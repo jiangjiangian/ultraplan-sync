@@ -1,0 +1,21 @@
+# Build artifacts
+build/
+*.o
+*.obj
+*.exe
+
+# Secrets / API keys
+.env
+.env.*
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# macOS
+.DS_Store
+
+# Generated images output (Nano Banana default dir is ~/nanobanana-images, but if user redirects locally)
+nanobanana-output/
