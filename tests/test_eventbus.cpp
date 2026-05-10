@@ -23,3 +23,27 @@ TEST_CASE("EventBus does not deliver to wrong type") {
     EventBus::Instance().Publish(Event{EventType::ShowMessage, {0,0}, BLACK, ""});
     CHECK(hits == 0);
 }
+
+// Regression for Codex finding "EventBus reentrancy UB" (Critical):
+// a handler that mutates the same event-type's subscription list during
+// Publish must not invalidate the live iteration. Snapshotting before
+// dispatch is the documented fix.
+TEST_CASE("EventBus tolerates Subscribe + Clear from inside a handler") {
+    EventBus::Instance().Clear();
+    int outer_hits = 0;
+    int reentrant_hits = 0;
+
+    EventBus::Instance().Subscribe(EventType::ShowMessage,
+        [&](const Event&) {
+            outer_hits++;
+            // mutate the same type's handler list mid-dispatch
+            EventBus::Instance().Subscribe(EventType::ShowMessage,
+                [&](const Event&) { reentrant_hits++; });
+            EventBus::Instance().Clear();
+        });
+
+    EventBus::Instance().Publish(Event{EventType::ShowMessage, {0,0}, BLACK, ""});
+
+    CHECK(outer_hits == 1);          // outer handler ran exactly once
+    CHECK(reentrant_hits == 0);      // newly-added handler must NOT run this dispatch
+}
