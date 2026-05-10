@@ -6,6 +6,9 @@
 enum class ObjectType {
     Player,
     TrueUmbrella,
+    FragileUmbrella,
+    ProfessorTrapUmbrella,
+    CursedUmbrella,
 };
 
 class GameObjectFactory {

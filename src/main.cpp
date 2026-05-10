@@ -24,8 +24,11 @@ int main() {
         });
 
     std::vector<std::unique_ptr<GameObject>> objects;
-    objects.push_back(GameObjectFactory::Create(ObjectType::Player, {400, 225}));
-    objects.push_back(GameObjectFactory::Create(ObjectType::TrueUmbrella, {200, 100}));
+    objects.push_back(GameObjectFactory::Create(ObjectType::Player,                {400, 225}));
+    objects.push_back(GameObjectFactory::Create(ObjectType::TrueUmbrella,          {150, 100}));
+    objects.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       {300, 100}));
+    objects.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, {500, 100}));
+    objects.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        {650, 100}));
 
     Player* player = dynamic_cast<Player*>(objects.front().get());
 
