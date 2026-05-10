@@ -62,7 +62,7 @@ int main() {
         }
         EndDrawing();
 
-        // End-of-frame sweep: deferred deletion (CLAUDE.md hard rule #3)
+        // End-of-frame sweep: deferred deletion to avoid iterator invalidation
         objects.erase(
             std::remove_if(objects.begin(), objects.end(),
                 [](const std::unique_ptr<GameObject>& o) {

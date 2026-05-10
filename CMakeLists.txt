@@ -39,8 +39,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
 # Add a static lib for the gameplay code IF any non-main .cpp files exist.
 # Early in development the lib may be empty; we add it lazily so configure succeeds.
 # When the lib exists, raylib is linked to it (PUBLIC) and the executable
-# inherits raylib transitively — never link raylib twice (Codex review fix:
-# duplicate-libraries linker warning was the symptom).
+# inherits raylib transitively — never link raylib twice, otherwise the
+# linker emits a duplicate-libraries warning.
 if(GAME_SOURCES)
     add_library(${PROJECT_NAME}_lib ${GAME_SOURCES})
     target_include_directories(${PROJECT_NAME}_lib PUBLIC "${INCLUDE_DIR}")

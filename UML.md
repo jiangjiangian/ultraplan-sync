@@ -160,11 +160,11 @@ classDiagram
 | **Observer** | `EventBus::Subscribe` / `Publish` | UI 訂閱 `RenderRequested`、`ShowMessage`、`UmbrellaClaimed` |
 | **State** | `SemesterStateMachine` (規劃中) | 學期 5 章 + 3 結局之間的轉換 |
 
-### 架構鐵律（CLAUDE.md hard rules）
+### 架構鐵律
 
 1. `Player` 不得 `#include` 任何具體 umbrella header — 只認 `TransparentUmbrella*`
 2. `Item` / `TransparentUmbrella` 不得呼叫 `DrawText` / `DrawTexture` — 一律經 `EventBus` 廣播
-3. `MapManager`（`main.cpp` 主迴圈）不得在迭代中 `delete` GameObject — 改 `isActive_ = false`，幀末 `erase-remove` 一次掃除
+3. 主迴圈不得在迭代中 `delete` GameObject — 改 `isActive_ = false`，幀末 `erase-remove` 一次掃除
 
 ---
 

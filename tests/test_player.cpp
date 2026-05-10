@@ -1,7 +1,6 @@
 #include "doctest/doctest.h"
 #include "Player.h"
 
-// Codex review gap: Player karma arithmetic was untested.
 TEST_CASE("Player starts with karma 50 and no umbrella") {
     Player p({0, 0});
     CHECK(p.GetKarma() == 50);

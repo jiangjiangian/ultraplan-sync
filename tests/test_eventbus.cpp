@@ -24,10 +24,9 @@ TEST_CASE("EventBus does not deliver to wrong type") {
     CHECK(hits == 0);
 }
 
-// Regression for Codex finding "EventBus reentrancy UB" (Critical):
-// a handler that mutates the same event-type's subscription list during
-// Publish must not invalidate the live iteration. Snapshotting before
-// dispatch is the documented fix.
+// EventBus reentrancy regression: a handler that mutates the same event
+// type's subscription list during Publish must not invalidate the live
+// iteration. Snapshotting the handler list before dispatch is the fix.
 TEST_CASE("EventBus tolerates Subscribe + Clear from inside a handler") {
     EventBus::Instance().Clear();
     int outer_hits = 0;
