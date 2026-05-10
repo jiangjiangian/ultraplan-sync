@@ -35,15 +35,19 @@ endif()
 
 add_executable(${PROJECT_NAME} "${SRC_DIR}/main.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 
 # Add a static lib for the gameplay code IF any non-main .cpp files exist.
 # Early in development the lib may be empty; we add it lazily so configure succeeds.
+# When the lib exists, raylib is linked to it (PUBLIC) and the executable
+# inherits raylib transitively — never link raylib twice (Codex review fix:
+# duplicate-libraries linker warning was the symptom).
 if(GAME_SOURCES)
     add_library(${PROJECT_NAME}_lib ${GAME_SOURCES})
     target_include_directories(${PROJECT_NAME}_lib PUBLIC "${INCLUDE_DIR}")
     target_link_libraries(${PROJECT_NAME}_lib PUBLIC raylib)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
 endif()
 
 if(APPLE)
@@ -57,10 +61,13 @@ FetchContent_Declare(doctest
     GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(doctest)
 
+enable_testing()
+
 file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
     target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}_lib doctest::doctest)
+    add_test(NAME unit_tests COMMAND ${PROJECT_NAME}_tests)
 endif()
 
 # Copy resources next to the executable
