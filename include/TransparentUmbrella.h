@@ -1,10 +1,11 @@
 #pragma once
 #include "Item.h"
+#include "gfx/Color.h"
 
 class TransparentUmbrella : public Item {
 public:
-    TransparentUmbrella(Vector2 position, std::string name, Color tint)
-        : Item(position, {position.x, position.y, 20.0f, 20.0f}, std::move(name)),
+    TransparentUmbrella(nccu::gfx::Vec2 position, std::string name, nccu::gfx::Color tint)
+        : Item(position, nccu::gfx::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
           umbrellaTint_(tint) {}
 
     void Update(float /*deltaTime*/) override {}
@@ -15,5 +16,5 @@ public:
     virtual void beClaimed(Player* player) = 0;
 
 protected:
-    Color umbrellaTint_;
+    nccu::gfx::Color umbrellaTint_;
 };

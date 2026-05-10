@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#include "raylib.h"
+#include "gfx/Vec2.h"
 #include <memory>
 
 enum class ObjectType {
@@ -13,5 +13,5 @@ enum class ObjectType {
 
 class GameObjectFactory {
 public:
-    static std::unique_ptr<GameObject> Create(ObjectType type, Vector2 position);
+    static std::unique_ptr<GameObject> Create(ObjectType type, nccu::gfx::Vec2 position);
 };

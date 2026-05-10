@@ -4,7 +4,7 @@
 
 class Item : public GameObject {
 public:
-    Item(Vector2 position, Rectangle hitBox, std::string name)
+    Item(nccu::gfx::Vec2 position, nccu::gfx::Rect hitBox, std::string name)
         : GameObject(position, hitBox), itemName_(std::move(name)), isPickable_(true) {}
 
     virtual void OnPickup(Player* player) = 0;

@@ -16,13 +16,13 @@ void CursedUmbrella::beClaimed(Player* player) {
     EventBus::Instance().Publish(Event{
         EventType::KarmaChanged,
         position_,
-        WHITE,
+        nccu::gfx::Colors::White,
         "Karma -50"
     });
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         position_,
-        WHITE,
+        nccu::gfx::Colors::White,
         "你順手牽羊了！成為了你最討厭的人。"
     });
 }

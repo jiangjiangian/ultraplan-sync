@@ -16,7 +16,7 @@ void ProfessorTrapUmbrella::beClaimed(Player* player) {
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         position_,
-        WHITE,
+        nccu::gfx::Colors::White,
         "你撿到了 ProfessorTrapUmbrella，遠處傳來助教們的腳步聲！"
     });
 }

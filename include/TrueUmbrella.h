@@ -3,8 +3,8 @@
 
 class TrueUmbrella : public TransparentUmbrella {
 public:
-    explicit TrueUmbrella(Vector2 position)
-        : TransparentUmbrella(position, "TrueUmbrella", Color{180, 230, 255, 255}) {}
+    explicit TrueUmbrella(nccu::gfx::Vec2 position)
+        : TransparentUmbrella(position, "TrueUmbrella", nccu::gfx::Color{180, 230, 255, 255}) {}
 
     void beClaimed(Player* player) override;
 };

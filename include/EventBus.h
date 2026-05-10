@@ -1,5 +1,6 @@
 #pragma once
-#include "raylib.h"
+#include "gfx/Color.h"
+#include "gfx/Vec2.h"
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -13,10 +14,10 @@ enum class EventType {
 };
 
 struct Event {
-    EventType type;
-    Vector2 position;
-    Color color;
-    std::string text;
+    EventType            type;
+    nccu::gfx::Vec2      position;
+    nccu::gfx::Color     color;
+    std::string          text;
 };
 
 class EventBus {

@@ -17,11 +17,10 @@ build/
 # macOS
 .DS_Store
 
-# Generated images output (Nano Banana default dir is ~/nanobanana-images, but if user redirects locally)
+# Generated image cache (local image-gen tool output dir)
 nanobanana-output/
 
-# AI agent / automation artifacts — local development only, never push
-# (Claude Code config, Codex CLI cache, agent manifests, implementation plans)
+# Local development tooling and notes — never push
 .claude/
 .codex/
 AGENTS.md

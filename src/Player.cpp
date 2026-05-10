@@ -1,9 +1,12 @@
 #include "Player.h"
-#include "raylib.h"
+#include "gfx/Renderer.h"
+#include "gfx/Input.h"
+#include "gfx/Key.h"
+#include "gfx/Color.h"
 
-Player::Player(Vector2 position)
-    // 180 px/sec ≈ original 3 px/frame at 60 FPS, but frame-rate independent now
-    : Character(position, {position.x, position.y, 24.0f, 24.0f}, 180.0f),
+Player::Player(nccu::gfx::Vec2 position)
+    // 180 px/sec ≈ original 3 px/frame at 60 FPS, frame-rate independent.
+    : Character(position, nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
       rainMeter_(0.0f), karma_(50), hasUmbrella_(false) {}
 
 void Player::Update(float deltaTime) {
@@ -11,7 +14,7 @@ void Player::Update(float deltaTime) {
 }
 
 void Player::Draw() const {
-    DrawRectangleRec(hitBox_, BLUE);
+    nccu::gfx::Renderer{}.Rect(hitBox_, nccu::gfx::Colors::Blue);
 }
 
 void Player::Interact(Player* /*initiator*/) {
@@ -19,11 +22,13 @@ void Player::Interact(Player* /*initiator*/) {
 }
 
 void Player::HandleInput(float deltaTime) {
-    Vector2 dir{0.0f, 0.0f};
-    if (IsKeyDown(KEY_W)) dir.y -= 1.0f;
-    if (IsKeyDown(KEY_S)) dir.y += 1.0f;
-    if (IsKeyDown(KEY_A)) dir.x -= 1.0f;
-    if (IsKeyDown(KEY_D)) dir.x += 1.0f;
+    using nccu::gfx::Input;
+    using nccu::gfx::Key;
+    nccu::gfx::Vec2 dir{0.0f, 0.0f};
+    if (Input::IsDown(Key::W)) dir.y -= 1.0f;
+    if (Input::IsDown(Key::S)) dir.y += 1.0f;
+    if (Input::IsDown(Key::A)) dir.x -= 1.0f;
+    if (Input::IsDown(Key::D)) dir.x += 1.0f;
     Move(dir, deltaTime);
 }
 

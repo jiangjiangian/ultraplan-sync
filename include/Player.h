@@ -3,7 +3,7 @@
 
 class Player : public Character {
 public:
-    Player(Vector2 position);
+    explicit Player(nccu::gfx::Vec2 position);
 
     void Update(float deltaTime) override;
     void Draw() const override;

@@ -3,8 +3,8 @@
 
 class FragileUmbrella : public TransparentUmbrella {
 public:
-    explicit FragileUmbrella(Vector2 position)
-        : TransparentUmbrella(position, "FragileUmbrella", Color{200, 220, 235, 255}),
+    explicit FragileUmbrella(nccu::gfx::Vec2 position)
+        : TransparentUmbrella(position, "FragileUmbrella", nccu::gfx::Color{200, 220, 235, 255}),
           leakRate_(0.5f) {}
 
     void beClaimed(Player* player) override;

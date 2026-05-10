@@ -15,7 +15,7 @@ void TrueUmbrella::beClaimed(Player* player) {
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         position_,
-        WHITE,
+        nccu::gfx::Colors::White,
         "你撿到了 TrueUmbrella，雨停了。"
     });
 }

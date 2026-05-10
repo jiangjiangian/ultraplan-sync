@@ -15,7 +15,7 @@ void FragileUmbrella::beClaimed(Player* player) {
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         position_,
-        WHITE,
+        nccu::gfx::Colors::White,
         "你撿到了 FragileUmbrella，骨架斷了，雨還是會慢慢滲進來。"
     });
 }
