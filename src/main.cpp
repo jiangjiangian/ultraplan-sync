@@ -1,10 +1,13 @@
 #include "GameObject.h"
 #include "GameObjectFactory.h"
 #include "Player.h"
+#include "NPC.h"
 #include "EventBus.h"
 #include "WorldConfig.h"
 #include "BuildingTracker.h"
 #include "Buildings.h"
+#include "SemesterStateMachine.h"
+#include "SemesterState.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
 #include "gfx/CameraScope.h"
@@ -66,9 +69,20 @@ int main() {
     objects.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{500, 100}));
     objects.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{650, 100}));
 
+    // Wave 2: NPC + state machine wiring (single demo NPC at 正門 plaza).
+    objects.push_back(std::make_unique<NPC>(
+        Vec2{200, 950},
+        std::vector<std::string>{
+            "歡迎來到政大山下校園！",
+            "聽說最近常常下雨，記得帶傘啊。",
+            "如果撿到別人的傘，記得物歸原主。"
+        },
+        /*isQuestGiver=*/true));
+
     Player* player = dynamic_cast<Player*>(objects.front().get());
     nccu::gfx::Camera2D cam;
     nccu::BuildingTracker tracker;
+    nccu::SemesterStateMachine semester;
 
     while (!win.ShouldClose()) {
         float dt = Time::DeltaSeconds();
@@ -136,6 +150,11 @@ int main() {
                 std::string line = "Inside: " + currentBuildingName;
                 TextBuilder{line}
                     .At(Vec2{10, 50}).Size(16).Color(Colors::Black).Draw();
+            }
+            {
+                std::string chapter{semester.CurrentName()};
+                TextBuilder{chapter}
+                    .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
             }
         }
 
