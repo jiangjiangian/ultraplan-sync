@@ -47,15 +47,24 @@ int main() {
 
     auto worldmap = nccu::gfx::Texture::Load("resources/assets/maps/worldmap.png");
 
+    nccu::SemesterStateMachine semester;
     std::string currentBuildingName;
+
     EventBus::Instance().Subscribe(EventType::ShowMessage,
         [](const Event& e) { std::cout << "[UI] " << e.text << '\n'; });
     EventBus::Instance().Subscribe(EventType::UmbrellaClaimed,
         [](const Event& e) { std::cout << "[Game] Claimed: " << e.text << '\n'; });
     EventBus::Instance().Subscribe(EventType::EnteredBuilding,
-        [&currentBuildingName](const Event& e) {
+        [&currentBuildingName, &semester](const Event& e) {
             currentBuildingName = e.text;
             std::cout << "[Game] Entered: " << e.text << '\n';
+            // Building-keyed chapter transitions. Walking into specific
+            // landmarks advances the semester state machine.
+            if      (e.text == "正門")      semester.Transition(nccu::SemesterState::Chapter1_AddDrop);
+            else if (e.text == "樂活小舖")   semester.Transition(nccu::SemesterState::Interlude_Market);
+            else if (e.text == "中正圖書館") semester.Transition(nccu::SemesterState::Chapter2_Midterms);
+            else if (e.text == "操場")      semester.Transition(nccu::SemesterState::Chapter3_SportsDay);
+            else if (e.text == "行政大樓")   semester.Transition(nccu::SemesterState::Chapter4_Finals);
         });
     EventBus::Instance().Subscribe(EventType::RenderRequested,
         [](const Event& e) {
@@ -82,7 +91,6 @@ int main() {
     Player* player = dynamic_cast<Player*>(objects.front().get());
     nccu::gfx::Camera2D cam;
     nccu::BuildingTracker tracker;
-    nccu::SemesterStateMachine semester;
 
     while (!win.ShouldClose()) {
         float dt = Time::DeltaSeconds();

@@ -123,3 +123,17 @@ TEST_CASE("BuildingTracker overlap: 集英樓 / 果夫樓 — nearer centre wins
     REQUIRE(b != nullptr);
     CHECK(b->name == "集英樓");
 }
+
+TEST_CASE("BuildingTracker overlap: exact-tie midpoint resolves lexicographically") {
+    EventBus::Instance().Clear();
+    BuildingTracker t;
+    // The midpoint between 風雩樓 centre (1080,1490) and 風雩走廊
+    // centre (1280,1620) is (1180, 1555). Both rects contain that point
+    // and both centres are exactly equidistant (≈ 119.3). Tie-break by
+    // string_view ordering: bytes 0xE6 0xA8 0x93 (樓) < 0xE8 0xB5 0xB0
+    // (走), so 風雩樓 < 風雩走廊 and 風雩樓 wins regardless of array
+    // ordering in Buildings.h.
+    auto* b = t.Update(Vec2{1180.0f, 1555.0f});
+    REQUIRE(b != nullptr);
+    CHECK(b->name == "風雩樓");
+}

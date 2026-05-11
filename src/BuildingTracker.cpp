@@ -24,7 +24,11 @@ const buildings::Building* BuildingTracker::Update(gfx::Vec2 playerCenter) {
         const float dx = cx - playerCenter.x;
         const float dy = cy - playerCenter.y;
         const float d2 = dx * dx + dy * dy;
-        if (d2 < bestDistSq) {
+        // On exact ties (player on the perpendicular bisector between two
+        // centres) break lexicographically by name rather than array order,
+        // so the result does not silently depend on Buildings.h ordering.
+        if (d2 < bestDistSq ||
+            (found != nullptr && d2 == bestDistSq && b.name < found->name)) {
             bestDistSq = d2;
             found = &b;
         }

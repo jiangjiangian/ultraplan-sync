@@ -23,13 +23,19 @@ void NPC::Draw() const {
 
 void NPC::Interact(Player* /*initiator*/) {
     if (dialogLines_.empty()) return;
+    // Snapshot the current line text and advance the index BEFORE
+    // dispatching the event. EventBus::Publish is synchronous and
+    // supports recursive dispatch (see test_eventbus reentrancy case),
+    // so any subscriber that calls back into Interact() must observe
+    // the already-advanced state rather than a stale index.
+    const std::string line = dialogLines_[currentLineIndex_];
+    currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         position_,
         nccu::gfx::Colors::White,
-        CurrentLineText()
+        line
     });
-    currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
 }
 
 const std::string& NPC::CurrentLineText() const {
