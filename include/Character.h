@@ -20,6 +20,14 @@ public:
         direction_ = n;
     }
 
+    // Sets world position and keeps hit-box in lock-step. Used by main.cpp
+    // to apply post-Update clamps from nccu::gfx::ClampToWorld.
+    void SetPosition(nccu::gfx::Vec2 p) noexcept {
+        position_ = p;
+        hitBox_.x = p.x;
+        hitBox_.y = p.y;
+    }
+
 protected:
     float speed_;
     nccu::gfx::Vec2 direction_;

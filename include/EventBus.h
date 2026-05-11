@@ -11,6 +11,7 @@ enum class EventType {
     UmbrellaClaimed,
     KarmaChanged,
     ShowMessage,
+    EnteredBuilding,
 };
 
 struct Event {
