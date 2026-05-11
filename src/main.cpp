@@ -4,6 +4,9 @@
 #include "EventBus.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
+#include "gfx/CameraScope.h"
+#include "gfx/Camera2D.h"
+#include "gfx/Texture.h"
 #include "gfx/Renderer.h"
 #include "gfx/TextBuilder.h"
 #include "gfx/Input.h"
@@ -21,11 +24,17 @@
 int main() {
     using namespace nccu::gfx;
 
+    constexpr int kWinW = 800;
+    constexpr int kWinH = 450;
+    const Vec2    kScreenCenter{kWinW / 2.0f, kWinH / 2.0f};
+
     auto win = Window::Builder()
                    .Title("Lost Umbrella - MVP")
-                   .Size(800, 450)
+                   .Size(kWinW, kWinH)
                    .Fps(60)
                    .Open();
+
+    auto worldmap = nccu::gfx::Texture::Load("resources/assets/maps/worldmap.png");
 
     // UI/Data separation: subscribers translate domain events into render
     // and console output. In production, a UIManager would consume these.
@@ -46,6 +55,7 @@ int main() {
     objects.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{650, 100}));
 
     Player* player = dynamic_cast<Player*>(objects.front().get());
+    nccu::gfx::Camera2D cam;
 
     while (!win.ShouldClose()) {
         float dt = Time::DeltaSeconds();
@@ -64,12 +74,24 @@ int main() {
             }
         }
 
+        if (player) {
+            cam.Follow(player->GetPosition(), kScreenCenter);
+        }
+
         {
             DrawScope frame;
             Renderer{}.Clear(Colors::RayWhite);
-            for (auto& obj : objects) {
-                if (obj && obj->IsActive()) obj->Draw();
+
+            // World-space pass: worldmap + game objects scroll with the camera.
+            {
+                CameraScope view{cam};
+                Renderer{}.Texture(worldmap, Vec2{0.0f, 0.0f});
+                for (auto& obj : objects) {
+                    if (obj && obj->IsActive()) obj->Draw();
+                }
             }
+
+            // Screen-space HUD: stays pinned, does not scroll with the world.
             TextBuilder{"WASD: move    E: pick up"}
                 .At(Vec2{10, 10}).Size(16).Color(Colors::DarkGray).Draw();
             if (player) {

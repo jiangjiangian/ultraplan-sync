@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
+#include "gfx/Texture.h"
 #include "gfx/Vec2.h"
 
 namespace nccu::gfx {
@@ -31,6 +32,18 @@ public:
 
     Renderer& Pixel(Vec2 p, Color c) noexcept {
         ::DrawPixelV(::Vector2{p.x, p.y}, ::Color{c.r, c.g, c.b, c.a});
+        return *this;
+    }
+
+    // Method name `Texture` shadows the type nccu::gfx::Texture inside the
+    // class scope, so we use the elaborated form `class Texture` in the
+    // parameter list (mirrors the Rect pattern above).
+    Renderer& Texture(const class Texture& tex,
+                      Vec2 pos,
+                      Color tint = Colors::White) noexcept {
+        ::DrawTextureV(tex.Raw(),
+                       ::Vector2{pos.x, pos.y},
+                       ::Color{tint.r, tint.g, tint.b, tint.a});
         return *this;
     }
 };
