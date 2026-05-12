@@ -4,6 +4,7 @@
 #include "gfx/Vec2.h"
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 class Player : public Character {
 public:
@@ -26,10 +27,26 @@ public:
     bool HasUmbrella() const { return hasUmbrella_; }
     void SetHasUmbrella(bool v) { hasUmbrella_ = v; }
 
+    // Money: starts at 100, three earning channels per design doc.
+    int GetMoney() const { return money_; }
+    void AddMoney(int amount) { money_ += amount; }
+    // Returns false (no side effect) if amount > money_; otherwise deducts.
+    bool DeductMoney(int amount);
+
+    // Flag system: bool-keyed dictionary for narrative branching.
+    void SetFlag(const std::string& name) { flags_[name] = true; }
+    void ClearFlag(const std::string& name) { flags_.erase(name); }
+    bool HasFlag(const std::string& name) const {
+        auto it = flags_.find(name);
+        return it != flags_.end() && it->second;
+    }
+
 private:
     float rainMeter_;
     int karma_;
     bool hasUmbrella_;
+    int money_;
+    std::unordered_map<std::string, bool> flags_;
 
     std::optional<nccu::gfx::Texture> sprite_;
     nccu::gfx::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down

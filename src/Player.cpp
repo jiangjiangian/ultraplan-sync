@@ -28,7 +28,7 @@ int RowForFacing(nccu::gfx::Vec2 facing) {
 Player::Player(nccu::gfx::Vec2 position)
     // 180 px/sec ≈ original 3 px/frame at 60 FPS, frame-rate independent.
     : Character(position, nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
-      rainMeter_(0.0f), karma_(50), hasUmbrella_(false) {}
+      rainMeter_(0.0f), karma_(50), hasUmbrella_(false), money_(100) {}
 
 void Player::LoadSprite(const std::string& path) {
     sprite_ = nccu::gfx::Texture::Load(path);
@@ -98,4 +98,12 @@ void Player::decreaseKarma(int amount) {
 
 void Player::resetRainMeter() {
     rainMeter_ = 0.0f;
+}
+
+bool Player::DeductMoney(int amount) {
+    if (amount > money_) {
+        return false;
+    }
+    money_ -= amount;
+    return true;
 }
