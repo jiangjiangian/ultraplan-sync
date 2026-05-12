@@ -130,7 +130,7 @@ void Player::ApplyRain(float dt) {
 
 void Player::RespawnAtGate() {
     // 正門 gate spawn — half-day passes, no karma penalty per design doc.
-    position_ = nccu::gfx::Vec2{400.0f, 1850.0f};
+    position_ = nccu::gfx::Vec2{500.0f, 1860.0f};
     hitBox_.x = position_.x;
     hitBox_.y = position_.y;
     resetRainMeter();

@@ -4,9 +4,7 @@
 
 void EnergyDrink::Consume(Player* player) {
     if (!player) return;
-    // TODO: enable after W3A lands AddKarma — see SCRIPT_HANDOFF
-    // player->AddKarma(kKarmaBonus);
-    player->decreaseKarma(-kKarmaBonus); // temporary equivalent: +kKarmaBonus
+    player->AddKarma(kKarmaBonus);
     isActive_ = false;
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,

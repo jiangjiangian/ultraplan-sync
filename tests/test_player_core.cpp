@@ -114,8 +114,8 @@ TEST_CASE("Player::ApplyRain accumulates 5 units/sec, no-ops with umbrella, resp
         // Respawn side-effects: rainMeter zeroed, position back at gate,
         // ShowMessage event delivered with the design-doc text.
         CHECK(p.GetRainMeter() == doctest::Approx(0.0f));
-        CHECK(p.GetPosition().x == doctest::Approx(400.0f));
-        CHECK(p.GetPosition().y == doctest::Approx(1850.0f));
+        CHECK(p.GetPosition().x == doctest::Approx(500.0f));
+        CHECK(p.GetPosition().y == doctest::Approx(1860.0f));
         CHECK(hits == 1);
         CHECK(captured == "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。");
     }
