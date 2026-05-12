@@ -2,6 +2,7 @@
 #include "EventBus.h"
 #include "gfx/Renderer.h"
 #include "gfx/Color.h"
+#include "gfx/Rect.h"
 
 NPC::NPC(nccu::gfx::Vec2 position,
          std::vector<std::string> dialogLines,
@@ -18,7 +19,33 @@ void NPC::Update(float /*deltaTime*/) {
 }
 
 void NPC::Draw() const {
-    nccu::gfx::Renderer{}.Rect(hitBox_, nccu::gfx::Colors::Green);
+    using nccu::gfx::Rect;
+    using nccu::gfx::Renderer;
+    if (!sprite_ || !sprite_->IsValid()) {
+        Renderer{}.Rect(hitBox_, nccu::gfx::Colors::Green);
+        return;
+    }
+    // Pipoya cell + facing: stationary NPCs always show col 1 (idle), row 0
+    // (facing the camera). Bottom-centre the 32x32 sprite on the 24x24 hit
+    // box so feet sit at the hitbox base — same convention as Player.
+    constexpr int kCell = 32;
+    constexpr int kIdleCol = 1;
+    constexpr int kDownRow = 0;
+    const Rect src{
+        static_cast<float>(kIdleCol * kCell),
+        static_cast<float>(kDownRow * kCell),
+        static_cast<float>(kCell),
+        static_cast<float>(kCell)};
+    const Rect dest{
+        hitBox_.x + (hitBox_.width  - kCell) * 0.5f,
+        hitBox_.y +  hitBox_.height - kCell,
+        static_cast<float>(kCell),
+        static_cast<float>(kCell)};
+    Renderer{}.TextureRect(*sprite_, src, dest);
+}
+
+void NPC::LoadSprite(const std::string& path) {
+    sprite_ = nccu::gfx::Texture::Load(path);
 }
 
 void NPC::Interact(Player* /*initiator*/) {

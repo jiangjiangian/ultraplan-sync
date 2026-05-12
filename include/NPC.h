@@ -1,5 +1,7 @@
 #pragma once
 #include "Character.h"
+#include "gfx/Texture.h"
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,6 +14,10 @@ public:
     void Update(float deltaTime) override;
     void Draw() const override;
     void Interact(Player* initiator) override;
+
+    // Loads a Pipoya 96x128 sheet. NPCs are stationary, so only the idle
+    // column at row 0 (facing down) is ever drawn.
+    void LoadSprite(const std::string& path);
 
     bool   IsQuestGiver()       const { return isQuestGiver_; }
     size_t CurrentLineIndex()   const { return currentLineIndex_; }
@@ -26,4 +32,6 @@ private:
     std::vector<std::string> dialogLines_;
     size_t                   currentLineIndex_;
     bool                     isQuestGiver_;
+
+    std::optional<nccu::gfx::Texture> sprite_;
 };

@@ -46,6 +46,22 @@ public:
                        ::Color{tint.r, tint.g, tint.b, tint.a});
         return *this;
     }
+
+    // Draws a sub-rectangle of `tex` (`src`) into a destination rectangle on
+    // screen. When `dest` differs in size from `src`, the sprite is scaled —
+    // used by sprite-sheet frame slicing and by the character-select grid's
+    // upscaled previews.
+    Renderer& TextureRect(const class Texture& tex,
+                          struct Rect src,
+                          struct Rect dest,
+                          Color tint = Colors::White) noexcept {
+        ::DrawTexturePro(tex.Raw(),
+                         ::Rectangle{src.x,  src.y,  src.width,  src.height},
+                         ::Rectangle{dest.x, dest.y, dest.width, dest.height},
+                         ::Vector2{0.0f, 0.0f}, 0.0f,
+                         ::Color{tint.r, tint.g, tint.b, tint.a});
+        return *this;
+    }
 };
 
 } // namespace nccu::gfx

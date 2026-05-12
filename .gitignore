@@ -20,6 +20,10 @@ build/
 # Generated image cache (local image-gen tool output dir)
 nanobanana-output/
 
+# Unzipped third-party sprite packs — only the curated subset under
+# resources/assets/sprites/ is versioned (see sprites/ATTRIBUTIONS.md).
+resources/assets/PIPOYA FREE RPG Character Sprites 32x32/
+
 # Local development tooling and notes — never push
 .claude/
 .codex/
