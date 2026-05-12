@@ -17,9 +17,6 @@ build/
 # macOS
 .DS_Store
 
-# Generated image cache (local image-gen tool output dir)
-nanobanana-output/
-
 # Unzipped third-party sprite packs — only the curated subset under
 # resources/assets/sprites/ is versioned (see sprites/ATTRIBUTIONS.md).
 resources/assets/PIPOYA FREE RPG Character Sprites 32x32/
