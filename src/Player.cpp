@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "EventBus.h"
 #include "gfx/Renderer.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
@@ -113,4 +114,30 @@ bool Player::DeductMoney(int amount) {
     }
     money_ -= amount;
     return true;
+}
+
+void Player::ApplyRain(float dt) {
+    if (hasUmbrella_) {
+        return;  // umbrella nullifies exposure
+    }
+    rainMeter_ += 5.0f * dt;
+    if (rainMeter_ > 100.0f) rainMeter_ = 100.0f;
+    if (rainMeter_ < 0.0f)   rainMeter_ = 0.0f;
+    if (rainMeter_ >= 100.0f) {
+        RespawnAtGate();
+    }
+}
+
+void Player::RespawnAtGate() {
+    // 正門 gate spawn — half-day passes, no karma penalty per design doc.
+    position_ = nccu::gfx::Vec2{400.0f, 1850.0f};
+    hitBox_.x = position_.x;
+    hitBox_.y = position_.y;
+    resetRainMeter();
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        position_,
+        nccu::gfx::Colors::Black,
+        "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。"
+    });
 }

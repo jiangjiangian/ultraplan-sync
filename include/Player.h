@@ -44,7 +44,14 @@ public:
         return it != flags_.end() && it->second;
     }
 
+    // Rain accumulation: 5 units/sec exposure when umbrella-less; clamped
+    // [0,100]. When the meter fills, the player is respawned at the 正門
+    // gate and a ShowMessage event is emitted via EventBus.
+    void ApplyRain(float dt);
+
 private:
+    void RespawnAtGate();
+
     float rainMeter_;
     int karma_;
     bool hasUmbrella_;
