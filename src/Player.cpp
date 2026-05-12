@@ -92,8 +92,15 @@ void Player::HandleInput(float deltaTime) {
     Move(dir, deltaTime);
 }
 
+void Player::AddKarma(int delta) {
+    karma_ += delta;
+    if (karma_ > 100) karma_ = 100;
+    if (karma_ < -100) karma_ = -100;
+}
+
 void Player::decreaseKarma(int amount) {
-    karma_ -= amount;
+    // TODO: migrate callers to AddKarma; kept as a thin wrapper for now.
+    AddKarma(-amount);
 }
 
 void Player::resetRainMeter() {

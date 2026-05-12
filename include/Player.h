@@ -15,6 +15,9 @@ public:
     void Interact(Player* initiator) override;
 
     void HandleInput(float deltaTime);
+    // Karma delta with clamp to [-100, 100]. delta can be negative.
+    void AddKarma(int delta);
+    // TODO: migrate existing callers to AddKarma and remove this wrapper.
     void decreaseKarma(int amount);
     void resetRainMeter();
 
