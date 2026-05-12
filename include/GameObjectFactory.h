@@ -9,6 +9,9 @@ enum class ObjectType {
     FragileUmbrella,
     ProfessorTrapUmbrella,
     CursedUmbrella,
+    HotPack,
+    WaterproofSpray,
+    EnergyDrink,
 };
 
 class GameObjectFactory {
