@@ -12,6 +12,10 @@ enum class EventType {
     KarmaChanged,
     ShowMessage,
     EnteredBuilding,
+    // Emitted whenever the player gains a non-umbrella inventory item —
+    // currently published by Vendor::TryBuy on a successful purchase. The
+    // event payload's `text` field carries the item id (e.g. "HotPack").
+    PickupAcquired,
 };
 
 struct Event {

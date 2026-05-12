@@ -1,5 +1,7 @@
 #include "Vendor.h"
+#include "EventBus.h"
 #include "Player.h"
+#include "gfx/Color.h"
 
 #include <string>
 #include <utility>
@@ -32,7 +34,42 @@ Vendor::Vendor(nccu::gfx::Vec2 position, VendorConfig config)
     : NPC(position, BuildDialogLines(config), /*isQuestGiver=*/false),
       config_(std::move(config)) {}
 
-bool Vendor::TryBuy(Player* /*player*/, std::size_t /*stockIndex*/) {
-    // Implemented in a later commit alongside the EventBus extension.
-    return false;
+bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
+    // Defensive bounds check first — a null player or an out-of-range index
+    // is a programmer error from the caller (UI passing the wrong slot), so
+    // we silently bail without emitting any event to avoid lying to the
+    // user about a transaction that never started.
+    if (!player) return false;
+    if (stockIndex >= config_.stock.size()) return false;
+
+    const VendorItem& item = config_.stock[stockIndex];
+
+    // DeductMoney is the gatekeeper: it returns false on insufficient funds
+    // and performs NO side effect, so the player's purse is safe here.
+    if (!player->DeductMoney(item.price)) {
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage,
+            position_,
+            nccu::gfx::Colors::Red,
+            "你錢不夠"
+        });
+        return false;
+    }
+
+    // Success: announce the transaction (UI) and the item gain (inventory).
+    // Two events because subscribers are different — one paints a toast,
+    // the other appends to the inventory model.
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        position_,
+        nccu::gfx::Colors::White,
+        std::string("買了 ") + item.itemId
+    });
+    EventBus::Instance().Publish(Event{
+        EventType::PickupAcquired,
+        position_,
+        nccu::gfx::Colors::White,
+        item.itemId
+    });
+    return true;
 }
