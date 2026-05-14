@@ -3,6 +3,7 @@
 #include "gfx/Color.h"
 #include "gfx/Vec2.h"
 #include <functional>
+#include <shared_mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -32,13 +33,21 @@ public:
 
     static EventBus& Instance();
 
-    void Subscribe(EventType type, Handler handler);
-    void Publish(const Event& event) const;
-    void Clear();
+    // Fluent — chain subscriptions:
+    //   EventBus::Instance()
+    //     .Subscribe(EventType::ShowMessage, ...)
+    //     .Subscribe(EventType::EnteredBuilding, ...);
+    EventBus& Subscribe(EventType type, Handler handler);
+    void      Publish(const Event& event) const;
+    EventBus& Clear();
 
 private:
     EventBus() = default;
     std::unordered_map<EventType, std::vector<Handler>> handlers_;
+    // Reader-writer mutex: Publish() is a reader (concurrent dispatch
+    // safe), Subscribe/Clear are writers (exclusive). Marked mutable so
+    // the const Publish can acquire the shared lock.
+    mutable std::shared_mutex mutex_;
 };
 
 #endif // EVENT_BUS_H_
