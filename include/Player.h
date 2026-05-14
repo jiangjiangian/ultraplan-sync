@@ -7,7 +7,7 @@
 #include <string>
 #include <unordered_map>
 
-class Player : public Character {
+class Player final : public Character {
 public:
     explicit Player(nccu::gfx::Vec2 position);
 
@@ -16,39 +16,37 @@ public:
     void Interact(Player* initiator) override;
 
     void HandleInput(float deltaTime);
-    // Karma delta with clamp to [-100, 100]. delta can be negative.
-    void AddKarma(int delta);
-    // TODO: migrate existing callers to AddKarma and remove this wrapper.
-    void decreaseKarma(int amount);
-    void resetRainMeter();
+
+    // Mutators return *this so callers can chain:
+    //   player.AddKarma(10).AddMoney(50).SetHasUmbrella(true);
+    Player& AddKarma(int delta);            // clamped to [-100, 100]
+    Player& decreaseKarma(int amount);      // thin wrapper, prefer AddKarma
+    Player& resetRainMeter() noexcept;
+    Player& SetHasUmbrella(bool v) noexcept { hasUmbrella_ = v; return *this; }
+    Player& AddMoney(int amount) noexcept   { money_ += amount; return *this; }
+    Player& SetFlag(const std::string& name)   { flags_[name] = true; return *this; }
+    Player& ClearFlag(const std::string& name) { flags_.erase(name);  return *this; }
 
     // Loads a Pipoya 96x128 sprite sheet (3 walk frames x 4 directions of
     // 32x32 each). Replaces any previously loaded sheet.
     void LoadSprite(const std::string& path);
 
-    int GetKarma() const { return karma_; }
-    float GetRainMeter() const { return rainMeter_; }
-    bool HasUmbrella() const { return hasUmbrella_; }
-    void SetHasUmbrella(bool v) { hasUmbrella_ = v; }
-
-    // Money: starts at 100, three earning channels per design doc.
-    int GetMoney() const { return money_; }
-    void AddMoney(int amount) { money_ += amount; }
-    // Returns false (no side effect) if amount > money_; otherwise deducts.
-    bool DeductMoney(int amount);
-
-    // Flag system: bool-keyed dictionary for narrative branching.
-    void SetFlag(const std::string& name) { flags_[name] = true; }
-    void ClearFlag(const std::string& name) { flags_.erase(name); }
-    bool HasFlag(const std::string& name) const {
+    [[nodiscard]] int   GetKarma()      const noexcept { return karma_; }
+    [[nodiscard]] float GetRainMeter()  const noexcept { return rainMeter_; }
+    [[nodiscard]] bool  HasUmbrella()   const noexcept { return hasUmbrella_; }
+    [[nodiscard]] int   GetMoney()      const noexcept { return money_; }
+    [[nodiscard]] bool  HasFlag(const std::string& name) const {
         auto it = flags_.find(name);
         return it != flags_.end() && it->second;
     }
 
+    // Returns false (no side effect) if amount > money_; otherwise deducts.
+    [[nodiscard]] bool DeductMoney(int amount) noexcept;
+
     // Rain accumulation: 5 units/sec exposure when umbrella-less; clamped
     // [0,100]. When the meter fills, the player is respawned at the 正門
     // gate and a ShowMessage event is emitted via EventBus.
-    void ApplyRain(float dt);
+    Player& ApplyRain(float dt);
 
 private:
     void RespawnAtGate();

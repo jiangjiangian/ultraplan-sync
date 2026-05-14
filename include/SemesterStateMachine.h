@@ -14,10 +14,10 @@ public:
     SemesterStateMachine(const SemesterStateMachine&) = delete;
     SemesterStateMachine& operator=(const SemesterStateMachine&) = delete;
 
-    SemesterState    Current()     const noexcept;
-    std::string_view CurrentName() const;
-    void             Transition(SemesterState next);
-    void             Update(float dt);
+    [[nodiscard]] SemesterState    Current()     const noexcept;
+    [[nodiscard]] std::string_view CurrentName() const;
+    void                           Transition(SemesterState next);
+    void                           Update(float dt);
 
 private:
     std::unique_ptr<IChapterState> state_;

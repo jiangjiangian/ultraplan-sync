@@ -2,7 +2,7 @@
 #define FRAGILE_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
-class FragileUmbrella : public TransparentUmbrella {
+class FragileUmbrella final : public TransparentUmbrella {
 public:
     explicit FragileUmbrella(nccu::gfx::Vec2 position)
         : TransparentUmbrella(position, "FragileUmbrella", nccu::gfx::Color{200, 220, 235, 255}),
@@ -10,7 +10,7 @@ public:
 
     void beClaimed(Player* player) override;
 
-    float GetLeakRate() const { return leakRate_; }
+    [[nodiscard]] float GetLeakRate() const noexcept { return leakRate_; }
 
 private:
     float leakRate_;

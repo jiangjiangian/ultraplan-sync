@@ -2,7 +2,7 @@
 #define PROFESSOR_TRAP_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
-class ProfessorTrapUmbrella : public TransparentUmbrella {
+class ProfessorTrapUmbrella final : public TransparentUmbrella {
 public:
     explicit ProfessorTrapUmbrella(nccu::gfx::Vec2 position)
         : TransparentUmbrella(position, "ProfessorTrapUmbrella", nccu::gfx::Color{210, 200, 230, 255}),
@@ -10,7 +10,7 @@ public:
 
     void beClaimed(Player* player) override;
 
-    int GetSpawnedEnemiesCount() const { return spawnedEnemiesCount_; }
+    [[nodiscard]] int GetSpawnedEnemiesCount() const noexcept { return spawnedEnemiesCount_; }
 
 private:
     int spawnedEnemiesCount_;

@@ -9,7 +9,7 @@
 // drives Interact() cycling so visitors browse via dialog; the dedicated
 // TryBuy() entry point is invoked by the UI / shop screen with an explicit
 // stock index after the player picks a line.
-class Vendor : public NPC {
+class Vendor final : public NPC {
 public:
     Vendor(nccu::gfx::Vec2 position, VendorConfig config);
 
@@ -17,9 +17,9 @@ public:
     //   - out-of-range stockIndex  -> false, no events
     //   - DeductMoney fails (poor) -> false, ShowMessage "你錢不夠"
     //   - success                  -> true, ShowMessage + PickupAcquired
-    bool TryBuy(class Player* player, std::size_t stockIndex);
+    [[nodiscard]] bool TryBuy(class Player* player, std::size_t stockIndex);
 
-    const VendorConfig& Config() const { return config_; }
+    [[nodiscard]] const VendorConfig& Config() const noexcept { return config_; }
 
 private:
     // Builds the NPC dialog lines from greeting + each stock entry. Called

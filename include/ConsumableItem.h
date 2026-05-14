@@ -20,7 +20,7 @@ public:
 
     virtual void Consume(Player* player) = 0;
 
-    int GetPrice() const { return price_; }
+    [[nodiscard]] int GetPrice() const noexcept { return price_; }
 
 protected:
     int price_;

@@ -5,8 +5,9 @@
 void CursedUmbrella::beClaimed(Player* player) {
     if (player == nullptr) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
-    player->SetHasUmbrella(true);
-    player->decreaseKarma(karmaPenalty_);
+    // Fluent mutators — both return Player&, so the two state changes
+    // read as one atomic transaction at the call site.
+    player->SetHasUmbrella(true).decreaseKarma(karmaPenalty_);
     isActive_ = false;
     EventBus::Instance().Publish(Event{
         EventType::UmbrellaClaimed,

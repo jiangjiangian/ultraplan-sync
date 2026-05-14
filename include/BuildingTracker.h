@@ -14,7 +14,7 @@ class BuildingTracker {
 public:
     const buildings::Building* Update(gfx::Vec2 playerCenter);
 
-    const buildings::Building* Current() const noexcept { return current_; }
+    [[nodiscard]] const buildings::Building* Current() const noexcept { return current_; }
 
 private:
     const buildings::Building* current_{nullptr};

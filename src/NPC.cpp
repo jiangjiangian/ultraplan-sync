@@ -71,7 +71,8 @@ const std::string& NPC::CurrentLineText() const {
     return dialogLines_[currentLineIndex_];
 }
 
-void NPC::SetDialogLines(std::vector<std::string> lines) {
+NPC& NPC::SetDialogLines(std::vector<std::string> lines) {
     dialogLines_ = std::move(lines);
     currentLineIndex_ = 0;
+    return *this;
 }

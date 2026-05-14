@@ -10,8 +10,8 @@ public:
 
     virtual void OnPickup(Player* player) = 0;
 
-    const std::string& GetName() const { return itemName_; }
-    bool IsPickable() const { return isPickable_; }
+    [[nodiscard]] const std::string& GetName() const noexcept { return itemName_; }
+    [[nodiscard]] bool IsPickable() const noexcept { return isPickable_; }
 
 protected:
     std::string itemName_;

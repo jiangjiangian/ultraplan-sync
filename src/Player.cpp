@@ -95,20 +95,21 @@ void Player::HandleInput(float deltaTime) {
     Move(dir, deltaTime);
 }
 
-void Player::AddKarma(int delta) {
+Player& Player::AddKarma(int delta) {
     karma_ = std::clamp(karma_ + delta, -100, 100);
+    return *this;
 }
 
-void Player::decreaseKarma(int amount) {
-    // TODO: migrate callers to AddKarma; kept as a thin wrapper for now.
-    AddKarma(-amount);
+Player& Player::decreaseKarma(int amount) {
+    return AddKarma(-amount);
 }
 
-void Player::resetRainMeter() {
+Player& Player::resetRainMeter() noexcept {
     rainMeter_ = 0.0f;
+    return *this;
 }
 
-bool Player::DeductMoney(int amount) {
+bool Player::DeductMoney(int amount) noexcept {
     if (amount > money_) {
         return false;
     }
@@ -116,14 +117,15 @@ bool Player::DeductMoney(int amount) {
     return true;
 }
 
-void Player::ApplyRain(float dt) {
+Player& Player::ApplyRain(float dt) {
     if (hasUmbrella_) {
-        return;  // umbrella nullifies exposure
+        return *this;  // umbrella nullifies exposure
     }
     rainMeter_ = std::clamp(rainMeter_ + 5.0f * dt, 0.0f, 100.0f);
     if (rainMeter_ >= 100.0f) {
         RespawnAtGate();
     }
+    return *this;
 }
 
 void Player::RespawnAtGate() {

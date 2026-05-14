@@ -2,7 +2,7 @@
 #define CURSED_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
-class CursedUmbrella : public TransparentUmbrella {
+class CursedUmbrella final : public TransparentUmbrella {
 public:
     explicit CursedUmbrella(nccu::gfx::Vec2 position)
         : TransparentUmbrella(position, "CursedUmbrella", nccu::gfx::Color{120, 100, 140, 255}),
@@ -10,7 +10,7 @@ public:
 
     void beClaimed(Player* player) override;
 
-    int GetKarmaPenalty() const { return karmaPenalty_; }
+    [[nodiscard]] int GetKarmaPenalty() const noexcept { return karmaPenalty_; }
 
 private:
     int karmaPenalty_;

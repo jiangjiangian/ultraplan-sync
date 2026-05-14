@@ -16,13 +16,19 @@ public:
     virtual void Draw() const = 0;
     virtual void Interact(Player* initiator) = 0;
 
-    bool CheckCollision(nccu::gfx::Rect other) const {
+    [[nodiscard]] bool CheckCollision(nccu::gfx::Rect other) const noexcept {
         return hitBox_.Intersects(other);
     }
 
-    bool IsActive() const { return isActive_; }
-    void Deactivate() { isActive_ = false; }
-    nccu::gfx::Vec2 GetPosition() const { return position_; }
+    [[nodiscard]] bool IsActive() const noexcept { return isActive_; }
+    void Deactivate() noexcept { isActive_ = false; }
+    [[nodiscard]] nccu::gfx::Vec2 GetPosition() const noexcept { return position_; }
+
+    // Replaces dynamic_cast<NPC*> in the collision loop. Default: false
+    // (items, the player, decoration). Movement blockers — NPCs, future
+    // wall objects — override to return true. Virtual dispatch + bool is
+    // closed under inheritance; dynamic_cast is not.
+    [[nodiscard]] virtual bool BlocksMovement() const noexcept { return false; }
 
 protected:
     nccu::gfx::Vec2 position_;

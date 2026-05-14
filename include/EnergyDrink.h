@@ -4,7 +4,7 @@
 
 // EnergyDrink: small karma bump representing the morale boost before an exam.
 // Single-use; deactivates after Consume().
-class EnergyDrink : public ConsumableItem {
+class EnergyDrink final : public ConsumableItem {
 public:
     static constexpr int kPrice = 40;
     static constexpr int kKarmaBonus = 3;

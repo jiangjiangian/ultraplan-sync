@@ -7,7 +7,7 @@
 // the player's money pool on collision. Mirrors the consumable-item shape
 // but lives in the Item subtree directly because there is no Consume()
 // semantics to share — money pickups have no animation / no karma delta.
-class CashPickup : public Item {
+class CashPickup final : public Item {
 public:
     CashPickup(nccu::gfx::Vec2 position, int value);
 
@@ -17,7 +17,7 @@ public:
 
     void OnPickup(Player* player) override;
 
-    int Value() const { return value_; }
+    [[nodiscard]] int Value() const noexcept { return value_; }
 
 private:
     int value_;
