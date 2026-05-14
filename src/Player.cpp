@@ -6,6 +6,8 @@
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 
 namespace {
@@ -13,7 +15,7 @@ namespace {
 // Pipoya 32x32 walk-strip cycle: idle column (1), left foot (0), idle (1),
 // right foot (2). Stepping every kFrameDuration seconds while moving.
 constexpr int kSpriteCell = 32;
-constexpr int kWalkColumns[4] = {1, 0, 1, 2};
+constexpr std::array<int, 4> kWalkColumns = {1, 0, 1, 2};
 constexpr float kFrameDuration = 0.15f;
 
 // Pipoya row order: 0=down, 1=left, 2=right, 3=up.
@@ -94,9 +96,7 @@ void Player::HandleInput(float deltaTime) {
 }
 
 void Player::AddKarma(int delta) {
-    karma_ += delta;
-    if (karma_ > 100) karma_ = 100;
-    if (karma_ < -100) karma_ = -100;
+    karma_ = std::clamp(karma_ + delta, -100, 100);
 }
 
 void Player::decreaseKarma(int amount) {
@@ -120,9 +120,7 @@ void Player::ApplyRain(float dt) {
     if (hasUmbrella_) {
         return;  // umbrella nullifies exposure
     }
-    rainMeter_ += 5.0f * dt;
-    if (rainMeter_ > 100.0f) rainMeter_ = 100.0f;
-    if (rainMeter_ < 0.0f)   rainMeter_ = 0.0f;
+    rainMeter_ = std::clamp(rainMeter_ + 5.0f * dt, 0.0f, 100.0f);
     if (rainMeter_ >= 100.0f) {
         RespawnAtGate();
     }
