@@ -31,6 +31,18 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <unordered_map>
+
+// Building-entry → semester transition table. Walking into the named
+// landmark advances the state machine to the listed chapter. Data-driven
+// so adding a new trigger building does not reopen main().
+static const std::unordered_map<std::string, nccu::SemesterState> kEnterTrigger = {
+    {"正門",       nccu::SemesterState::Chapter1_AddDrop},
+    {"樂活小舖",   nccu::SemesterState::Interlude_Market},
+    {"中正圖書館", nccu::SemesterState::Chapter2_Midterms},
+    {"操場",       nccu::SemesterState::Chapter3_SportsDay},
+    {"行政大樓",   nccu::SemesterState::Chapter4_Finals},
+};
 
 int main() {
     using namespace nccu::gfx;
@@ -66,13 +78,9 @@ int main() {
         [&currentBuildingName, &semester](const Event& e) {
             currentBuildingName = e.text;
             std::cout << "[Game] Entered: " << e.text << '\n';
-            // Building-keyed chapter transitions. Walking into specific
-            // landmarks advances the semester state machine.
-            if      (e.text == "正門")      semester.Transition(nccu::SemesterState::Chapter1_AddDrop);
-            else if (e.text == "樂活小舖")   semester.Transition(nccu::SemesterState::Interlude_Market);
-            else if (e.text == "中正圖書館") semester.Transition(nccu::SemesterState::Chapter2_Midterms);
-            else if (e.text == "操場")      semester.Transition(nccu::SemesterState::Chapter3_SportsDay);
-            else if (e.text == "行政大樓")   semester.Transition(nccu::SemesterState::Chapter4_Finals);
+            if (auto it = kEnterTrigger.find(e.text); it != kEnterTrigger.end()) {
+                semester.Transition(it->second);
+            }
         });
     EventBus::Instance().Subscribe(EventType::RenderRequested,
         [](const Event& e) {
