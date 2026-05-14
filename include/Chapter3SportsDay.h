@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHAPTER3_SPORTS_DAY_H_
+#define CHAPTER3_SPORTS_DAY_H_
 #include "SemesterState.h"
 
 namespace nccu {
@@ -10,3 +11,5 @@ public:
 };
 
 } // namespace nccu
+
+#endif // CHAPTER3_SPORTS_DAY_H_

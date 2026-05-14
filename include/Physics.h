@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PHYSICS_H_
+#define PHYSICS_H_
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
 #include <vector>
@@ -46,3 +47,5 @@ inline gfx::Vec2 ResolveMove(gfx::Vec2 prev,
 }
 
 } // namespace nccu::physics
+
+#endif // PHYSICS_H_

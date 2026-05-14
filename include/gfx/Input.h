@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_INPUT_H_
+#define GFX_INPUT_H_
 #include "raylib.h"
 #include "gfx/Key.h"
 
@@ -11,3 +12,5 @@ struct Input {
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_INPUT_H_

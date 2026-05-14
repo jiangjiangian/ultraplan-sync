@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_TEXT_BUILDER_H_
+#define GFX_TEXT_BUILDER_H_
 #include "raylib.h"
 #include "gfx/Color.h"
 #include "gfx/Vec2.h"
@@ -35,3 +36,5 @@ private:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_TEXT_BUILDER_H_

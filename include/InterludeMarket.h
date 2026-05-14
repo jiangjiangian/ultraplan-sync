@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INTERLUDE_MARKET_H_
+#define INTERLUDE_MARKET_H_
 #include "SemesterState.h"
 
 namespace nccu {
@@ -10,3 +11,5 @@ public:
 };
 
 } // namespace nccu
+
+#endif // INTERLUDE_MARKET_H_

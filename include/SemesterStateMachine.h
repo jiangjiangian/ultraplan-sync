@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SEMESTER_STATE_MACHINE_H_
+#define SEMESTER_STATE_MACHINE_H_
 #include "SemesterState.h"
 #include <memory>
 #include <string_view>
@@ -25,3 +26,5 @@ private:
 };
 
 } // namespace nccu
+
+#endif // SEMESTER_STATE_MACHINE_H_

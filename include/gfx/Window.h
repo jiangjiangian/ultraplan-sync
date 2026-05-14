@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_WINDOW_H_
+#define GFX_WINDOW_H_
 #include "raylib.h"
 #include <string>
 #include <utility>
@@ -49,3 +50,5 @@ private:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_WINDOW_H_

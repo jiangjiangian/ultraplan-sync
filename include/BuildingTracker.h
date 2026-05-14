@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BUILDING_TRACKER_H_
+#define BUILDING_TRACKER_H_
 #include "Buildings.h"
 #include "gfx/Vec2.h"
 
@@ -20,3 +21,5 @@ private:
 };
 
 } // namespace nccu
+
+#endif // BUILDING_TRACKER_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CASH_PICKUP_H_
+#define CASH_PICKUP_H_
 #include "Item.h"
 #include "gfx/Vec2.h"
 
@@ -21,3 +22,5 @@ public:
 private:
     int value_;
 };
+
+#endif // CASH_PICKUP_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef N_P_C_H_
+#define N_P_C_H_
 #include "Character.h"
 #include "gfx/Texture.h"
 #include <optional>
@@ -35,3 +36,5 @@ private:
 
     std::optional<nccu::gfx::Texture> sprite_;
 };
+
+#endif // N_P_C_H_

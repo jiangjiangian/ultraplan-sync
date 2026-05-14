@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRANSPARENT_UMBRELLA_H_
+#define TRANSPARENT_UMBRELLA_H_
 #include "Item.h"
 #include "gfx/Color.h"
 
@@ -18,3 +19,5 @@ public:
 protected:
     nccu::gfx::Color umbrellaTint_;
 };
+
+#endif // TRANSPARENT_UMBRELLA_H_

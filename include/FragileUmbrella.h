@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FRAGILE_UMBRELLA_H_
+#define FRAGILE_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
 class FragileUmbrella : public TransparentUmbrella {
@@ -14,3 +15,5 @@ public:
 private:
     float leakRate_;
 };
+
+#endif // FRAGILE_UMBRELLA_H_

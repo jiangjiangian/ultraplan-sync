@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_RENDERER_H_
+#define GFX_RENDERER_H_
 #include "raylib.h"
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
@@ -65,3 +66,5 @@ public:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_RENDERER_H_

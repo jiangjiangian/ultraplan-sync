@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRUE_UMBRELLA_H_
+#define TRUE_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
 class TrueUmbrella : public TransparentUmbrella {
@@ -8,3 +9,5 @@ public:
 
     void beClaimed(Player* player) override;
 };
+
+#endif // TRUE_UMBRELLA_H_

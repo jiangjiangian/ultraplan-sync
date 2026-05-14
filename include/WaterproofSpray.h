@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WATERPROOF_SPRAY_H_
+#define WATERPROOF_SPRAY_H_
 #include "ConsumableItem.h"
 
 // WaterproofSpray: placeholder mood-only consumable. The persistent
@@ -13,3 +14,5 @@ public:
 
     void Consume(Player* player) override;
 };
+
+#endif // WATERPROOF_SPRAY_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OBSTACLES_H_
+#define OBSTACLES_H_
 #include "gfx/Rect.h"
 #include <array>
 #include <string_view>
@@ -46,3 +47,5 @@ inline constexpr std::array<std::string_view, 2> kBuildingCollisionSkip = {
 };
 
 } // namespace nccu::obstacles
+
+#endif // OBSTACLES_H_

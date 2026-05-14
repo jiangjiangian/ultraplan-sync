@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ITEM_H_
+#define ITEM_H_
 #include "GameObject.h"
 #include <string>
 
@@ -16,3 +17,5 @@ protected:
     std::string itemName_;
     bool isPickable_;
 };
+
+#endif // ITEM_H_

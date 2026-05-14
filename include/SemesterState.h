@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SEMESTER_STATE_H_
+#define SEMESTER_STATE_H_
 #include <string_view>
 
 namespace nccu {
@@ -25,3 +26,5 @@ public:
 };
 
 } // namespace nccu
+
+#endif // SEMESTER_STATE_H_

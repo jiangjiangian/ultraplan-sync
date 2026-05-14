@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EVENT_BUS_H_
+#define EVENT_BUS_H_
 #include "gfx/Color.h"
 #include "gfx/Vec2.h"
 #include <functional>
@@ -39,3 +40,5 @@ private:
     EventBus() = default;
     std::unordered_map<EventType, std::vector<Handler>> handlers_;
 };
+
+#endif // EVENT_BUS_H_

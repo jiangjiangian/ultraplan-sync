@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VENDOR_H_
+#define VENDOR_H_
 #include "NPC.h"
 #include "VendorConfig.h"
 #include "gfx/Vec2.h"
@@ -28,3 +29,5 @@ private:
 
     VendorConfig config_;
 };
+
+#endif // VENDOR_H_

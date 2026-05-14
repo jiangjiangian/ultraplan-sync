@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_VEC2_H_
+#define GFX_VEC2_H_
 #include <cmath>
 
 namespace nccu::gfx {
@@ -22,3 +23,5 @@ constexpr Vec2 operator*(Vec2 a, float s) noexcept { return Vec2{a.x * s, a.y * 
 constexpr Vec2 operator*(float s, Vec2 a) noexcept { return a * s; }
 
 } // namespace nccu::gfx
+
+#endif // GFX_VEC2_H_

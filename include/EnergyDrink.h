@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENERGY_DRINK_H_
+#define ENERGY_DRINK_H_
 #include "ConsumableItem.h"
 
 // EnergyDrink: small karma bump representing the morale boost before an exam.
@@ -13,3 +14,5 @@ public:
 
     void Consume(Player* player) override;
 };
+
+#endif // ENERGY_DRINK_H_

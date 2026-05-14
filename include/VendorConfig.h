@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VENDOR_CONFIG_H_
+#define VENDOR_CONFIG_H_
 #include <string>
 #include <vector>
 
@@ -18,3 +19,5 @@ struct VendorConfig {
     std::string             greeting;  // shown on first Interact
     std::vector<VendorItem> stock;     // items offered (price-ordered by author)
 };
+
+#endif // VENDOR_CONFIG_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHAPTER1_ADD_DROP_H_
+#define CHAPTER1_ADD_DROP_H_
 #include "SemesterState.h"
 
 namespace nccu {
@@ -10,3 +11,5 @@ public:
 };
 
 } // namespace nccu
+
+#endif // CHAPTER1_ADD_DROP_H_

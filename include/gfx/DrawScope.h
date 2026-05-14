@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_DRAW_SCOPE_H_
+#define GFX_DRAW_SCOPE_H_
 #include "raylib.h"
 
 namespace nccu::gfx {
@@ -15,3 +16,5 @@ public:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_DRAW_SCOPE_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_TEXTURE_H_
+#define GFX_TEXTURE_H_
 #include "raylib.h"
 #include <string>
 
@@ -49,3 +50,5 @@ private:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_TEXTURE_H_

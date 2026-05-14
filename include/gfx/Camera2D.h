@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_CAMERA2_D_H_
+#define GFX_CAMERA2_D_H_
 #include "gfx/Vec2.h"
 
 namespace nccu::gfx {
@@ -37,3 +38,5 @@ struct Camera2D {
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_CAMERA2_D_H_

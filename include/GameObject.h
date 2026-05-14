@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_OBJECT_H_
+#define GAME_OBJECT_H_
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
 
@@ -29,3 +30,5 @@ protected:
     bool isActive_;
     int collisionLayer_;
 };
+
+#endif // GAME_OBJECT_H_

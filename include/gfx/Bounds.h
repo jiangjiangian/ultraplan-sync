@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_BOUNDS_H_
+#define GFX_BOUNDS_H_
 #include "gfx/Vec2.h"
 
 namespace nccu::gfx {
@@ -20,3 +21,5 @@ inline Vec2 ClampToWorld(Vec2 pos, Vec2 size, Vec2 worldSize) noexcept {
 }
 
 } // namespace nccu::gfx
+
+#endif // GFX_BOUNDS_H_

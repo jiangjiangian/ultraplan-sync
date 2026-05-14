@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHARACTER_SELECT_H_
+#define CHARACTER_SELECT_H_
 #include "gfx/Window.h"
 #include <string>
 
@@ -22,3 +23,5 @@ struct CharacterSelectResult {
 CharacterSelectResult RunCharacterSelect(gfx::Window& win);
 
 } // namespace nccu
+
+#endif // CHARACTER_SELECT_H_

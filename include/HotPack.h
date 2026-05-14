@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HOT_PACK_H_
+#define HOT_PACK_H_
 #include "ConsumableItem.h"
 
 // HotPack: warms the player up — dries off accumulated rain (rainMeter -> 0)
@@ -13,3 +14,5 @@ public:
 
     void Consume(Player* player) override;
 };
+
+#endif // HOT_PACK_H_

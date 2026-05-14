@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PROFESSOR_TRAP_UMBRELLA_H_
+#define PROFESSOR_TRAP_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
 class ProfessorTrapUmbrella : public TransparentUmbrella {
@@ -14,3 +15,5 @@ public:
 private:
     int spawnedEnemiesCount_;
 };
+
+#endif // PROFESSOR_TRAP_UMBRELLA_H_

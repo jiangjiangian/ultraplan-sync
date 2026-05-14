@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONSUMABLE_ITEM_H_
+#define CONSUMABLE_ITEM_H_
 #include "Item.h"
 
 // ConsumableItem: abstract Item that disappears after being used.
@@ -24,3 +25,5 @@ public:
 protected:
     int price_;
 };
+
+#endif // CONSUMABLE_ITEM_H_

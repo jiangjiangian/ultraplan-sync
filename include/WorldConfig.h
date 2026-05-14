@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WORLD_CONFIG_H_
+#define WORLD_CONFIG_H_
 
 namespace world {
 
@@ -11,3 +12,5 @@ inline constexpr float kPlayerWidth  = 24.0f;
 inline constexpr float kPlayerHeight = 24.0f;
 
 } // namespace world
+
+#endif // WORLD_CONFIG_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHARACTER_H_
+#define CHARACTER_H_
 #include "GameObject.h"
 #include "gfx/Vec2.h"
 
@@ -33,3 +34,5 @@ protected:
     nccu::gfx::Vec2 direction_;
     int currentFrame_;
 };
+
+#endif // CHARACTER_H_

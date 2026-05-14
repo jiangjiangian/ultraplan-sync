@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CURSED_UMBRELLA_H_
+#define CURSED_UMBRELLA_H_
 #include "TransparentUmbrella.h"
 
 class CursedUmbrella : public TransparentUmbrella {
@@ -14,3 +15,5 @@ public:
 private:
     int karmaPenalty_;
 };
+
+#endif // CURSED_UMBRELLA_H_

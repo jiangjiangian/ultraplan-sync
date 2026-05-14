@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_KEY_H_
+#define GFX_KEY_H_
 #include "raylib.h"
 
 namespace nccu::gfx {
@@ -22,3 +23,5 @@ enum class Key : int {
 constexpr int ToRaylibKey(Key k) noexcept { return static_cast<int>(k); }
 
 } // namespace nccu::gfx
+
+#endif // GFX_KEY_H_

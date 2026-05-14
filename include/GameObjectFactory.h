@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_OBJECT_FACTORY_H_
+#define GAME_OBJECT_FACTORY_H_
 #include "GameObject.h"
 #include "gfx/Vec2.h"
 #include <memory>
@@ -27,3 +28,5 @@ class GameObjectFactory {
 public:
     static std::unique_ptr<GameObject> Create(ObjectType type, nccu::gfx::Vec2 position);
 };
+
+#endif // GAME_OBJECT_FACTORY_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_TIME_H_
+#define GFX_TIME_H_
 #include "raylib.h"
 
 namespace nccu::gfx {
@@ -9,3 +10,5 @@ struct Time {
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_TIME_H_

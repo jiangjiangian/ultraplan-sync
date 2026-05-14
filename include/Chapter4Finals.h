@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHAPTER4_FINALS_H_
+#define CHAPTER4_FINALS_H_
 #include "SemesterState.h"
 
 namespace nccu {
@@ -10,3 +11,5 @@ public:
 };
 
 } // namespace nccu
+
+#endif // CHAPTER4_FINALS_H_

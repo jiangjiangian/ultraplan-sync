@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GFX_CAMERA_SCOPE_H_
+#define GFX_CAMERA_SCOPE_H_
 #include "raylib.h"
 #include "gfx/Camera2D.h"
 
@@ -30,3 +31,5 @@ public:
 };
 
 } // namespace nccu::gfx
+
+#endif // GFX_CAMERA_SCOPE_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PLAYER_H_
+#define PLAYER_H_
 #include "Character.h"
 #include "gfx/Texture.h"
 #include "gfx/Vec2.h"
@@ -63,3 +64,5 @@ private:
     float animTimer_{0.0f};
     int   animStep_{0};                       // 0..3 -> column 1,0,1,2
 };
+
+#endif // PLAYER_H_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BUILDINGS_H_
+#define BUILDINGS_H_
 #include "gfx/Rect.h"
 #include <array>
 #include <string_view>
@@ -48,3 +49,5 @@ inline constexpr std::array<Building, 27> kAll = {{
 }};
 
 } // namespace nccu::buildings
+
+#endif // BUILDINGS_H_
