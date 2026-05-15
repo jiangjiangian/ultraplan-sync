@@ -44,9 +44,12 @@ public:
 private:
     EventBus() = default;
     std::unordered_map<EventType, std::vector<Handler>> handlers_;
-    // Reader-writer mutex: Publish() is a reader (concurrent dispatch
-    // safe), Subscribe/Clear are writers (exclusive). Marked mutable so
-    // the const Publish can acquire the shared lock.
+    // Reader-writer mutex guarding the handler list ONLY — not handler
+    // bodies. Subscribe/Clear take unique_lock; Publish takes shared_lock
+    // to copy the snapshot then drops it before dispatch. Handler bodies
+    // still race if Publish is called from multiple threads — DO NOT
+    // publish off the main thread. raylib's GL context is single-threaded
+    // too, so RenderRequested handlers MUST run on the main thread.
     mutable std::shared_mutex mutex_;
 };
 
