@@ -4,7 +4,6 @@
 #include "gfx/Rect.h"
 #include "gfx/Vec2.h"
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 class Player;  // global-namespace model object
@@ -36,7 +35,6 @@ public:
 
 private:
     World&                                               world_;
-    const std::unordered_map<std::string, SemesterState> enterTrigger_;
     std::vector<nccu::gfx::Rect>                         frameColliders_;
     nccu::gfx::Vec2                                       worldSize_;
     nccu::gfx::Vec2                                       playerSize_;

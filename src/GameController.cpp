@@ -28,18 +28,11 @@ void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
 
 GameController::GameController(World& world)
     : world_(world),
-      enterTrigger_{
-          {"正門",       SemesterState::Chapter1_AddDrop},
-          {"樂活小舖",   SemesterState::Interlude_Market},
-          {"中正圖書館", SemesterState::Chapter2_Midterms},
-          {"操場",       SemesterState::Chapter3_SportsDay},
-          {"行政大樓",   SemesterState::Chapter4_Finals},
-      },
       worldSize_{::world::kSize, ::world::kSize},
       playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight} {
     frameColliders_.reserve(world_.StaticColliders().size() + 16);
     WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
-                           world_.CurrentBuildingName(), enterTrigger_);
+                           world_.CurrentBuildingName());
 }
 
 GameController::~GameController() {
