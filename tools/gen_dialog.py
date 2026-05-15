@@ -29,11 +29,28 @@ STATE_RE = re.compile(r"SemesterState:\s*`([A-Za-z0-9_]+)`")
 STATE_RE2 = re.compile(r"SemesterState::([A-Za-z0-9_]+)")
 NPC_RE = re.compile(r"^##\s*NPC：(.+?)\s*$")
 SCENE_RE = re.compile(r"^##\s*場景旁白\s*$")
-SUBSEC_RE = re.compile(r"^###\s*\(([a-d])\)")
+# Group 1 = sub-block letter (a-d -> subState via SUB), group 2 = the
+# heading text that becomes the choice label (see clean_label).
+SUBSEC_RE = re.compile(r"^###\s*\(([a-d])\)\s*(.*)$")
 SCENE_SUBSEC_RE = re.compile(r"^###\s+(.+?)\s*$")
 LINE_RE = re.compile(r'^-\s*"(.*)"\s*$')
 KARMA_RE = re.compile(r"//\s*karma\s*([+-]\d+)")
 FLAG_RE = re.compile(r"\b(Flag_[A-Za-z0-9_]+)\s*=\s*(true|false)\b")
+
+
+def clean_label(h):
+    """Derive a choice menu label from a sub-block heading.
+
+    Rule: a 「…」 quoted span is the author's explicit label override and
+    wins (e.g. `(b) 玩家給予安慰（選擇「我去幫你追」）` -> `我去幫你追`).
+    Otherwise the label is the heading minus any trailing （…）
+    parenthetical (e.g. `(c) 玩家接受，取傘後交給學長` stays as-is).
+    """
+    h = h.strip()
+    m = re.search(r"「(.+?)」", h)      # quoted span wins (author override)
+    if m:
+        return m.group(1)
+    return re.sub(r"（.*?）\s*$", "", h).strip()  # else drop trailing （…）
 
 
 class Entry:
@@ -45,6 +62,7 @@ class Entry:
         self.karma = 0
         self.flag = ""        # "" = none
         self.flag_val = False
+        self.choice_label = ""   # "" = not a choice (scene / subState 0)
 
 
 def parse_file(path):
@@ -91,6 +109,7 @@ def parse_file(path):
                 entries.append(cur)
             elif sm:
                 cur = Entry(cur_npc, state, SUB[sm.group(1)])
+                cur.choice_label = clean_label(sm.group(2))
                 entries.append(cur)
             else:
                 cur = None
@@ -151,6 +170,7 @@ def main():
     out.append("    int              karmaDelta;")
     out.append("    std::string_view setsFlag;   // \"\" = none")
     out.append("    bool             flagValue;")
+    out.append("    std::string_view choiceLabel;  // \"\" = not a choice")
     out.append("};")
     out.append("")
     for i, e in enumerate(all_entries):
@@ -164,7 +184,8 @@ def main():
         out.append(
             f'    {{ "{e.npc_id}", SemesterState::{e.state}, {e.sub}, '
             f'kL{i}, {len(e.lines)}, {e.karma}, "{flag}", '
-            f'{"true" if e.flag_val else "false"} }},')
+            f'{"true" if e.flag_val else "false"}, '
+            f'"{cpp_escape(e.choice_label)}" }},')
     out.append("};")
     out.append("")
     out.append(f"inline constexpr std::size_t kEntryCount = "

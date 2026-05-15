@@ -33,10 +33,20 @@ const DialogChoice* DialogState::Advance() {
         if (choices_.empty()) { Close(); return nullptr; } // end, no choice
         return nullptr;                                    // enter choice mode
     }
-    // choice mode: confirm
-    const DialogChoice* picked = &choices_[static_cast<std::size_t>(choiceCursor_)];
-    Close();
-    return picked;
+    // choice mode: confirm the highlighted choice. Copy it into picked_
+    // so the returned pointer stays valid after we mutate/close (fixes a
+    // latent use-after-free) and so a follow-up can play its lines.
+    picked_ = choices_[static_cast<std::size_t>(choiceCursor_)];
+    if (!picked_.nextLines.empty()) {
+        lines_        = picked_.nextLines;   // play the (b)/(c) consequence
+        choices_.clear();
+        cursor_       = 0;
+        choiceCursor_ = 0;
+        // active_ stays true; AtChoice() now false; CurrentLine()==nextLines[0]
+    } else {
+        Close();                             // no follow-up: old behaviour
+    }
+    return &picked_;
 }
 
 void DialogState::Close() noexcept {

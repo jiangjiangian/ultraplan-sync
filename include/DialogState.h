@@ -11,6 +11,7 @@ struct DialogChoice {
     int         karmaDelta = 0;
     std::string setsFlag;          // "" = no flag
     bool        flagValue  = false;
+    std::vector<std::string> nextLines;   // consequence lines played on pick
 };
 
 // Pure-data conversation. Owned by World; View reads it const, the
@@ -36,8 +37,10 @@ public:
 
     // Lines mode: step to next line (return nullptr); past last line with
     // no choices -> Close (nullptr); with choices -> enter choice mode
-    // (nullptr). Choice mode: confirm the highlighted choice -> return it
-    // and Close. Inactive: nullptr.
+    // (nullptr). Choice mode: confirm the highlighted choice -> return a
+    // stable pointer to it; if it carries nextLines, transition back to
+    // lines mode playing those (stay active) instead of closing, else
+    // Close. Inactive: nullptr.
     const DialogChoice* Advance();
 
     void Close() noexcept;
@@ -48,6 +51,8 @@ private:
     std::vector<DialogChoice> choices_;
     std::size_t               cursor_       = 0;
     int                       choiceCursor_ = 0;
+    DialogChoice              picked_;      // stable storage so Advance()'s
+                                            // return survives Close
 };
 
 } // namespace nccu

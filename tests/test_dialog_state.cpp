@@ -67,6 +67,43 @@ TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes"
     CHECK_FALSE(d.Active());
 }
 
+TEST_CASE("Choice WITH nextLines: confirm plays the follow-up, then closes") {
+    DialogState d;
+    std::vector<DialogChoice> ch{
+        {"help", 5, "Flag_PromisedVictim", true, {"c0", "c1"}},
+        {"ignore", -3, "", false}};
+    d.Open({"intro"}, ch);
+    CHECK(d.Advance() == nullptr);            // past "intro" -> choice mode
+    CHECK(d.AtChoice());
+    const DialogChoice* picked = d.Advance(); // confirm choice 0
+    REQUIRE(picked != nullptr);
+    CHECK(picked->label == "help");
+    CHECK_FALSE(d.AtChoice());
+    CHECK(d.Active());
+    CHECK(d.CurrentLine() == "c0");
+    CHECK(d.Advance() == nullptr);            // c0 -> c1
+    CHECK(d.CurrentLine() == "c1");
+    CHECK(d.Advance() == nullptr);            // c1 -> close
+    CHECK_FALSE(d.Active());
+}
+
+TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)") {
+    DialogState d;
+    std::vector<DialogChoice> ch{
+        {"refuse", 0, "", false},
+        {"accept", -5, "Flag_ScoldedSenior", false}};
+    d.Open({"intro"}, ch);
+    d.Advance();                 // -> choice mode
+    d.MoveChoice(1);             // -> "accept"
+    const DialogChoice* picked = d.Advance();   // confirms + Close()s
+    REQUIRE(picked != nullptr);
+    CHECK_FALSE(d.Active());                     // closed (no nextLines)
+    // Pointer must still be valid AFTER Close cleared choices_.
+    CHECK(picked->karmaDelta == -5);
+    CHECK(picked->setsFlag == "Flag_ScoldedSenior");
+    CHECK(picked->flagValue == false);
+}
+
 TEST_CASE("ApplyDialogChoice mutates player karma and flag") {
     Player p{nccu::gfx::Vec2{0, 0}};
     const int before = p.GetKarma();
