@@ -13,7 +13,7 @@ public:
         bool isQuestGiver = false);
 
     void Update(float deltaTime) override;
-    void Draw() const override;
+    void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override;
 
     [[nodiscard]] bool BlocksMovement() const noexcept override { return true; }

@@ -14,7 +14,7 @@ public:
 
     // Pure data — concrete subclasses emit events via EventBus, never raylib.
     void Update(float /*deltaTime*/) override {}
-    void Draw() const override {} // no raylib call; rendering owned by gfx layer
+    void Render(nccu::gfx::IRenderer&) const override {} // nothing to draw; rendering owned by the View layer
     void Interact(Player* initiator) override { Consume(initiator); }
     void OnPickup(Player* player) override { Consume(player); }
 

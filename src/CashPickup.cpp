@@ -23,10 +23,5 @@ void CashPickup::OnPickup(Player* player) {
     player->AddMoney(value_);
     isActive_ = false;
 
-    EventBus::Instance().Publish(Event{
-        EventType::ShowMessage,
-        position_,
-        nccu::gfx::Colors::Yellow,
-        std::string("撿到 ") + std::to_string(value_) + " 元"
-    });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string("撿到 ") + std::to_string(value_) + " 元" });
 }

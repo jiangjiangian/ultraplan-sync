@@ -21,6 +21,7 @@
 #include "gfx/Texture.h"
 #include "gfx/Bounds.h"
 #include "gfx/Renderer.h"
+#include "gfx/RaylibRenderer.h"
 #include "gfx/TextBuilder.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
@@ -133,6 +134,10 @@ int main() {
     std::vector<Rect> frameColliders;
     frameColliders.reserve(staticColliders.size() + 16);
 
+    // Concrete draw service for this round. Round 3 moves ownership into
+    // the View; for now main holds it and hands it to each Render() call.
+    RaylibRenderer renderer;
+
     while (!win.ShouldClose()) {
         const float dt = Time::DeltaSeconds();
         const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
@@ -193,7 +198,7 @@ int main() {
             {
                 CameraScope view{cam};
                 Renderer{}.Texture(worldmap, Vec2{0.0f, 0.0f});
-                ForEachActive(objects, [](const GameObject& o) { o.Draw(); });
+                ForEachActive(objects, [&renderer](const GameObject& o) { o.Render(renderer); });
             }
 
             TextBuilder{"WASD: move    E: pick up"}

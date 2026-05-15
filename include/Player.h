@@ -12,7 +12,7 @@ public:
     explicit Player(nccu::gfx::Vec2 position);
 
     void Update(float deltaTime) override;
-    void Draw() const override;
+    void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override;
 
     void HandleInput(float deltaTime);

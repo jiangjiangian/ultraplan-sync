@@ -3,6 +3,7 @@
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
 
+namespace nccu::gfx { class IRenderer; }
 class Player; // forward decl — avoids circular include from Interact()
 
 class GameObject {
@@ -13,7 +14,7 @@ public:
     virtual ~GameObject() = default;
 
     virtual void Update(float deltaTime) = 0;
-    virtual void Draw() const = 0;
+    virtual void Render(nccu::gfx::IRenderer& renderer) const = 0;
     virtual void Interact(Player* initiator) = 0;
 
     [[nodiscard]] bool CheckCollision(nccu::gfx::Rect other) const noexcept {

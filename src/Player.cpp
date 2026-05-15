@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "EventBus.h"
-#include "gfx/Renderer.h"
+#include "gfx/IRenderer.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
 #include "gfx/Color.h"
@@ -56,11 +56,10 @@ void Player::Update(float deltaTime) {
     }
 }
 
-void Player::Draw() const {
+void Player::Render(nccu::gfx::IRenderer& renderer) const {
     using nccu::gfx::Rect;
-    using nccu::gfx::Renderer;
     if (!sprite_ || !sprite_->IsValid()) {
-        Renderer{}.Rect(hitBox_, nccu::gfx::Colors::Blue);
+        renderer.DrawRect(hitBox_, nccu::gfx::Colors::Blue);
         return;
     }
     const int col = kWalkColumns[animStep_];
@@ -77,7 +76,7 @@ void Player::Draw() const {
         hitBox_.y +  hitBox_.height - kSpriteCell,
         static_cast<float>(kSpriteCell),
         static_cast<float>(kSpriteCell)};
-    Renderer{}.TextureRect(*sprite_, src, dest);
+    renderer.DrawSprite(*sprite_, src, dest);
 }
 
 void Player::Interact(Player* /*initiator*/) {
@@ -134,10 +133,5 @@ void Player::RespawnAtGate() {
     hitBox_.x = position_.x;
     hitBox_.y = position_.y;
     resetRainMeter();
-    EventBus::Instance().Publish(Event{
-        EventType::ShowMessage,
-        position_,
-        nccu::gfx::Colors::Black,
-        "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。"
-    });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。" });
 }

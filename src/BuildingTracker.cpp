@@ -37,13 +37,7 @@ const buildings::Building* BuildingTracker::Update(gfx::Vec2 playerCenter) {
     if (found != current_) {
         current_ = found;
         if (found) {
-            const auto& r = found->triggerRect;
-            EventBus::Instance().Publish(Event{
-                EventType::EnteredBuilding,
-                gfx::Vec2{r.x + r.width * 0.5f, r.y + r.height * 0.5f},
-                gfx::Colors::White,
-                std::string{found->name}
-            });
+            EventBus::Instance().Publish(Event{ EventType::EnteredBuilding, std::string{found->name} });
         }
     }
     return current_;

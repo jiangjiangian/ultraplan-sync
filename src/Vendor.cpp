@@ -50,29 +50,14 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     // DeductMoney is the gatekeeper: it returns false on insufficient funds
     // and performs NO side effect, so the player's purse is safe here.
     if (!player->DeductMoney(item.price)) {
-        EventBus::Instance().Publish(Event{
-            EventType::ShowMessage,
-            position_,
-            nccu::gfx::Colors::Red,
-            std::string(nccu::vendor::msg::kInsufficientFunds)
-        });
+        EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kInsufficientFunds) });
         return false;
     }
 
     // Success: announce the transaction (UI) and the item gain (inventory).
     // Two events because subscribers are different — one paints a toast,
     // the other appends to the inventory model.
-    EventBus::Instance().Publish(Event{
-        EventType::ShowMessage,
-        position_,
-        nccu::gfx::Colors::White,
-        std::string(nccu::vendor::msg::kPurchasedPrefix) + item.itemId
-    });
-    EventBus::Instance().Publish(Event{
-        EventType::PickupAcquired,
-        position_,
-        nccu::gfx::Colors::White,
-        item.itemId
-    });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kPurchasedPrefix) + item.itemId });
+    EventBus::Instance().Publish(Event{ EventType::PickupAcquired, item.itemId });
     return true;
 }

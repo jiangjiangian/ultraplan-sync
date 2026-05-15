@@ -1,6 +1,6 @@
 #include "NPC.h"
 #include "EventBus.h"
-#include "gfx/Renderer.h"
+#include "gfx/IRenderer.h"
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
 
@@ -18,11 +18,10 @@ void NPC::Update(float /*deltaTime*/) {
     // NPCs are stationary in this phase.
 }
 
-void NPC::Draw() const {
+void NPC::Render(nccu::gfx::IRenderer& renderer) const {
     using nccu::gfx::Rect;
-    using nccu::gfx::Renderer;
     if (!sprite_ || !sprite_->IsValid()) {
-        Renderer{}.Rect(hitBox_, nccu::gfx::Colors::Green);
+        renderer.DrawRect(hitBox_, nccu::gfx::Colors::Green);
         return;
     }
     // Pipoya cell + facing: stationary NPCs always show col 1 (idle), row 0
@@ -41,7 +40,7 @@ void NPC::Draw() const {
         hitBox_.y +  hitBox_.height - kCell,
         static_cast<float>(kCell),
         static_cast<float>(kCell)};
-    Renderer{}.TextureRect(*sprite_, src, dest);
+    renderer.DrawSprite(*sprite_, src, dest);
 }
 
 void NPC::LoadSprite(const std::string& path) {
@@ -57,12 +56,7 @@ void NPC::Interact(Player* /*initiator*/) {
     // the already-advanced state rather than a stale index.
     const std::string line = dialogLines_[currentLineIndex_];
     currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
-    EventBus::Instance().Publish(Event{
-        EventType::ShowMessage,
-        position_,
-        nccu::gfx::Colors::White,
-        line
-    });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, line });
 }
 
 const std::string& NPC::CurrentLineText() const {

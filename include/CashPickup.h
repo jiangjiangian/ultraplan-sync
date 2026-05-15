@@ -12,7 +12,7 @@ public:
     CashPickup(nccu::gfx::Vec2 position, int value);
 
     void Update(float /*deltaTime*/) override {}
-    void Draw()  const override {}                 // events only — no raylib
+    void Render(nccu::gfx::IRenderer&) const override {}    // nothing to draw; pure data pickup
     void Interact(Player* initiator) override { OnPickup(initiator); }
 
     void OnPickup(Player* player) override;

@@ -10,7 +10,7 @@ public:
           umbrellaTint_(tint) {}
 
     void Update(float /*deltaTime*/) override {}
-    void Draw() const override; // emits event via EventBus, no raylib call
+    void Render(nccu::gfx::IRenderer& renderer) const override; // 3-rect glyph via IRenderer (Template Method)
     void Interact(Player* initiator) override { beClaimed(initiator); }
     void OnPickup(Player* player) override { beClaimed(player); }
 

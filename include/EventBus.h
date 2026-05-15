@@ -1,7 +1,5 @@
 #ifndef EVENT_BUS_H_
 #define EVENT_BUS_H_
-#include "gfx/Color.h"
-#include "gfx/Vec2.h"
 #include <functional>
 #include <shared_mutex>
 #include <string>
@@ -9,7 +7,6 @@
 #include <vector>
 
 enum class EventType {
-    RenderRequested,
     UmbrellaClaimed,
     KarmaChanged,
     ShowMessage,
@@ -21,10 +18,8 @@ enum class EventType {
 };
 
 struct Event {
-    EventType            type;
-    nccu::gfx::Vec2      position;
-    nccu::gfx::Color     color;
-    std::string          text;
+    EventType   type;
+    std::string text;
 };
 
 class EventBus {
@@ -48,8 +43,8 @@ private:
     // bodies. Subscribe/Clear take unique_lock; Publish takes shared_lock
     // to copy the snapshot then drops it before dispatch. Handler bodies
     // still race if Publish is called from multiple threads — DO NOT
-    // publish off the main thread. raylib's GL context is single-threaded
-    // too, so RenderRequested handlers MUST run on the main thread.
+    // publish off the main thread: subscriber bodies may touch the GL
+    // context via the View, which is single-threaded.
     mutable std::shared_mutex mutex_;
 };
 
