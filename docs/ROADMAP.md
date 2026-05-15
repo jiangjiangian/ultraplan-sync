@@ -64,14 +64,15 @@
 `// karma +N` / `// karma -N` 註解解析成該 subState 的 karma delta；
 `Flag_xxx` 解析成該分支要 `SetFlag` 的旗標名。
 
-`DialogData.h` 對外介面（草案）：
+`DialogData.h` 對外介面（定稿見 `docs/plans/2026-05-15-dialog-pipeline.md`；
+本專案為 C++17，**不可用** `std::span`，改 pointer+count）：
 
 ```cpp
 namespace nccu::dialog {
-struct Line  { std::string_view npcId; int subState;
-               std::span<const std::string_view> lines;
-               int karmaDelta; std::string_view setsFlag; };
-std::span<const Line> For(std::string_view npcId, SemesterState s);
+struct Entry { std::string_view npcId; SemesterState state; int subState;
+               const std::string_view* lines; int lineCount;
+               int karmaDelta; std::string_view setsFlag; bool flagValue; };
+EntryRange All();                       // range-for 友善（C++17 begin/end）
 }
 ```
 
