@@ -16,40 +16,40 @@ struct Building {
     bool             flipY = false;
 };
 
-// 27 NCCU 山下 buildings. Coordinates auto-emitted from
+// 26 NCCU 山下 buildings. Coordinates auto-emitted from
 // tools/tiled_to_world.py — width/height are the placed sprite
 // dimensions, flipX/flipY the Tiled mirror state. The trigger box is the
 // full sprite rect; the walkable footprint is derived in World.cpp. Run
 // the tool after re-positioning in Tiled and paste the printed block
-// below.
-inline constexpr std::array<Building, 27> kAll = {{
-    {"游泳館",       {  50.0f,  630.0f, 301.0f, 180.0f}},
-    {"樂活館",       { 380.0f,  630.0f, 281.0f, 180.0f}},
-    {"研究大樓",     { 672.0f,  640.0f, 296.0f, 160.0f}},
-    {"中正圖書館",   { 198.0f,  890.0f, 324.0f, 200.0f}},
-    {"操場",         {1206.0f,  670.0f, 348.0f, 200.0f}},
-    {"體育館",       {1635.0f,  520.0f, 231.0f, 180.0f}},
-    {"羅馬廣場",     { 896.0f,  980.0f, 209.0f, 200.0f}},
-    {"綜合院館",     {1612.0f,  810.0f, 177.0f, 180.0f}},
-    {"校友服務中心", {1740.0f, 1010.0f, 280.0f, 180.0f}},
-    {"行政大樓",     {  69.0f, 1330.0f, 222.0f, 200.0f}},
-    {"樂活小舖",     { 296.0f, 1340.0f, 289.0f, 180.0f}},
-    {"商學院",       { 595.0f, 1340.0f, 250.0f, 180.0f}},
-    {"新聞館",       { 848.0f, 1340.0f, 274.0f, 180.0f}},
-    {"資訊大樓",     {1135.0f, 1340.0f, 291.0f, 180.0f}},
-    {"風雩樓",       {1448.0f, 1340.0f, 304.0f, 180.0f}},
-    {"大仁樓",       {1798.0f, 1360.0f, 244.0f, 140.0f}},
-    {"法學院",       {  37.0f, 1520.0f, 146.0f, 200.0f}},
-    {"井塘樓",       { 196.0f, 1530.0f, 269.0f, 180.0f}},
-    {"四維堂",       { 473.0f, 1530.0f, 214.0f, 180.0f}},
-    {"果夫樓",       { 724.0f, 1540.0f, 292.0f, 160.0f}},
-    {"集英樓",       {1018.0f, 1530.0f, 245.0f, 180.0f}},
-    {"大勇樓",       {1269.0f, 1530.0f, 322.0f, 180.0f}},
-    {"學思樓",       {1608.0f, 1530.0f, 245.0f, 180.0f}},
-    {"風雩走廊",     { 737.0f, 1720.0f, 326.0f, 100.0f}},
-    {"志希樓",       {1218.0f, 1700.0f, 224.0f, 140.0f}},
-    {"大智樓",       {1496.0f, 1700.0f, 248.0f, 140.0f}},
-    {"正門",         {  26.0f, 1820.0f, 309.0f, 140.0f}},
+// below. 羅馬廣場 has no entry — its open plaza lives in the base map and
+// hosts a market rather than a collider.
+inline constexpr std::array<Building, 26> kAll = {{
+    {"中正圖書館", {  649.0f,   261.0f,  452.0f,  301.0f}, false, false},
+    {"大智樓", { 1808.0f,  1363.0f,  250.0f,  249.0f}, false, false},
+    {"大仁樓", { 1808.0f,  1200.0f,  242.0f,  206.0f}, false, false},
+    {"大勇樓", { 1776.0f,  1021.0f,  252.0f,  211.0f}, false, false},
+    {"商學院", {  464.0f,   991.0f,  318.0f,  310.0f}, true, false},
+    {"學思樓", {  333.0f,  1013.0f,  276.0f,  162.0f}, false, false},
+    {"樂活館", { 1290.0f,  1562.0f,  178.0f,  156.0f}, false, false},
+    {"四維堂", { 1083.0f,   751.0f,  146.0f,  126.0f}, false, false},
+    {"果夫樓", { 1069.0f,  1194.0f,  202.0f,  162.0f}, false, false},
+    {"志希樓", {  811.0f,  1176.0f,  153.0f,  154.0f}, true, false},
+    {"校友服務中心", { 1131.0f,  1419.0f,  244.0f,  219.0f}, false, false},
+    {"樂活小舖", { 1388.0f,  1594.0f,  309.0f,  205.0f}, false, false},
+    {"游泳館", {  313.0f,   328.0f,  366.0f,  199.0f}, false, false},
+    {"綜合院館", { 1684.0f,   702.0f,  371.0f,  326.0f}, false, false},
+    {"集英樓", { 1525.0f,  1371.0f,  224.0f,  192.0f}, false, false},
+    {"法學院", {  457.0f,   698.0f,  271.0f,  293.0f}, false, false},
+    {"研究大樓", {  590.0f,  1453.0f,  367.0f,  255.0f}, true, false},
+    {"井塘樓", {   27.0f,   604.0f,  321.0f,  257.0f}, true, false},
+    {"新聞館", { 1601.0f,  1341.0f,  159.0f,  109.0f}, true, false},
+    {"資訊大樓", { 1334.0f,  1050.0f,  319.0f,  233.0f}, false, false},
+    {"風雩樓", { 1105.0f,   493.0f,  178.0f,  121.0f}, false, false},
+    {"行政大樓", { 1057.0f,   598.0f,  240.0f,  156.0f}, true, false},
+    {"風雩走廊", { 1255.0f,    65.0f,  154.0f,  108.0f}, true, false},
+    {"體育館", { 1493.0f,   306.0f,  418.0f,  235.0f}, true, false},
+    {"操場", { 1384.0f,   541.0f,  621.0f,  399.0f}, false, false},
+    {"正門", {  825.0f,  1667.0f,  196.0f,  167.0f}, false, false},
 }};
 
 } // namespace nccu::buildings
