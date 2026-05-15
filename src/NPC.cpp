@@ -1,21 +1,70 @@
 #include "NPC.h"
 #include "EventBus.h"
+#include "Physics.h"
+#include "WorldConfig.h"
 #include "gfx/IRenderer.h"
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
+#include <algorithm>
 
 NPC::NPC(nccu::gfx::Vec2 position,
          std::vector<std::string> dialogLines,
          bool isQuestGiver)
     : Character(position,
                 nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f},
-                0.0f /* npcs do not move on their own in this phase */),
+                0.0f /* archetype NPCs are stationary; EnableWander() opts in */),
       dialogLines_(std::move(dialogLines)),
       currentLineIndex_(0),
-      isQuestGiver_(isQuestGiver) {}
+      isQuestGiver_(isQuestGiver),
+      wander_(false),
+      retargetTimer_(0.0f),
+      wanderDir_{0.0f, 0.0f},
+      rng_(0),
+      wanderColliders_(nullptr) {}
 
-void NPC::Update(float /*deltaTime*/) {
-    // NPCs are stationary in this phase.
+NPC& NPC::EnableWander(float speed, unsigned seed) noexcept {
+    wander_        = true;
+    speed_         = speed;                       // protected in Character
+    rng_           = seed ? seed : 0x9E3779B9u;   // never seed an all-zero state
+    retargetTimer_ = 0.0f;                        // pick a heading on frame 1
+    return *this;
+}
+
+void NPC::Update(float deltaTime) {
+    if (!wander_) return;  // archetype NPCs stand at their post
+
+    retargetTimer_ -= deltaTime;
+    if (retargetTimer_ <= 0.0f) {
+        // xorshift32 — one of 8 compass headings, or idx 8 = pause.
+        rng_ ^= rng_ << 13; rng_ ^= rng_ >> 17; rng_ ^= rng_ << 5;
+        static constexpr nccu::gfx::Vec2 kDirs[9] = {
+            {0, -1}, {0, 1}, {-1, 0}, {1, 0},
+            {-1, -1}, {1, -1}, {-1, 1}, {1, 1}, {0, 0}};
+        wanderDir_ = kDirs[rng_ % 9u];
+        rng_ ^= rng_ << 13; rng_ ^= rng_ >> 17; rng_ ^= rng_ << 5;
+        retargetTimer_ = 1.0f + static_cast<float>(rng_ % 2000u) / 1000.0f;
+    }
+
+    const nccu::gfx::Vec2 prev = position_;
+    Move(wanderDir_, deltaTime);  // Character::Move integrates + syncs hitBox_
+
+    const float kMaxXY = ::world::kSize - ::world::kPlayerWidth;
+    nccu::gfx::Vec2 p = position_;
+    p.x = std::clamp(p.x, 0.0f, kMaxXY);
+    p.y = std::clamp(p.y, 0.0f, kMaxXY);
+    SetPosition(p);
+
+    if (wanderColliders_) {
+        const nccu::gfx::Vec2 resolved = nccu::physics::ResolveMove(
+            prev, position_,
+            nccu::gfx::Vec2{::world::kPlayerWidth, ::world::kPlayerHeight},
+            *wanderColliders_);
+        if (resolved.x != position_.x || resolved.y != position_.y) {
+            // Bumped a wall — turn away within a beat instead of grinding.
+            retargetTimer_ = std::min(retargetTimer_, 0.2f);
+        }
+        SetPosition(resolved);
+    }
 }
 
 void NPC::Render(nccu::gfx::IRenderer& renderer) const {

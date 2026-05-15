@@ -18,6 +18,7 @@ struct NpcSpawn {
     const char*              spritePath;
     std::vector<std::string> dialog;
     bool                     isQuestGiver;
+    bool                     wander = false;
 };
 
 inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
@@ -52,6 +53,22 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
           "孩子，傘要記得帶啊，淋濕了會感冒的。",
           "缺什麼來阿姨這裡看看，雜貨都有。"},
          false},
+    };
+    return kAll;
+}
+
+// Ambient pedestrians — students drifting along Zhinan Rd and the
+// central strip to make the山下 campus feel populated. No dialog (the
+// player walks straight past), non-blocking, wander=true so World wires
+// EnableWander(). Spawn points sit on open road clear of footprints.
+inline const std::vector<NpcSpawn>& AmbientStudentSpawns() {
+    static const std::vector<NpcSpawn> kAll = {
+        {gfx::Vec2{ 700, 1880}, "resources/assets/sprites/school_uniform_3/male_01.png",   {}, false, true},
+        {gfx::Vec2{1080, 1870}, "resources/assets/sprites/school_uniform_3/female_01.png", {}, false, true},
+        {gfx::Vec2{1500, 1880}, "resources/assets/sprites/school_uniform_3/male_03.png",   {}, false, true},
+        {gfx::Vec2{ 640, 1180}, "resources/assets/sprites/school_uniform_3/female_02.png", {}, false, true},
+        {gfx::Vec2{1340, 1180}, "resources/assets/sprites/school_uniform_3/male_02.png",   {}, false, true},
+        {gfx::Vec2{ 980, 1500}, "resources/assets/sprites/school_uniform_3/female_03.png", {}, false, true},
     };
     return kAll;
 }
