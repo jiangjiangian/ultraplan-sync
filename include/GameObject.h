@@ -2,6 +2,8 @@
 #define GAME_OBJECT_H_
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
+#include <string>
+#include <vector>
 
 namespace nccu::gfx { class IRenderer; }
 class Player; // forward decl — avoids circular include from Interact()
@@ -30,6 +32,13 @@ public:
     // wall objects — override to return true. Virtual dispatch + bool is
     // closed under inheritance; dynamic_cast is not.
     [[nodiscard]] virtual bool BlocksMovement() const noexcept { return false; }
+
+    // Talk target? Default: nullptr (items, player, decoration). NPCs
+    // override to return their line vector. Virtual-not-dynamic_cast,
+    // same rationale as BlocksMovement(). Pointer (not ref) so "no
+    // dialog" is representable without a sentinel vector.
+    [[nodiscard]] virtual const std::vector<std::string>*
+        DialogLines() const noexcept { return nullptr; }
 
 protected:
     nccu::gfx::Vec2 position_;

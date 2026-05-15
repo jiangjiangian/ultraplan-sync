@@ -1,7 +1,9 @@
 #include "doctest/doctest.h"
 #include "NPC.h"
+#include "GameObject.h"
 #include "SemesterState.h"
 #include "gfx/Vec2.h"
+#include <vector>
 
 using nccu::SemesterState;
 
@@ -17,4 +19,13 @@ TEST_CASE("LoadDialog on a missing key leaves dialog empty") {
     NPC npc(nccu::gfx::Vec2{0, 0}, {"x"}, false);
     npc.LoadDialog("nobody", SemesterState::Ending_A, 0);
     CHECK(npc.DialogLineCount() == 0);
+}
+
+TEST_CASE("NPC exposes its lines via the GameObject::DialogLines virtual") {
+    NPC npc(nccu::gfx::Vec2{0, 0}, {"hi", "there"}, true);
+    GameObject& as_base = npc;
+    const std::vector<std::string>* lines = as_base.DialogLines();
+    REQUIRE(lines != nullptr);
+    CHECK(lines->size() == 2);
+    CHECK((*lines)[0] == "hi");
 }

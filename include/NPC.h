@@ -56,6 +56,9 @@ public:
     NPC& LoadDialog(std::string_view npcId, nccu::SemesterState state,
                     int subState = 0);
 
+    [[nodiscard]] const std::vector<std::string>*
+        DialogLines() const noexcept override { return &dialogLines_; }
+
 private:
     std::vector<std::string> dialogLines_;
     size_t                   currentLineIndex_;
