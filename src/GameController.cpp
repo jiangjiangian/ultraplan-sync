@@ -64,7 +64,7 @@ void GameController::Update() {
             if (Input::IsPressed(Key::E)) {
                 if (const DialogChoice* c = dlg.Advance(); c && p) {
                     ApplyDialogChoice(*p, *c);
-                    CheckEndingGates(*p, world_.Semester());
+                    CheckEndingGates(*p, world_.Semester(), dlg);
                 }
             }
             return;
