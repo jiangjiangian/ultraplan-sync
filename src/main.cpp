@@ -126,6 +126,13 @@ int main() {
     std::copy(nccu::obstacles::kAll.begin(), nccu::obstacles::kAll.end(),
               std::back_inserter(staticColliders));
 
+    // Per-frame collider scratch: hoisted out of the loop so the heap
+    // allocation is paid once. clear() preserves capacity, insert() does
+    // a single memcpy of the static set, and the NPC append fits inside
+    // the headroom (16 slots) without reallocating.
+    std::vector<Rect> frameColliders;
+    frameColliders.reserve(staticColliders.size() + 16);
+
     while (!win.ShouldClose()) {
         const float dt = Time::DeltaSeconds();
         const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
@@ -144,7 +151,9 @@ int main() {
             // hitbox push the player back on the blocked axis only —
             // diagonal slides naturally along walls. Items are
             // deliberately not colliders.
-            std::vector<Rect> frameColliders = staticColliders;
+            frameColliders.clear();
+            frameColliders.insert(frameColliders.end(),
+                                  staticColliders.begin(), staticColliders.end());
             ForEachActiveExcept(objects, player, [&frameColliders](GameObject& o) {
                 if (!o.BlocksMovement()) return;
                 const Vec2 p = o.GetPosition();
@@ -205,19 +214,25 @@ int main() {
         }
 
         // End-of-frame sweep: deferred deletion avoids iterator
-        // invalidation inside the Update loops above.
+        // invalidation inside the Update loops above. Capture the
+        // player's "about to die" status BEFORE the erase: once the
+        // unique_ptr is destroyed the raw `player` pointer dangles, so
+        // we cannot legally compare it against post-erase vector
+        // contents (heap-use-after-free per [basic.stc.dynamic
+        // .deallocation]/4). The bool snapshot sidesteps that.
+        const bool playerWillDie = player && !player->IsActive();
         objects.erase(
             std::remove_if(objects.begin(), objects.end(),
                 [](const std::unique_ptr<GameObject>& o) {
                     return !o || !o->IsActive();
                 }),
             objects.end());
-        if (player && std::find_if(objects.begin(), objects.end(),
-                [player](const std::unique_ptr<GameObject>& o) { return o.get() == player; })
-            == objects.end()) {
-            player = nullptr;
-        }
+        if (playerWillDie) player = nullptr;
     }
 
+    // Drop subscribers before main()'s stack frames go out of scope —
+    // closes the static-destruction UB window where a singleton-bound
+    // lambda would otherwise capture freed currentBuildingName / semester.
+    EventBus::Instance().Clear();
     return 0;
 }
