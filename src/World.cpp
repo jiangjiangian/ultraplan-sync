@@ -4,6 +4,7 @@
 #include "NpcSpawns.h"
 #include "Buildings.h"
 #include "Obstacles.h"
+#include "QuestFlagPickup.h"
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <iterator>
@@ -49,6 +50,11 @@ World::World(const std::string& playerSpritePath) {
     objects_.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1180, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));
+
+    // Ch1 跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起 ->
+    // Flag_FoundForm -> 助教給獎勵對白（集英樓 2 樓線索）。
+    objects_.push_back(std::make_unique<QuestFlagPickup>(
+        nccu::gfx::Vec2{560.0f, 1725.0f}, "Flag_FoundForm"));
 
     for (const auto& spawn : DefaultNpcSpawns()) {
         auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},

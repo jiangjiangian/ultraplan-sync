@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "DialogOpener.h"
 #include "DialogState.h"
+#include "Player.h"
 
 using nccu::DialogState;
 using nccu::SemesterState;
@@ -67,4 +68,89 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1 is line-only (not in allowlist)")
         d.Advance();
     }
     CHECK_FALSE(d.Active());           // eventually closes
+}
+
+TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // fresh
+    p.SetFlag("Flag_FoundForm");
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // reward
+    p.SetFlag("Flag_HelpedTA_Ch1");
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // stays 1
+}
+
+TEST_CASE("ResolveOpenerSubState: victim recap gated by promise flag") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // fresh
+    p.SetFlag("Flag_PromisedVictim");
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // recap
+}
+
+TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
+    p.SetFlag("Flag_FoundForm");
+    p.SetFlag("Flag_PromisedVictim");
+    CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
+}
+
+TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    p.SetFlag("Flag_FoundForm");
+    const int k0 = p.GetKarma();
+    DialogState d;
+    nccu::OpenNpcDialog(d, p, "ta", Ch1);
+    CHECK(d.Active());
+    CHECK_FALSE(d.AtChoice());
+    CHECK(d.CurrentLine() == "謝謝你……那份表格要是不見我真的完了。");  // ta sub-1 line 0
+    CHECK(p.HasFlag("Flag_HelpedTA_Ch1"));
+    CHECK(p.GetKarma() == k0 + 5);
+    // Re-open with the SAME player -> apply-once guard skips (no double).
+    DialogState d2;
+    nccu::OpenNpcDialog(d2, p, "ta", Ch1);
+    CHECK(d2.Active());
+    CHECK(d2.CurrentLine() == "謝謝你……那份表格要是不見我真的完了。");
+    CHECK(p.GetKarma() == k0 + 5);
+}
+
+TEST_CASE("Player overload: ta with no flag is the line-only intro") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p2{nccu::gfx::Vec2{0, 0}};
+    const int k0 = p2.GetKarma();
+    DialogState d2;
+    nccu::OpenNpcDialog(d2, p2, "ta", Ch1);
+    CHECK(d2.Active());
+    CHECK_FALSE(d2.AtChoice());
+    CHECK(d2.CurrentLine() == "同學，加退選截止了，現在不受理。");  // ta sub-0 line 0
+    CHECK(p2.GetKarma() == k0);
+    CHECK_FALSE(p2.HasFlag("Flag_HelpedTA_Ch1"));
+}
+
+TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    DialogState d;
+    nccu::OpenNpcDialog(d, p, "victim", Ch1);
+    CHECK(d.Active());
+    CHECK(d.CurrentLine() == "……我的傘不見了。");      // (a) opener line 0
+    for (int i = 0; i < 5; ++i) d.Advance();
+    CHECK(d.AtChoice());
+    CHECK(d.Choices().size() == 2);
+}
+
+TEST_CASE("Player overload: victim with promise flag is line-only recap") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    p.SetFlag("Flag_PromisedVictim");
+    const int k0 = p.GetKarma();
+    DialogState d;
+    nccu::OpenNpcDialog(d, p, "victim", Ch1);
+    CHECK(d.Active());
+    CHECK_FALSE(d.AtChoice());
+    CHECK(d.CurrentLine() == "真的？謝謝你……");        // victim sub-1 line 0
+    CHECK(p.GetKarma() == k0);   // +5 was the choice's job, flag preset -> skip
 }

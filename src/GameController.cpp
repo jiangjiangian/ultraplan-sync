@@ -115,7 +115,7 @@ void GameController::Update() {
             [this, player, pHit](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
                 if (const std::string_view id = o.NpcId(); !id.empty())
-                    OpenNpcDialog(world_.Dialog(), id,
+                    OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
                 else
                     o.Interact(player);                              // pick up / Vendor
