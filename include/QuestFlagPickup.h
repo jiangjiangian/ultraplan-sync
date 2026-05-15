@@ -6,15 +6,15 @@
 
 // A one-shot ground item that sets a named Player flag on pickup, then
 // deactivates (end-of-frame sweep removes it). Quest-chain plumbing —
-// e.g. the 四維道 form that unlocks the 助教 reward. Mirrors CashPickup:
-// pure-data, nothing to draw, picked up via the E-interact sweep
-// (empty NpcId() -> Interact()).
+// e.g. the 四維道 form that unlocks the 助教 reward. Draws a small ground
+// marker so the player can spot and collect it while exploring; picked
+// up via the E-interact sweep (empty NpcId() -> Interact()).
 class QuestFlagPickup final : public Item {
 public:
     QuestFlagPickup(nccu::gfx::Vec2 position, std::string flagName);
 
     void Update(float /*deltaTime*/) override {}
-    void Render(nccu::gfx::IRenderer&) const override {}
+    void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override { OnPickup(initiator); }
     void OnPickup(Player* player) override;
 
