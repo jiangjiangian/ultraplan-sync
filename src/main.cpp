@@ -1,4 +1,5 @@
 #include "World.h"
+#include "View.h"
 #include "GameObjectQueries.h"
 #include "Player.h"
 #include "EventBus.h"
@@ -9,21 +10,13 @@
 #include "SemesterState.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
-#include "gfx/CameraScope.h"
-#include "gfx/Camera2D.h"
-#include "gfx/Texture.h"
 #include "gfx/Bounds.h"
-#include "gfx/Renderer.h"
-#include "gfx/RaylibRenderer.h"
-#include "gfx/TextBuilder.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
 #include "gfx/Time.h"
-#include "gfx/Color.h"
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
 #include <algorithm>
-#include <cstdio>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -47,9 +40,7 @@ int main() {
 
     constexpr int kWinW = 800;
     constexpr int kWinH = 450;
-    const Vec2    kScreenCenter{kWinW / 2.0f, kWinH / 2.0f};
     const Vec2    kWorldSize{world::kSize, world::kSize};
-    const Vec2    kViewportSize{static_cast<float>(kWinW), static_cast<float>(kWinH)};
     const Vec2    kPlayerSize{world::kPlayerWidth, world::kPlayerHeight};
 
     auto win = Window::Builder()
@@ -61,13 +52,11 @@ int main() {
     auto selection = nccu::RunCharacterSelect(win);
     if (selection.closed) return 0;
 
-    auto worldmap = nccu::gfx::Texture::Load("resources/assets/maps/worldmap.png");
-
     nccu::World world{selection.spritePath};
     nccu::WireDefaultSubscribers(EventBus::Instance(), world.Semester(),
                                  world.CurrentBuildingName(), kEnterTrigger);
 
-    nccu::gfx::Camera2D cam;
+    nccu::View view{kWinW, kWinH};
 
     // Per-frame collider scratch: hoisted out of the loop so the heap
     // allocation is paid once. clear() preserves capacity, insert() does
@@ -75,10 +64,6 @@ int main() {
     // the headroom (16 slots) without reallocating.
     std::vector<Rect> frameColliders;
     frameColliders.reserve(world.StaticColliders().size() + 16);
-
-    // Concrete draw service for this round. Round 3 moves ownership into
-    // the View; for now main holds it and hands it to each Render() call.
-    RaylibRenderer renderer;
 
     while (!win.ShouldClose()) {
         const float dt = Time::DeltaSeconds();
@@ -125,7 +110,9 @@ int main() {
         }
 
         if (player) {
-            // Phase C: detect building entry (transition only).
+            // Phase C: detect building entry (transition only). The
+            // follow camera now lives in View::Draw — main no longer
+            // touches presentation.
             const Vec2 playerCentre{
                 player->GetPosition().x + kPlayerSize.x * 0.5f,
                 player->GetPosition().y + kPlayerSize.y * 0.5f
@@ -133,35 +120,11 @@ int main() {
             if (world.Tracker().Update(playerCentre) == nullptr) {
                 world.CurrentBuildingName().clear();
             }
-            cam.Follow(player->GetPosition(), kScreenCenter)
-               .ClampToWorld(kWorldSize, kViewportSize);
         }
 
         {
             DrawScope frame;
-            Renderer{}.Clear(Colors::RayWhite);
-            {
-                CameraScope view{cam};
-                Renderer{}.Texture(worldmap, Vec2{0.0f, 0.0f});
-                ForEachActive(world.Objects(),
-                              [&renderer](const GameObject& o) { o.Render(renderer); });
-            }
-
-            TextBuilder{"WASD: move    E: pick up"}
-                .At(Vec2{10, 10}).Size(16).Color(Colors::DarkGray).Draw();
-            if (player) {
-                char buf[64];
-                std::snprintf(buf, sizeof(buf), "karma: %d   umbrella: %s",
-                    player->GetKarma(), player->HasUmbrella() ? "yes" : "no");
-                TextBuilder{buf}
-                    .At(Vec2{10, 30}).Size(16).Color(Colors::DarkGray).Draw();
-            }
-            if (!world.CurrentBuildingName().empty()) {
-                TextBuilder{"Inside: " + world.CurrentBuildingName()}
-                    .At(Vec2{10, 50}).Size(16).Color(Colors::Black).Draw();
-            }
-            TextBuilder{std::string{world.Semester().CurrentName()}}
-                .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
+            view.Draw(world);
         }
 
         // End-of-frame sweep: deferred deletion avoids iterator
