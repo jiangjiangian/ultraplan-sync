@@ -6,6 +6,7 @@
 #include "Buildings.h"
 #include "Obstacles.h"
 #include "WorldConfig.h"
+#include "DialogView.h"
 #include "gfx/Renderer.h"
 #include "gfx/CameraScope.h"
 #include "gfx/TextBuilder.h"
@@ -110,6 +111,8 @@ void View::Draw(const World& world) {
     }
     TextBuilder{std::string{world.Semester().CurrentName()}}
         .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
+
+    DrawDialog(renderer_, world.Dialog());
 }
 
 } // namespace nccu
