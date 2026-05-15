@@ -1,18 +1,11 @@
-#include "GameObject.h"
-#include "GameObjectFactory.h"
+#include "World.h"
 #include "GameObjectQueries.h"
 #include "Player.h"
-#include "NPC.h"
-#include "NpcSpawns.h"
 #include "EventBus.h"
 #include "EventWiring.h"
 #include "WorldConfig.h"
-#include "BuildingTracker.h"
-#include "Buildings.h"
 #include "CharacterSelect.h"
-#include "Obstacles.h"
 #include "Physics.h"
-#include "SemesterStateMachine.h"
 #include "SemesterState.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
@@ -31,7 +24,6 @@
 #include "gfx/Rect.h"
 #include <algorithm>
 #include <cstdio>
-#include <iterator>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -71,68 +63,18 @@ int main() {
 
     auto worldmap = nccu::gfx::Texture::Load("resources/assets/maps/worldmap.png");
 
-    nccu::SemesterStateMachine semester;
-    std::string currentBuildingName;
-    nccu::WireDefaultSubscribers(EventBus::Instance(), semester,
-                                 currentBuildingName, kEnterTrigger);
+    nccu::World world{selection.spritePath};
+    nccu::WireDefaultSubscribers(EventBus::Instance(), world.Semester(),
+                                 world.CurrentBuildingName(), kEnterTrigger);
 
-    std::vector<std::unique_ptr<GameObject>> objects;
-    // Player on Zhinan Rd east of 正門 and east of 苦主, clear of every
-    // building wall and NPC hitbox so the AABB resolver never has to
-    // rescue them at frame 0.
-    objects.push_back(GameObjectFactory::Create(ObjectType::Player,                Vec2{500, 1860}));
-    // 4 umbrellas across the central strip between the plaza (y ~ 1080)
-    // and Si Wei Blvd (y ~ 1340) — clear of every building.
-    objects.push_back(GameObjectFactory::Create(ObjectType::TrueUmbrella,          Vec2{ 320, 1280}));
-    objects.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
-    objects.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1180, 1280}));
-    objects.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));
-
-    for (const auto& spawn : nccu::DefaultNpcSpawns()) {
-        auto npc = std::make_unique<NPC>(spawn.pos, spawn.dialog, spawn.isQuestGiver);
-        npc->LoadSprite(spawn.spritePath);
-        objects.push_back(std::move(npc));
-    }
-
-    Player* player = dynamic_cast<Player*>(objects.front().get());
-    if (player) player->LoadSprite(selection.spritePath);
     nccu::gfx::Camera2D cam;
-    nccu::BuildingTracker tracker;
-
-    // Static collider list: each building's trigger-rect shrunk uniformly
-    // by kBuildingInset so the outermost frame stays walkable (and still
-    // fires the entry trigger via BuildingTracker), while the interior
-    // becomes a wall the player bumps off. Open-ground "buildings"
-    // (track, plaza) are skipped here and handled by Obstacles.h strip
-    // colliders instead.
-    constexpr float kBuildingInset = 32.0f;
-    const auto isCollisionBuilding = [](const nccu::buildings::Building& b) noexcept {
-        const auto& skips = nccu::obstacles::kBuildingCollisionSkip;
-        return std::find(skips.begin(), skips.end(), b.name) == skips.end();
-    };
-    const auto toCollider = [](const nccu::buildings::Building& b) noexcept {
-        return Rect{
-            b.triggerRect.x + kBuildingInset,
-            b.triggerRect.y + kBuildingInset,
-            b.triggerRect.width  - 2.0f * kBuildingInset,
-            b.triggerRect.height - 2.0f * kBuildingInset
-        };
-    };
-
-    std::vector<Rect> staticColliders;
-    staticColliders.reserve(nccu::buildings::kAll.size() + nccu::obstacles::kAll.size());
-    for (const auto& b : nccu::buildings::kAll) {
-        if (isCollisionBuilding(b)) staticColliders.push_back(toCollider(b));
-    }
-    std::copy(nccu::obstacles::kAll.begin(), nccu::obstacles::kAll.end(),
-              std::back_inserter(staticColliders));
 
     // Per-frame collider scratch: hoisted out of the loop so the heap
     // allocation is paid once. clear() preserves capacity, insert() does
     // a single memcpy of the static set, and the NPC append fits inside
     // the headroom (16 slots) without reallocating.
     std::vector<Rect> frameColliders;
-    frameColliders.reserve(staticColliders.size() + 16);
+    frameColliders.reserve(world.StaticColliders().size() + 16);
 
     // Concrete draw service for this round. Round 3 moves ownership into
     // the View; for now main holds it and hands it to each Render() call.
@@ -140,9 +82,10 @@ int main() {
 
     while (!win.ShouldClose()) {
         const float dt = Time::DeltaSeconds();
+        Player* player = world.GetPlayer();
         const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
 
-        ForEachActive(objects, [dt](GameObject& o) { o.Update(dt); });
+        ForEachActive(world.Objects(), [dt](GameObject& o) { o.Update(dt); });
 
         if (player) {
             // Phase B: clamp player to world AABB right after Update().
@@ -158,12 +101,14 @@ int main() {
             // deliberately not colliders.
             frameColliders.clear();
             frameColliders.insert(frameColliders.end(),
-                                  staticColliders.begin(), staticColliders.end());
-            ForEachActiveExcept(objects, player, [&frameColliders](GameObject& o) {
+                                  world.StaticColliders().begin(),
+                                  world.StaticColliders().end());
+            ForEachActiveExcept(world.Objects(), player,
+                                [&frameColliders, kPlayerSize](GameObject& o) {
                 if (!o.BlocksMovement()) return;
                 const Vec2 p = o.GetPosition();
                 frameColliders.push_back(
-                    Rect{p.x, p.y, world::kPlayerWidth, world::kPlayerHeight});
+                    Rect{p.x, p.y, kPlayerSize.x, kPlayerSize.y});
             });
             const Vec2 resolved = nccu::physics::ResolveMove(
                 prevPlayerPos, player->GetPosition(), kPlayerSize, frameColliders);
@@ -174,7 +119,7 @@ int main() {
 
         if (Input::IsPressed(Key::E) && player) {
             const Rect pHit{player->GetPosition().x, player->GetPosition().y, 24, 24};
-            ForEachActiveExcept(objects, player, [player, pHit](GameObject& o) {
+            ForEachActiveExcept(world.Objects(), player, [player, pHit](GameObject& o) {
                 if (o.CheckCollision(pHit)) o.Interact(player);
             });
         }
@@ -185,8 +130,8 @@ int main() {
                 player->GetPosition().x + kPlayerSize.x * 0.5f,
                 player->GetPosition().y + kPlayerSize.y * 0.5f
             };
-            if (tracker.Update(playerCentre) == nullptr) {
-                currentBuildingName.clear();
+            if (world.Tracker().Update(playerCentre) == nullptr) {
+                world.CurrentBuildingName().clear();
             }
             cam.Follow(player->GetPosition(), kScreenCenter)
                .ClampToWorld(kWorldSize, kViewportSize);
@@ -198,7 +143,8 @@ int main() {
             {
                 CameraScope view{cam};
                 Renderer{}.Texture(worldmap, Vec2{0.0f, 0.0f});
-                ForEachActive(objects, [&renderer](const GameObject& o) { o.Render(renderer); });
+                ForEachActive(world.Objects(),
+                              [&renderer](const GameObject& o) { o.Render(renderer); });
             }
 
             TextBuilder{"WASD: move    E: pick up"}
@@ -210,34 +156,35 @@ int main() {
                 TextBuilder{buf}
                     .At(Vec2{10, 30}).Size(16).Color(Colors::DarkGray).Draw();
             }
-            if (!currentBuildingName.empty()) {
-                TextBuilder{"Inside: " + currentBuildingName}
+            if (!world.CurrentBuildingName().empty()) {
+                TextBuilder{"Inside: " + world.CurrentBuildingName()}
                     .At(Vec2{10, 50}).Size(16).Color(Colors::Black).Draw();
             }
-            TextBuilder{std::string{semester.CurrentName()}}
+            TextBuilder{std::string{world.Semester().CurrentName()}}
                 .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
         }
 
         // End-of-frame sweep: deferred deletion avoids iterator
         // invalidation inside the Update loops above. Capture the
         // player's "about to die" status BEFORE the erase: once the
-        // unique_ptr is destroyed the raw `player` pointer dangles, so
-        // we cannot legally compare it against post-erase vector
-        // contents (heap-use-after-free per [basic.stc.dynamic
-        // .deallocation]/4). The bool snapshot sidesteps that.
+        // unique_ptr is destroyed the cached Player* dangles, so we
+        // cannot legally compare it against post-erase vector contents
+        // (heap-use-after-free per [basic.stc.dynamic.deallocation]/4).
+        // The bool snapshot sidesteps that.
         const bool playerWillDie = player && !player->IsActive();
+        auto& objects = world.Objects();
         objects.erase(
             std::remove_if(objects.begin(), objects.end(),
                 [](const std::unique_ptr<GameObject>& o) {
                     return !o || !o->IsActive();
                 }),
             objects.end());
-        if (playerWillDie) player = nullptr;
+        if (playerWillDie) world.ClearPlayer();
     }
 
     // Drop subscribers before main()'s stack frames go out of scope —
     // closes the static-destruction UB window where a singleton-bound
-    // lambda would otherwise capture freed currentBuildingName / semester.
+    // lambda would otherwise capture freed World members.
     EventBus::Instance().Clear();
     return 0;
 }
