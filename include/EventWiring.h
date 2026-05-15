@@ -4,7 +4,6 @@
 #include "SemesterStateMachine.h"
 #include <iostream>
 #include <string>
-#include <unordered_map>
 
 namespace nccu {
 
@@ -17,22 +16,35 @@ inline void WireLoggingSubscribers(EventBus& bus) {
             [](const Event& e) { std::cout << "[Game] Claimed: " << e.text << '\n'; });
 }
 
-// Wires the EnteredBuilding subscriber that drives chapter transitions.
-// Captures references to caller-owned state — caller must outlive the
+// Wires the state subscribers: the EnteredBuilding tracker that feeds
+// the current-building HUD label, and the real Chapter 1 gate that
+// advances the semester when the TrueUmbrella is claimed. Captures
+// references to caller-owned state — caller must outlive the
 // subscription, OR call EventBus::Clear() before those refs go out of
 // scope (main.cpp does the latter just before return 0).
 inline void WireStateTransitionSubscribers(
     EventBus&                                                  bus,
     SemesterStateMachine&                                      semester,
-    std::string&                                               currentBuildingName,
-    const std::unordered_map<std::string, SemesterState>&      enterTrigger)
+    std::string&                                               currentBuildingName)
 {
     bus.Subscribe(EventType::EnteredBuilding,
-        [&currentBuildingName, &semester, &enterTrigger](const Event& e) {
+        [&currentBuildingName](const Event& e) {
             currentBuildingName = e.text;
             std::cout << "[Game] Entered: " << e.text << '\n';
-            if (auto it = enterTrigger.find(e.text); it != enterTrigger.end()) {
-                semester.Transition(it->second);
+        });
+
+    // Real Ch1 chapter gate: claiming the TrueUmbrella in Chapter 1
+    // clears the chapter and advances to the Interlude. This is the
+    // narrower of chapter1.md's two clear conditions ("TrueUmbrella");
+    // the broader "持有任意傘種離開集英樓" location path is deferred to
+    // Phase 2 alongside ending wiring (intentional, not a bug). Extend
+    // future gates by adding sibling ifs of this exact shape — do not
+    // generalise yet.
+    bus.Subscribe(EventType::UmbrellaClaimed,
+        [&semester](const Event& e) {
+            if (e.text == "TrueUmbrella" &&
+                semester.Current() == SemesterState::Chapter1_AddDrop) {
+                semester.Transition(SemesterState::Interlude_Market);
             }
         });
 }
@@ -42,11 +54,10 @@ inline void WireStateTransitionSubscribers(
 inline void WireDefaultSubscribers(
     EventBus&                                                  bus,
     SemesterStateMachine&                                      semester,
-    std::string&                                               currentBuildingName,
-    const std::unordered_map<std::string, SemesterState>&      enterTrigger)
+    std::string&                                               currentBuildingName)
 {
     WireLoggingSubscribers(bus);
-    WireStateTransitionSubscribers(bus, semester, currentBuildingName, enterTrigger);
+    WireStateTransitionSubscribers(bus, semester, currentBuildingName);
 }
 
 } // namespace nccu
