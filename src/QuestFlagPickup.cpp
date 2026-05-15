@@ -1,8 +1,18 @@
 #include "QuestFlagPickup.h"
 #include "EventBus.h"
 #include "Player.h"
+#include "gfx/Color.h"
+#include "gfx/IRenderer.h"
 #include "gfx/Rect.h"
 #include <string>
+
+void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
+    // Visible ground marker so the player can spot and collect the
+    // quest item while exploring (Zelda-style). Same injected-renderer
+    // placeholder convention as NPC::Render — no direct raylib, no
+    // DrawText/DrawTexture from an Item.
+    renderer.DrawRect(hitBox_, nccu::gfx::Colors::Yellow);
+}
 
 QuestFlagPickup::QuestFlagPickup(nccu::gfx::Vec2 position,
                                  std::string flagName)
