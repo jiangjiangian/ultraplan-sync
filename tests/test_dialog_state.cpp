@@ -1,5 +1,7 @@
 #include "doctest/doctest.h"
 #include "DialogState.h"
+#include "Player.h"
+#include "GameController.h"
 
 using nccu::DialogState;
 using nccu::DialogChoice;
@@ -63,4 +65,17 @@ TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes"
     CHECK(picked->karmaDelta == -5);
     CHECK(picked->setsFlag == "Flag_ScoldedSenior");
     CHECK_FALSE(d.Active());
+}
+
+TEST_CASE("ApplyDialogChoice mutates player karma and flag") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    const int before = p.GetKarma();
+    nccu::DialogChoice c{"accept", -5, "Flag_ScoldedSenior", false};
+    nccu::ApplyDialogChoice(p, c);
+    CHECK(p.GetKarma() == before - 5);
+    CHECK_FALSE(p.HasFlag("Flag_ScoldedSenior"));   // flagValue false -> ClearFlag
+    nccu::DialogChoice c2{"help", 10, "Flag_HelpedSenior", true};
+    nccu::ApplyDialogChoice(p, c2);
+    CHECK(p.GetKarma() == before - 5 + 10);
+    CHECK(p.HasFlag("Flag_HelpedSenior"));
 }

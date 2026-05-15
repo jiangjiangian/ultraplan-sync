@@ -1,6 +1,7 @@
 #include "GameController.h"
 #include "World.h"
 #include "Player.h"
+#include "DialogState.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
 #include "EventWiring.h"
@@ -14,6 +15,14 @@
 #include <memory>
 
 namespace nccu {
+
+void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
+    player.AddKarma(choice.karmaDelta);
+    if (!choice.setsFlag.empty()) {
+        if (choice.flagValue) player.SetFlag(choice.setsFlag);
+        else                  player.ClearFlag(choice.setsFlag);
+    }
+}
 
 GameController::GameController(World& world)
     : world_(world),
@@ -42,6 +51,27 @@ void GameController::Update() {
     using namespace nccu::gfx;
     using nccu::queries::ForEachActive;
     using nccu::queries::ForEachActiveExcept;
+
+    // Dialog freeze: while a conversation is open the world is paused —
+    // we run ONLY the dialog input and skip the object tick / movement /
+    // collision / building-entry / sweep below. IsKeyPressed is edge-
+    // triggered, so the E that opened the box (handled in the normal path
+    // last frame) does not auto-advance it this frame.
+    {
+        DialogState& dlg = world_.Dialog();
+        if (dlg.Active()) {
+            Player* p = world_.GetPlayer();
+            if (dlg.AtChoice()) {
+                if (Input::IsPressed(Key::Up))   dlg.MoveChoice(-1);
+                if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
+            }
+            if (Input::IsPressed(Key::E)) {
+                if (const DialogChoice* c = dlg.Advance(); c && p)
+                    ApplyDialogChoice(*p, *c);
+            }
+            return;
+        }
+    }
 
     const float dt = Time::DeltaSeconds();
     Player* player = world_.GetPlayer();
@@ -79,9 +109,15 @@ void GameController::Update() {
 
     if (Input::IsPressed(Key::E) && player) {
         const Rect pHit{player->GetPosition().x, player->GetPosition().y, 24, 24};
-        ForEachActiveExcept(world_.Objects(), player, [player, pHit](GameObject& o) {
-            if (o.CheckCollision(pHit)) o.Interact(player);
-        });
+        ForEachActiveExcept(world_.Objects(), player,
+            [this, player, pHit](GameObject& o) {
+                if (!o.CheckCollision(pHit)) return;
+                if (const auto* lines = o.DialogLines();
+                    lines && !lines->empty())
+                    world_.Dialog().Open(*lines);   // talk
+                else
+                    o.Interact(player);             // pick up / use
+            });
     }
 
     if (player) {
