@@ -1,4 +1,5 @@
 #include "NPC.h"
+#include "DialogData.h"
 #include "EventBus.h"
 #include "Physics.h"
 #include "WorldConfig.h"
@@ -118,4 +119,19 @@ NPC& NPC::SetDialogLines(std::vector<std::string> lines) {
     dialogLines_ = std::move(lines);
     currentLineIndex_ = 0;
     return *this;
+}
+
+NPC& NPC::LoadDialog(std::string_view npcId, nccu::SemesterState state,
+                     int subState) {
+    for (const auto& e : nccu::dialog::All()) {
+        if (e.npcId == npcId && e.state == state &&
+            e.subState == subState) {
+            std::vector<std::string> lines;
+            lines.reserve(static_cast<std::size_t>(e.lineCount));
+            for (int i = 0; i < e.lineCount; ++i)
+                lines.emplace_back(e.lines[i]);
+            return SetDialogLines(std::move(lines));
+        }
+    }
+    return SetDialogLines({});
 }

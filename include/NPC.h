@@ -1,11 +1,13 @@
 #ifndef N_P_C_H_
 #define N_P_C_H_
 #include "Character.h"
+#include "SemesterState.h"
 #include "gfx/Texture.h"
 #include "gfx/Rect.h"
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class NPC : public Character {
@@ -48,6 +50,11 @@ public:
     // state machine pushes new lines into the NPC). Resets currentLineIndex_.
     // Returns *this for chaining: npc.SetDialogLines({...}).LoadSprite(...).
     NPC& SetDialogLines(std::vector<std::string> lines);
+
+    // Replace dialog from the generated DialogData table for the given
+    // (npcId, state, subState). No match -> dialog cleared. Chainable.
+    NPC& LoadDialog(std::string_view npcId, nccu::SemesterState state,
+                    int subState = 0);
 
 private:
     std::vector<std::string> dialogLines_;
