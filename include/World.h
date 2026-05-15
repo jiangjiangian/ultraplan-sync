@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "SemesterStateMachine.h"
 #include "BuildingTracker.h"
+#include "DialogState.h"
 #include "gfx/Rect.h"
 #include <memory>
 #include <string>
@@ -36,6 +37,9 @@ public:
     [[nodiscard]] const SemesterStateMachine& Semester() const noexcept { return semester_; }
     [[nodiscard]] BuildingTracker&            Tracker()        noexcept { return tracker_; }
 
+    [[nodiscard]] DialogState&       Dialog()       noexcept { return dialog_; }
+    [[nodiscard]] const DialogState& Dialog() const noexcept { return dialog_; }
+
     [[nodiscard]] std::string&       CurrentBuildingName()       noexcept { return currentBuildingName_; }
     [[nodiscard]] const std::string& CurrentBuildingName() const noexcept { return currentBuildingName_; }
 
@@ -48,6 +52,7 @@ private:
     Player*                      player_{nullptr};
     SemesterStateMachine         semester_;
     BuildingTracker              tracker_;
+    DialogState                  dialog_;
     std::string                  currentBuildingName_;
     std::vector<nccu::gfx::Rect> staticColliders_;
 };
