@@ -12,9 +12,9 @@ STL refactor). Five reviewers each took an angle:
 | Memory / UB | `adv_memory.md` | 3 CRITICAL, 5 MAJOR, 5 MINOR |
 | Performance | `adv_performance.md` | 2 CRITICAL, 5 MAJOR, 5 MINOR |
 
-(Source markdowns archived under `~/.claude/jobs/13db9f5f/round3/`. The OCP /
-LSP / ISP / Sean-Parent-ergonomics angles were rate-limited mid-run on the
-day of the audit; they remain optional follow-ups.)
+(Source markdowns archived locally outside the repo. The OCP / LSP / ISP /
+Sean-Parent-ergonomics angles were rate-limited mid-run and remain optional
+follow-ups.)
 
 ---
 
