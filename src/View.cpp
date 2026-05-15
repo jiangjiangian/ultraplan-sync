@@ -41,7 +41,8 @@ View::View(int windowWidth, int windowHeight)
         buildingTextures_.push_back(std::move(tex));
         buildings_.push_back(BuildingSprite{
             idx, b.triggerRect,
-            b.triggerRect.y + b.triggerRect.height});
+            b.triggerRect.y + b.triggerRect.height,
+            b.flipX, b.flipY});
     }
 }
 
@@ -80,11 +81,15 @@ void View::Draw(const World& world) {
             } else {
                 const BuildingSprite& bs  = buildings_[d.building];
                 const Texture&        tex = buildingTextures_[bs.texIndex];
+                const float sw = static_cast<float>(tex.Width());
+                const float sh = static_cast<float>(tex.Height());
+                // Negative source extents make DrawTexturePro mirror the
+                // sprite — carries the Tiled flip into the render.
                 renderer_.DrawSprite(
                     tex,
                     Rect{0.0f, 0.0f,
-                         static_cast<float>(tex.Width()),
-                         static_cast<float>(tex.Height())},
+                         bs.flipX ? -sw : sw,
+                         bs.flipY ? -sh : sh},
                     bs.dest);
             }
         }

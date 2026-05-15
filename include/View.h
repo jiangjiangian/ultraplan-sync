@@ -32,6 +32,8 @@ private:
         std::size_t     texIndex;
         nccu::gfx::Rect dest;
         float           baseY;
+        bool            flipX;
+        bool            flipY;
     };
     // A single entry in the per-frame painter's-order list. Exactly one
     // of {obj, building} is meaningful: obj!=nullptr → a GameObject,

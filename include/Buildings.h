@@ -9,15 +9,19 @@ namespace nccu::buildings {
 struct Building {
     std::string_view name;
     nccu::gfx::Rect  triggerRect;
+    // Mirror flags emitted by tools/tiled_to_world.py from the Tiled
+    // flip bits. Defaulted so the legacy 2-field initializers below still
+    // compile; the regenerated block carries the real flip state.
+    bool             flipX = false;
+    bool             flipY = false;
 };
 
 // 27 NCCU 山下 buildings. Coordinates auto-emitted from
-// tools/composite_worldmap.py — width/height are the ACTUAL placed sprite
-// dimensions after bbox-crop + fit-to-height. Earlier versions of this
-// table used target_h for both axes and the trigger box covered only the
-// central 60% of each visual building, letting the player walk on the
-// overhanging roof. Run the python tool after re-positioning any building
-// and paste the printed block below.
+// tools/tiled_to_world.py — width/height are the placed sprite
+// dimensions, flipX/flipY the Tiled mirror state. The trigger box is the
+// full sprite rect; the walkable footprint is derived in World.cpp. Run
+// the tool after re-positioning in Tiled and paste the printed block
+// below.
 inline constexpr std::array<Building, 27> kAll = {{
     {"游泳館",       {  50.0f,  630.0f, 301.0f, 180.0f}},
     {"樂活館",       { 380.0f,  630.0f, 281.0f, 180.0f}},
