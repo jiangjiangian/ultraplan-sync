@@ -3,6 +3,7 @@
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace nccu::gfx { class IRenderer; }
@@ -39,6 +40,13 @@ public:
     // dialog" is representable without a sentinel vector.
     [[nodiscard]] virtual const std::vector<std::string>*
         DialogLines() const noexcept { return nullptr; }
+
+    // Talk identity for DialogData lookup. Default: empty (items, the
+    // player, Vendor, decoration, ambient students — they fall back to
+    // Interact()). Archetype NPCs override to return their npcId so
+    // GameController builds the per-(npcId, SemesterState) opener.
+    // Virtual-not-dynamic_cast, same rationale as BlocksMovement().
+    [[nodiscard]] virtual std::string_view NpcId() const noexcept { return {}; }
 
 protected:
     nccu::gfx::Vec2 position_;

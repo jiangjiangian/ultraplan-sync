@@ -51,7 +51,8 @@ World::World(const std::string& playerSpritePath) {
     objects_.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));
 
     for (const auto& spawn : DefaultNpcSpawns()) {
-        auto npc = std::make_unique<NPC>(spawn.pos, spawn.dialog, spawn.isQuestGiver);
+        auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},
+                                         spawn.isQuestGiver, spawn.npcId);
         npc->LoadSprite(spawn.spritePath);
         objects_.push_back(std::move(npc));
     }
@@ -71,7 +72,8 @@ World::World(const std::string& playerSpritePath) {
     // gets a distinct PRNG seed so the crowd doesn't move in lock-step.
     unsigned seed = 0x1234567u;
     for (const auto& s : AmbientStudentSpawns()) {
-        auto npc = std::make_unique<NPC>(s.pos, s.dialog, s.isQuestGiver);
+        auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
+                                         s.isQuestGiver, s.npcId);
         npc->LoadSprite(s.spritePath);
         npc->EnableWander(50.0f, seed);
         npc->SetWanderColliders(staticColliders_);

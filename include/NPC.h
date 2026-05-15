@@ -14,11 +14,18 @@ class NPC : public Character {
 public:
     NPC(nccu::gfx::Vec2 position,
         std::vector<std::string> dialogLines,
-        bool isQuestGiver = false);
+        bool isQuestGiver = false,
+        std::string_view npcId = {});
 
     void Update(float deltaTime) override;
     void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override;
+
+    // DialogData lookup key — GameController builds the per-(npcId,
+    // SemesterState) opener from this. "" for Vendor / ambient students
+    // (they fall back to Interact()). Overrides GameObject::NpcId so the
+    // dispatch stays virtual-not-dynamic_cast.
+    [[nodiscard]] std::string_view NpcId() const noexcept override;
 
     // Stationary archetype NPCs are solid walls the player bumps off;
     // ambient wandering students are decorative and must NOT block the
@@ -63,6 +70,7 @@ private:
     std::vector<std::string> dialogLines_;
     size_t                   currentLineIndex_;
     bool                     isQuestGiver_;
+    std::string              npcId_;
 
     std::optional<nccu::gfx::Texture> sprite_;
 

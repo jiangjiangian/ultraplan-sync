@@ -2,6 +2,7 @@
 #include "World.h"
 #include "Player.h"
 #include "DialogState.h"
+#include "DialogOpener.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
 #include "EventWiring.h"
@@ -13,6 +14,7 @@
 #include "gfx/Time.h"
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 namespace nccu {
 
@@ -112,11 +114,11 @@ void GameController::Update() {
         ForEachActiveExcept(world_.Objects(), player,
             [this, player, pHit](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
-                if (const auto* lines = o.DialogLines();
-                    lines && !lines->empty())
-                    world_.Dialog().Open(*lines);   // talk
+                if (const std::string_view id = o.NpcId(); !id.empty())
+                    OpenNpcDialog(world_.Dialog(), id,
+                                  world_.Semester().Current(), 0);  // talk
                 else
-                    o.Interact(player);             // pick up / use
+                    o.Interact(player);                              // pick up / Vendor
             });
     }
 

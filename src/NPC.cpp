@@ -10,13 +10,15 @@
 
 NPC::NPC(nccu::gfx::Vec2 position,
          std::vector<std::string> dialogLines,
-         bool isQuestGiver)
+         bool isQuestGiver,
+         std::string_view npcId)
     : Character(position,
                 nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f},
                 0.0f /* archetype NPCs are stationary; EnableWander() opts in */),
       dialogLines_(std::move(dialogLines)),
       currentLineIndex_(0),
       isQuestGiver_(isQuestGiver),
+      npcId_(npcId),
       wander_(false),
       retargetTimer_(0.0f),
       wanderDir_{0.0f, 0.0f},
@@ -108,6 +110,8 @@ void NPC::Interact(Player* /*initiator*/) {
     currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, line });
 }
+
+std::string_view NPC::NpcId() const noexcept { return npcId_; }
 
 const std::string& NPC::CurrentLineText() const {
     static const std::string empty;
