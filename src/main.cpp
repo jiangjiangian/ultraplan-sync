@@ -22,6 +22,9 @@ int main() {
     auto selection = nccu::RunCharacterSelect(win);
     if (selection.closed) return 0;
 
+    // Declaration order matters: reverse-destruction runs the controller
+    // dtor (EventBus::Clear) BEFORE the World refs its subscribers
+    // captured die. Do not reorder these three.
     nccu::World          world{selection.spritePath};
     nccu::View           view{kWinW, kWinH};
     nccu::GameController  controller{world};
