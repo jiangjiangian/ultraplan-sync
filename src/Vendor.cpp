@@ -1,6 +1,7 @@
 #include "Vendor.h"
 #include "EventBus.h"
 #include "Player.h"
+#include "VendorMessages.h"
 #include "gfx/Color.h"
 
 #include <string>
@@ -12,7 +13,9 @@ namespace {
 // Tiny helper so we don't reach for <sstream> just to glue together a price
 // line. Format: "<itemId> - <price> 元"
 std::string FormatStockLine(const VendorItem& item) {
-    return item.itemId + " - " + std::to_string(item.price) + " 元";
+    namespace msg = nccu::vendor::msg;
+    return item.itemId + std::string(msg::kStockLineSep)
+         + std::to_string(item.price) + std::string(msg::kStockLineUnit);
 }
 
 } // namespace
@@ -51,7 +54,7 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
             EventType::ShowMessage,
             position_,
             nccu::gfx::Colors::Red,
-            "你錢不夠"
+            std::string(nccu::vendor::msg::kInsufficientFunds)
         });
         return false;
     }
@@ -63,7 +66,7 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
         EventType::ShowMessage,
         position_,
         nccu::gfx::Colors::White,
-        std::string("買了 ") + item.itemId
+        std::string(nccu::vendor::msg::kPurchasedPrefix) + item.itemId
     });
     EventBus::Instance().Publish(Event{
         EventType::PickupAcquired,
