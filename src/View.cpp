@@ -7,7 +7,9 @@
 #include "Obstacles.h"
 #include "WorldConfig.h"
 #include "DialogView.h"
+#include "EndingView.h"
 #include "gfx/Renderer.h"
+#include "gfx/Time.h"
 #include "gfx/CameraScope.h"
 #include "gfx/TextBuilder.h"
 #include "gfx/Color.h"
@@ -50,6 +52,15 @@ View::View(int windowWidth, int windowHeight)
 void View::Draw(const World& world) {
     using namespace nccu::gfx;
     using nccu::queries::ForEachActive;
+
+    const SemesterState st = world.Semester().Current();
+    if (IsEndingState(st)) {
+        endingAlpha_ = std::min(1.0f, endingAlpha_ +
+                                nccu::gfx::Time::DeltaSeconds());
+        DrawEndingCard(renderer_, st, world.Semester().CurrentName(),
+                       endingAlpha_, viewportSize_.x, viewportSize_.y);
+        return;   // ending replaces the world; player has no agency here
+    }
 
     if (const Player* p = world.GetPlayer()) {
         camera_.Follow(p->GetPosition(), screenCenter_)

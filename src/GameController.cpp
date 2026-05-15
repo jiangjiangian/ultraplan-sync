@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "DialogState.h"
 #include "DialogOpener.h"
+#include "EndingGate.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
 #include "EventWiring.h"
@@ -61,8 +62,10 @@ void GameController::Update() {
                 if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
             }
             if (Input::IsPressed(Key::E)) {
-                if (const DialogChoice* c = dlg.Advance(); c && p)
+                if (const DialogChoice* c = dlg.Advance(); c && p) {
                     ApplyDialogChoice(*p, *c);
+                    CheckEndingGates(*p, world_.Semester());
+                }
             }
             return;
         }

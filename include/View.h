@@ -53,6 +53,7 @@ private:
     std::vector<nccu::gfx::Texture>  buildingTextures_;
     std::vector<BuildingSprite>      buildings_;
     std::vector<DrawRef>             drawOrder_;  // per-frame scratch
+    float                            endingAlpha_ = 0.0f;  // card fade-in
 };
 
 } // namespace nccu

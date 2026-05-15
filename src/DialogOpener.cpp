@@ -17,13 +17,16 @@ std::vector<std::string> EntryLines(const nccu::dialog::Entry& e) {
     return lines;
 }
 
-// Scaffold: which NPCs present the branch menu in this state. 1b-3's
-// ResolveOpenerSubState will replace this hardcoded allowlist with a
-// per-NPC, flag-aware resolver. For Ch1 only 西裝學長 / 苦主 carry the
-// genuine ripple A/B; everyone else stays line-only.
+// Scaffold: which NPCs present the branch menu in this state. The Ch1
+// choice-opener set is now {suit_senior, victim, shop_auntie}.
+// 西裝學長 / 苦主 carry the genuine ripple A/B; 福利社阿姨's (c)
+// branch sets Flag_BoughtUglyUmbrella -> Ending C (the buy-umbrella
+// path — its subState 1/2 already live in DialogData). Everyone else
+// stays line-only.
 bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
     if (s != SemesterState::Chapter1_AddDrop) return false;
-    return npcId == "suit_senior" || npcId == "victim";
+    return npcId == "suit_senior" || npcId == "victim" ||
+           npcId == "shop_auntie";
 }
 
 }  // namespace

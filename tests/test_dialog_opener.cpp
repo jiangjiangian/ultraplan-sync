@@ -57,17 +57,27 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     CHECK_FALSE(d.Active());
 }
 
-TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1 is line-only (not in allowlist)") {
+TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     DialogState d;
     nccu::OpenNpcDialog(d, "shop_auntie", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
-    int guard = 0;
-    while (d.Active() && guard++ < 100) {
-        CHECK_FALSE(d.AtChoice());     // never enters choice mode
-        d.Advance();
-    }
-    CHECK_FALSE(d.Active());           // eventually closes
+    // Step through the 4 (a) opener lines into choice mode.
+    for (int i = 0; i < 4; ++i) d.Advance();
+    CHECK(d.AtChoice());
+    REQUIRE(d.Choices().size() == 2);
+    // Table order: subState 1 first, subState 2 second.
+    CHECK(d.Choices()[0].label == "玩家詢問雨傘");
+    CHECK(d.Choices()[1].label == "玩家購買醜綠傘後");
+    // Pick the buy branch (index 1) -> Flag_BoughtUglyUmbrella -> Ending C.
+    d.MoveChoice(1);
+    const nccu::DialogChoice* c = d.Advance();
+    REQUIRE(c != nullptr);
+    CHECK(c->label == "玩家購買醜綠傘後");
+    CHECK(c->setsFlag == "Flag_BoughtUglyUmbrella");
+    CHECK(c->flagValue == true);
+    while (d.Active()) d.Advance();    // exhaust -> close
+    CHECK_FALSE(d.Active());
 }
 
 TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
