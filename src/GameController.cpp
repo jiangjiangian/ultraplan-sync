@@ -31,7 +31,7 @@ GameController::GameController(World& world)
     : world_(world),
       worldSize_{::world::kSize, ::world::kSize},
       playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight} {
-    frameColliders_.reserve(world_.StaticColliders().size() + 16);
+    frameColliders_.reserve(64);  // dynamic actors only; terrain is the mask
     WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
                            world_.CurrentBuildingName());
 }
@@ -84,14 +84,12 @@ void GameController::Update() {
             player->SetPosition(clamped);
         }
 
-        // Phase B2: axis-separated collision resolution. Static building
-        // walls + every BlocksMovement()-true object's hitbox push the
-        // player back on the blocked axis only — diagonal slides along
-        // walls. Items are deliberately not colliders.
+        // Phase B2: axis-separated collision resolution. The terrain mask
+        // (building wall bases, river, painted props) plus every
+        // BlocksMovement()-true object's hitbox push the player back on
+        // the blocked axis only — diagonal slides along walls. Items are
+        // deliberately not colliders.
         frameColliders_.clear();
-        frameColliders_.insert(frameColliders_.end(),
-                               world_.StaticColliders().begin(),
-                               world_.StaticColliders().end());
         ForEachActiveExcept(world_.Objects(), player, [this](GameObject& o) {
             if (!o.BlocksMovement()) return;
             const Vec2 p = o.GetPosition();
@@ -99,7 +97,8 @@ void GameController::Update() {
                 Rect{p.x, p.y, playerSize_.x, playerSize_.y});
         });
         const Vec2 resolved = nccu::physics::ResolveMove(
-            prevPlayerPos, player->GetPosition(), playerSize_, frameColliders_);
+            prevPlayerPos, player->GetPosition(), playerSize_,
+            frameColliders_, &world_.TerrainMask());
         if (resolved.x != player->GetPosition().x || resolved.y != player->GetPosition().y) {
             player->SetPosition(resolved);
         }

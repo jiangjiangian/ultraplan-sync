@@ -2,6 +2,7 @@
 #define PHYSICS_H_
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
+#include "CollisionMask.h"
 #include <vector>
 
 namespace nccu::physics {
@@ -9,8 +10,9 @@ namespace nccu::physics {
 // Axis-separated AABB movement resolver.
 //
 // Given a player's previous top-left position, the position they would
-// occupy after Update(), the player's AABB size, and a list of static
-// colliders, return the position the player should actually end up at.
+// occupy after Update(), the player's AABB size, a list of dynamic
+// colliders and an optional static terrain mask, return the position
+// the player should actually end up at.
 //
 // Strategy: try the X delta in isolation; if the resulting AABB overlaps
 // any collider, drop it (player stays on prev.x). Then try the Y delta
@@ -18,19 +20,23 @@ namespace nccu::physics {
 // along the wall" feel: walking diagonally into a corner moves on the
 // open axis only.
 //
-// `colliders` is intended to hold every static obstacle (building walls
-// shrunk from triggerRect, NPC hit-boxes). It is passed by const reference
-// so the caller can rebuild it each frame to fold in dynamic actors.
+// `colliders` holds the per-frame DYNAMIC obstacles only (other actors'
+// hit-boxes). Static terrain — building wall bases, the river, painted
+// trees / planters / the perimeter wall — comes from `mask`, a
+// pixel-accurate walkability grid; pass nullptr to skip terrain (NPC
+// paths with no mask, unit tests). It is passed by const reference so
+// the caller can rebuild the dynamic list each frame.
 inline gfx::Vec2 ResolveMove(gfx::Vec2 prev,
                              gfx::Vec2 desired,
                              gfx::Vec2 playerSize,
-                             const std::vector<gfx::Rect>& colliders) {
+                             const std::vector<gfx::Rect>& colliders,
+                             const CollisionMask* mask = nullptr) {
     auto overlapsAny = [&](float x, float y) -> bool {
         const gfx::Rect aabb{x, y, playerSize.x, playerSize.y};
         for (const auto& c : colliders) {
             if (aabb.Intersects(c)) return true;
         }
-        return false;
+        return mask && mask->BlockedBox(x, y, playerSize.x, playerSize.y);
     };
 
     // Escape mode: if prev is already overlapping something (spawned on

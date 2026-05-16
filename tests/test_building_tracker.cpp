@@ -1,11 +1,15 @@
 #include "doctest/doctest.h"
 #include "BuildingTracker.h"
-#include "Buildings.h"
 #include "EventBus.h"
-#include "gfx/Vec2.h"
+
+#include <array>
+#include <string>
+#include <string_view>
 
 using nccu::BuildingTracker;
+using nccu::buildings::Building;
 using nccu::buildings::kAll;
+using nccu::detail::NearestContaining;
 using nccu::gfx::Vec2;
 
 namespace {
@@ -17,6 +21,19 @@ struct EventCapture {
 void SubscribeBuilding(EventCapture& cap) {
     EventBus::Instance().Subscribe(EventType::EnteredBuilding,
         [&](const Event& e) { cap.hits++; cap.lastName = e.text; });
+}
+
+// Centre of the named building's trigger rect, looked up live in kAll so
+// the transition tests track Tiled re-placements instead of hardcoding
+// coordinates. Feeding a building's OWN centre also guarantees distance 0,
+// so it wins any overlap deterministically regardless of layout. Returns
+// {-1,-1} if absent — callers REQUIRE presence so a rename fails loudly.
+Vec2 CentreOf(std::string_view name) {
+    for (const auto& b : kAll)
+        if (b.name == name)
+            return Vec2{b.triggerRect.x + b.triggerRect.width  * 0.5f,
+                        b.triggerRect.y + b.triggerRect.height * 0.5f};
+    return Vec2{-1.0f, -1.0f};
 }
 } // namespace
 
@@ -31,9 +48,11 @@ TEST_CASE("BuildingTracker: entering 操場 fires one event") {
     EventCapture cap;
     SubscribeBuilding(cap);
 
+    const Vec2 c = CentreOf("操場");
+    REQUIRE(c.x >= 0.0f);            // 操場 must exist in kAll
+
     BuildingTracker t;
-    // 操場 trigger rect: {1240, 630, 280, 280} — centre (1380, 770).
-    t.Update(Vec2{1380.0f, 770.0f});
+    t.Update(c);
 
     CHECK(t.Current() != nullptr);
     CHECK(t.Current()->name == "操場");
@@ -46,10 +65,13 @@ TEST_CASE("BuildingTracker: staying inside same building fires no further events
     EventCapture cap;
     SubscribeBuilding(cap);
 
+    const Vec2 c = CentreOf("操場");
+    REQUIRE(c.x >= 0.0f);
+
     BuildingTracker t;
-    t.Update(Vec2{1380.0f, 770.0f});  // enter 操場
-    t.Update(Vec2{1385.0f, 775.0f});  // still inside
-    t.Update(Vec2{1390.0f, 780.0f});  // still inside
+    t.Update(c);                              // enter 操場
+    t.Update(Vec2{c.x + 5.0f, c.y + 5.0f});   // still deep inside
+    t.Update(Vec2{c.x - 5.0f, c.y - 5.0f});   // still deep inside
 
     CHECK(cap.hits == 1);
 }
@@ -59,9 +81,14 @@ TEST_CASE("BuildingTracker: walking from 操場 into 體育館 fires a new event
     EventCapture cap;
     SubscribeBuilding(cap);
 
+    const Vec2 a = CentreOf("操場");
+    const Vec2 b = CentreOf("體育館");
+    REQUIRE(a.x >= 0.0f);
+    REQUIRE(b.x >= 0.0f);
+
     BuildingTracker t;
-    t.Update(Vec2{1380.0f, 770.0f});     // 操場 centre
-    t.Update(Vec2{1750.0f, 670.0f});     // 體育館 centre
+    t.Update(a);
+    t.Update(b);
 
     CHECK(cap.hits == 2);
     CHECK(cap.lastName == "體育館");
@@ -73,61 +100,69 @@ TEST_CASE("BuildingTracker: leaving into empty space clears Current() with no sp
     EventCapture cap;
     SubscribeBuilding(cap);
 
+    const Vec2 c = CentreOf("操場");
+    REQUIRE(c.x >= 0.0f);
+
+    // The map's top-left corner holds no trigger rect in any sane layout;
+    // assert that precondition so a future regression fails loudly here
+    // rather than as a confusing spurious-event miscount below.
+    const Vec2 empty{50.0f, 50.0f};
+    for (const auto& bld : kAll) REQUIRE_FALSE(bld.triggerRect.Contains(empty));
+
     BuildingTracker t;
-    t.Update(Vec2{1380.0f, 770.0f});     // 操場
-    t.Update(Vec2{50.0f, 50.0f});        // far NW corner, no trigger rect there
+    t.Update(c);          // enter 操場
+    t.Update(empty);      // walk off into nothing
 
     CHECK(t.Current() == nullptr);
-    CHECK(cap.hits == 1);                // only the entry into 操場
+    CHECK(cap.hits == 1); // only the entry into 操場
 }
 
-// Regression: when trigger rects overlap, BuildingTracker::Update must
-// resolve to the building whose CENTRE is nearest to the player —
-// independent of array order in Buildings.h.
+// The overlap / tie-break disambiguation is a property of the algorithm,
+// not of the campus layout, so it is exercised against fixed synthetic
+// fixtures via the extracted nccu::detail::NearestContaining helper —
+// independent of Buildings.h and immune to Tiled regeneration.
 
-TEST_CASE("BuildingTracker overlap: 行政大樓 / 法學院 — nearer centre wins") {
-    EventBus::Instance().Clear();
-    BuildingTracker t;
-    // 行政大樓 (69, 1330, 222, 200) occupies x [69,291], y [1330,1530].
-    // 法學院   (37, 1520, 146, 200) occupies x [37,183], y [1520,1720].
-    // Their rects overlap in x [69,183], y [1520,1530].
-    // (130, 1525) is in both. Centre distances:
-    //   行政大樓 centre (180,1430): d ≈ 103
-    //   法學院   centre (110,1620): d ≈ 97  ← nearer
-    auto* b = t.Update(Vec2{130.0f, 1525.0f});
+TEST_CASE("NearestContaining: overlapping rects — nearer centre wins") {
+    const std::array<Building, 2> fix = {{
+        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // centre (100,100)
+        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // centre (200,200)
+    }};
+    // (140,140) is in both rects; nearer A's centre (≈56.6 vs ≈84.9).
+    const Building* b = NearestContaining(Vec2{140.0f, 140.0f}, fix);
     REQUIRE(b != nullptr);
-    CHECK(b->name == "法學院");
+    CHECK(b->name == "A");
 }
 
-TEST_CASE("BuildingTracker overlap: 大勇樓 / 志希樓 — closer point wins each way") {
-    EventBus::Instance().Clear();
-    BuildingTracker t1;
-    // 大勇樓 (1269, 1530, 322, 180) occupies x [1269,1591], y [1530,1710].
-    // 志希樓 (1218, 1700, 224, 140) occupies x [1218,1442], y [1700,1840].
-    // Overlap region: x [1269,1442], y [1700,1710].
-    // (1300, 1705) inside both; closer to 志希樓 centre (1330,1770).
-    auto* b1 = t1.Update(Vec2{1300.0f, 1705.0f});
-    REQUIRE(b1 != nullptr);
-    CHECK(b1->name == "志希樓");
-
-    EventBus::Instance().Clear();
-    BuildingTracker t2;
-    // (1400, 1705) inside both; closer to 大勇樓 centre (1430,1620).
-    auto* b2 = t2.Update(Vec2{1400.0f, 1705.0f});
-    REQUIRE(b2 != nullptr);
-    CHECK(b2->name == "大勇樓");
+TEST_CASE("NearestContaining: same overlap, opposite points pick opposite buildings") {
+    const std::array<Building, 2> fix = {{
+        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // centre (100,100)
+        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // centre (200,200)
+    }};
+    const Building* near_a = NearestContaining(Vec2{120.0f, 120.0f}, fix);
+    const Building* near_b = NearestContaining(Vec2{180.0f, 180.0f}, fix);
+    REQUIRE(near_a != nullptr);
+    REQUIRE(near_b != nullptr);
+    CHECK(near_a->name == "A");
+    CHECK(near_b->name == "B");
 }
 
-TEST_CASE("BuildingTracker overlap: exact-tie midpoint resolves lexicographically") {
-    EventBus::Instance().Clear();
-    BuildingTracker t;
-    // 行政大樓 centre = (69+222/2, 1330+200/2) = (180, 1430).
-    // 法學院   centre = (37+146/2, 1520+200/2) = (110, 1620).
-    // Exact midpoint = (145, 1525). Both rects contain that point and both
-    // centres are exactly equidistant (√10250 ≈ 101.24). Tie-break by
-    // string_view ordering: bytes 0xE6 0xB3 0x95 (法) < 0xE8 0xA1 0x8C
-    // (行), so 法學院 < 行政大樓 — 法學院 wins regardless of array order.
-    auto* b = t.Update(Vec2{145.0f, 1525.0f});
+TEST_CASE("NearestContaining: exact equidistant tie breaks lexicographically by name") {
+    // Centres (50,50) and (150,50); (100,50) sits on their perpendicular
+    // bisector → identical squared distance (2500). Rects are widened so
+    // (100,50) is strictly interior to BOTH (Rect::Contains is half-open,
+    // so a shared edge would not count). UTF-8 first byte: 法 0xE6 < 行
+    // 0xE8, so 法學院 must win regardless of array order.
+    const Building admin{"行政大樓", {-20.0f, 0.0f, 140.0f, 100.0f}, false, false};
+    const Building law  {"法學院",   { 80.0f, 0.0f, 140.0f, 100.0f}, false, false};
+    const Vec2 mid{100.0f, 50.0f};
+
+    const std::array<Building, 2> fwd = {{admin, law}};
+    const std::array<Building, 2> rev = {{law, admin}};
+
+    const Building* a = NearestContaining(mid, fwd);
+    const Building* b = NearestContaining(mid, rev);
+    REQUIRE(a != nullptr);
     REQUIRE(b != nullptr);
+    CHECK(a->name == "法學院");
     CHECK(b->name == "法學院");
 }

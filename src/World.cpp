@@ -2,42 +2,10 @@
 #include "GameObjectFactory.h"
 #include "NPC.h"
 #include "NpcSpawns.h"
-#include "Buildings.h"
-#include "Obstacles.h"
 #include "QuestFlagPickup.h"
 #include "gfx/Vec2.h"
-#include <algorithm>
-#include <iterator>
 
 namespace nccu {
-namespace {
-
-// The 3/4-oblique building art has its solid ground floor in the LOWER
-// band of the sprite; the roof and eaves overhang the path above it. So
-// the collider is only the bottom footprint — kFootprintFrac of the
-// trigger-rect height, inset on x for the side walls. The overhang and
-// the whole area behind the building stay walkable (and the full
-// trigger-rect still fires the entry event via BuildingTracker).
-// Open-ground "buildings" (track, plaza) are skipped — Obstacles.h
-// supplies their strip colliders instead.
-constexpr float kBuildingInset = 24.0f;
-constexpr float kFootprintFrac = 0.40f;
-
-bool IsCollisionBuilding(const buildings::Building& b) noexcept {
-    const auto& skips = obstacles::kBuildingCollisionSkip;
-    return std::find(skips.begin(), skips.end(), b.name) == skips.end();
-}
-
-nccu::gfx::Rect ToCollider(const buildings::Building& b) noexcept {
-    const float fh = b.triggerRect.height * kFootprintFrac;
-    return nccu::gfx::Rect{
-        b.triggerRect.x + kBuildingInset,
-        b.triggerRect.y + b.triggerRect.height - fh,
-        b.triggerRect.width - 2.0f * kBuildingInset,
-        fh};
-}
-
-} // namespace
 
 World::World(const std::string& playerSpritePath) {
     using nccu::gfx::Vec2;
@@ -66,14 +34,15 @@ World::World(const std::string& playerSpritePath) {
     player_ = dynamic_cast<Player*>(objects_.front().get());
     if (player_) player_->LoadSprite(playerSpritePath);
 
-    staticColliders_.reserve(buildings::kAll.size() + obstacles::kAll.size());
-    for (const auto& b : buildings::kAll) {
-        if (IsCollisionBuilding(b)) staticColliders_.push_back(ToCollider(b));
-    }
-    std::copy(obstacles::kAll.begin(), obstacles::kAll.end(),
-              std::back_inserter(staticColliders_));
+    // Static collision is a pixel-accurate walkability mask now:
+    // tools/tiled_to_world.py bakes building wall bases + the river into
+    // collision_mask_base.png, the artist paints trees / planters / the
+    // perimeter wall on top into collision_mask.png. The sprite rect in
+    // buildings::kAll is a trigger zone only — BuildingTracker keys
+    // chapter events off it.
+    terrainMask_ = LoadTerrainMask();
 
-    // Ambient pedestrians — wired AFTER staticColliders_ is filled so the
+    // Ambient pedestrians — wired AFTER the mask is loaded so the
     // self-resolving wander stays out of buildings and the river. Each
     // gets a distinct PRNG seed so the crowd doesn't move in lock-step.
     unsigned seed = 0x1234567u;
@@ -82,7 +51,7 @@ World::World(const std::string& playerSpritePath) {
                                          s.isQuestGiver, s.npcId);
         npc->LoadSprite(s.spritePath);
         npc->EnableWander(50.0f, seed);
-        npc->SetWanderColliders(staticColliders_);
+        npc->SetWanderMask(terrainMask_);
         objects_.push_back(std::move(npc));
         seed = seed * 1664525u + 1013904223u;
     }
