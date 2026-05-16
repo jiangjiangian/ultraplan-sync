@@ -1,6 +1,7 @@
 #ifndef N_P_C_H_
 #define N_P_C_H_
 #include "Character.h"
+#include "CollisionMask.h"
 #include "gfx/Texture.h"
 #include "gfx/Rect.h"
 #include <cstdint>
@@ -28,11 +29,11 @@ public:
     // PRNG so a crowd does not march in lock-step. Chainable.
     NPC& EnableWander(float speed, unsigned seed) noexcept;
 
-    // Wandering NPCs self-resolve against the world's static colliders so
-    // they don't walk through buildings or the river. The reference must
-    // outlive the NPC (World owns both; the vector is fixed after ctor).
-    void SetWanderColliders(const std::vector<nccu::gfx::Rect>& colliders) noexcept {
-        wanderColliders_ = &colliders;
+    // Wandering NPCs self-resolve against the world's terrain mask so
+    // they don't walk through buildings, the river or painted props. The
+    // reference must outlive the NPC (World owns both; fixed after ctor).
+    void SetWanderMask(const nccu::CollisionMask& mask) noexcept {
+        wanderMask_ = &mask;
     }
 
     // Loads a Pipoya 96x128 sheet. NPCs are stationary, so only the idle
@@ -60,7 +61,7 @@ private:
     float                                      retargetTimer_;
     nccu::gfx::Vec2                             wanderDir_;
     std::uint32_t                              rng_;
-    const std::vector<nccu::gfx::Rect>*        wanderColliders_;
+    const nccu::CollisionMask*                 wanderMask_;
 };
 
 #endif // N_P_C_H_

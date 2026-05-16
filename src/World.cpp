@@ -2,7 +2,6 @@
 #include "GameObjectFactory.h"
 #include "NPC.h"
 #include "NpcSpawns.h"
-#include "Obstacles.h"
 #include "gfx/Vec2.h"
 
 namespace nccu {
@@ -28,14 +27,15 @@ World::World(const std::string& playerSpritePath) {
     player_ = dynamic_cast<Player*>(objects_.front().get());
     if (player_) player_->LoadSprite(playerSpritePath);
 
-    // Static collision is fully authored now: tools/tiled_to_world.py
-    // emits colliders::kAll (Tiled tile-collision shapes rasterised to
-    // AABB rects, footprint fallback for un-traced buildings, the river
-    // appended). The sprite rect in buildings::kAll is a trigger zone
-    // only — BuildingTracker keys chapter events off it.
-    staticColliders_.assign(colliders::kAll.begin(), colliders::kAll.end());
+    // Static collision is a pixel-accurate walkability mask now:
+    // tools/tiled_to_world.py bakes building wall bases + the river into
+    // collision_mask_base.png, the artist paints trees / planters / the
+    // perimeter wall on top into collision_mask.png. The sprite rect in
+    // buildings::kAll is a trigger zone only — BuildingTracker keys
+    // chapter events off it.
+    terrainMask_ = LoadTerrainMask();
 
-    // Ambient pedestrians — wired AFTER staticColliders_ is filled so the
+    // Ambient pedestrians — wired AFTER the mask is loaded so the
     // self-resolving wander stays out of buildings and the river. Each
     // gets a distinct PRNG seed so the crowd doesn't move in lock-step.
     unsigned seed = 0x1234567u;
@@ -43,7 +43,7 @@ World::World(const std::string& playerSpritePath) {
         auto npc = std::make_unique<NPC>(s.pos, s.dialog, s.isQuestGiver);
         npc->LoadSprite(s.spritePath);
         npc->EnableWander(50.0f, seed);
-        npc->SetWanderColliders(staticColliders_);
+        npc->SetWanderMask(terrainMask_);
         objects_.push_back(std::move(npc));
         seed = seed * 1664525u + 1013904223u;
     }
