@@ -1,0 +1,98 @@
+#include "DialogSource.h"
+
+#include <map>
+#include <string>
+#include <string_view>
+#include <vector>
+
+namespace nccu::dialog {
+
+namespace {
+
+// English NPC id (as carried by the codegen Entry / used by the dialog
+// consumers) -> the Chinese section name LoadChapter keys its map on.
+const std::map<std::string_view, std::string>& NpcNameTable() {
+    static const std::map<std::string_view, std::string> kTable = {
+        {"victim",       "苦主"},
+        {"suit_senior",  "西裝學長"},
+        {"bookworm",     "學霸"},
+        {"ta",           "助教"},
+        {"shop_auntie",  "福利社阿姨"},
+    };
+    return kTable;
+}
+
+// SemesterState -> the chapter markdown file under the content dir.
+const std::map<SemesterState, std::string>& ChapterFileTable() {
+    static const std::map<SemesterState, std::string> kTable = {
+        {SemesterState::Chapter1_AddDrop,   "chapter1.md"},
+        {SemesterState::Interlude_Market,   "interlude_market.md"},
+        {SemesterState::Chapter2_Midterms,  "chapter2.md"},
+        {SemesterState::Chapter3_SportsDay, "chapter3.md"},
+        {SemesterState::Chapter4_Finals,    "chapter4.md"},
+        {SemesterState::Ending_A,           "ending_a.md"},
+        {SemesterState::Ending_B,           "ending_b.md"},
+        {SemesterState::Ending_C,           "ending_c.md"},
+    };
+    return kTable;
+}
+
+std::string& ContentDir() {
+    static std::string dir = "docs/content";
+    return dir;
+}
+
+// One parsed chapter per state. std::map is node-stable: inserting a
+// new state never moves the vectors already stored, so references
+// handed out by Entries() survive later loads of other states. Only
+// Reload()'s clear() invalidates them.
+std::map<SemesterState, LoadedChapter>& Cache() {
+    static std::map<SemesterState, LoadedChapter> cache;
+    return cache;
+}
+
+// Loads the chapter for `state` once and returns the cached parse.
+// A file that could not be opened still gets cached (LoadChapter
+// yields an empty LoadedChapter) so repeated misses don't re-read.
+const LoadedChapter& ChapterFor(SemesterState state) {
+    auto& cache = Cache();
+    auto it = cache.find(state);
+    if (it != cache.end()) return it->second;
+
+    const auto& files = ChapterFileTable();
+    auto fileIt = files.find(state);
+    if (fileIt == files.end()) {
+        // Unknown state: cache an empty chapter so we stop looking.
+        return cache.emplace(state, LoadedChapter{}).first->second;
+    }
+
+    const std::string path = ContentDir() + "/" + fileIt->second;
+    return cache.emplace(state, LoadChapter(path)).first->second;
+}
+
+}  // namespace
+
+const std::vector<SubEntry>& Entries(std::string_view npcId,
+                                     SemesterState state) {
+    static const std::vector<SubEntry> kEmpty;
+
+    const auto& names = NpcNameTable();
+    auto nameIt = names.find(npcId);
+    if (nameIt == names.end()) return kEmpty;
+
+    const LoadedChapter& chapter = ChapterFor(state);
+    auto npcIt = chapter.npcs.find(nameIt->second);
+    if (npcIt == chapter.npcs.end()) return kEmpty;
+
+    return npcIt->second;
+}
+
+void Reload() {
+    Cache().clear();
+}
+
+void SetContentDir(std::string dir) {
+    ContentDir() = std::move(dir);
+}
+
+}  // namespace nccu::dialog
