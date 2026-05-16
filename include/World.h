@@ -4,8 +4,8 @@
 #include "Player.h"
 #include "SemesterStateMachine.h"
 #include "BuildingTracker.h"
+#include "CollisionMask.h"
 #include "DialogState.h"
-#include "gfx/Rect.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 namespace nccu {
 
 // The game's data model — owns every GameObject, the semester FSM, the
-// building tracker and the static collider set. No rendering, no input:
+// building tracker and the terrain collision mask. No rendering, no input:
 // the View reads it const, the GameController mutates it. player_ is a
 // non-owning cache of the front object, dropped by the end-of-frame
 // sweep when the player is removed.
@@ -43,18 +43,18 @@ public:
     [[nodiscard]] std::string&       CurrentBuildingName()       noexcept { return currentBuildingName_; }
     [[nodiscard]] const std::string& CurrentBuildingName() const noexcept { return currentBuildingName_; }
 
-    [[nodiscard]] const std::vector<nccu::gfx::Rect>& StaticColliders() const noexcept {
-        return staticColliders_;
+    [[nodiscard]] const CollisionMask& TerrainMask() const noexcept {
+        return terrainMask_;
     }
 
 private:
-    ObjectList                   objects_;
-    Player*                      player_{nullptr};
-    SemesterStateMachine         semester_;
-    BuildingTracker              tracker_;
-    DialogState                  dialog_;
-    std::string                  currentBuildingName_;
-    std::vector<nccu::gfx::Rect> staticColliders_;
+    ObjectList           objects_;
+    Player*              player_{nullptr};
+    SemesterStateMachine semester_;
+    BuildingTracker      tracker_;
+    DialogState          dialog_;
+    std::string          currentBuildingName_;
+    CollisionMask        terrainMask_;
 };
 
 } // namespace nccu
