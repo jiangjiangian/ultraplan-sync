@@ -20,7 +20,7 @@ NPC::NPC(nccu::gfx::Vec2 position,
       retargetTimer_(0.0f),
       wanderDir_{0.0f, 0.0f},
       rng_(0),
-      wanderColliders_(nullptr) {}
+      wanderMask_(nullptr) {}
 
 NPC& NPC::EnableWander(float speed, unsigned seed) noexcept {
     wander_        = true;
@@ -54,11 +54,12 @@ void NPC::Update(float deltaTime) {
     p.y = std::clamp(p.y, 0.0f, kMaxXY);
     SetPosition(p);
 
-    if (wanderColliders_) {
+    if (wanderMask_) {
+        static const std::vector<nccu::gfx::Rect> kNoDynamic;
         const nccu::gfx::Vec2 resolved = nccu::physics::ResolveMove(
             prev, position_,
             nccu::gfx::Vec2{::world::kPlayerWidth, ::world::kPlayerHeight},
-            *wanderColliders_);
+            kNoDynamic, wanderMask_);
         if (resolved.x != position_.x || resolved.y != position_.y) {
             // Bumped a wall — turn away within a beat instead of grinding.
             retargetTimer_ = std::min(retargetTimer_, 0.2f);
