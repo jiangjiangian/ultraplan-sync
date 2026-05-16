@@ -22,7 +22,7 @@ public:
     void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override;
 
-    // DialogData lookup key — GameController builds the per-(npcId,
+    // Dialog lookup key — GameController builds the per-(npcId,
     // SemesterState) opener from this. "" for Vendor / ambient students
     // (they fall back to Interact()). Overrides GameObject::NpcId so the
     // dispatch stays virtual-not-dynamic_cast.
@@ -59,7 +59,7 @@ public:
     // Returns *this for chaining: npc.SetDialogLines({...}).LoadSprite(...).
     NPC& SetDialogLines(std::vector<std::string> lines);
 
-    // Replace dialog from the generated DialogData table for the given
+    // Replace dialog from the runtime chapter content for the given
     // (npcId, state, subState). No match -> dialog cleared. Chainable.
     NPC& LoadDialog(std::string_view npcId, nccu::SemesterState state,
                     int subState = 0);
