@@ -30,7 +30,8 @@ void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
 GameController::GameController(World& world)
     : world_(world),
       worldSize_{::world::kSize, ::world::kSize},
-      playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight} {
+      playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight},
+      lastRosterState_(world.Semester().Current()) {
     frameColliders_.reserve(64);  // dynamic actors only; terrain is the mask
     WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
                            world_.CurrentBuildingName());
@@ -47,6 +48,17 @@ void GameController::Update() {
     using namespace nccu::gfx;
     using nccu::queries::ForEachActive;
     using nccu::queries::ForEachActiveExcept;
+
+    // Roster follows the FSM. Any trigger (EndingGate, EventWiring,
+    // future) only mutates the pure state machine; we observe the change
+    // here and ask World to swap the chapter NPCs. A transition fired
+    // inside CheckEndingGates (in the dialog branch below) is picked up
+    // at the top of the NEXT frame — robust, no new EventType.
+    if (const SemesterState cur = world_.Semester().Current();
+        cur != lastRosterState_) {
+        world_.RespawnChapterRoster(cur);
+        lastRosterState_ = cur;
+    }
 
     // Dialog freeze: while a conversation is open the world is paused —
     // we run ONLY the dialog input and skip the object tick / movement /
