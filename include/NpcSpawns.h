@@ -35,11 +35,13 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
         // narrative flavour; the campus is a single z-plane.
         {gfx::Vec2{1140, 1725}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        // 學霸 — south of 中正圖書館, between library and the gym row.
-        {gfx::Vec2{560, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        // 學霸 — on the central umbrella strip (same row as the umbrellas),
+        // west of the planter prop so the spawn box stays walkable.
+        {gfx::Vec2{480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
-        // 助教 — south of 學思樓, towards Zhinan Rd.
-        {gfx::Vec2{1730, 1790}, "resources/assets/sprites/npc/ta.png",
+        // 助教 — Zhinan Rd, SE corner near the 學思樓 approach, nudged off
+        // the baked perimeter/prop collision so the player can reach them.
+        {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
         // 福利社阿姨 — outside 樂活小舖, inside its trigger but clear of the wall.
         {gfx::Vec2{460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
