@@ -11,7 +11,7 @@ struct DialogChoice {
     int         karmaDelta = 0;
     std::string setsFlag;          // "" = no flag
     bool        flagValue  = false;
-    std::vector<std::string> nextLines;   // consequence lines played on pick
+    std::vector<std::string> nextLines{}; // consequence lines played on pick
 };
 
 // Pure-data conversation. Owned by World; View reads it const, the

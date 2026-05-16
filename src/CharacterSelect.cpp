@@ -15,7 +15,7 @@ namespace nccu {
 namespace {
 
 constexpr int kWinW       = 800;
-constexpr int kWinH       = 450;
+[[maybe_unused]] constexpr int kWinH = 450;
 constexpr int kFrameSize  = 32;  // each Pipoya cell is 32x32
 constexpr int kIdleCol    = 1;   // middle column of the 3-frame walk strip
 constexpr int kDownRow    = 0;   // first row faces the camera
