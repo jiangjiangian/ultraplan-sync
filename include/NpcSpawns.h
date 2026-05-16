@@ -59,8 +59,11 @@ inline const std::vector<NpcSpawn>& AmbientStudentSpawns() {
         {gfx::Vec2{ 700, 1880}, "resources/assets/sprites/school_uniform_3/male_01.png",   "", false, true},
         {gfx::Vec2{1080, 1870}, "resources/assets/sprites/school_uniform_3/female_01.png", "", false, true},
         {gfx::Vec2{1500, 1880}, "resources/assets/sprites/school_uniform_3/male_03.png",   "", false, true},
-        {gfx::Vec2{ 640, 1180}, "resources/assets/sprites/school_uniform_3/female_02.png", "", false, true},
-        {gfx::Vec2{1340, 1180}, "resources/assets/sprites/school_uniform_3/male_02.png",   "", false, true},
+        // female_02 / male_02 were embedded in 商學院 / 資訊大樓 wall bases
+        // (read in-game as "someone stuck in the wall"); moved onto the
+        // open central campus, verified walkable + reachable.
+        {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/school_uniform_3/female_02.png", "", false, true},
+        {gfx::Vec2{1450, 1620}, "resources/assets/sprites/school_uniform_3/male_02.png",   "", false, true},
         {gfx::Vec2{ 980, 1500}, "resources/assets/sprites/school_uniform_3/female_03.png", "", false, true},
     };
     return kAll;

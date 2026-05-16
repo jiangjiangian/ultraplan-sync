@@ -30,8 +30,11 @@ struct Spot { const char* name; float x; float y; };
 
 // Player / umbrella / quest-pickup spawns MUST mirror the literals in
 // src/World.cpp::World() — keep this list in sync if those move. The
-// five archetype NPCs are pulled live from DefaultNpcSpawns() so a
-// future NPC move is covered with zero duplication.
+// archetype NPCs and ambient pedestrians are pulled live from
+// DefaultNpcSpawns() / AmbientStudentSpawns() so a future spawn move is
+// covered with zero duplication. Ambient pedestrians are included
+// because a wanderer that *starts* embedded in a wall reads in-game as
+// "someone stuck in the wall" even though it never blocks progress.
 std::vector<Spot> GameplaySpots() {
     std::vector<Spot> s = {
         {"player",            500.0f, 1860.0f},
@@ -43,6 +46,8 @@ std::vector<Spot> GameplaySpots() {
     };
     for (const auto& n : nccu::DefaultNpcSpawns())
         s.push_back(Spot{n.npcId, n.pos.x, n.pos.y});
+    for (const auto& n : nccu::AmbientStudentSpawns())
+        s.push_back(Spot{n.spritePath, n.pos.x, n.pos.y});
     return s;
 }
 
