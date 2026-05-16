@@ -14,7 +14,7 @@ namespace nccu {
 // trigger-rect shrunk by main.cpp's kBuildingInset) so a player walking
 // up to talk does not get pushed away by the wall.
 //
-// `npcId` keys the generated DialogData table — the opener pulls the
+// `npcId` keys the runtime dialog content — the opener pulls the
 // per-(npcId, SemesterState) lines at talk time, so dialog is no longer
 // hard-coded here. "" = no dialog (ambient pedestrians).
 struct NpcSpawn {

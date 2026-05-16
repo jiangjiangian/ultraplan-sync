@@ -13,7 +13,7 @@ namespace {
 // choice-opener set is now {suit_senior, victim, shop_auntie}.
 // 西裝學長 / 苦主 carry the genuine ripple A/B; 福利社阿姨's (c)
 // branch sets Flag_BoughtUglyUmbrella -> Ending C (the buy-umbrella
-// path — its subState 1/2 already live in DialogData). Everyone else
+// path — its subState 1/2 already live in the chapter content). Everyone else
 // stays line-only.
 bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
     if (s != SemesterState::Chapter1_AddDrop) return false;

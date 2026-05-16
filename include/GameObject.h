@@ -41,7 +41,7 @@ public:
     [[nodiscard]] virtual const std::vector<std::string>*
         DialogLines() const noexcept { return nullptr; }
 
-    // Talk identity for DialogData lookup. Default: empty (items, the
+    // Talk identity for runtime dialog lookup. Default: empty (items, the
     // player, Vendor, decoration, ambient students — they fall back to
     // Interact()). Archetype NPCs override to return their npcId so
     // GameController builds the per-(npcId, SemesterState) opener.
