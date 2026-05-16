@@ -1,13 +1,18 @@
 #include "World.h"
+#include "ChapterSpawns.h"
 #include "GameObjectFactory.h"
 #include "NPC.h"
 #include "NpcSpawns.h"
 #include "QuestFlagPickup.h"
 #include "gfx/Vec2.h"
+#include <algorithm>
+#include <cassert>
+#include <unordered_set>
 
 namespace nccu {
 
-World::World(const std::string& playerSpritePath) {
+World::World(const std::string& playerSpritePath, bool loadSprites)
+    : loadSprites_(loadSprites) {
     using nccu::gfx::Vec2;
 
     // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
@@ -24,15 +29,15 @@ World::World(const std::string& playerSpritePath) {
     objects_.push_back(std::make_unique<QuestFlagPickup>(
         nccu::gfx::Vec2{560.0f, 1725.0f}, "Flag_FoundForm"));
 
-    for (const auto& spawn : DefaultNpcSpawns()) {
-        auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},
-                                         spawn.isQuestGiver, spawn.npcId);
-        npc->LoadSprite(spawn.spritePath);
-        objects_.push_back(std::move(npc));
-    }
-
+    // Cache the Player BEFORE spawning chapter NPCs so the front-is-
+    // Player invariant is established up front and never disturbed:
+    // SpawnChapterNpcs only appends at the back.
     player_ = dynamic_cast<Player*>(objects_.front().get());
     if (player_) player_->LoadSprite(playerSpritePath);
+
+    // Ch1 spawns through the same state-aware path the FSM later drives,
+    // so the initial roster is the identical 5 archetypes.
+    RespawnChapterRoster(semester_.Current());
 
     // Static collision is a pixel-accurate walkability mask now:
     // tools/tiled_to_world.py bakes building wall bases + the river into
@@ -49,11 +54,53 @@ World::World(const std::string& playerSpritePath) {
     for (const auto& s : AmbientStudentSpawns()) {
         auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
                                          s.isQuestGiver, s.npcId);
-        npc->LoadSprite(s.spritePath);
+        if (loadSprites_) npc->LoadSprite(s.spritePath);
         npc->EnableWander(50.0f, seed);
         npc->SetWanderMask(terrainMask_);
         objects_.push_back(std::move(npc));
         seed = seed * 1664525u + 1013904223u;
+    }
+}
+
+void World::SpawnChapterNpcs(nccu::SemesterState state) {
+    for (const auto& spawn : ChapterNpcSpawns(state)) {
+        auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},
+                                         spawn.isQuestGiver, spawn.npcId);
+        if (loadSprites_) npc->LoadSprite(spawn.spritePath);
+        chapterRoster_.push_back(npc.get());   // record before the move
+        objects_.push_back(std::move(npc));
+    }
+}
+
+void World::RespawnChapterRoster(nccu::SemesterState state) {
+    // Build the drop-set from the tracked pointers, then clear the
+    // tracker FIRST so the raw pointers are never dereferenced after
+    // their unique_ptr is freed — the erase predicate compares pointer
+    // identity only (no deref). The single remove-erase pass runs AFTER
+    // we are done iterating chapterRoster_, never mid-iteration, and
+    // never reorders/removes element 0 (Player) since the Player was
+    // never in chapterRoster_.
+    if (!chapterRoster_.empty()) {
+        const std::unordered_set<GameObject*> drop(chapterRoster_.begin(),
+                                                   chapterRoster_.end());
+        chapterRoster_.clear();
+        objects_.erase(
+            std::remove_if(objects_.begin(), objects_.end(),
+                [&drop](const std::unique_ptr<GameObject>& o) {
+                    return drop.find(o.get()) != drop.end();
+                }),
+            objects_.end());
+    }
+
+    SpawnChapterNpcs(state);
+
+    // Invariant guard: front must still be the live Player and the
+    // cached pointer must still address it. Both hold by construction
+    // (we only ever appended at the back and dropped tracked NPCs that
+    // were never element 0), this asserts it rather than trusting it.
+    if (player_) {
+        assert(!objects_.empty() &&
+               objects_.front().get() == static_cast<GameObject*>(player_));
     }
 }
 

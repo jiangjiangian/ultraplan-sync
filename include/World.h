@@ -2,6 +2,7 @@
 #define WORLD_H_
 #include "GameObject.h"
 #include "Player.h"
+#include "SemesterState.h"
 #include "SemesterStateMachine.h"
 #include "BuildingTracker.h"
 #include "CollisionMask.h"
@@ -19,7 +20,14 @@ namespace nccu {
 // sweep when the player is removed.
 class World {
 public:
-    explicit World(const std::string& playerSpritePath);
+    // loadSprites: production passes the default true. A headless unit
+    // test (no GL context) passes false so chapter-NPC sprite loads skip
+    // the GPU upload that would otherwise SIGSEGV — same kind of
+    // headless accommodation as LoadTerrainMask() degrading to an empty
+    // mask without assets. The Player/umbrella loads are already safe
+    // (their texture path file-not-found-early-outs before any GPU call).
+    explicit World(const std::string& playerSpritePath,
+                   bool loadSprites = true);
 
     World(const World&)            = delete;
     World& operator=(const World&) = delete;
@@ -47,14 +55,32 @@ public:
         return terrainMask_;
     }
 
+    // Make the chapter-NPC roster follow the semester FSM. Removes ONLY
+    // the chapter NPCs this method last spawned (tracked by raw pointer
+    // in chapterRoster_) with a single deferred remove-erase pass —
+    // never mid-iteration — then spawns ChapterNpcSpawns(state). The Player
+    // (index 0), the 4 umbrellas, the QuestFlagPickup and the ambient
+    // students are never touched, so objects_.front() stays the Player
+    // and the cached player_ pointer stays valid. GameController calls
+    // this once per detected SemesterState change.
+    void RespawnChapterRoster(nccu::SemesterState state);
+
 private:
-    ObjectList           objects_;
-    Player*              player_{nullptr};
-    SemesterStateMachine semester_;
-    BuildingTracker      tracker_;
-    DialogState          dialog_;
-    std::string          currentBuildingName_;
-    CollisionMask        terrainMask_;
+    // Shared spawn path so the ctor and RespawnChapterRoster build
+    // chapter NPCs identically (no construction drift). Appends one NPC
+    // per spawn at the back of objects_ and records its raw pointer in
+    // chapterRoster_.
+    void SpawnChapterNpcs(nccu::SemesterState state);
+
+    ObjectList                  objects_;
+    Player*                     player_{nullptr};
+    std::vector<GameObject*>    chapterRoster_;
+    bool                        loadSprites_{true};
+    SemesterStateMachine        semester_;
+    BuildingTracker             tracker_;
+    DialogState                 dialog_;
+    std::string                 currentBuildingName_;
+    CollisionMask               terrainMask_;
 };
 
 } // namespace nccu

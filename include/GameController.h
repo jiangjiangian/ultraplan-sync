@@ -38,6 +38,11 @@ private:
     std::vector<nccu::gfx::Rect>                         frameColliders_;
     nccu::gfx::Vec2                                       worldSize_;
     nccu::gfx::Vec2                                       playerSize_;
+    // The SemesterState the live NPC roster was last spawned for. When
+    // the FSM moves past it (via ANY trigger — EndingGate, EventWiring,
+    // future) the next Update() asks World to respawn. Keeps the state
+    // machine pure: no World/EventBus dependency, no new EventType.
+    nccu::SemesterState                                  lastRosterState_;
 };
 
 } // namespace nccu
