@@ -49,7 +49,7 @@ inline constexpr std::array<Building, 26> kAll = {{
     {"體育館", { 1493.0f,   306.0f,  418.0f,  235.0f}, true, false},
     {"操場", { 1384.0f,   541.0f,  621.0f,  399.0f}, false, false},
     {"正門", {  887.0f,  1722.0f,  101.0f,  116.0f}, false, false},
-    {"中正圖書館", {  705.0f,   279.0f,  382.0f,  255.0f}, false, false},
+    {"中正圖書館", {  698.0f,   254.0f,  382.0f,  255.0f}, false, false},
 }};
 
 } // namespace nccu::buildings
