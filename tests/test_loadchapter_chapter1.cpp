@@ -8,11 +8,11 @@
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif
 
-// Parity test: the runtime LoadChapter parser must extract, from the REAL
-// content file docs/content/chapter1.md, the same per-substate metadata the
-// build-time codegen carries in include/DialogData.h. Expected values below
-// were transcribed from chapter1.md and cross-checked against the
-// Chapter1_AddDrop rows of the generated include/DialogData.h.
+// Parity net: the runtime LoadChapter parser must extract, from the REAL
+// content file docs/content/chapter1.md, the exact per-substate metadata
+// asserted below. Expected values were transcribed by hand from
+// chapter1.md and are the permanent contract for the Chapter1_AddDrop
+// dialog payload.
 
 namespace {
 
@@ -73,9 +73,9 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     CHECK(s_b->setsFlag == "");
 
     // (c) blockquote: `// karma -5`, `// Flag_ScoldedSenior = false`.
-    // 5 dialog lines. Matches DialogData.h row
-    //   { "suit_senior", ..., 2, kL3, 5, -5, "Flag_ScoldedSenior", false,
-    //     "玩家接受，取傘後交給學長" }.
+    // Expected: suit_senior subState 2, 5 dialog lines, karmaDelta -5,
+    // setsFlag "Flag_ScoldedSenior" -> false,
+    // choiceLabel "玩家接受，取傘後交給學長".
     REQUIRE(s_c->lines.size() == 5);
     CHECK(s_c->karmaDelta == -5);
     CHECK(s_c->setsFlag == "Flag_ScoldedSenior");
@@ -105,9 +105,9 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     //
     // 「…」 author-override case: 苦主 (b) heading is
     //   `### (b) 玩家給予安慰（選擇「我去幫你追」）`
-    // The 「我去幫你追」 span wins over the surrounding （…）. Matches
-    // DialogData.h row { "victim", ..., 1, ..., 5, "Flag_PromisedVictim",
-    // true, "我去幫你追" }.
+    // The 「我去幫你追」 span wins over the surrounding （…）. Expected:
+    // victim subState 1, 5 dialog lines, setsFlag "Flag_PromisedVictim"
+    // -> true, choiceLabel "我去幫你追".
     const auto& victim = chapter.npcs.at("苦主");
     const auto* v_b = Find(victim, 1);
     REQUIRE(v_b != nullptr);

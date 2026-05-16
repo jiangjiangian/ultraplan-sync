@@ -11,10 +11,8 @@
 // Verifies the runtime DialogSource provider: the English npcId ->
 // Chinese section mapping, the SemesterState -> chapter file mapping,
 // the per-state cache, the no-throw empty fallback, and the Reload()
-// cache-rebuild path. Expected metadata is cross-checked against the
-// Chapter1_AddDrop rows of include/DialogData.h (kL1..) and the
-// golden snapshot in tests/test_dialog_data_golden.cpp — do not
-// weaken these without updating those in the same change.
+// cache-rebuild path. Expected metadata is the Chapter1_AddDrop
+// payload parsed from docs/content/chapter1.md.
 
 using nccu::SemesterState;
 

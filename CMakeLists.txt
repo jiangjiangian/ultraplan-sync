@@ -73,19 +73,6 @@ if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     add_test(NAME unit_tests COMMAND ${PROJECT_NAME}_tests)
 endif()
 
-# Dev convenience: regenerate include/DialogData.h from docs/content/*.md.
-# NOT a build dependency — the generated header is committed, so the
-# grader's build never needs Python. Run manually:
-#   cmake --build build --target gen_dialog
-find_program(PYTHON3_EXECUTABLE NAMES python3 python)
-if(PYTHON3_EXECUTABLE)
-    add_custom_target(gen_dialog
-        COMMAND ${PYTHON3_EXECUTABLE}
-                "${CMAKE_SOURCE_DIR}/tools/gen_dialog.py"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        COMMENT "Regenerating include/DialogData.h from docs/content")
-endif()
-
 # Copy resources next to the executable
 function(copy_resources_to_target TARGET_NAME)
     if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
