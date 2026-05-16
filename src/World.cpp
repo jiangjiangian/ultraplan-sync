@@ -16,7 +16,7 @@ World::World(const std::string& playerSpritePath) {
     objects_.push_back(GameObjectFactory::Create(ObjectType::Player,                Vec2{500, 1860}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::TrueUmbrella,          Vec2{ 320, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
-    objects_.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1180, 1280}));
+    objects_.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1200, 1256}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));
 
     // Ch1 跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起 ->
