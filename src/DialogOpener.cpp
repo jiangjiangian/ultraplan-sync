@@ -1,6 +1,6 @@
 #include "DialogOpener.h"
 #include "DialogState.h"
-#include "DialogData.h"
+#include "DialogSource.h"
 #include "Player.h"
 #include <string>
 #include <vector>
@@ -8,14 +8,6 @@
 namespace nccu {
 
 namespace {
-
-std::vector<std::string> EntryLines(const nccu::dialog::Entry& e) {
-    std::vector<std::string> lines;
-    lines.reserve(static_cast<std::size_t>(e.lineCount));
-    for (int i = 0; i < e.lineCount; ++i)
-        lines.emplace_back(e.lines[i]);
-    return lines;
-}
 
 // Scaffold: which NPCs present the branch menu in this state. The Ch1
 // choice-opener set is now {suit_senior, victim, shop_auntie}.
@@ -33,9 +25,9 @@ bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
 
 void OpenNpcDialogSub(DialogState& dlg, std::string_view npcId,
                       SemesterState state, int subState) {
-    for (const auto& e : nccu::dialog::All()) {
-        if (e.npcId == npcId && e.state == state && e.subState == subState) {
-            dlg.Open(EntryLines(e));
+    for (const auto& sub : nccu::dialog::Entries(npcId, state)) {
+        if (sub.subState == subState) {
+            dlg.Open(sub.lines);
             return;
         }
     }
@@ -44,16 +36,18 @@ void OpenNpcDialogSub(DialogState& dlg, std::string_view npcId,
 
 void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
                    SemesterState state) {
-    const nccu::dialog::Entry* opener = nullptr;
-    for (const auto& e : nccu::dialog::All()) {
-        if (e.npcId == npcId && e.state == state && e.subState == 0) {
-            opener = &e;
+    const auto& subs = nccu::dialog::Entries(npcId, state);
+
+    const nccu::dialog::SubEntry* opener = nullptr;
+    for (const auto& sub : subs) {
+        if (sub.subState == 0) {
+            opener = &sub;
             break;
         }
     }
     if (opener == nullptr) { dlg.Open({}); return; }  // no opener -> inactive
 
-    std::vector<std::string> openerLines = EntryLines(*opener);
+    std::vector<std::string> openerLines = opener->lines;
 
     if (!UsesChoiceOpener(npcId, state)) {
         dlg.Open(std::move(openerLines));  // line-only
@@ -61,11 +55,11 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
     }
 
     std::vector<DialogChoice> choices;
-    for (const auto& e : nccu::dialog::All()) {
-        if (e.npcId == npcId && e.state == state && e.subState >= 1) {
+    for (const auto& sub : subs) {
+        if (sub.subState >= 1) {
             choices.push_back(DialogChoice{
-                std::string(e.choiceLabel), e.karmaDelta,
-                std::string(e.setsFlag), e.flagValue, EntryLines(e)});
+                sub.choiceLabel, sub.karmaDelta,
+                sub.setsFlag, sub.flagValue, sub.lines});
         }
     }
     dlg.Open(std::move(openerLines), std::move(choices));
@@ -92,14 +86,14 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     const int sub = ResolveOpenerSubState(npcId, state, player);
     if (sub == 0) { OpenNpcDialog(dlg, npcId, state); return; }  // 1b-2 path
 
-    const nccu::dialog::Entry* hit = nullptr;
-    for (const auto& e : nccu::dialog::All())
-        if (e.npcId == npcId && e.state == state && e.subState == sub) {
+    const nccu::dialog::SubEntry* hit = nullptr;
+    for (const auto& e : nccu::dialog::Entries(npcId, state))
+        if (e.subState == sub) {
             hit = &e; break;
         }
     if (hit == nullptr) { OpenNpcDialog(dlg, npcId, state); return; }  // fallback
 
-    dlg.Open(EntryLines(*hit));  // line-only consequence / recap
+    dlg.Open(hit->lines);  // line-only consequence / recap
 
     // Apply the entry's own side-effects ONCE: only when it sets a true
     // flag the player doesn't have yet (ta reward). victim recap's flag
