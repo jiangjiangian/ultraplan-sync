@@ -14,12 +14,11 @@ namespace nccu::dialog {
 // and caching one LoadedChapter per state.
 //
 // Why this exists: the dialog content used to be frozen into a
-// generated header (include/DialogData.h) at build time, so any text
-// tweak meant regenerating and recompiling. This provider reads the
-// authored docs/content/*.md straight at runtime and exposes Reload()
-// so writers can edit a chapter file and see the change on the next
-// dialog without a rebuild. (Consumers are migrated onto this in a
-// later step; this layer is purely additive for now.)
+// generated header at build time, so any text tweak meant
+// regenerating and recompiling. This provider reads the authored
+// docs/content/*.md straight at runtime and exposes Reload() so
+// writers can edit a chapter file and see the change on the next
+// dialog without a rebuild.
 //
 // English npcId -> Chinese section name and SemesterState -> chapter
 // filename are fixed lookups kept in the .cpp. Unknown id / name /
