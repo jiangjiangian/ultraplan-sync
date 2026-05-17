@@ -44,19 +44,22 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     CHECK(chapter.npcs.count("場景旁白") == 0);
     CHECK(chapter.npcs.count("章節結尾分支提示") == 0);
 
-    // --- 西裝學長: substates {0,1,2} in ascending order ---------------
+    // --- 西裝學長: substates {0,1,2,3} in ascending order -------------
     const auto& senior = chapter.npcs.at("西裝學長");
-    REQUIRE(senior.size() == 3);
+    REQUIRE(senior.size() == 4);
     CHECK(senior[0].subState == 0);
     CHECK(senior[1].subState == 1);
     CHECK(senior[2].subState == 2);
+    CHECK(senior[3].subState == 3);
 
     const auto* s_a = Find(senior, 0);
     const auto* s_b = Find(senior, 1);
     const auto* s_c = Find(senior, 2);
+    const auto* s_d = Find(senior, 3);
     REQUIRE(s_a != nullptr);
     REQUIRE(s_b != nullptr);
     REQUIRE(s_c != nullptr);
+    REQUIRE(s_d != nullptr);
 
     // (a) opener = subState 0, 5 lines, first line verbatim. No karma /
     // flag note in the (a) blockquote -> defaults.
@@ -81,6 +84,17 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     CHECK(s_c->setsFlag == "Flag_ScoldedSenior");
     CHECK(s_c->flagValue == false);
     CHECK(s_c->choiceLabel == "玩家接受，取傘後交給學長");
+
+    // (d) NEW positive branch (C.2). Blockquote order: `// karma +3`,
+    // `// Flag_HelpedSenior = true`, `// Flag_ScoldedSenior = false` —
+    // first Flag_ line wins, so setsFlag is Flag_HelpedSenior / true.
+    // 5 lines; choiceLabel from heading (no 「」/（）override).
+    REQUIRE(s_d->lines.size() == 5);
+    CHECK(s_d->lines[0] == "……怪怪的？你什麼意思？");
+    CHECK(s_d->karmaDelta == 3);
+    CHECK(s_d->setsFlag == "Flag_HelpedSenior");
+    CHECK(s_d->flagValue == true);
+    CHECK(s_d->choiceLabel == "玩家點破傘的疑點，轉而提供正規協助");
 
     // --- 學霸: (a) subState 0; (b) karmaDelta == 3 -------------------
     const auto& bookworm = chapter.npcs.at("學霸");

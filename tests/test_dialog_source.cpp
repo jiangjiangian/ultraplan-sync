@@ -34,14 +34,16 @@ TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
     const auto& senior =
         nccu::dialog::Entries("suit_senior",
                               SemesterState::Chapter1_AddDrop);
-    REQUIRE(senior.size() == 3);
+    REQUIRE(senior.size() == 4);
 
     const auto* s0 = Find(senior, 0);
     const auto* s1 = Find(senior, 1);
     const auto* s2 = Find(senior, 2);
+    const auto* s3 = Find(senior, 3);
     REQUIRE(s0 != nullptr);
     REQUIRE(s1 != nullptr);
     REQUIRE(s2 != nullptr);
+    REQUIRE(s3 != nullptr);
 
     // subState 0: opener. choiceLabel "初次接觸", no karma / flag.
     CHECK(s0->choiceLabel == "初次接觸");
@@ -56,6 +58,13 @@ TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
     CHECK(s2->setsFlag == "Flag_ScoldedSenior");
     CHECK(s2->flagValue == false);
     CHECK(s2->choiceLabel == "玩家接受，取傘後交給學長");
+
+    // subState 3: NEW (d) positive branch (C.2). karma +3,
+    // Flag_HelpedSenior = true (first Flag_ line wins).
+    CHECK(s3->karmaDelta == 3);
+    CHECK(s3->setsFlag == "Flag_HelpedSenior");
+    CHECK(s3->flagValue == true);
+    CHECK(s3->choiceLabel == "玩家點破傘的疑點，轉而提供正規協助");
 }
 
 TEST_CASE("DialogSource: Ch1 ta reward substate parity") {
@@ -95,7 +104,7 @@ TEST_CASE("DialogSource: Reload() rebuilds the cache, data unchanged") {
     const auto& before =
         nccu::dialog::Entries("suit_senior",
                               SemesterState::Chapter1_AddDrop);
-    REQUIRE(before.size() == 3);
+    REQUIRE(before.size() == 4);
     const int karmaBefore = Find(before, 2)->karmaDelta;
 
     // Drop the cache; the next call must re-read from disk.
@@ -104,7 +113,7 @@ TEST_CASE("DialogSource: Reload() rebuilds the cache, data unchanged") {
     const auto& after =
         nccu::dialog::Entries("suit_senior",
                               SemesterState::Chapter1_AddDrop);
-    REQUIRE(after.size() == 3);
+    REQUIRE(after.size() == 4);
 
     // Compare by value (a fresh LoadedChapter, so addresses differ).
     const auto* a0 = Find(after, 0);
