@@ -52,6 +52,18 @@ inline void WireStateTransitionSubscribers(
                 semester.SetInterludeReturnTo(SemesterState::Chapter2_Midterms);
                 semester.Transition(SemesterState::Interlude_Market);
             }
+            // S5d-2 Ch3 clear: the 啦啦隊's TrueUmbrella, reclaimed from
+            // the 體育館後台道具箱. Same shape as the Ch1 sibling-if
+            // above (Ch1-isomorphic physical retrieval) — third market
+            // returns to Ch4. Ch2's clear is the 喚醒 + LiftChapter2
+            // Clear path instead (a social exchange, no umbrella pickup).
+            // ChapterGate.cpp's Flag_Ch3Cleared sibling-if stays as the
+            // test_chapter_spine stub; the real in-game path is this.
+            if (e.text == "TrueUmbrella" &&
+                semester.Current() == SemesterState::Chapter3_SportsDay) {
+                semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
+                semester.Transition(SemesterState::Interlude_Market);
+            }
         });
 }
 

@@ -1,5 +1,6 @@
 #include "DialogOpener.h"
 #include "Chapter2Quest.h"
+#include "Chapter3Quest.h"
 #include "DialogState.h"
 #include "DialogSource.h"
 #include "Player.h"
@@ -116,6 +117,30 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             // 無法分離（需 chapter2.md 切段，屬 C.1 以外的 content
             // gate，Phase 2 不做——已知省略，見計畫 §F.5）。
             if (player.HasFlag(kFlagBookwormRecovered)) return 3;
+            return 0;
+        }
+    }
+    if (state == SemesterState::Chapter3_SportsDay) {
+        // 物物交換鏈三節點：route to (b)「交易完成 / 情報揭露」once
+        // this NPC's link has been done, else (a). The (a) sub-blocks
+        // 「玩家尚未帶X / 玩家帶著X」are parser-flattened conditional
+        // lines (KNOWN OMISSION, same class as S5c-2 (c)/(c-fail) and
+        // 學霸 (a) cursed line) — accepted, not routable without a
+        // chapter3.md edit. (b) is line-only recap; the +3/+3/+5 is
+        // landed by TryAdvanceCh3Trade, not the opener's once-apply.
+        if (npcId == "vendor_sausage_a") {
+            if (player.HasFlag(kFlagHasSausage) ||
+                player.HasFlag(kFlagHasLoudspeaker) ||
+                player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
+            return 0;
+        }
+        if (npcId == "loudspeaker_b") {
+            if (player.HasFlag(kFlagHasLoudspeaker) ||
+                player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
+            return 0;
+        }
+        if (npcId == "senior_c") {
+            if (player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
             return 0;
         }
     }
