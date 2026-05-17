@@ -5,9 +5,13 @@
 void CursedUmbrella::beClaimed(Player* player) {
     if (player == nullptr) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
-    // Fluent mutators — both return Player&, so the two state changes
-    // read as one atomic transaction at the call site.
-    player->SetHasUmbrella(true).decreaseKarma(karmaPenalty_);
+    // Fluent mutators — all return Player&, so the state changes read as
+    // one atomic transaction. SetFlag is the ripple seed (F.9-b): taking
+    // the cursed umbrella in Ch1 is what drives Ending B and the Ch2-4
+    // 學霸/環境 cold reactions; without it that path was unreachable.
+    player->SetHasUmbrella(true)
+           .decreaseKarma(karmaPenalty_)
+           .SetFlag("Flag_TookCursedUmbrella");
     isActive_ = false;
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
     EventBus::Instance().Publish(Event{ EventType::KarmaChanged, "Karma -50" });
