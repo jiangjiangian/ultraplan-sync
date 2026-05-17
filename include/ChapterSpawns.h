@@ -20,7 +20,28 @@ namespace nccu {
 // wiring it once after the terrain mask loads.
 inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     static const std::vector<NpcSpawn> kInterlude;     // TODO(S5b): chapter roster
-    static const std::vector<NpcSpawn> kChapter2;      // TODO(S5c): chapter roster
+
+    // Ch2 圖書館期中考 (S5c-1). chapter2.md has 6 NPC sections; sprites
+    // reuse Ch1's (art polish later). Positions reuse Ch1-proven walkable
+    // coordinates (test_spawn_reachability / playtested) so the same
+    // single-z-plane campus stays reachable: librarian takes the central
+    // 集英樓-south spot, the rest sit on their Ch1 anchors. Only the
+    // librarian is the quest-giver (chapter2.md: 純資訊關鍵 NPC); 助教 /
+    // 學霸 / 苦主 / 阿姨 / 學長 are isQuestGiver=false there.
+    static const std::vector<NpcSpawn> kChapter2 = {
+        {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
+         "victim", false},
+        {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/npc/suit_senior.png",
+         "suit_senior", false},
+        {gfx::Vec2{ 480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+         "bookworm", false},
+        {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
+         "ta", false},
+        {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
+         "shop_auntie", false},
+        {gfx::Vec2{1140, 1725}, "resources/assets/sprites/school_uniform_3/female_01.png",
+         "librarian", true},
+    };
     static const std::vector<NpcSpawn> kChapter3;      // TODO(S5d): chapter roster
     static const std::vector<NpcSpawn> kChapter4;      // TODO(S5e): chapter roster
     static const std::vector<NpcSpawn> kEndingA;       // TODO(S5e): chapter roster

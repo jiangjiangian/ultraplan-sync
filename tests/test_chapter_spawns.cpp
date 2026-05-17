@@ -42,7 +42,7 @@ std::size_t RosterCashCount(const World& w) {
 
 } // namespace
 
-TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes, later states empty") {
+TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") {
     const auto& ch1 = ChapterNpcSpawns(SemesterState::Chapter1_AddDrop);
     std::set<std::string> ids;
     for (const auto& s : ch1) ids.insert(s.npcId);
@@ -60,10 +60,15 @@ TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes, later states empty") {
         CHECK(ch1[i].isQuestGiver == legacy[i].isQuestGiver);
     }
 
+    // States with no NPC roster through ALL of Phase 2 (durable — does
+    // not churn as S5c/d/e fill the chapters): the Interlude has none
+    // (its actors are parser Vendors via ChapterVendors, not NPCs; the
+    // exit is a trigger zone, S5b-2), and the three endings render a
+    // card with no roster. Ch2/Ch3/Ch4 are populated by design as each
+    // S5c/d/e lands — their rosters are pinned by their own tests
+    // (test_chapter2_roster, …), not by a blanket "later states empty"
+    // assertion here.
     CHECK(ChapterNpcSpawns(SemesterState::Interlude_Market).empty());
-    CHECK(ChapterNpcSpawns(SemesterState::Chapter2_Midterms).empty());
-    CHECK(ChapterNpcSpawns(SemesterState::Chapter3_SportsDay).empty());
-    CHECK(ChapterNpcSpawns(SemesterState::Chapter4_Finals).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_A).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_B).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_C).empty());
@@ -103,13 +108,13 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
     const std::size_t nonChapter = totalCh1 - ch1Npcs - ch1Cash;
 
     // --- Transition to a state with an empty roster. ---
-    // Was Interlude_Market when this test was written (S5a-1), but S5b-3
-    // makes the Interlude genuinely non-empty (10 parser-spawned
-    // Vendors). Chapter2_Midterms is the still-empty state until S5c, so
-    // it is now the right vehicle for "swap to an empty roster" — this
-    // test guards the Player-invariant + clean swap mechanism, NOT the
-    // Interlude population (that is test_vendor_loader's job).
-    w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
+    // Vehicle history: Interlude (S5a-1) → non-empty at S5b-3 (Vendors);
+    // Chapter2 (S5b-3) → non-empty at S5c-1. Ending_A is the DURABLE
+    // choice: an ending renders a card and has no NPC roster / no
+    // Vendors / no CashPickups by design — it stays empty through all of
+    // Phase 2, so this swap-mechanism + Player-invariant test never
+    // churns again as S5d/S5e fill the remaining chapters.
+    w.RespawnChapterRoster(SemesterState::Ending_A);
 
     // The 5 Ch1 NPCs are gone; no chapter NPCs remain.
     CHECK(RosterNpcIds(w).empty());

@@ -47,7 +47,21 @@ std::string ParseNpcName(const std::string& line) {
     const std::string rest = line.substr(kPrefix.size());
     const size_t colon = rest.find(kFullWidthColon);
     if (colon == std::string::npos) return {};
-    return Trim(rest.substr(colon + 3 /* bytes in U+FF1A */));
+    std::string name = Trim(rest.substr(colon + 3 /* bytes in U+FF1A */));
+
+    // Strip a trailing full-width （…） annotation so the section key is
+    // the bare name — e.g. chapter2.md「## NPC：圖書館管理員（新角色）」
+    // keys as "圖書館管理員". This mirrors CleanLabel's anchored-at-end
+    // （…）strip for choice headings; verified that no NPC name across
+    // chapter1-4 legitimately ends in （…）, so this only removes author
+    // scaffolding and Ch1 (bare headings) is a no-op.
+    const size_t pr = name.rfind(kFullWidthParenR);
+    if (pr != std::string::npos && pr + 3 == name.size()) {
+        const size_t pl = name.find(kFullWidthParenL);
+        if (pl != std::string::npos && pl < pr)
+            name = Trim(name.substr(0, pl));
+    }
+    return name;
 }
 
 // gen_dialog.py SUB = {"a":0,"b":1,"c":2,"d":3}.
