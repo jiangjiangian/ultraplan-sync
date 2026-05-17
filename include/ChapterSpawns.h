@@ -67,7 +67,29 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {gfx::Vec2{ 250, 1640}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
-    static const std::vector<NpcSpawn> kChapter4;      // TODO(S5e): chapter roster
+    // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —
+    // the 5 archetypes at peak intensity, no new NPCs. All
+    // isQuestGiver=false (the finale is gate-driven, not quest-giver
+    // driven — Ending A/B/C resolve in CheckEndingGates; 助教 is
+    // central but via the (d) 體諒 choice, not a quest-giver marker).
+    // Sprites reuse existing art; positions reuse the proven walkable
+    // coords (reachability is a manual-verify item, as everywhere).
+    // 西裝學長 stays in the roster even when Flag_ScoldedSenior /
+    // !Flag_HelpedSenior — routing degrades it to (a) (chapter4.md's
+    // 「不出場」is a KNOWN OMISSION; spawn-suppression deliberately
+    // not special-cased, same stance as the Ch3 flattened ripples).
+    static const std::vector<NpcSpawn> kChapter4 = {
+        {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
+         "victim", false},
+        {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/npc/suit_senior.png",
+         "suit_senior", false},
+        {gfx::Vec2{ 480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+         "bookworm", false},
+        {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
+         "ta", false},
+        {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
+         "shop_auntie", false},
+    };
     static const std::vector<NpcSpawn> kEndingA;       // TODO(S5e): chapter roster
     static const std::vector<NpcSpawn> kEndingB;       // TODO(S5e): chapter roster
     static const std::vector<NpcSpawn> kEndingC;       // TODO(S5e): chapter roster
