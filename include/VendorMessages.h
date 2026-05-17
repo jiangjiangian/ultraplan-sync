@@ -15,6 +15,10 @@ inline constexpr std::string_view kInsufficientFunds = "你錢不夠";
 // ShowMessage toast prefix on a successful buy: kPurchasedPrefix + itemId.
 inline constexpr std::string_view kPurchasedPrefix = "買了 ";
 
+// ShowMessage when a finite-stock line is exhausted (stockLeft hit 0):
+// the purse is untouched, the purchase did not happen.
+inline constexpr std::string_view kSoldOut = "賣完了";
+
 // Stock dialog line composed by BuildDialogLines:
 //   <itemId> + kStockLineSep + <price> + kStockLineUnit
 inline constexpr std::string_view kStockLineSep  = " - ";
