@@ -128,6 +128,38 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         // 學霸 (a) cursed line) — accepted, not routable without a
         // chapter3.md edit. (b) is line-only recap; the +3/+3/+5 is
         // landed by TryAdvanceCh3Trade, not the opener's once-apply.
+        //
+        // S5d-3 ripple routing (genuine flag-gated SEPARATE subStates;
+        // chapter3.md karma is `- \`// karma\`` bullet-doc, NOT a `>`
+        // blockquote, so nothing here is parser-applied — these route
+        // are pure narrative recap, the only code-karma is ProfTrap
+        // -10 via TryApplyCh3Ripple).
+        if (npcId == "bookworm") {
+            // (a) Ch2 救回分支（Flag_BookwormRecovered=true）/
+            // (b) 未救回分支（=false）.
+            if (player.HasFlag(kFlagBookwormRecovered)) return 0;
+            return 1;
+        }
+        if (npcId == "ta") {
+            // (c) Flag_HelpedTA_Ch1 分支；否則 (a) 登記桌初次接觸.
+            if (player.HasFlag("Flag_HelpedTA_Ch1")) return 2;
+            return 0;
+        }
+        if (npcId == "victim") {
+            // (a) Flag_PromisedVictim=true 且傘尚未歸還 /
+            // (b) =false 或 Ch1 無承諾.
+            if (player.HasFlag("Flag_PromisedVictim")) return 0;
+            return 1;
+        }
+        if (npcId == "suit_senior") {
+            // HelpedSenior -> (b) 物物交換鏈提示（省一步）. Else (a),
+            // whose Helped=true/false condition lines are parser-
+            // flattened (KNOWN OMISSION); ScoldedSenior「不觸發對話」
+            // is likewise not expressible as a subState — accepted,
+            // would need a chapter3.md edit.
+            if (player.HasFlag("Flag_HelpedSenior")) return 1;
+            return 0;
+        }
         if (npcId == "vendor_sausage_a") {
             if (player.HasFlag(kFlagHasSausage) ||
                 player.HasFlag(kFlagHasLoudspeaker) ||

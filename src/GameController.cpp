@@ -181,6 +181,11 @@ void GameController::Update() {
                     // order, before the opener routes to (b) recap.
                     TryAdvanceCh3Trade(*player, id,
                                        world_.Semester().Current());
+                    // S5d-3: land the Ch3 ProfessorTrap ripple (-10
+                    // once). npcId-agnostic — the first Ch3 talk while
+                    // holding the trap umbrella triggers it.
+                    TryApplyCh3Ripple(*player,
+                                      world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
                 } else {
