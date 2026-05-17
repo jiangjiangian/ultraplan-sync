@@ -70,6 +70,14 @@ void SemesterStateMachine::Transition(SemesterState next) {
     }
 }
 
+void SemesterStateMachine::SetInterludeReturnTo(SemesterState next) noexcept {
+    interludeReturnTo_ = next;
+}
+
+SemesterState SemesterStateMachine::InterludeReturnTo() const noexcept {
+    return interludeReturnTo_;
+}
+
 void SemesterStateMachine::Update(float dt) {
     if (state_) {
         state_->Update(dt);

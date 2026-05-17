@@ -19,10 +19,21 @@ public:
     void                           Transition(SemesterState next);
     void                           Update(float dt);
 
+    // Where the Interlude returns to once the player leaves the market.
+    // Stored on the machine (not the InterludeMarket object) because every
+    // Transition() recreates the IChapterState, so a state object cannot
+    // carry data across the chapter -> Interlude -> chapter round trip.
+    // The chapter that *enters* the Interlude sets this; the Interlude
+    // exit gate reads it. Defaults to Chapter2_Midterms (the first market
+    // always follows Chapter 1).
+    void                           SetInterludeReturnTo(SemesterState next) noexcept;
+    [[nodiscard]] SemesterState    InterludeReturnTo() const noexcept;
+
 private:
     std::unique_ptr<IChapterState> state_;
     SemesterState                  ending_{SemesterState::Chapter1_AddDrop}; // sentinel for endings
     bool                           inEnding_{false};
+    SemesterState                  interludeReturnTo_{SemesterState::Chapter2_Midterms};
 };
 
 } // namespace nccu
