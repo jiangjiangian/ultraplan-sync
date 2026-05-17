@@ -66,10 +66,28 @@ const std::vector<VendorPlacement>& BuildInterlude() {
 
 }  // namespace
 
+// Ch2 圖書館地下室自動販賣機 (chapter2.md 學霸 (c-fail) / §五.3): the
+// anti-softlock fallback so a player who did not buy an EnergyDrink in
+// the market can still wake 學霸. One stall, EnergyDrink at the same 35
+// the market charges (unlimited stock — a machine never sells out). A
+// hand-written 3-field VendorConfig literal (the pinned aggregate
+// contract); positioned on the playtested-walkable south band.
+const std::vector<VendorPlacement>& Chapter2Vendors() {
+    static const std::vector<VendorPlacement> kCh2 = {
+        VendorPlacement{
+            VendorConfig{"圖書館地下室自動販賣機",
+                         "（投幣口閃著微光，機器嗡嗡作響）",
+                         {VendorItem{"EnergyDrink", 35}}},
+            nccu::gfx::Vec2{660.0f, 1850.0f}},
+    };
+    return kCh2;
+}
+
 const std::vector<VendorPlacement>& ChapterVendors(SemesterState state) {
     static const std::vector<VendorPlacement> kNone;
     if (state == SemesterState::Interlude_Market) return BuildInterlude();
-    return kNone;  // chapters get incidental Vendors in S5c/d/e
+    if (state == SemesterState::Chapter2_Midterms) return Chapter2Vendors();
+    return kNone;  // Ch3/Ch4 get incidental Vendors in S5d/S5e
 }
 
 void SetVendorContentDir(std::string dir) {

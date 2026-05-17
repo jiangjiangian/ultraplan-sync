@@ -1,6 +1,7 @@
 #include "World.h"
 #include "CashPickup.h"
 #include "ChapterPickups.h"
+#include "ChapterQuestItems.h"
 #include "ChapterSpawns.h"
 #include "ChapterVendors.h"
 #include "GameObjectFactory.h"
@@ -97,6 +98,20 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         auto coin = std::make_unique<CashPickup>(pp.pos, pp.value);
         chapterRoster_.push_back(coin.get());
         objects_.push_back(std::move(coin));
+    }
+
+    // Quest items: chapter-scoped QuestFlagPickups (Ch2 = the 3 散落
+    // 筆記, S5c-2). Roster-tracked like the coins, so an uncollected
+    // note is swept on the next state change instead of leaking into
+    // the Interlude / next chapter. Ch1's 申請書 is NOT here — it stays
+    // ctor-spawned (a permanent Ch1 object); ChapterQuestItems(Ch1) is
+    // empty so this loop is a no-op for every state but Ch2.
+    for (const auto& qi : ChapterQuestItems(state)) {
+        auto item = std::make_unique<QuestFlagPickup>(
+            qi.pos, qi.flag, qi.message, qi.completionFlags,
+            qi.completionKarma);
+        chapterRoster_.push_back(item.get());
+        objects_.push_back(std::move(item));
     }
 }
 
