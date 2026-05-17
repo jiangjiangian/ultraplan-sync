@@ -18,6 +18,9 @@ const std::map<std::string_view, std::string>& NpcNameTable() {
         {"bookworm",     "學霸"},
         {"ta",           "助教"},
         {"shop_auntie",  "福利社阿姨"},
+        // Ch2 新角色（圖書館管理員）：純資訊 quest-giver，推進主線的關鍵
+        // NPC。section 名對應 chapter2.md「## NPC：圖書館管理員」。
+        {"librarian",    "圖書館管理員"},
     };
     return kTable;
 }
