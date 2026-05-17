@@ -1,5 +1,6 @@
 #include "doctest/doctest.h"
 #include "ChapterSpawns.h"
+#include "CashPickup.h"
 #include "World.h"
 #include "Player.h"
 #include "GameObject.h"
@@ -27,6 +28,16 @@ std::set<std::string> RosterNpcIds(const World& w) {
 
 bool HasNpc(const World& w, const char* id) {
     return RosterNpcIds(w).count(id) != 0;
+}
+
+// CashPickups are chapter-roster members too (S5b-4: per-chapter coins,
+// swept on a state change like the NPCs), so the "survives a swap" count
+// must exclude them as well.
+std::size_t RosterCashCount(const World& w) {
+    std::size_t n = 0;
+    for (const auto& o : w.Objects())
+        if (dynamic_cast<const CashPickup*>(o.get())) ++n;
+    return n;
 }
 
 } // namespace
@@ -82,9 +93,14 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
 
     const std::size_t totalCh1   = w.Objects().size();
     const std::size_t ch1Npcs    = RosterNpcIds(w).size();
+    const std::size_t ch1Cash    = RosterCashCount(w);
     REQUIRE(ch1Npcs == 5);
-    const std::size_t nonChapter = totalCh1 - ch1Npcs;  // player + 4 umbrellas
-                                                        // + pickup + ambients
+    REQUIRE(ch1Cash == 5);                              // S5b-4 Ch1 spread
+    // Survives a roster swap = everything that is NOT a chapter-roster
+    // member. The roster is the 5 NPCs AND the 5 CashPickups (S5b-4),
+    // so both are subtracted; what remains is player + 4 umbrellas +
+    // 申請書 QuestFlagPickup + ambient students.
+    const std::size_t nonChapter = totalCh1 - ch1Npcs - ch1Cash;
 
     // --- Transition to a state with an empty roster. ---
     // Was Interlude_Market when this test was written (S5a-1), but S5b-3

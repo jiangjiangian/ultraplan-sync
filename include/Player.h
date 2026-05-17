@@ -23,7 +23,17 @@ public:
     Player& decreaseKarma(int amount);      // thin wrapper, prefer AddKarma
     Player& resetRainMeter() noexcept;
     Player& SetHasUmbrella(bool v) noexcept { hasUmbrella_ = v; return *this; }
-    Player& AddMoney(int amount) noexcept   { money_ += amount; return *this; }
+    // Money has a soft cap (S5b-4 loop economy): with 3 earn->spend
+    // cycles, an uncapped purse would let a thorough explorer trivialise
+    // every market. 300 is the SCRIPT_HANDOFF §五.1 999 retuned for the
+    // 3-cycle structure. DeductMoney is unaffected; only the ceiling is
+    // clamped, never the floor (a negative `amount` still subtracts).
+    static constexpr int kMoneySoftCap = 300;
+    Player& AddMoney(int amount) noexcept {
+        money_ += amount;
+        if (money_ > kMoneySoftCap) money_ = kMoneySoftCap;
+        return *this;
+    }
     Player& SetFlag(const std::string& name)   { flags_[name] = true; return *this; }
     Player& ClearFlag(const std::string& name) { flags_.erase(name);  return *this; }
 
@@ -47,6 +57,13 @@ public:
         if (it == consumables_.end() || it->second <= 0) return false;
         if (--it->second == 0) consumables_.erase(it);
         return true;
+    }
+    // S5b-4 "消耗品當章用完": GameController wipes the inventory when the
+    // player re-enters the market, so consumables bought for one chapter
+    // can't be hoarded across the market boundary into the next.
+    Player& ClearConsumables() noexcept {
+        consumables_.clear();
+        return *this;
     }
 
     // Loads a Pipoya 96x128 sprite sheet (3 walk frames x 4 directions of

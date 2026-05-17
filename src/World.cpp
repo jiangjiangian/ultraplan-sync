@@ -1,4 +1,6 @@
 #include "World.h"
+#include "CashPickup.h"
+#include "ChapterPickups.h"
 #include "ChapterSpawns.h"
 #include "ChapterVendors.h"
 #include "GameObjectFactory.h"
@@ -84,6 +86,17 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         auto vendor = std::make_unique<Vendor>(vp.pos, vp.config);
         chapterRoster_.push_back(vendor.get());
         objects_.push_back(std::move(vendor));
+    }
+
+    // CashPickups: the exploration earner of the loop economy. Tracked
+    // in chapterRoster_ like the NPCs/Vendors, so a coin not collected
+    // before the chapter ends is swept with the roster (one shot per
+    // chapter visit; money already banked lives on the Player). Ch1 has
+    // a concrete spread today; other states' tables fill in S5c/d/e.
+    for (const auto& pp : ChapterPickups(state)) {
+        auto coin = std::make_unique<CashPickup>(pp.pos, pp.value);
+        chapterRoster_.push_back(coin.get());
+        objects_.push_back(std::move(coin));
     }
 }
 
