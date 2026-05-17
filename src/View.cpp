@@ -126,24 +126,32 @@ void View::Draw(const World& world) {
     TextBuilder{std::string{world.Semester().CurrentName()}}
         .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
 
-    // Quest objective, prominent at the very top-centre (the playtest's
-    // "任務指引在最上方"), separate from the small grey status HUD on the
-    // left. Width is estimated from the UTF-8 codepoint count (lead bytes
-    // — continuation bytes are 10xxxxxx) treating each glyph as ~size
-    // wide; good enough to keep a one-liner centred without pulling a
-    // text-measurement dependency into the View.
+    // Quest objective: a panel-backed one-liner, top-centre but BELOW
+    // the left status column (its lines end ~y86) so it never overlaps
+    // the karma/chapter readout — the playtest's "不要佔到左上數值狀態
+    // ，放一個面板當底". Smaller than the status text; the dark panel
+    // makes the bright text pop ("比較顯眼"). Width is estimated from the
+    // UTF-8 codepoint count (lead bytes — continuation bytes are
+    // 10xxxxxx) treating each glyph as ~size wide, enough to centre a
+    // one-liner without a text-measurement dependency in the View.
     if (const Player* p = world.GetPlayer()) {
         const std::string obj = CurrentObjective(st, *p);
         if (!obj.empty()) {
             int glyphs = 0;
             for (unsigned char c : obj)
                 if ((c & 0xC0) != 0x80) ++glyphs;
-            constexpr int kObjSize = 20;
-            const float w = static_cast<float>(glyphs * kObjSize);
-            float x = viewportSize_.x * 0.5f - w * 0.5f;
-            if (x < 8.0f) x = 8.0f;
-            TextBuilder{obj}.At(Vec2{x, 12})
-                .Size(kObjSize).Color(Colors::Red).Draw();
+            constexpr float kObjSize = 14.0f;
+            constexpr float kPad     = 6.0f;
+            const float tw = glyphs * kObjSize;
+            const float panelW = tw + kPad * 2.0f;
+            const float panelH = kObjSize + kPad * 2.0f;
+            float px = viewportSize_.x * 0.5f - panelW * 0.5f;
+            if (px < 4.0f) px = 4.0f;
+            constexpr float kPanelY = 88.0f;   // clears the 4 status lines
+            renderer_.DrawRect(Rect{px, kPanelY, panelW, panelH},
+                               Color{20, 22, 30, 185});
+            TextBuilder{obj}.At(Vec2{px + kPad, kPanelY + kPad})
+                .Size(static_cast<int>(kObjSize)).Color(Colors::White).Draw();
         }
     }
 

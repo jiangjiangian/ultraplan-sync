@@ -19,18 +19,23 @@ inline std::string CurrentObjective(SemesterState state,
     switch (state) {
         case SemesterState::Chapter1_AddDrop:
             if (!player.HasFlag("Flag_PromisedVictim"))
-                return "目標：找到那位在雨中淋濕的同學，聽他說發生了什麼事";
+                return "目標：在校門口指南路（你出生點旁）找苦主同學，"
+                       "靠近按 E 跟他對話、答應幫他找傘";
             if (!player.HasUmbrella())
-                return "目標：在校園裡找回苦主的傘——找到後靠近按 E 撿起";
-            return "目標：傘到手了，回去把傘交還給苦主";
+                return "目標：傘被吹到校園中央（羅馬廣場南側、四維道一帶）"
+                       "——走過去靠近傘按 E 撿起";
+            return "目標：拿著傘回校門口指南路，交還給苦主";
         case SemesterState::Interlude_Market:
-            return "目標：在羅馬廣場市集採買下一章要用的道具，再往南離開";
+            return "目標：在羅馬廣場市集向攤販按 E 採買，"
+                   "逛完往南（校門口方向）離開";
         case SemesterState::Chapter2_Midterms:
-            return "目標：到圖書館找管理員問線索，設法喚醒學霸";
+            return "目標：先到中正圖書館找管理員問線索，"
+                   "再去羅馬廣場雕像下喚醒學霸";
         case SemesterState::Chapter3_SportsDay:
-            return "目標：校慶運動會——完成物物交換，取回真傘";
+            return "目標：到操場參加校慶，在四維道攤位完成物物交換、"
+                   "取回真傘";
         case SemesterState::Chapter4_Finals:
-            return "目標：期末考終焉——面對你的選擇";
+            return "目標：期末考終焉——回集英樓面對你的最終選擇";
         case SemesterState::Ending_A:
         case SemesterState::Ending_B:
         case SemesterState::Ending_C:
