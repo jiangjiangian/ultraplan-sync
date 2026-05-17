@@ -85,6 +85,16 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // MECHANISM, with zero behaviour change.
     for (const auto& vp : ChapterVendors(state)) {
         auto vendor = std::make_unique<Vendor>(vp.pos, vp.config);
+        // Without a sprite a Vendor falls through NPC::Render's
+        // missing-sprite path and draws as a bare green box — the
+        // playtest's "一堆綠色方塊" at the market was the 10 stalls.
+        // Give every stall one shared keeper sprite (design C.7: the
+        // vendors deliberately share a single base sprite; reuse an
+        // existing shopkeeper asset, no new art). Gated by loadSprites_
+        // exactly like the chapter NPCs above, so the headless World
+        // unit tests (loadSprites=false) skip the GPU upload.
+        if (loadSprites_)
+            vendor->LoadSprite("resources/assets/sprites/npc/shop_auntie.png");
         chapterRoster_.push_back(vendor.get());
         objects_.push_back(std::move(vendor));
     }
