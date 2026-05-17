@@ -17,24 +17,27 @@ std::string& VendorContentDir() {
 }
 
 // Spatial layout is code's job (the .md owns content/dialogue, not
-// positions — same split as NpcSpawns vs chapter dialog). Ten spots on
-// the walkable 四維道 / central-campus band, NORTH of the south exit
-// zone (y < kInterludeExitMinY=1900) so the player browses the market
-// on the way down to leave. Reachability is a manual-verify item (same
-// stance as every map-position table in this project). If the parser
-// yields fewer stalls than positions the extra spots are simply unused;
-// if more, the surplus stalls fall back to the last position.
+// positions — same split as NpcSpawns vs chapter dialog). The ten stalls
+// ring 羅馬廣場 — the campus's circular plaza hub — per the playtest
+// request to gather the market inside the plaza circle and off the
+// radiating road junctions ("路口"). If the parser yields fewer stalls
+// than positions the extra spots are simply unused; if more, the surplus
+// stalls fall back to the last position.
 const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
-    // 2026-05-17 reachability fix: the original {1660,*}/{1360,1690}
-    // slots baked into solid terrain (east perimeter / a plaza prop —
-    // test_spawn_reachability now guards this). Relocated to the proven-
-    // walkable Zhinan y≈1850 band (still north of kInterludeExitMinY
-    // 1900, so the player browses on the way down to the south exit).
+    // 2026-05-17: relocated into 羅馬廣場. The plaza disc was located by
+    // analysing worldmap_base.png (densest filled stone blob): centre
+    // ≈(1088,960), disc rim ≈r200 where the eight roads enter. These ten
+    // points sit on an r≈90 ring (24°+k·36°, angles offset so none lands
+    // on a road spoke) — well inside the walkable plaza stone and clear
+    // of every junction. Every point was verified pure-white (walkable)
+    // in collision_mask.png and is flood-fill-reachable from the player
+    // spawn; test_spawn_reachability reads ChapterVendors().pos directly
+    // and re-checks both invariants on every build.
     static const std::vector<nccu::gfx::Vec2> kPos = {
-        {  400.0f, 1460.0f}, {  720.0f, 1460.0f}, { 1040.0f, 1460.0f},
-        { 1360.0f, 1460.0f}, {  520.0f, 1850.0f},
-        {  400.0f, 1690.0f}, {  720.0f, 1690.0f}, { 1040.0f, 1690.0f},
-        {  840.0f, 1850.0f}, { 1160.0f, 1850.0f},
+        {1170.0f,  997.0f}, {1133.0f, 1038.0f}, {1079.0f, 1050.0f},
+        {1028.0f, 1027.0f}, {1000.0f,  979.0f}, {1006.0f,  923.0f},
+        {1043.0f,  882.0f}, {1097.0f,  870.0f}, {1148.0f,  893.0f},
+        {1176.0f,  941.0f},
     };
     return kPos;
 }

@@ -18,37 +18,46 @@ namespace nccu::gfx {
 
 namespace detail {
 
-// Bundled-first, then per-OS system CJK fonts. The first path that exists
-// AND loads with a non-zero glyph set wins. To ship a portable graded
-// build, drop a .ttf/.otf/.ttc into resources/assets/fonts/ — it is tried
-// before any system font. resources/ is user-managed and untracked, so no
-// binary font is committed; the macOS system-font fallback below makes the
-// game readable immediately on the developer's machine.
-inline std::string ResolveFontPath() {
-    // resources/assets/fonts/ is preferred but its filename is unknown;
-    // probe a few conventional names rather than scanning the dir (keeps
-    // this header free of <filesystem>).
-    static const char* kCandidates[] = {
+// Ordered CJK font candidates. raylib's LoadFontData hardcodes
+// stbtt_InitFont(..., 0): no .ttc collection-index selection, and on a
+// font whose outlines its bundled stb_truetype cannot rasterize (CFF /
+// PostScript — which PingFang and Hiragino use) it returns glyphCount==0
+// and silently falls back to the ASCII-only default → every Chinese
+// glyph renders as `?`. (Verified against raylib master src/rtext.c.)
+// So a single fixed path is fragile: EnsureFont must TRY each candidate
+// and keep the first that actually yields glyphCount>0.
+//
+// Order: a user-supplied bundled font first (drop a real .ttf at
+// resources/assets/fonts/cjk.ttf for a guaranteed, parser-friendly face
+// — resources/ is user-managed/untracked so no binary font is
+// committed); then macOS faces best-effort (TrueType-outline ones before
+// the CFF .ttc, so whichever the local stb_truetype can parse wins);
+// then Linux Noto.
+inline const std::vector<std::string>& FontCandidates() {
+    static const std::vector<std::string> kCandidates = {
         "resources/assets/fonts/cjk.ttf",
         "resources/assets/fonts/cjk.otf",
         "resources/assets/fonts/cjk.ttc",
         "resources/assets/fonts/font.ttf",
         "resources/assets/fonts/font.otf",
         "resources/assets/fonts/font.ttc",
-        // macOS system CJK faces.
-        "/System/Library/Fonts/PingFang.ttc",
+        // macOS — try the .ttf / TrueType-outline faces before the
+        // CFF-outline .ttc (PingFang/Hiragino) which stb_truetype often
+        // cannot rasterize. None is guaranteed present; the loop skips
+        // missing ones and validates glyphCount>0 on the rest.
+        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+        "/System/Library/Fonts/STHeiti Medium.ttc",
         "/System/Library/Fonts/STHeiti Light.ttc",
-        "/System/Library/Fonts/Hiragino Sans GB.ttc",
         "/Library/Fonts/Songti.ttc",
-        // Linux (Noto CJK) fallbacks.
+        "/System/Library/Fonts/Supplemental/Songti.ttc",
+        "/System/Library/Fonts/PingFang.ttc",
+        "/System/Library/Fonts/Hiragino Sans GB.ttc",
+        // Linux (Noto CJK).
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/noto/NotoSansCJKtc-Regular.otf",
         "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",
     };
-    for (const char* c : kCandidates) {
-        if (::FileExists(c)) return std::string{c};
-    }
-    return std::string{};
+    return kCandidates;
 }
 
 // The CJK characters baked into the four UI .cpp files' string literals
@@ -152,20 +161,29 @@ inline void EnsureFont() {
     if (!::IsWindowReady()) return;   // headless / pre-InitWindow guard
     s.attempted = true;
 
-    const std::string path = detail::ResolveFontPath();
-    if (path.empty()) return;         // no CJK font anywhere → fallback
-
     std::vector<int> cps = detail::CollectCodepoints();
     constexpr int kFontSize = 32;     // rasterize big; DrawTextEx scales down
-    ::Font f = ::LoadFontEx(path.c_str(), kFontSize,
-                            cps.data(), static_cast<int>(cps.size()));
-    if (f.texture.id == 0 || f.glyphCount == 0) {
-        ::UnloadFont(f);              // failed load → keep default font
+
+    // Try every candidate that exists on disk; keep the FIRST that loads
+    // with real glyphs. A CFF .ttc raylib/stb_truetype cannot rasterize
+    // comes back glyphCount==0 — skip it and fall through instead of
+    // giving up (the bug that left Chinese as `?` even though a usable
+    // face existed further down the list).
+    for (const std::string& path : detail::FontCandidates()) {
+        if (!::FileExists(path.c_str())) continue;
+        ::Font f = ::LoadFontEx(path.c_str(), kFontSize,
+                                cps.data(), static_cast<int>(cps.size()));
+        if (f.texture.id == 0 || f.glyphCount == 0) {
+            ::UnloadFont(f);          // unparseable face → try the next
+            continue;
+        }
+        ::SetTextureFilter(f.texture, TEXTURE_FILTER_BILINEAR);
+        s.font   = f;
+        s.loaded = true;
         return;
     }
-    ::SetTextureFilter(f.texture, TEXTURE_FILTER_BILINEAR);
-    s.font   = f;
-    s.loaded = true;
+    // Nothing parseable anywhere → keep the ASCII default. Drop a real
+    // .ttf at resources/assets/fonts/cjk.ttf to guarantee CJK rendering.
 }
 
 inline bool IsCJKFontLoaded() { return detail::State().loaded; }
