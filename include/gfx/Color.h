@@ -29,6 +29,7 @@ inline constexpr Color Blue      {  0, 121, 241, 255};
 inline constexpr Color Red       {230,  41,  55, 255};
 inline constexpr Color Green     {  0, 228,  48, 255};
 inline constexpr Color Yellow    {253, 249,   0, 255};
+inline constexpr Color Gold      {255, 203,   0, 255};
 inline constexpr Color Magenta   {255,   0, 255, 255};
 }
 

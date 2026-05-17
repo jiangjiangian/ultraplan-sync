@@ -10,9 +10,16 @@
 void CashPickup::Render(nccu::gfx::IRenderer& renderer) const {
     // Visible ground marker so loose cash is spottable while exploring —
     // an invisible pickup is undiscoverable (the exact gap 1b-5 fixed for
-    // QuestFlagPickup). Green reads as money, distinct from the Yellow
-    // quest marker. Same injected-renderer convention: no raylib here.
-    renderer.DrawRect(hitBox_, nccu::gfx::Colors::Green);
+    // QuestFlagPickup). The full-hitbox Green block read as anonymous
+    // debris in playtest ("一堆綠色方塊，不知道是啥"); a small centred
+    // GOLD token reads as a dropped coin (gold == money is universal) and
+    // stays distinct from the Yellow quest marker. DrawRect only — Item
+    // must not call DrawText/DrawTexture (architecture rule); no raylib.
+    constexpr float kCoin = 10.0f;                 // < the 16px hitbox
+    const float inset = (hitBox_.width - kCoin) * 0.5f;
+    renderer.DrawRect(
+        nccu::gfx::Rect{hitBox_.x + inset, hitBox_.y + inset, kCoin, kCoin},
+        nccu::gfx::Colors::Gold);
 }
 
 CashPickup::CashPickup(nccu::gfx::Vec2 position, int value)
