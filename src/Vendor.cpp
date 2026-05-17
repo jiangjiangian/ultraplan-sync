@@ -25,8 +25,18 @@ std::vector<std::string> Vendor::BuildDialogLines(const VendorConfig& config) {
     // the goal is just to give NPC::Interact something to cycle through so
     // the player can preview prices before invoking TryBuy.
     std::vector<std::string> lines;
-    lines.reserve(1 + config.stock.size());
-    lines.push_back(config.greeting);
+    // Parsed stalls carry a multi-line greeting (greetingLines); a
+    // hand-written 3-field literal carries the single `greeting`. Prefer
+    // the multi-line form when present, else fall back to the single
+    // line (this keeps the pinned test_vendor 2-line expectation: that
+    // config has no greetingLines, so it is greeting + 1 stock entry).
+    if (!config.greetingLines.empty()) {
+        lines.reserve(config.greetingLines.size() + config.stock.size());
+        for (const auto& g : config.greetingLines) lines.push_back(g);
+    } else {
+        lines.reserve(1 + config.stock.size());
+        lines.push_back(config.greeting);
+    }
     for (const auto& item : config.stock) {
         lines.push_back(FormatStockLine(item));
     }
@@ -45,7 +55,14 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     if (!player) return false;
     if (stockIndex >= config_.stock.size()) return false;
 
-    const VendorItem& item = config_.stock[stockIndex];
+    VendorItem& item = config_.stock[stockIndex];
+
+    // Sold out (stockLeft hit 0; -1 = unlimited). Checked before the
+    // charge so the purse is never touched for an item we can't deliver.
+    if (item.stockLeft == 0) {
+        EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kSoldOut) });
+        return false;
+    }
 
     // DeductMoney is the gatekeeper: it returns false on insufficient funds
     // and performs NO side effect, so the player's purse is safe here.
@@ -59,5 +76,14 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     // the other appends to the inventory model.
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kPurchasedPrefix) + item.itemId });
     EventBus::Instance().Publish(Event{ EventType::PickupAcquired, item.itemId });
+
+    // S5b-3: the buy actually lands in the count inventory, the stall's
+    // karma hook fires (e.g. 募款箱 +1; default 0 = no-op, so the pinned
+    // test_vendor stall is unaffected), and a finite stock ticks down
+    // (-1 = unlimited, so the pinned stall never decrements).
+    player->AddConsumable(item.itemId);
+    if (config_.karmaOnInteract != 0)
+        player->AddKarma(config_.karmaOnInteract);
+    if (item.stockLeft > 0) --item.stockLeft;
     return true;
 }

@@ -27,6 +27,28 @@ public:
     Player& SetFlag(const std::string& name)   { flags_[name] = true; return *this; }
     Player& ClearFlag(const std::string& name) { flags_.erase(name);  return *this; }
 
+    // Count-only consumable inventory (S5b-3): the player holds a tally
+    // per itemId, not GameObject instances — deliberately minimal ("中庸"
+    // per the plan: no duration/quantity GameObjects; the Tab UI in
+    // S5b-5 just renders these counts). Vendor::TryBuy adds; a chapter
+    // that "uses up" a consumable calls ConsumeOne; S5b-4 clears the map
+    // on chapter change (consumables are spent within their chapter).
+    Player& AddConsumable(const std::string& itemId) {
+        ++consumables_[itemId];
+        return *this;
+    }
+    [[nodiscard]] int ConsumableCount(const std::string& itemId) const {
+        auto it = consumables_.find(itemId);
+        return it == consumables_.end() ? 0 : it->second;
+    }
+    // Spends one if present (returns true); a no-op false if none held.
+    bool ConsumeOne(const std::string& itemId) {
+        auto it = consumables_.find(itemId);
+        if (it == consumables_.end() || it->second <= 0) return false;
+        if (--it->second == 0) consumables_.erase(it);
+        return true;
+    }
+
     // Loads a Pipoya 96x128 sprite sheet (3 walk frames x 4 directions of
     // 32x32 each). Replaces any previously loaded sheet.
     void LoadSprite(const std::string& path);
@@ -56,6 +78,7 @@ private:
     bool hasUmbrella_;
     int money_;
     std::unordered_map<std::string, bool> flags_;
+    std::unordered_map<std::string, int>  consumables_;
 
     std::optional<nccu::gfx::Texture> sprite_;
     nccu::gfx::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down

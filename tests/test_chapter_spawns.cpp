@@ -86,8 +86,14 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
     const std::size_t nonChapter = totalCh1 - ch1Npcs;  // player + 4 umbrellas
                                                         // + pickup + ambients
 
-    // --- Transition to a chapter with an empty roster. ---
-    w.RespawnChapterRoster(SemesterState::Interlude_Market);
+    // --- Transition to a state with an empty roster. ---
+    // Was Interlude_Market when this test was written (S5a-1), but S5b-3
+    // makes the Interlude genuinely non-empty (10 parser-spawned
+    // Vendors). Chapter2_Midterms is the still-empty state until S5c, so
+    // it is now the right vehicle for "swap to an empty roster" — this
+    // test guards the Player-invariant + clean swap mechanism, NOT the
+    // Interlude population (that is test_vendor_loader's job).
+    w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
 
     // The 5 Ch1 NPCs are gone; no chapter NPCs remain.
     CHECK(RosterNpcIds(w).empty());
