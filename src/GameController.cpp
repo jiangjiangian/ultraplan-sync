@@ -119,6 +119,16 @@ void GameController::Update() {
                     // flag and recaps line-only thereafter.
                     if (npc == "suit_senior")
                         p->SetFlag("Flag_SuitSeniorChoiceMade");
+                    // S5e-2d: a confirmed 助教 (d) 結算 choice in Ch4
+                    // locks the menu (one-shot, like C.3(b)) so the
+                    // moral choice (體諒 → Flag_ConsoledTA, +15) can't
+                    // be flipped/re-applied on a re-talk. ApplyDialog
+                    // Choice already set Flag_ConsoledTA + karma; the
+                    // CheckEndingGates below routes Ending A if its
+                    // karma>80 + TrueUmbrella conditions also hold.
+                    if (npc == "ta" && world_.Semester().Current() ==
+                            SemesterState::Chapter4_Finals)
+                        p->SetFlag("Flag_TaFinaleChoiceMade");
                     // Ending gates first, then chapter gates (existing
                     // precedent: EndingGate predates this). Order is safe
                     // either way — once an ending fires, Current() is

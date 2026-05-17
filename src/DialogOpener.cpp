@@ -240,6 +240,45 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
         return;
     }
 
+    // S5e-2d: 助教 (d) 結算 — the moral choice that gates Ending A.
+    // chapter4.md (d)'s 「體諒」/「質問」are parser-flattened bold
+    // sub-blocks (same class as S5c-2 (c)/(c-fail)), so the choice is
+    // CODE-CONSTRUCTED (no 2nd content nod, not a fragile line-split —
+    // payload is code, the .md owns flavour; path-b precedent). The
+    // opener lines are the routed (a)/(b)/(c) reaction; the menu is the
+    // 結算. One-shot like C.3(b): Flag_TaFinaleChoiceMade (set by
+    // GameController on confirm) → line-only recap, never re-presented
+    // (no double karma / no flipping the moral choice).
+    if (state == SemesterState::Chapter4_Finals && npcId == "ta") {
+        const int taSub = ResolveOpenerSubState(npcId, state, player);
+        std::vector<std::string> openerLines;
+        for (const auto& e : nccu::dialog::Entries(npcId, state))
+            if (e.subState == taSub) { openerLines = e.lines; break; }
+
+        if (player.HasFlag("Flag_TaFinaleChoiceMade")) {
+            dlg.Open(std::move(openerLines));     // recap, NO menu
+            dlg.SetNpcContext(std::string(npcId));
+            return;
+        }
+        std::vector<DialogChoice> taChoices;
+        taChoices.push_back(DialogChoice{
+            "體諒助教的辛勞", 15, "Flag_ConsoledTA", true,
+            {"（你選擇體諒——他愣了一下）",
+             "「……你不追究？」",
+             "（他把考卷整理了一下，低聲）",
+             "「你這學期……做了蠻多的。我有看到。」",
+             "（轉身，低聲）歐趴糖，之後找你。"}});
+        taChoices.push_back(DialogChoice{
+            "質問／強硬索回", -5, std::string{}, false,
+            {"（你伸手，語氣不軟）",
+             "「規定就是規定，我配合。」",
+             "「傘是你的，我還你。」",
+             "（他不再說話，繼續巡考）"}});
+        dlg.Open(std::move(openerLines), std::move(taChoices));
+        dlg.SetNpcContext(std::string(npcId));
+        return;
+    }
+
     const int sub = ResolveOpenerSubState(npcId, state, player);
     if (sub == 0) { OpenNpcDialog(dlg, npcId, state); return; }  // 1b-2 path
 
