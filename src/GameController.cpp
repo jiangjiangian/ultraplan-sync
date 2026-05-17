@@ -7,6 +7,7 @@
 #include "ChapterGate.h"
 #include "Chapter2Quest.h"
 #include "Chapter3Quest.h"
+#include "Chapter4Quest.h"
 #include "InterludeExit.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
@@ -197,6 +198,11 @@ void GameController::Update() {
                     // once). npcId-agnostic — the first Ch3 talk while
                     // holding the trap umbrella triggers it.
                     TryApplyCh3Ripple(*player,
+                                      world_.Semester().Current());
+                    // S5e-2c: land the Ch4 peak ripple karma (學長/
+                    // 學霸/助教 +; ProfTrap -15) so karma>80 (Ending A)
+                    // is reachable. Per-NPC, once each. No-op elsewhere.
+                    TryApplyCh4Ripple(*player, id,
                                       world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
