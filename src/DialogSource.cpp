@@ -21,6 +21,13 @@ const std::map<std::string_view, std::string>& NpcNameTable() {
         // Ch2 新角色（圖書館管理員）：純資訊 quest-giver，推進主線的關鍵
         // NPC。section 名對應 chapter2.md「## NPC：圖書館管理員」。
         {"librarian",    "圖書館管理員"},
+        // Ch3 物物交換鏈三節點（S5d-1）。section 名逐字對應
+        // chapter3.md「## NPC：A 系烤香腸攤主 / B 系大聲公持有者 /
+        // C 系學姊」（含 A/B/C 後的 ASCII 空白，ParseNpcName 只剝
+        // 前後空白與尾端 （…），內部空白原樣保留）。
+        {"vendor_sausage_a", "A 系烤香腸攤主"},
+        {"loudspeaker_b",    "B 系大聲公持有者"},
+        {"senior_c",         "C 系學姊"},
     };
     return kTable;
 }
