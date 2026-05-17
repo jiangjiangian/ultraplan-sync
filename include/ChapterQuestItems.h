@@ -38,9 +38,9 @@ ChapterQuestItems(SemesterState state) {
     static const std::vector<std::string> kNoteSet = {
         kFlagFoundNote1, kFlagFoundNote2, kFlagFoundNote3};
     static const std::vector<QuestItemPlacement> kChapter2 = {
-        {{ 940.0f, 1380.0f}, kFlagFoundNote1,
+        {{ 900.0f, 1850.0f}, kFlagFoundNote1,
          "撿到一頁學霸的筆記。字跡工整，但順序不對。", kNoteSet, 3},
-        {{ 250.0f, 1640.0f}, kFlagFoundNote2,
+        {{1500.0f, 1430.0f}, kFlagFoundNote2,
          "又一頁筆記——空白處寫著「期末準備就從現在開始」。", kNoteSet, 3},
         {{1320.0f, 1850.0f}, kFlagFoundNote3,
          "最後一頁找齊了。管理員說他在外面——大雨裡。", kNoteSet, 3},

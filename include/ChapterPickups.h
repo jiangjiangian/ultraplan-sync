@@ -29,9 +29,9 @@ inline const std::vector<PickupPlacement>& ChapterPickups(SemesterState state) {
     static const std::vector<PickupPlacement> kChapter1 = {
         {{ 760.0f, 1850.0f}, 10},
         {{1320.0f, 1850.0f}, 10},
-        {{ 940.0f, 1380.0f}, 20},
-        {{1520.0f, 1430.0f},  5},
-        {{ 250.0f, 1640.0f},  5},
+        {{1080.0f, 1850.0f}, 20},
+        {{1500.0f, 1430.0f},  5},
+        {{ 600.0f, 1850.0f},  5},
     };
     static const std::vector<PickupPlacement> kChapter2;  // TODO(S5c)
     static const std::vector<PickupPlacement> kChapter3;  // TODO(S5d)

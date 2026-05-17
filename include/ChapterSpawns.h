@@ -64,7 +64,7 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
          "vendor_sausage_a", true},
         {gfx::Vec2{1320, 1850}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "loudspeaker_b", true},
-        {gfx::Vec2{ 250, 1640}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {gfx::Vec2{1080, 1850}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
     // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —
