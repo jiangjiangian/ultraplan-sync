@@ -176,6 +176,49 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             return 0;
         }
     }
+    if (state == SemesterState::Chapter4_Finals) {
+        // S5e-2a peak ripple routing (line-only recap; chapter4.md
+        // karma is `- \`// karma\`` bullet-doc, NOT a `>` blockquote,
+        // so nothing is parser-applied — the Ch4 karma that matters is
+        // landed by TryApplyCh4Ripple (S5e-2c) and the 助教 (d) 體諒
+        // choice (S5e-2d)). 助教 (d) is NOT routed here — it is a
+        // code-constructed choice-opener (S5e-2d).
+        if (npcId == "suit_senior") {
+            // chapter4.md L88: !HelpedSenior / ScoldedSenior → 學長
+            // 不出場. Spawn-suppression is a KNOWN OMISSION (roster
+            // keeps him); degrade to (a) 假笑面具. Otherwise karma
+            // splits the arc: >70 崩潰坦白 (b), <30 翻臉 (c), the
+            // 30..70 middle stays (a).
+            if (!player.HasFlag("Flag_HelpedSenior")) return 0;
+            if (player.GetKarma() > 70) return 1;   // (b)
+            if (player.GetKarma() < 30) return 2;   // (c)
+            return 0;                               // (a)
+        }
+        if (npcId == "bookworm") {
+            // (b) Ch2 救他 callback / (c) 未救.
+            if (player.HasFlag(kFlagBookwormRecovered)) return 1;
+            return 2;
+        }
+        if (npcId == "ta") {
+            // (b)/(c) 互斥, HelpedTA_Ch1 優先 (chapter4.md L235); the
+            // (c) -15 still lands separately via TryApplyCh4Ripple.
+            // (a) 巡考慌張 default. (d) 體諒 is the S5e-2d choice.
+            if (player.HasFlag("Flag_HelpedTA_Ch1"))     return 1;  // (b)
+            if (player.HasFlag("Flag_HasProfessorTrap")) return 2;  // (c)
+            return 0;                                                // (a)
+        }
+        if (npcId == "victim") {
+            // (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338).
+            // 否則 (a) 釋懷（已歸還 or Ch1 無承諾, L325). HasUmbrella()
+            // is set by TrueUmbrella::beClaimed.
+            if (player.HasFlag("Flag_PromisedVictim") &&
+                !player.HasUmbrella()) return 1;
+            return 0;
+        }
+        // shop_auntie falls through to the line-only (a) opener — its
+        // Ending-C role is the 集英樓 Vendor (S5e-2b), not a routed
+        // subState; (b)/(c) are deeper flavor beats.
+    }
     return 0;
 }
 
@@ -210,13 +253,20 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     dlg.Open(hit->lines);  // line-only consequence / recap
     dlg.SetNpcContext(std::string(npcId));
 
-    // Apply the entry's own side-effects ONCE: only when it sets a true
-    // flag the player doesn't have yet (ta reward). victim recap's flag
-    // is already set by the 1b-2 choice, so this is skipped (no double
-    // karma). flagValue==false / empty-flag entries are reached via the
-    // 1b-2 choice path, not here.
+    // Apply the entry's own side-effects ONCE — the Ch1 1b-3 reward
+    // recap (ta 申請書 / victim 承諾): only when it sets a true flag the
+    // player doesn't have yet. Scoped to Chapter1_AddDrop on purpose:
+    // this is the Ch1 reward-recap mechanism. Ch2/3/4 ripple karma is
+    // path-b (TryRescueBookworm / TryApplyChNRipple / trade hooks), and
+    // a ripple subState's parsed setsFlag is an ARTIFACT of the
+    // chapter*.md prose, not an intended reward — e.g. chapter4.md 助教
+    // (c) L235's precedence note carries `Flag_HelpedTA_Ch1 = true`, so
+    // an unscoped auto-apply would spuriously grant HelpedTA_Ch1 to a
+    // player routed to (c). Ch2/Ch3 only avoided this by content luck
+    // (empty setsFlag); the guard makes safety structural.
     const std::string flag(hit->setsFlag);
-    if (!flag.empty() && hit->flagValue && !player.HasFlag(flag)) {
+    if (state == SemesterState::Chapter1_AddDrop &&
+        !flag.empty() && hit->flagValue && !player.HasFlag(flag)) {
         player.AddKarma(hit->karmaDelta);
         player.SetFlag(flag);
     }
