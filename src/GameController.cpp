@@ -6,6 +6,7 @@
 #include "EndingGate.h"
 #include "ChapterGate.h"
 #include "Chapter2Quest.h"
+#include "Chapter3Quest.h"
 #include "InterludeExit.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
@@ -176,6 +177,10 @@ void GameController::Update() {
                     // cannot (once per Ch2, per NPC). No-op elsewhere.
                     TryApplyCh2Ripple(*player, id,
                                       world_.Semester().Current());
+                    // S5d-2: advance the Ch3 物物交換鏈 one link, in
+                    // order, before the opener routes to (b) recap.
+                    TryAdvanceCh3Trade(*player, id,
+                                       world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
                 } else {

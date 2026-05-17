@@ -113,6 +113,22 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         chapterRoster_.push_back(item.get());
         objects_.push_back(std::move(item));
     }
+
+    // Ch3 校慶運動會 (S5d-2): the TrueUmbrella the 啦啦隊 took, sitting
+    // in the 體育館後台道具箱. Claiming it is the chapter clear, exactly
+    // Ch1-isomorphic — beClaimed fires UmbrellaClaimed and the
+    // EventWiring Ch3 sibling-if routes to the Interlude (returnTo Ch4).
+    // The 物物交換鏈 (TryAdvanceCh3Trade) is the karma / narrative path,
+    // not a hard gate (mirrors Ch1's optional umbrella quest). One
+    // single-chapter object, so it is spawned inline rather than via a
+    // 5th per-state table (no speculative no-caller infra). Roster-
+    // tracked, so it is swept if the player leaves Ch3 uncleared.
+    if (state == SemesterState::Chapter3_SportsDay) {
+        auto umb = GameObjectFactory::Create(
+            ObjectType::TrueUmbrella, nccu::gfx::Vec2{1500.0f, 1430.0f});
+        chapterRoster_.push_back(umb.get());
+        objects_.push_back(std::move(umb));
+    }
 }
 
 void World::RespawnChapterRoster(nccu::SemesterState state) {
