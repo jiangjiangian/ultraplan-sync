@@ -18,6 +18,13 @@ inline constexpr const char* kFlagFoundNote3        = "Flag_FoundNote3";
 inline constexpr const char* kFlagBookwormRecovered = "Flag_BookwormRecovered";
 inline constexpr const char* kFlagCh2Cleared        = "Flag_Ch2Cleared";
 
+// S5c-3 per-NPC "the Ch2 ripple karma already landed" once-keys. The
+// ripple dialog itself may re-show on re-talks (a consistent reaction);
+// only the karma adjustment is gated to fire exactly once per Ch2.
+inline constexpr const char* kFlagCh2RippledSuitSenior =
+    "Flag_Ch2Rippled_SuitSenior";
+inline constexpr const char* kFlagCh2RippledTA = "Flag_Ch2Rippled_TA";
+
 // All three 學霸 notes collected — gates 圖書館管理員 (b) and the rescue.
 [[nodiscard]] bool Chapter2NotesComplete(const Player& player);
 
@@ -43,6 +50,19 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
 // polled consume).
 void LiftChapter2Clear(Player& player, SemesterState state,
                        const DialogState& dialog);
+
+// E-interact hook, sibling of TryRescueBookworm — lands the Ch1->Ch2
+// ripple karma the dialog opener cannot. chapter2.md routes 西裝學長 /
+// 助教 to a flag-gated subState whose `// karma` the opener's once-apply
+// will NOT grant (it is guarded behind a NOT-yet-set flag, but the
+// ripple flags are Ch1 flags already held — or the entry is karma-only
+// with no flag). So the documented "karma -10 在此落地" / ±3 must be
+// applied here, once per Ch2 (per-NPC once-key). No-op for any other
+// NPC / state / flag combination. Precedence (chapter2.md L211/L225):
+//   助教   HasProfessorTrap (c, 取代 a/b, -10)  >  HelpedTA_Ch1 (b, 0)
+//   西裝學長 HelpedSenior (b, +3)  xor  ScoldedSenior (c, -3)
+void TryApplyCh2Ripple(Player& player, std::string_view npcId,
+                       SemesterState state);
 
 } // namespace nccu
 

@@ -50,4 +50,37 @@ void LiftChapter2Clear(Player& player, SemesterState state,
     player.SetFlag(kFlagCh2Cleared);
 }
 
+void TryApplyCh2Ripple(Player& player, std::string_view npcId,
+                       SemesterState state) {
+    if (state != SemesterState::Chapter2_Midterms) return;
+
+    if (npcId == "suit_senior") {
+        if (player.HasFlag(kFlagCh2RippledSuitSenior)) return;  // once
+        // HelpedSenior / ScoldedSenior are mutually exclusive (the Ch1
+        // C.3(b) choice guard). chapter2.md 學長 (b) `// karma +3`
+        // (callback note carries Flag_HelpedSenior=true, already held,
+        // so the opener's once-apply skips it) / (c) `// karma -3`
+        // (no flag note -> opener never applies it).
+        if (player.HasFlag("Flag_HelpedSenior")) {
+            player.AddKarma(3).SetFlag(kFlagCh2RippledSuitSenior);
+        } else if (player.HasFlag("Flag_ScoldedSenior")) {
+            player.AddKarma(-3).SetFlag(kFlagCh2RippledSuitSenior);
+        }
+        return;
+    }
+
+    if (npcId == "ta") {
+        if (player.HasFlag(kFlagCh2RippledTA)) return;          // once
+        // chapter2.md 助教 (c) `// karma -10`（Ch1 漣漪效應兌現，
+        // "karma -10 在此落地"）— a karma-only entry, never auto-
+        // applied. (b) HelpedTA_Ch1 is an information ripple with no
+        // `// karma`, so there is nothing to land for it (no key set —
+        // it never had a karma debt to settle).
+        if (player.HasFlag("Flag_HasProfessorTrap")) {
+            player.AddKarma(-10).SetFlag(kFlagCh2RippledTA);
+        }
+        return;
+    }
+}
+
 } // namespace nccu
