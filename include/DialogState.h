@@ -35,6 +35,14 @@ public:
 
     void MoveChoice(int delta) noexcept;
 
+    // Optional npc attribution for the open conversation. OpenNpcDialog
+    // tags it after Open() so a confirmed choice can be attributed back
+    // to its NPC (the C.3 suit_senior one-shot guard reads this). ""
+    // when none / after Close(). Vendor / test Open() paths leave it
+    // empty, which is correct — they are not choice-opener NPCs.
+    void SetNpcContext(std::string npcId) { npcId_ = std::move(npcId); }
+    [[nodiscard]] const std::string& NpcId() const noexcept { return npcId_; }
+
     // Lines mode: step to next line (return nullptr); past last line with
     // no choices -> Close (nullptr); with choices -> enter choice mode
     // (nullptr). Choice mode: confirm the highlighted choice -> return a
@@ -53,6 +61,7 @@ private:
     int                       choiceCursor_ = 0;
     DialogChoice              picked_;      // stable storage so Advance()'s
                                             // return survives Close
+    std::string               npcId_;       // attribution; cleared on Close()
 };
 
 } // namespace nccu

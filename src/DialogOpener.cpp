@@ -51,6 +51,7 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
 
     if (!UsesChoiceOpener(npcId, state)) {
         dlg.Open(std::move(openerLines));  // line-only
+        dlg.SetNpcContext(std::string(npcId));
         return;
     }
 
@@ -63,6 +64,7 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
         }
     }
     dlg.Open(std::move(openerLines), std::move(choices));
+    dlg.SetNpcContext(std::string(npcId));
 }
 
 int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
@@ -83,6 +85,22 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
 
 void OpenNpcDialog(DialogState& dlg, Player& player,
                    std::string_view npcId, SemesterState state) {
+    // C.3(b): 西裝學長 is the ripple-critical choice-opener. Once the
+    // player has committed a choice with him (Flag_SuitSeniorChoiceMade
+    // is set by GameController when a suit_senior choice is confirmed),
+    // re-talking must NOT re-present the branch menu — otherwise the
+    // player could stack mutually-exclusive ripple flags (pick (d)
+    // Flag_HelpedSenior, then re-talk and pick (c) Flag_ScoldedSenior).
+    // Recap = the subState-0 opener lines, line-only (no menu, no
+    // re-applied karma/flag). shop_auntie / victim stay re-enterable
+    // (low impact; after C.1 a shop_auntie re-entry is harmless).
+    if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
+        player.HasFlag("Flag_SuitSeniorChoiceMade")) {
+        OpenNpcDialogSub(dlg, npcId, state, 0);   // opener lines, NO choices
+        dlg.SetNpcContext(std::string(npcId));
+        return;
+    }
+
     const int sub = ResolveOpenerSubState(npcId, state, player);
     if (sub == 0) { OpenNpcDialog(dlg, npcId, state); return; }  // 1b-2 path
 
@@ -94,6 +112,7 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     if (hit == nullptr) { OpenNpcDialog(dlg, npcId, state); return; }  // fallback
 
     dlg.Open(hit->lines);  // line-only consequence / recap
+    dlg.SetNpcContext(std::string(npcId));
 
     // Apply the entry's own side-effects ONCE: only when it sets a true
     // flag the player doesn't have yet (ta reward). victim recap's flag

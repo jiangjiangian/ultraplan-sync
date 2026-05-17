@@ -5,6 +5,7 @@
 #include "DialogOpener.h"
 #include "EndingGate.h"
 #include "ChapterGate.h"
+#include "InterludeExit.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
 #include "EventWiring.h"
@@ -58,6 +59,16 @@ void GameController::Update() {
     if (const SemesterState cur = world_.Semester().Current();
         cur != lastRosterState_) {
         world_.RespawnChapterRoster(cur);
+        // Arriving at the market: place the player at its entrance, well
+        // north of the south exit band. Without this a chapter that ended
+        // in the south would leave the player already inside the exit
+        // zone, instantly bouncing them straight back out (a skipped
+        // market). Chapter entry points are an S5c/d/e concern; the
+        // Interlude is the only state S5b-2 owns.
+        if (cur == SemesterState::Interlude_Market) {
+            if (Player* ip = world_.GetPlayer())
+                ip->SetPosition(nccu::kInterludeEntry);
+        }
         lastRosterState_ = cur;
     }
 
@@ -75,8 +86,17 @@ void GameController::Update() {
                 if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
             }
             if (Input::IsPressed(Key::E)) {
+                // Capture the npc BEFORE Advance() — confirming the last
+                // choice can Close() the dialog, which clears NpcId().
+                const std::string npc = dlg.NpcId();
                 if (const DialogChoice* c = dlg.Advance(); c && p) {
                     ApplyDialogChoice(*p, *c);
+                    // C.3(b): a confirmed 西裝學長 choice locks the
+                    // branch menu so re-talking can't stack mutually-
+                    // exclusive ripple flags. DialogOpener reads this
+                    // flag and recaps line-only thereafter.
+                    if (npc == "suit_senior")
+                        p->SetFlag("Flag_SuitSeniorChoiceMade");
                     // Ending gates first, then chapter gates (existing
                     // precedent: EndingGate predates this). Order is safe
                     // either way — once an ending fires, Current() is
@@ -146,6 +166,23 @@ void GameController::Update() {
             world_.CurrentBuildingName().clear();
         }
     }
+
+    // Interlude exit (the position-trigger half of the progression
+    // spine; the dialog-choice half runs in the frozen branch above).
+    // Walking into the south 觸發區 arms Flag_LeaveInterlude; the
+    // existing CheckChapterGates Interlude sibling-if consumes it ->
+    // Transition(InterludeReturnTo()). CheckChapterGates is polled every
+    // non-dialog frame because the trigger has no event to ride; it is
+    // idempotent (Ch2/Ch3 sibling-ifs gate on their quest flags, the
+    // Interlude one on Flag_LeaveInterlude, all consumed on use).
+    if (player &&
+        world_.Semester().Current() == SemesterState::Interlude_Market) {
+        const Vec2 c{player->GetPosition().x + playerSize_.x * 0.5f,
+                     player->GetPosition().y + playerSize_.y * 0.5f};
+        if (InInterludeExitZone(c)) player->SetFlag("Flag_LeaveInterlude");
+    }
+    if (player)
+        CheckChapterGates(*player, world_.Semester(), world_.Dialog());
 
     // End-of-frame sweep: deferred deletion avoids iterator invalidation
     // inside the Update loops above. Snapshot the player's death BEFORE

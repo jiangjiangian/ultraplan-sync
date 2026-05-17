@@ -1,9 +1,11 @@
 #include "World.h"
 #include "ChapterSpawns.h"
+#include "ChapterVendors.h"
 #include "GameObjectFactory.h"
 #include "NPC.h"
 #include "NpcSpawns.h"
 #include "QuestFlagPickup.h"
+#include "Vendor.h"
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <cassert>
@@ -69,6 +71,19 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         if (loadSprites_) npc->LoadSprite(spawn.spritePath);
         chapterRoster_.push_back(npc.get());   // record before the move
         objects_.push_back(std::move(npc));
+    }
+
+    // Vendors are the price-table sibling of the NPC roster (their
+    // placement carries a VendorConfig, not a sprite path + npcId, so
+    // they get their own table). Tracked in chapterRoster_ so the next
+    // state change sweeps them exactly like an NPC. ChapterVendors() is
+    // empty for every state until S5b-3 transcribes the Interlude
+    // lineup, so today this loop is a no-op — it only proves the spawn
+    // MECHANISM, with zero behaviour change.
+    for (const auto& vp : ChapterVendors(state)) {
+        auto vendor = std::make_unique<Vendor>(vp.pos, vp.config);
+        chapterRoster_.push_back(vendor.get());
+        objects_.push_back(std::move(vendor));
     }
 }
 
