@@ -172,6 +172,10 @@ void GameController::Update() {
                     // other NPC / state (early-returns inside).
                     TryRescueBookworm(*player, id,
                                       world_.Semester().Current());
+                    // S5c-3: land the Ch1->Ch2 ripple karma the opener
+                    // cannot (once per Ch2, per NPC). No-op elsewhere.
+                    TryApplyCh2Ripple(*player, id,
+                                      world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
                 } else {

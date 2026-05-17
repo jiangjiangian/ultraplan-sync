@@ -82,6 +82,24 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         }
     }
     if (state == SemesterState::Chapter2_Midterms) {
+        // S5c-3 ripple routing. Genuine flag-gated SEPARATE subStates
+        // only — 學霸/苦主/阿姨's `*（若 Flag_X）*` are conditional
+        // LINES inside one subState, which the parser flattens (same
+        // class as (c)/(c-fail) in S5c-2; documented omission, not
+        // routable without a chapter2.md edit). Line-only recap; the
+        // once-per-Ch2 karma is landed by TryApplyCh2Ripple, not here.
+        if (npcId == "suit_senior") {
+            if (player.HasFlag("Flag_HelpedSenior"))  return 1;  // (b) +3
+            if (player.HasFlag("Flag_ScoldedSenior")) return 2;  // (c) -3
+            return 0;                                            // (a) 路過
+        }
+        if (npcId == "ta") {
+            // Precedence (chapter2.md L225 「取代 (a)/(b) 段」 >
+            // L211 「取代 (a) 段」): ProfessorTrap outranks HelpedTA.
+            if (player.HasFlag("Flag_HasProfessorTrap")) return 2;  // (c) -10
+            if (player.HasFlag("Flag_HelpedTA_Ch1"))     return 1;  // (b)
+            return 0;                                               // (a)
+        }
         if (npcId == "librarian") {
             // (a) 詢問線索 -> (b) 確認三頁筆記、指向羅馬廣場。純資訊
             // 節點（chapter2.md：不給 karma、無 flag），故
