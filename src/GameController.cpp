@@ -4,6 +4,7 @@
 #include "DialogState.h"
 #include "DialogOpener.h"
 #include "EndingGate.h"
+#include "ChapterGate.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
 #include "EventWiring.h"
@@ -76,7 +77,13 @@ void GameController::Update() {
             if (Input::IsPressed(Key::E)) {
                 if (const DialogChoice* c = dlg.Advance(); c && p) {
                     ApplyDialogChoice(*p, *c);
+                    // Ending gates first, then chapter gates (existing
+                    // precedent: EndingGate predates this). Order is safe
+                    // either way — once an ending fires, Current() is
+                    // Ending_X and none of CheckChapterGates' Ch2/Ch3/
+                    // Interlude sibling-ifs can match.
                     CheckEndingGates(*p, world_.Semester(), dlg);
+                    CheckChapterGates(*p, world_.Semester(), dlg);
                 }
             }
             return;

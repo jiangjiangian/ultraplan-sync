@@ -44,6 +44,12 @@ inline void WireStateTransitionSubscribers(
         [&semester](const Event& e) {
             if (e.text == "TrueUmbrella" &&
                 semester.Current() == SemesterState::Chapter1_AddDrop) {
+                // Seed where the first market returns to (Ch2) before
+                // entering it — the InterludeMarket state object is
+                // recreated each Transition, so returnTo lives on the
+                // machine. CheckChapterGates reads it on Interlude exit;
+                // the later Ch2/Ch3 gates re-seed it for markets 2 & 3.
+                semester.SetInterludeReturnTo(SemesterState::Chapter2_Midterms);
                 semester.Transition(SemesterState::Interlude_Market);
             }
         });
