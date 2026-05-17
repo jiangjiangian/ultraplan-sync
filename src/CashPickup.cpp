@@ -2,9 +2,18 @@
 #include "EventBus.h"
 #include "Player.h"
 #include "gfx/Color.h"
+#include "gfx/IRenderer.h"
 #include "gfx/Rect.h"
 
 #include <string>
+
+void CashPickup::Render(nccu::gfx::IRenderer& renderer) const {
+    // Visible ground marker so loose cash is spottable while exploring —
+    // an invisible pickup is undiscoverable (the exact gap 1b-5 fixed for
+    // QuestFlagPickup). Green reads as money, distinct from the Yellow
+    // quest marker. Same injected-renderer convention: no raylib here.
+    renderer.DrawRect(hitBox_, nccu::gfx::Colors::Green);
+}
 
 CashPickup::CashPickup(nccu::gfx::Vec2 position, int value)
     : Item(position,

@@ -12,7 +12,7 @@ public:
     CashPickup(nccu::gfx::Vec2 position, int value);
 
     void Update(float /*deltaTime*/) override {}
-    void Render(nccu::gfx::IRenderer&) const override {}    // nothing to draw; pure data pickup
+    void Render(nccu::gfx::IRenderer& renderer) const override;  // visible ground marker
     void Interact(Player* initiator) override { OnPickup(initiator); }
 
     void OnPickup(Player* player) override;

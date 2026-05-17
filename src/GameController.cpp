@@ -66,8 +66,15 @@ void GameController::Update() {
         // market). Chapter entry points are an S5c/d/e concern; the
         // Interlude is the only state S5b-2 owns.
         if (cur == SemesterState::Interlude_Market) {
-            if (Player* ip = world_.GetPlayer())
+            if (Player* ip = world_.GetPlayer()) {
                 ip->SetPosition(nccu::kInterludeEntry);
+                // S5b-4 "消耗品當章用完": re-entering the market wipes
+                // the consumable inventory, so what was bought for one
+                // chapter can't be hoarded across the market boundary
+                // into the next — every market visit is a fresh "buy
+                // for the chapter ahead" decision (the loop's tension).
+                ip->ClearConsumables();
+            }
         }
         lastRosterState_ = cur;
     }
