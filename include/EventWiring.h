@@ -2,6 +2,7 @@
 #define EVENT_WIRING_H_
 #include "EventBus.h"
 #include "SemesterStateMachine.h"
+#include "World.h"
 #include <iostream>
 #include <string>
 
@@ -65,6 +66,20 @@ inline void WireStateTransitionSubscribers(
                 semester.Transition(SemesterState::Interlude_Market);
             }
         });
+}
+
+// Feeds the transient on-screen banner: every EventType::ShowMessage
+// (quest cues, 喚醒提示, 章節清關旁白, ripple reactions, vendor purchase
+// text) is mirrored into caller-owned World so the View can render the
+// latest one as a fading toast. WireLoggingSubscribers still logs the
+// same event to cout — this is an ADDITIONAL subscriber, not a
+// replacement. Captures `world` by reference exactly like
+// WireStateTransitionSubscribers captures currentBuildingName: the
+// caller (GameController) must outlive the subscription OR call
+// EventBus::Clear() first — GameController's dtor does the latter.
+inline void WireHudMessageSubscriber(EventBus& bus, World& world) {
+    bus.Subscribe(EventType::ShowMessage,
+        [&world](const Event& e) { world.SetHudMessage(e.text); });
 }
 
 // Convenience aggregator — preserves the original single-call entry

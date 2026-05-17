@@ -40,6 +40,10 @@ GameController::GameController(World& world)
     frameColliders_.reserve(64);  // dynamic actors only; terrain is the mask
     WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
                            world_.CurrentBuildingName());
+    // Additional ShowMessage subscriber: mirrors the event text into
+    // world_ for the transient HUD banner. Same lifetime as the
+    // subscribers above — torn down by the ~GameController Clear() below.
+    WireHudMessageSubscriber(EventBus::Instance(), world_);
 }
 
 GameController::~GameController() {
@@ -151,6 +155,12 @@ void GameController::Update() {
     if (world_.InventoryOpen()) return;
 
     const float dt = Time::DeltaSeconds();
+    // Age the transient banner with the sim. Reached only AFTER the
+    // dialog AND Tab-inventory early-returns above, so it freezes while
+    // a conversation or the inventory is open — a chapter-clear notice
+    // fired by a dialog choice then survives to be read once the box
+    // closes, instead of burning its TTL behind it.
+    world_.TickHud(dt);
     Player* player = world_.GetPlayer();
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
 
