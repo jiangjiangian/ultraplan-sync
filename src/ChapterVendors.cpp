@@ -24,20 +24,23 @@ std::string& VendorContentDir() {
 // than positions the extra spots are simply unused; if more, the surplus
 // stalls fall back to the last position.
 const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
-    // 2026-05-17: relocated into 羅馬廣場. The plaza disc was located by
-    // analysing worldmap_base.png (densest filled stone blob): centre
-    // ≈(1088,960), disc rim ≈r200 where the eight roads enter. These ten
-    // points sit on an r≈90 ring (24°+k·36°, angles offset so none lands
-    // on a road spoke) — well inside the walkable plaza stone and clear
-    // of every junction. Every point was verified pure-white (walkable)
-    // in collision_mask.png and is flood-fill-reachable from the player
-    // spawn; test_spawn_reachability reads ChapterVendors().pos directly
-    // and re-checks both invariants on every build.
+    // 2026-05-17: scattered across 羅馬廣場's interior. The plaza disc was
+    // located from worldmap_base.png (densest filled stone blob): centre
+    // ≈(1088,960), rim ≈r200 where the eight roads enter. The earlier
+    // single-radius r90 ring looked like a fence encircling the plaza;
+    // the playtest asked for the stalls SPREAD across the middle, not
+    // ringed. So these ten sit at mixed radii — one at the centre, a
+    // tight inner cluster (~r70) and a looser middle band (~r115-125),
+    // angles jittered — staying well inside the rim (max r≈125 ≪ 200) so
+    // none blocks a road junction. Every point was verified pure-white
+    // (walkable) in collision_mask.png and is flood-fill-reachable from
+    // the player spawn; test_spawn_reachability reads ChapterVendors()
+    // .pos directly and re-checks both invariants on every build.
     static const std::vector<nccu::gfx::Vec2> kPos = {
-        {1170.0f,  997.0f}, {1133.0f, 1038.0f}, {1079.0f, 1050.0f},
-        {1028.0f, 1027.0f}, {1000.0f,  979.0f}, {1006.0f,  923.0f},
-        {1043.0f,  882.0f}, {1097.0f,  870.0f}, {1148.0f,  893.0f},
-        {1176.0f,  941.0f},
+        {1088.0f,  960.0f}, {1155.0f,  982.0f}, {1036.0f, 1007.0f},
+        {1073.0f,  892.0f}, {1207.0f,  999.0f}, {1114.0f, 1082.0f},
+        { 995.0f, 1044.0f}, { 969.0f,  921.0f}, {1065.0f,  849.0f},
+        {1181.0f,  876.0f},
     };
     return kPos;
 }

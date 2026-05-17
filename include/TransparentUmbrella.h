@@ -11,8 +11,14 @@ public:
 
     void Update(float /*deltaTime*/) override {}
     void Render(nccu::gfx::IRenderer& renderer) const override; // 3-rect glyph via IRenderer (Template Method)
-    void Interact(Player* initiator) override { beClaimed(initiator); }
-    void OnPickup(Player* player) override { beClaimed(player); }
+    // Both pick-up paths route through the same quest gate (defined in
+    // the .cpp so it can see Player/EventBus): an umbrella may only be
+    // claimed once the player has taken the 苦主's request
+    // (Flag_PromisedVictim) — before that it fires a guidance cue
+    // instead of a silent no-op. By Ch3/Ch4 the flag is long set, so the
+    // TrueUmbrella re-claim there is unaffected.
+    void Interact(Player* initiator) override;
+    void OnPickup(Player* player) override;
 
     virtual void beClaimed(Player* player) = 0;
 

@@ -7,6 +7,7 @@
 #include "GameObjectFactory.h"
 #include "NPC.h"
 #include "NpcSpawns.h"
+#include "PipoyaRoster.h"
 #include "QuestFlagPickup.h"
 #include "Vendor.h"
 #include "gfx/Vec2.h"
@@ -59,7 +60,8 @@ World::World(const std::string& playerSpritePath, bool loadSprites)
     for (const auto& s : AmbientStudentSpawns()) {
         auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
                                          s.isQuestGiver, s.npcId);
-        if (loadSprites_) npc->LoadSprite(s.spritePath);
+        if (loadSprites_)
+            npc->LoadSprite(PickNpcSprite(s.npcId, s.pos, s.spritePath));
         npc->EnableWander(50.0f, seed);
         npc->SetWanderMask(terrainMask_);
         objects_.push_back(std::move(npc));
@@ -71,7 +73,9 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     for (const auto& spawn : ChapterNpcSpawns(state)) {
         auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},
                                          spawn.isQuestGiver, spawn.npcId);
-        if (loadSprites_) npc->LoadSprite(spawn.spritePath);
+        if (loadSprites_)
+            npc->LoadSprite(
+                PickNpcSprite(spawn.npcId, spawn.pos, spawn.spritePath));
         chapterRoster_.push_back(npc.get());   // record before the move
         objects_.push_back(std::move(npc));
     }
@@ -94,7 +98,9 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         // exactly like the chapter NPCs above, so the headless World
         // unit tests (loadSprites=false) skip the GPU upload.
         if (loadSprites_)
-            vendor->LoadSprite("resources/assets/sprites/npc/shop_auntie.png");
+            vendor->LoadSprite(PickNpcSprite(
+                "vendor", vp.pos,
+                "resources/assets/sprites/npc/shop_auntie.png"));
         chapterRoster_.push_back(vendor.get());
         objects_.push_back(std::move(vendor));
     }

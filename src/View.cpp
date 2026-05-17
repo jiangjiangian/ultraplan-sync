@@ -10,6 +10,7 @@
 #include "EndingView.h"
 #include "InventoryView.h"
 #include "MessageView.h"
+#include "QuestObjective.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/CameraScope.h"
@@ -124,6 +125,27 @@ void View::Draw(const World& world) {
     }
     TextBuilder{std::string{world.Semester().CurrentName()}}
         .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
+
+    // Quest objective, prominent at the very top-centre (the playtest's
+    // "任務指引在最上方"), separate from the small grey status HUD on the
+    // left. Width is estimated from the UTF-8 codepoint count (lead bytes
+    // — continuation bytes are 10xxxxxx) treating each glyph as ~size
+    // wide; good enough to keep a one-liner centred without pulling a
+    // text-measurement dependency into the View.
+    if (const Player* p = world.GetPlayer()) {
+        const std::string obj = CurrentObjective(st, *p);
+        if (!obj.empty()) {
+            int glyphs = 0;
+            for (unsigned char c : obj)
+                if ((c & 0xC0) != 0x80) ++glyphs;
+            constexpr int kObjSize = 20;
+            const float w = static_cast<float>(glyphs * kObjSize);
+            float x = viewportSize_.x * 0.5f - w * 0.5f;
+            if (x < 8.0f) x = 8.0f;
+            TextBuilder{obj}.At(Vec2{x, 12})
+                .Size(kObjSize).Color(Colors::Red).Draw();
+        }
+    }
 
     // Transient ShowMessage toast: above the world/HUD labels, BELOW the
     // dialog box — an open conversation takes visual precedence, matching
