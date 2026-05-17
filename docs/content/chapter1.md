@@ -197,7 +197,7 @@
 ### (c) 玩家購買醜綠傘後
 
 > `// 觸發 Ending C 路徑種子`
-> `// Flag_BoughtUglyUmbrella = true`
+> `// Flag_KnowsUglyUmbrella = true`
 > `// karma +0`（實用主義選擇，中性）
 
 - "聰明！醜有醜的好處啦。"

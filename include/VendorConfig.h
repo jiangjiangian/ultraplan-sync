@@ -11,6 +11,12 @@ struct VendorItem {
     int         price;    // money cost; matched against Player::DeductMoney
     int         stockLeft = -1;  // -1 = unlimited; >0 decremented per buy;
                                  // 0 = sold out (TryBuy fails before charge)
+    // Optional: a Player flag SetFlag'd on a successful buy. "" = none
+    // (default → a 2/3-field VendorItem literal behaves exactly as
+    // before; same -Wmissing-field-initializers suppression as
+    // stockLeft). S5e-2b uses it for the 集英樓 ugly-umbrella →
+    // Flag_BoughtUglyUmbrella (Ending C trigger).
+    std::string setsFlag{};
 };
 
 // Aggregate config for one market stall. The Vendor class consumes this in
