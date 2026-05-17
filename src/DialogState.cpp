@@ -55,6 +55,7 @@ void DialogState::Close() noexcept {
     choices_.clear();
     cursor_       = 0;
     choiceCursor_ = 0;
+    npcId_.clear();
 }
 
 } // namespace nccu
