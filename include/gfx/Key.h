@@ -12,6 +12,7 @@ enum class Key : int {
     U = KEY_U, V = KEY_V, W = KEY_W, X = KEY_X, Y = KEY_Y,
     Z = KEY_Z,
     Space  = KEY_SPACE,
+    Tab    = KEY_TAB,
     Enter  = KEY_ENTER,
     Escape = KEY_ESCAPE,
     Up     = KEY_UP,
