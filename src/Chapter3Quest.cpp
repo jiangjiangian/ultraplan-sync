@@ -50,4 +50,18 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
     }
 }
 
+void TryApplyCh3Ripple(Player& player, SemesterState state) {
+    if (state != SemesterState::Chapter3_SportsDay) return;
+    if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // once
+    if (!player.HasFlag("Flag_HasProfessorTrap")) return;
+    // chapter3.md 章節結尾分支二: 「後台某個同學看了你手上的傘一眼」
+    // → `// karma -10`（Ch1 漣漪延伸至 Ch3）。獨立 once-key，與
+    // Flag_Ch2Rippled_TA 分開，故 Ch2 已扣過本次仍照扣（L329）。
+    player.AddKarma(-10).SetFlag(kFlagCh3RippledProfTrap);
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        std::string("有人看了你手上的傘一眼："
+                    "「那把……是教授研究室借出去的那把嗎？」")});
+}
+
 } // namespace nccu
