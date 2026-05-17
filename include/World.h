@@ -9,6 +9,7 @@
 #include "DialogState.h"
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace nccu {
@@ -61,6 +62,20 @@ public:
     [[nodiscard]] bool InventoryOpen() const noexcept { return inventoryOpen_; }
     void SetInventoryOpen(bool v) noexcept { inventoryOpen_ = v; }
 
+    // Transient on-screen notice driven by EventType::ShowMessage. The
+    // EventBus subscriber (wired by GameController) calls SetHudMessage;
+    // GameController::Update ages it via TickHud; the View renders it as
+    // a fading banner. Pure data — no raylib, no timing source here.
+    void SetHudMessage(std::string text) {
+        hudMessage_ = std::move(text);
+        hudAge_     = 0.0f;
+    }
+    void TickHud(float dt) noexcept {
+        if (!hudMessage_.empty()) hudAge_ += dt;
+    }
+    [[nodiscard]] const std::string& HudMessage() const noexcept { return hudMessage_; }
+    [[nodiscard]] float              HudAge()     const noexcept { return hudAge_; }
+
     // Make the chapter-NPC roster follow the semester FSM. Removes ONLY
     // the chapter NPCs this method last spawned (tracked by raw pointer
     // in chapterRoster_) with a single deferred remove-erase pass —
@@ -86,6 +101,8 @@ private:
     BuildingTracker             tracker_;
     DialogState                 dialog_;
     std::string                 currentBuildingName_;
+    std::string                 hudMessage_;
+    float                       hudAge_{0.0f};
     CollisionMask               terrainMask_;
     bool                        inventoryOpen_{false};
 };

@@ -9,6 +9,7 @@
 #include "DialogView.h"
 #include "EndingView.h"
 #include "InventoryView.h"
+#include "MessageView.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/CameraScope.h"
@@ -123,6 +124,15 @@ void View::Draw(const World& world) {
     }
     TextBuilder{std::string{world.Semester().CurrentName()}}
         .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
+
+    // Transient ShowMessage toast: above the world/HUD labels, BELOW the
+    // dialog box — an open conversation takes visual precedence, matching
+    // the existing DrawDialog ordering. Suppressed during endings since
+    // Draw already early-returned above for IsEndingState. Text flows
+    // through the same IRenderer path → it picks up the CJK font (the
+    // gfx Font fix), so Chinese cues render, not as `?`.
+    DrawHudMessage(renderer_, world.HudMessage(), world.HudAge(),
+                   viewportSize_.x, viewportSize_.y);
 
     DrawDialog(renderer_, world.Dialog());
 
