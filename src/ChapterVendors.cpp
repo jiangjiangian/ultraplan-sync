@@ -83,11 +83,32 @@ const std::vector<VendorPlacement>& Chapter2Vendors() {
     return kCh2;
 }
 
+// Ch4 集英樓便利商店 (chapter4.md L11/L295): the Ending C trigger.
+// One stall selling the 超醜螢光綠雨傘; the buy SetFlag's
+// Flag_BoughtUglyUmbrella (VendorItem::setsFlag, S5e-2b) and
+// CheckEndingGates routes Ending C. Price is a fixed 100 — the
+// chapter4.md「花光所有遊戲幣」is flavour, not a mechanic (a
+// money-equal price would be fragile); unlimited stock. The ugly
+// umbrella is deliberately NOT in the Interlude market (kept here so
+// Ending C stays a Ch4 集英樓 act, per SCRIPT_HANDOFF / C.1).
+const std::vector<VendorPlacement>& Chapter4Vendors() {
+    static const std::vector<VendorPlacement> kCh4 = {
+        VendorPlacement{
+            VendorConfig{"集英樓便利商店",
+                         "（貨架最下層，一把螢光綠到刺眼的傘）",
+                         {VendorItem{"UglyUmbrella", 100, -1,
+                                     "Flag_BoughtUglyUmbrella"}}},
+            nccu::gfx::Vec2{1180.0f, 1725.0f}},
+    };
+    return kCh4;
+}
+
 const std::vector<VendorPlacement>& ChapterVendors(SemesterState state) {
     static const std::vector<VendorPlacement> kNone;
     if (state == SemesterState::Interlude_Market) return BuildInterlude();
     if (state == SemesterState::Chapter2_Midterms) return Chapter2Vendors();
-    return kNone;  // Ch3/Ch4 get incidental Vendors in S5d/S5e
+    if (state == SemesterState::Chapter4_Finals)   return Chapter4Vendors();
+    return kNone;  // Ch3 has no incidental Vendor (its quest is NPC trades)
 }
 
 void SetVendorContentDir(std::string dir) {

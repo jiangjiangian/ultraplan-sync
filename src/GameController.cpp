@@ -78,6 +78,18 @@ void GameController::Update() {
                 ip->ClearConsumables();
             }
         }
+        // Ch4 entry (chapter4.md L6「傘再度失蹤」): the player walks
+        // out of 集英樓 with no umbrella. Reset both the generic
+        // HasUmbrella bool AND the TrueUmbrella-specific marker, so
+        // Ending A's 持-TrueUmbrella condition only holds if the
+        // player RE-claims the Ch4 TrueUmbrella (not a leftover from
+        // Ch1/Ch3 nor a stray ctor umbrella).
+        if (cur == SemesterState::Chapter4_Finals) {
+            if (Player* ip = world_.GetPlayer()) {
+                ip->SetHasUmbrella(false);
+                ip->ClearFlag("Flag_HasTrueUmbrella");
+            }
+        }
         lastRosterState_ = cur;
     }
 

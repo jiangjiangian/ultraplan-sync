@@ -123,7 +123,14 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // single-chapter object, so it is spawned inline rather than via a
     // 5th per-state table (no speculative no-caller infra). Roster-
     // tracked, so it is swept if the player leaves Ch3 uncleared.
-    if (state == SemesterState::Chapter3_SportsDay) {
+    // Ch3 道具箱 (claim = Ch1-isomorphic clear via EventWiring) AND Ch4
+    // (chapter4.md L6 傘再度失蹤 — the player re-finds the TrueUmbrella;
+    // claiming it does NOT clear Ch4, it only satisfies Ending A's
+    // 持-TrueUmbrella condition via Flag_HasTrueUmbrella, since no
+    // EventWiring Ch4 sibling-if exists). Same proven coord; different
+    // state so no overlap. Roster-tracked, swept on state change.
+    if (state == SemesterState::Chapter3_SportsDay ||
+        state == SemesterState::Chapter4_Finals) {
         auto umb = GameObjectFactory::Create(
             ObjectType::TrueUmbrella, nccu::gfx::Vec2{1500.0f, 1430.0f});
         chapterRoster_.push_back(umb.get());

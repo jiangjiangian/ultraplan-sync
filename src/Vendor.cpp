@@ -85,5 +85,9 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     if (config_.karmaOnInteract != 0)
         player->AddKarma(config_.karmaOnInteract);
     if (item.stockLeft > 0) --item.stockLeft;
+    // S5e-2b: an opt-in per-item flag (default "" = no-op, so every
+    // existing stall is unaffected). The 集英樓 ugly-umbrella sets
+    // Flag_BoughtUglyUmbrella → CheckEndingGates routes Ending C.
+    if (!item.setsFlag.empty()) player->SetFlag(item.setsFlag);
     return true;
 }

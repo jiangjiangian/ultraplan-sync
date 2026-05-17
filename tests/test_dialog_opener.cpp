@@ -69,12 +69,15 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     // Table order: subState 1 first, subState 2 second.
     CHECK(d.Choices()[0].label == "玩家詢問雨傘");
     CHECK(d.Choices()[1].label == "玩家購買醜綠傘後");
-    // Pick the buy branch (index 1) -> Flag_BoughtUglyUmbrella -> Ending C.
+    // C.1 (pre-approved): the Ch1 阿姨 buy branch now seeds
+    // Flag_KnowsUglyUmbrella, NOT Flag_BoughtUglyUmbrella. The real
+    // purchase (→ Ending C) moved to the Ch4 集英樓 Vendor; the Ch1
+    // buy is now a 伏筆 seed, not an instant ending trigger.
     d.MoveChoice(1);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "玩家購買醜綠傘後");
-    CHECK(c->setsFlag == "Flag_BoughtUglyUmbrella");
+    CHECK(c->setsFlag == "Flag_KnowsUglyUmbrella");
     CHECK(c->flagValue == true);
     while (d.Active()) d.Advance();    // exhaust -> close
     CHECK_FALSE(d.Active());
