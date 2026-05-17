@@ -2,6 +2,7 @@
 #define GFX_TEXT_BUILDER_H_
 #include "raylib.h"
 #include "gfx/Color.h"
+#include "gfx/Font.h"
 #include "gfx/Vec2.h"
 #include <string>
 #include <utility>
@@ -17,11 +18,22 @@ public:
     TextBuilder& Color(struct Color c) noexcept { color_ = c; return *this; }
 
     void Draw() const {
-        ::DrawText(text_.c_str(),
-                   static_cast<int>(position_.x),
-                   static_cast<int>(position_.y),
-                   size_,
-                   ::Color{color_.r, color_.g, color_.b, color_.a});
+        const ::Color rc{color_.r, color_.g, color_.b, color_.a};
+        // The default font is ASCII-only; route through the loaded CJK
+        // font (DrawTextEx) whenever it is available so Chinese renders.
+        // Spacing follows raylib's own DrawText convention (size/10).
+        if (IsCJKFontLoaded()) {
+            ::DrawTextEx(CJKFont(), text_.c_str(),
+                         ::Vector2{position_.x, position_.y},
+                         static_cast<float>(size_),
+                         static_cast<float>(size_) / 10.0f,
+                         rc);
+        } else {
+            ::DrawText(text_.c_str(),
+                       static_cast<int>(position_.x),
+                       static_cast<int>(position_.y),
+                       size_, rc);
+        }
     }
 
     Vec2                GetPosition() const noexcept { return position_; }

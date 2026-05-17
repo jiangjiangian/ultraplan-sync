@@ -4,6 +4,7 @@
 #include "CharacterSelect.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
+#include "gfx/Font.h"
 
 // MVC composition root. Model = World (pure data), View = rendering,
 // Controller = input + simulation + event wiring. The game loop is the
@@ -19,8 +20,15 @@ int main() {
                    .Fps(60)
                    .Open();
 
+    // raylib's default font is ASCII-only; load the CJK font now that the
+    // GL context exists, before any text (incl. character-select) draws.
+    nccu::gfx::EnsureFont();
+
     auto selection = nccu::RunCharacterSelect(win);
-    if (selection.closed) return 0;
+    if (selection.closed) {
+        nccu::gfx::ShutdownFont();   // free the glyph atlas while GL is live
+        return 0;
+    }
 
     // Declaration order matters: reverse-destruction runs the controller
     // dtor (EventBus::Clear) BEFORE the World refs its subscribers
@@ -36,5 +44,10 @@ int main() {
             view.Draw(world);
         }
     }
+
+    // Unload the font BEFORE the Window dtor runs ::CloseWindow(): a
+    // static-lifetime font would otherwise destruct after the GL context
+    // is gone. `win` is still alive on this line, so GL is valid.
+    nccu::gfx::ShutdownFont();
     return 0;
 }
