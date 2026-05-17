@@ -42,7 +42,31 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {gfx::Vec2{1140, 1725}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "librarian", true},
     };
-    static const std::vector<NpcSpawn> kChapter3;      // TODO(S5d): chapter roster
+    // Ch3 校慶運動會 (S5d-1). chapter3.md has 8 ## NPC：sections — the
+    // 5 archetypes (ripple / optional, isQuestGiver=false, same stance
+    // as Ch2) + 3 物物交換鏈 nodes (A系香腸 / B系大聲公 / C系學姊,
+    // isQuestGiver=true — they drive the main quest). Sprites reuse
+    // existing art; positions reuse Ch1/Ch2-proven walkable coords so
+    // the single-z-plane campus stays reachable (reachability is a
+    // manual-verify item, same as every map-position table here).
+    static const std::vector<NpcSpawn> kChapter3 = {
+        {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
+         "victim", false},
+        {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/npc/suit_senior.png",
+         "suit_senior", false},
+        {gfx::Vec2{ 480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+         "bookworm", false},
+        {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
+         "ta", false},
+        {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
+         "shop_auntie", false},
+        {gfx::Vec2{ 760, 1850}, "resources/assets/sprites/npc/shop_auntie.png",
+         "vendor_sausage_a", true},
+        {gfx::Vec2{1320, 1850}, "resources/assets/sprites/school_uniform_3/male_02.png",
+         "loudspeaker_b", true},
+        {gfx::Vec2{ 250, 1640}, "resources/assets/sprites/school_uniform_3/female_01.png",
+         "senior_c", true},
+    };
     static const std::vector<NpcSpawn> kChapter4;      // TODO(S5e): chapter roster
     static const std::vector<NpcSpawn> kEndingA;       // TODO(S5e): chapter roster
     static const std::vector<NpcSpawn> kEndingB;       // TODO(S5e): chapter roster
