@@ -1,4 +1,5 @@
 #include "DialogOpener.h"
+#include "Chapter2Quest.h"
 #include "DialogState.h"
 #include "DialogSource.h"
 #include "Player.h"
@@ -77,6 +78,26 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         }
         if (npcId == "victim") {
             if (player.HasFlag("Flag_PromisedVictim")) return 1;
+            return 0;
+        }
+    }
+    if (state == SemesterState::Chapter2_Midterms) {
+        if (npcId == "librarian") {
+            // (a) 詢問線索 -> (b) 確認三頁筆記、指向羅馬廣場。純資訊
+            // 節點（chapter2.md：不給 karma、無 flag），故
+            // OpenNpcDialog 的 once-apply 區對 (b) 是 no-op，純
+            // line-only recap（ta/victim recap 先例）。
+            if (Chapter2NotesComplete(player)) return 1;
+            return 0;
+        }
+        if (npcId == "bookworm") {
+            // 喚醒前皆 (a) 遊魂；TryRescueBookworm 設 Recovered 後
+            // -> (d) 致謝 recap（line-only；+5 已在 rescue 套，(d)
+            // blockquote 無 flag 註解，once-apply 不重套）。(c)/(c-fail)
+            // 刻意不路由：解析器把 (c) 兩個粗體子塊併進同一 subState，
+            // 無法分離（需 chapter2.md 切段，屬 C.1 以外的 content
+            // gate，Phase 2 不做——已知省略，見計畫 §F.5）。
+            if (player.HasFlag(kFlagBookwormRecovered)) return 3;
             return 0;
         }
     }

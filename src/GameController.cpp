@@ -5,6 +5,7 @@
 #include "DialogOpener.h"
 #include "EndingGate.h"
 #include "ChapterGate.h"
+#include "Chapter2Quest.h"
 #include "InterludeExit.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
@@ -163,11 +164,19 @@ void GameController::Update() {
         ForEachActiveExcept(world_.Objects(), player,
             [this, player, pHit](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
-                if (const std::string_view id = o.NpcId(); !id.empty())
+                if (const std::string_view id = o.NpcId(); !id.empty()) {
+                    // S5c-2: talking to 學霸 at the rescue moment
+                    // consumes the EnergyDrink + sets Flag_Bookworm
+                    // Recovered BEFORE the opener runs, so the opener
+                    // then routes to 學霸 (d) thanks. No-op for every
+                    // other NPC / state (early-returns inside).
+                    TryRescueBookworm(*player, id,
+                                      world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
-                else
+                } else {
                     o.Interact(player);                              // pick up / Vendor
+                }
             });
     }
 
@@ -196,8 +205,16 @@ void GameController::Update() {
                      player->GetPosition().y + playerSize_.y * 0.5f};
         if (InInterludeExitZone(c)) player->SetFlag("Flag_LeaveInterlude");
     }
-    if (player)
+    if (player) {
+        // S5c-2: lift Flag_Ch2Cleared only once 學霸 is recovered AND
+        // the (d) thanks dialog has closed (deferred so the gate does
+        // not close that dialog the frame it opens). Runs BEFORE
+        // CheckChapterGates so the lifted flag is consumed the same
+        // frame. No-op outside Ch2 / before recovery.
+        LiftChapter2Clear(*player, world_.Semester().Current(),
+                          world_.Dialog());
         CheckChapterGates(*player, world_.Semester(), world_.Dialog());
+    }
 
     // End-of-frame sweep: deferred deletion avoids iterator invalidation
     // inside the Update loops above. Snapshot the player's death BEFORE
