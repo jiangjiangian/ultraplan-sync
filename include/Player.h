@@ -65,6 +65,11 @@ public:
         consumables_.clear();
         return *this;
     }
+    // Whole-map view for the Tab inventory UI (S5b-5) — read-only so the
+    // reactive InventoryView can render every held line without the
+    // Player exposing its storage for mutation.
+    [[nodiscard]] const std::unordered_map<std::string, int>&
+    Consumables() const noexcept { return consumables_; }
 
     // Loads a Pipoya 96x128 sprite sheet (3 walk frames x 4 directions of
     // 32x32 each). Replaces any previously loaded sheet.

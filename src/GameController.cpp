@@ -117,6 +117,14 @@ void GameController::Update() {
         }
     }
 
+    // Tab inventory overlay (S5b-5). Edge-triggered toggle, then — while
+    // open — freeze the sim exactly like the dialog box above (no tick /
+    // movement / collision / sweep). Placed AFTER the dialog block so a
+    // conversation has priority and Tab can't pop the panel mid-dialog.
+    if (Input::IsPressed(Key::Tab))
+        world_.SetInventoryOpen(!world_.InventoryOpen());
+    if (world_.InventoryOpen()) return;
+
     const float dt = Time::DeltaSeconds();
     Player* player = world_.GetPlayer();
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};

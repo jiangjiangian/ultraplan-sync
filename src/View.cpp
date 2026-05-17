@@ -8,6 +8,7 @@
 #include "WorldConfig.h"
 #include "DialogView.h"
 #include "EndingView.h"
+#include "InventoryView.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/CameraScope.h"
@@ -124,6 +125,15 @@ void View::Draw(const World& world) {
         .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
 
     DrawDialog(renderer_, world.Dialog());
+
+    // Tab inventory overlay, on top of the (frozen) world + dialog.
+    // Reactive: a pure function of World::InventoryOpen + the Player's
+    // count map, drawn each frame it is open (no retained UI state).
+    if (world.InventoryOpen()) {
+        if (const Player* ip = world.GetPlayer())
+            DrawInventory(renderer_, ip->Consumables(),
+                          viewportSize_.x, viewportSize_.y);
+    }
 }
 
 } // namespace nccu

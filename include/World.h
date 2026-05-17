@@ -55,6 +55,12 @@ public:
         return terrainMask_;
     }
 
+    // Tab inventory overlay (S5b-5): pure UI state on the World so View
+    // reacts to it and GameController freezes the sim while it is open
+    // (same model as the dialog box). Player owns the actual counts.
+    [[nodiscard]] bool InventoryOpen() const noexcept { return inventoryOpen_; }
+    void SetInventoryOpen(bool v) noexcept { inventoryOpen_ = v; }
+
     // Make the chapter-NPC roster follow the semester FSM. Removes ONLY
     // the chapter NPCs this method last spawned (tracked by raw pointer
     // in chapterRoster_) with a single deferred remove-erase pass —
@@ -81,6 +87,7 @@ private:
     DialogState                 dialog_;
     std::string                 currentBuildingName_;
     CollisionMask               terrainMask_;
+    bool                        inventoryOpen_{false};
 };
 
 } // namespace nccu
