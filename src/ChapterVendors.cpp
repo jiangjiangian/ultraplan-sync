@@ -25,11 +25,16 @@ std::string& VendorContentDir() {
 // yields fewer stalls than positions the extra spots are simply unused;
 // if more, the surplus stalls fall back to the last position.
 const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
+    // 2026-05-17 reachability fix: the original {1660,*}/{1360,1690}
+    // slots baked into solid terrain (east perimeter / a plaza prop —
+    // test_spawn_reachability now guards this). Relocated to the proven-
+    // walkable Zhinan y≈1850 band (still north of kInterludeExitMinY
+    // 1900, so the player browses on the way down to the south exit).
     static const std::vector<nccu::gfx::Vec2> kPos = {
         {  400.0f, 1460.0f}, {  720.0f, 1460.0f}, { 1040.0f, 1460.0f},
-        { 1360.0f, 1460.0f}, { 1660.0f, 1460.0f},
+        { 1360.0f, 1460.0f}, {  520.0f, 1850.0f},
         {  400.0f, 1690.0f}, {  720.0f, 1690.0f}, { 1040.0f, 1690.0f},
-        { 1360.0f, 1690.0f}, { 1660.0f, 1690.0f},
+        {  840.0f, 1850.0f}, { 1160.0f, 1850.0f},
     };
     return kPos;
 }

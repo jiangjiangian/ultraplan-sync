@@ -1,10 +1,19 @@
 #include "doctest/doctest.h"
 #include "CollisionMask.h"
 #include "NpcSpawns.h"
+#include "ChapterSpawns.h"
+#include "ChapterQuestItems.h"
+#include "ChapterPickups.h"
+#include "ChapterVendors.h"
+#include "SemesterState.h"
 #include <array>
 #include <queue>
 #include <string>
 #include <vector>
+
+#ifndef TEST_CONTENT_DIR
+#error "TEST_CONTENT_DIR must be defined by the build system"
+#endif
 
 // Defense-in-depth guard for the collision-mask integration. A baked
 // terrain mask that seals the campus perimeter, or a spawn coordinate
@@ -48,6 +57,35 @@ std::vector<Spot> GameplaySpots() {
         s.push_back(Spot{n.npcId, n.pos.x, n.pos.y});
     for (const auto& n : nccu::AmbientStudentSpawns())
         s.push_back(Spot{n.spritePath, n.pos.x, n.pos.y});
+
+    // S5b–S5e chapter spawns — these were NEVER reachability-validated
+    // (the playtest found objects in walls/trees). Cover every coord a
+    // chapter actually spawns: per-chapter NPC rosters (the new
+    // librarian / 香腸 / 大聲公 / 學姊 + the re-positioned archetypes),
+    // the Ch2 散落筆記, the parsed Interlude stalls + the hardcoded
+    // Ch2 自販機 / Ch4 集英樓 Vendors, and the Ch3/Ch4 道具箱
+    // TrueUmbrella (World.cpp inline spawn at {1500,1430}).
+    using nccu::SemesterState;
+    for (auto st : {SemesterState::Chapter2_Midterms,
+                    SemesterState::Chapter3_SportsDay,
+                    SemesterState::Chapter4_Finals}) {
+        for (const auto& n : nccu::ChapterNpcSpawns(st))
+            s.push_back(Spot{n.npcId, n.pos.x, n.pos.y});
+    }
+    for (const auto& q : nccu::ChapterQuestItems(SemesterState::Chapter2_Midterms))
+        s.push_back(Spot{"Ch2note", q.pos.x, q.pos.y});
+    for (const auto& pk : nccu::ChapterPickups(SemesterState::Chapter1_AddDrop))
+        s.push_back(Spot{"Ch1cash", pk.pos.x, pk.pos.y});
+
+    nccu::SetVendorContentDir(TEST_CONTENT_DIR);
+    nccu::ReloadVendors();
+    for (auto st : {SemesterState::Interlude_Market,
+                    SemesterState::Chapter2_Midterms,
+                    SemesterState::Chapter4_Finals}) {
+        for (const auto& v : nccu::ChapterVendors(st))
+            s.push_back(Spot{"vendor", v.pos.x, v.pos.y});
+    }
+    s.push_back(Spot{"Ch3/Ch4 道具箱 TrueUmbrella", 1500.0f, 1430.0f});
     return s;
 }
 
