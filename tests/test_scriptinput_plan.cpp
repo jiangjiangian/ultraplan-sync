@@ -95,18 +95,35 @@ const GameObject* FindNpc(const World& w, const char* id) {
 
 // `goto` is a pure function of player position + 3 px/frame: it must land
 // within the arrive-epsilon and never overshoot past it. Route picked to
-// avoid the static quest-NPC walls (goto is an axis driver, not a path-
-// finder — scripts compose waypoints to route around blockers).
+// avoid the static quest-NPC walls AND the baked terrain mask (goto is an
+// axis driver, not a path-finder — scripts compose waypoints to route
+// around blockers).
+//
+// Route reconciliation (BUGLEDGER I7): the shipped collision_mask.png
+// (committed in 964b4ee, AFTER this test was written against an
+// all-walkable world) bakes a continuous E-W wall at y≈1761–1819 across
+// the whole south campus; its ONLY gap is the column x≈880–1042. The old
+// `goto 750 1860 / goto 750 1280` drove straight up x=750, which is
+// walled at y≈1819 — the player flush-stopped at y≈1821 forever (`goto`
+// correctly does not path-find). The genuinely clear column is the gap
+// chute at x≈1000: x=1000 is mask-free top-to-bottom (verified — first
+// blocked y == none for the full y span; no static NPC in this column).
+// (1000,1300) is a free, NPC-free, mask-free target reachable by pure
+// X-then-Y from the spawn. Cross-ref: tests/test_i6_interact_reach.cpp
+// (owns the dialog-open guarantee) and tests/test_ch1_spine_reachable.cpp
+// (owns the full Ch1→Ch2 progression proof on this same mask).
 TEST_CASE("plan: `goto` drives the player to a free target within epsilon") {
-    // Player spawns at {500,1860}. Right along the open road to x=750,
-    // then up the clear column to the umbrella strip y=1280.
+    // Player spawns at {500,1860} on the open south road. East along the
+    // road to x=1000 (the only wall gap), then straight up the clear
+    // chute to y=1300 — all wall- and NPC-free (verified vs the shipped
+    // collision_mask.png + DefaultNpcSpawns()).
     const std::vector<Frame> tr =
-        RunPlan("goto 750 1860\ngoto 750 1280\n", 3000);
+        RunPlan("goto 1000 1860\ngoto 1000 1300\n", 3000);
 
     REQUIRE_FALSE(tr.empty());
     const Frame& last = tr.back();
-    CHECK(std::fabs(last.x - 750.0f) < 3.0f);   // within one frame's travel
-    CHECK(std::fabs(last.y - 1280.0f) < 3.0f);
+    CHECK(std::fabs(last.x - 1000.0f) < 3.0f);  // within one frame's travel
+    CHECK(std::fabs(last.y - 1300.0f) < 3.0f);
 }
 
 // `interact <npcId>` looks up the NPC's LIVE world position and drives the
@@ -142,10 +159,27 @@ TEST_CASE("plan: `interact victim` deterministically reaches the NPC") {
 }
 
 // The verb's actuation (drive + E) IS correct end-to-end on a NON-blocking
-// target: goto onto the FragileUmbrella (an Item, BlocksMovement()==false,
-// so the player CAN overlap it), then a tap of E reaches the game's
-// beClaimed path — proving the synthetic edges are indistinguishable from
-// hand-scripted input to GameController.
+// target: the player walks ONTO the TrueUmbrella (a TransparentUmbrella,
+// an Item with BlocksMovement()==false, so the player CAN overlap it) and
+// a tap of E reaches the game's beClaimed path — proving the synthetic
+// edges are indistinguishable from hand-scripted input to GameController.
+//
+// Route reconciliation (BUGLEDGER I7): on the shipped collision_mask.png
+// the umbrella strip (y≈1280) is sealed off from the spawn road by the
+// south wall (y≈1761–1819); the only crossing is the x≈880–1042 gap. The
+// old route drove straight up x=750 (the FragileUmbrella column), which
+// is walled — the player froze at y≈1821 and the case asserted a position
+// it could never reach. The robust, mask+NPC-verified route is: claim
+// gate (talk to 苦主 for Flag_PromisedVictim — every umbrella's beClaimed
+// is QuestGate-d, see TransparentUmbrella.cpp) → east on the open road →
+// up the x=1041 gap → west on the wall-north y≈1750 corridor (clear of
+// the mask AND all 5 DefaultNpcSpawns NPCs) → up the clean x=380 column
+// → onto the TrueUmbrella{320,1280}. This now also asserts the CLAIM
+// (Flag_HasTrueUmbrella, set only by TrueUmbrella::beClaimed), so it
+// genuinely exercises the drive+E→beClaimed path its title promises —
+// not just a final coordinate. Cross-ref: tests/test_i6_interact_reach
+// .cpp (NPC-dialog reach) and tests/test_ch1_spine_reachable.cpp (the
+// full Ch1→Ch2 spine on this mask).
 TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
@@ -153,13 +187,23 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     nccu::GameController controller{world};
 
     ScriptInput in;
-    std::istringstream src("goto 750 1860\ngoto 750 1280\n");
+    std::istringstream src(
+        "interact victim\n"           // Flag_PromisedVictim (claim gate)
+        "choose 0\n"
+        "advance\nadvance\nadvance\nadvance\nadvance\nadvance\n"
+        "goto 500 1900\n"             // onto the open south road
+        "goto 1041 1900\n"            // east to the only wall gap
+        "goto 1041 1750\n"            // up the gap, north of the S wall
+        "goto 380 1750\n"             // west on the clear wall-north corridor
+        "goto 380 1290\n"             // up the clean x=380 column
+        "interact trueumb 320 1280\n" // drive onto the Item + E => beClaimed
+        "wait 20\n");
     in.Load(src);
     nccu::gfx::Input::SetSource(&in);
 
     const World* snap = nullptr;
     bool planDone = false;
-    for (int f = 0; f < 3000 && !planDone; ++f) {
+    for (int f = 0; f < 8000 && !planDone; ++f) {
         in.Advance();
         in.ResolvePlan(snap);
         controller.Update();
@@ -171,11 +215,12 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
 
     const Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
-    // Reached the FragileUmbrella at {750,1280} within epsilon (proves the
-    // verb drove the player onto a non-blocking object it overlaps — the
-    // case where in-engine E-actuation is fully reachable).
-    CHECK(std::fabs(p->GetPosition().x - 750.0f) < 3.0f);
-    CHECK(std::fabs(p->GetPosition().y - 1280.0f) < 3.0f);
+    // The drive+E reached TransparentUmbrella::beClaimed end-to-end:
+    // Flag_HasTrueUmbrella is set ONLY there (src/TrueUmbrella.cpp), so
+    // this proves the synthetic E edge actuated the game on a reachable
+    // non-blocking Item — exactly what this case is named for.
+    CHECK(p->HasFlag("Flag_HasTrueUmbrella"));
+    CHECK(p->HasFlag("Flag_PromisedVictim"));
 }
 
 // The headline guarantee: two runs of the SAME script (mixing every verb)
