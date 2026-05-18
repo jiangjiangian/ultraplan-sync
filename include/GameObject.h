@@ -48,6 +48,14 @@ public:
     // Virtual-not-dynamic_cast, same rationale as BlocksMovement().
     [[nodiscard]] virtual std::string_view NpcId() const noexcept { return {}; }
 
+    // Shop counter? Default: false (everything but Vendor). A Vendor has
+    // an empty NpcId() (it is not a dialog-content NPC) so without this
+    // the E-interact path would route it to NPC::Interact line-cycling
+    // and TryBuy would never run (BUGLEDGER I5). GameController checks
+    // this to drive the purchase choice UI. Virtual-not-dynamic_cast,
+    // same closed-under-inheritance rationale as BlocksMovement().
+    [[nodiscard]] virtual bool IsVendor() const noexcept { return false; }
+
 protected:
     nccu::gfx::Vec2 position_;
     nccu::gfx::Rect hitBox_;

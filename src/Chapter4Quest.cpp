@@ -24,6 +24,17 @@ void TryApplyCh4Ripple(Player& player, std::string_view npcId,
         return;
     }
 
+    if (npcId == "shop_auntie") {
+        // chapter4.md 阿姨 (a) 直接情報 callback `// karma +3`（Ch1
+        // 請咖啡情分，Ch4 直接情報兌現）, once. Only on the direct-info
+        // route (Flag_BoughtCoffeeForAuntie_Ch1) — the (d) 間接情報
+        // route grants nothing, mirroring 學長 +10 being (b)-route only.
+        if (player.HasFlag(kFlagCh4RippledAuntie)) return;
+        if (player.HasFlag(kFlagBoughtCoffeeForAuntie))
+            player.AddKarma(3).SetFlag(kFlagCh4RippledAuntie);
+        return;
+    }
+
     if (npcId == "ta") {
         // Two INDEPENDENT effects (chapter4.md L235): the (b) 坦白 +10
         // for HelpedTA_Ch1 AND the (c) 對峙 -15 for HasProfessorTrap —
