@@ -3,6 +3,10 @@ build/
 *.o
 *.obj
 *.exe
+.cache/
+
+# Local full-repo git backup — must never be committed
+.git.backup-before-filter/
 
 # Secrets / API keys
 .env
@@ -17,13 +21,30 @@ build/
 # macOS
 .DS_Store
 
-# Unzipped third-party sprite packs — only the curated subset under
-# resources/assets/sprites/ is versioned (see sprites/ATTRIBUTIONS.md).
+# resources/assets: only runtime-required subsets are versioned —
+# curated sprites/, the CJK font, the final map masks, and the trimmed
+# 3D building art the game actually loads. Heavy raw / intermediate art
+# and the unzipped third-party pack stay local (see sprites/ATTRIBUTIONS.md).
 resources/assets/PIPOYA FREE RPG Character Sprites 32x32/
+resources/assets/buildings_3d/
+resources/assets/buildings_topdown/
+resources/assets/buildings_topdown_trimmed/
+resources/assets/Real_Buildings/
+resources/assets/style/
+resources/assets/Others/
+resources/assets/maps/
 
 # Local development tooling and notes — never push
 .claude/
 .codex/
 AGENTS.md
 CLAUDE.md
+Game_Plan.md
+System_Design_UML_analysis.md
 docs/superpowers/
+
+# Asset / map pipeline working files (regenerated locally; not shipped)
+tools/__pycache__/
+tools/*.bak.*
+tools/_plot_mask_preview.png
+tools/world.tmj
