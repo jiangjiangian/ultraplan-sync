@@ -1,6 +1,7 @@
 #include "DialogOpener.h"
 #include "Chapter2Quest.h"
 #include "Chapter3Quest.h"
+#include "Chapter4Quest.h"
 #include "DialogState.h"
 #include "DialogSource.h"
 #include "Player.h"
@@ -83,12 +84,18 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         }
     }
     if (state == SemesterState::Chapter2_Midterms) {
-        // S5c-3 ripple routing. Genuine flag-gated SEPARATE subStates
-        // only — 學霸/苦主/阿姨's `*（若 Flag_X）*` are conditional
-        // LINES inside one subState, which the parser flattens (same
-        // class as (c)/(c-fail) in S5c-2; documented omission, not
-        // routable without a chapter2.md edit). Line-only recap; the
-        // once-per-Ch2 karma is landed by TryApplyCh2Ripple, not here.
+        // S5c-3 ripple routing. Line-only recap; the once-per-Ch2 karma
+        // is landed by TryApplyCh2Ripple, not here.
+        //
+        // B5: 學霸/苦主/阿姨's reactive beats USED to be inline
+        // `*（若 Flag_X）*` lines the parser silently drops. They are now
+        // re-authored as genuine flag-gated SEPARATE subStates in
+        // chapter2.md and routed here so the line actually displays
+        // (mirrors the 助教 "(c) 取代 (a) 段" pattern):
+        //   學霸  Flag_TookCursedUmbrella & !Recovered -> (b) 詛咒冷反應
+        //   苦主  Flag_PromisedVictim                  -> (c) 承諾回扣
+        //   苦主  Flag_BoughtUglyUmbrella              -> (d) 醜傘辨識
+        //   阿姨  Flag_BoughtUglyUmbrella              -> (b) 醜傘辨識
         if (npcId == "suit_senior") {
             if (player.HasFlag("Flag_HelpedSenior"))  return 1;  // (b) +3
             if (player.HasFlag("Flag_ScoldedSenior")) return 2;  // (c) -3
@@ -110,14 +117,31 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             return 0;
         }
         if (npcId == "bookworm") {
-            // 喚醒前皆 (a) 遊魂；TryRescueBookworm 設 Recovered 後
-            // -> (d) 致謝 recap（line-only；+5 已在 rescue 套，(d)
-            // blockquote 無 flag 註解，once-apply 不重套）。(c)/(c-fail)
-            // 刻意不路由：解析器把 (c) 兩個粗體子塊併進同一 subState，
-            // 無法分離（需 chapter2.md 切段，屬 C.1 以外的 content
-            // gate，Phase 2 不做——已知省略，見計畫 §F.5）。
+            // Recovered 後 -> (d) 致謝 recap（line-only；+5 已在 rescue
+            // 套，(d) blockquote 無 flag 註解，once-apply 不重套）。
+            // B5: 喚醒前若玩家身上有詛咒傘 -> (b) 詛咒冷反應變體
+            // (chapter2.md (b)「取代 (a)」；學霸直覺感應到那把寫著別人
+            // 名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應)。否則
+            // (a) 常態遊魂初遇。(c)/(c-fail) 仍不路由：解析器把 (c) 兩個
+            // 粗體子塊併進同一 subState，無法分離（已知省略，見 §F.5）。
             if (player.HasFlag(kFlagBookwormRecovered)) return 3;
-            return 0;
+            if (player.HasFlag("Flag_TookCursedUmbrella")) return 1;  // (b)
+            return 0;                                                // (a)
+        }
+        if (npcId == "shop_auntie") {
+            // B5: 買過集英樓螢光綠醜傘 -> (b) 阿姨認出你（取代 (a)）。
+            // 否則 (a) 考試週招呼。(c) 狼狽版仍由 rainMeter 機制觸發，
+            // 非 opener 路由（沿用原狀，已知省略）。
+            if (player.HasFlag("Flag_BoughtUglyUmbrella")) return 1;  // (b)
+            return 0;                                                // (a)
+        }
+        if (npcId == "victim") {
+            // B5: Ch1 承諾過 -> (c) 她記得承諾（取代 (a)）；買過醜傘
+            // -> (d) 她注意到那把醜傘（取代 (b)）。兩旗標互不相斥，
+            // 承諾的情感回扣優先於醜傘的辨識橋段。否則 (a) 常態路過。
+            if (player.HasFlag("Flag_PromisedVictim")) return 2;     // (c)
+            if (player.HasFlag("Flag_BoughtUglyUmbrella")) return 3;  // (d)
+            return 0;                                                // (a)
         }
     }
     if (state == SemesterState::Chapter3_SportsDay) {
@@ -215,9 +239,18 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
                 !player.HasUmbrella()) return 1;
             return 0;
         }
-        // shop_auntie falls through to the line-only (a) opener — its
-        // Ending-C role is the 集英樓 Vendor (S5e-2b), not a routed
-        // subState; (b)/(c) are deeper flavor beats.
+        if (npcId == "shop_auntie") {
+            // B3: the Ch1→Ch4 阿姨 ripple the GDD names
+            // (Flag_BoughtCoffeeForAuntie_Ch1) but engine never read.
+            // Ch1 請過咖啡情分 → (a) 直接情報（subState 0，主動說助教
+            // 往哪跑）；否則 → (d) 間接情報（subState 3，只說「那個常
+            // 來的助教很趕」）. The +3 (a)-route callback is path-b via
+            // TryApplyCh4Ripple (chapter4.md karma is bullet-doc, not a
+            // `>` blockquote — nothing here is parser-applied). (b)/(c)
+            // 推銷綠傘/拒買 stay the Ending-C 集英樓 Vendor flavour beats.
+            if (player.HasFlag(kFlagBoughtCoffeeForAuntie)) return 0;  // (a)
+            return 3;                                                 // (d)
+        }
     }
     return 0;
 }

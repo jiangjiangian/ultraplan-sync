@@ -1,4 +1,5 @@
 #include "DialogState.h"
+#include "DialogLayout.h"
 #include <algorithm>
 
 namespace nccu {
@@ -9,6 +10,7 @@ void DialogState::Open(std::vector<std::string> lines,
     lines_        = std::move(lines);
     choices_      = std::move(choices);
     cursor_       = 0;
+    pageCursor_   = 0;
     choiceCursor_ = 0;
     active_       = true;
 }
@@ -17,6 +19,28 @@ const std::string& DialogState::CurrentLine() const {
     static const std::string kEmpty;
     if (!active_ || cursor_ >= lines_.size()) return kEmpty;
     return lines_[cursor_];
+}
+
+std::vector<std::string> DialogState::CurrentPageRows() const {
+    if (!active_ || cursor_ >= lines_.size()) return {};
+    const auto pages = dialog::LayoutPages(
+        lines_[cursor_], dialog::kBoxCells, dialog::kBoxRowsPerPage);
+    const std::size_t pc = std::min(pageCursor_, pages.size() - 1);
+    return pages[pc];
+}
+
+bool DialogState::CurrentLineHasMorePages() const {
+    if (!active_ || cursor_ >= lines_.size()) return false;
+    const auto pages = dialog::LayoutPages(
+        lines_[cursor_], dialog::kBoxCells, dialog::kBoxRowsPerPage);
+    return pageCursor_ + 1 < pages.size();
+}
+
+bool DialogState::HasMore() const {
+    if (!active_ || cursor_ >= lines_.size()) return false;
+    if (CurrentLineHasMorePages()) return true;       // more pages
+    if (cursor_ + 1 < lines_.size()) return true;     // more lines
+    return !choices_.empty();                         // choice menu next
 }
 
 void DialogState::MoveChoice(int delta) noexcept {
@@ -28,7 +52,12 @@ void DialogState::MoveChoice(int delta) noexcept {
 const DialogChoice* DialogState::Advance() {
     if (!active_) return nullptr;
     if (cursor_ < lines_.size()) {
+        if (CurrentLineHasMorePages()) {  // turn the page, stay on line
+            ++pageCursor_;
+            return nullptr;
+        }
         ++cursor_;
+        pageCursor_ = 0;
         if (cursor_ < lines_.size()) return nullptr;       // next line
         if (choices_.empty()) { Close(); return nullptr; } // end, no choice
         return nullptr;                                    // enter choice mode
@@ -41,6 +70,7 @@ const DialogChoice* DialogState::Advance() {
         lines_        = picked_.nextLines;   // play the (b)/(c) consequence
         choices_.clear();
         cursor_       = 0;
+        pageCursor_   = 0;
         choiceCursor_ = 0;
         // active_ stays true; AtChoice() now false; CurrentLine()==nextLines[0]
     } else {
@@ -54,6 +84,7 @@ void DialogState::Close() noexcept {
     lines_.clear();
     choices_.clear();
     cursor_       = 0;
+    pageCursor_   = 0;
     choiceCursor_ = 0;
     npcId_.clear();
 }

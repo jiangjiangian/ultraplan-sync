@@ -2,6 +2,7 @@
 #include "View.h"
 #include "GameController.h"
 #include "CharacterSelect.h"
+#include "Harness.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Font.h"
@@ -24,10 +25,19 @@ int main() {
     // GL context exists, before any text (incl. character-select) draws.
     nccu::gfx::EnsureFont();
 
-    auto selection = nccu::RunCharacterSelect(win);
-    if (selection.closed) {
-        nccu::gfx::ShutdownFont();   // free the glyph atlas while GL is live
-        return 0;
+    // Off unless UMBRELLA_SCRIPT is set; then it drives input headlessly
+    // and skips the interactive character-select for a deterministic run.
+    auto harness = nccu::MaybeAttach();
+
+    nccu::CharacterSelectResult selection;
+    if (harness.Active()) {
+        selection.spritePath = harness.SpritePath();
+    } else {
+        selection = nccu::RunCharacterSelect(win);
+        if (selection.closed) {
+            nccu::gfx::ShutdownFont();   // free the glyph atlas while GL is live
+            return 0;
+        }
     }
 
     // Declaration order matters: reverse-destruction runs the controller
@@ -37,12 +47,16 @@ int main() {
     nccu::View           view{kWinW, kWinH};
     nccu::GameController  controller{world};
 
-    while (!win.ShouldClose()) {
+    harness.WireEvents();   // after controller wiring: teardown stays safe
+
+    while (!win.ShouldClose() && !harness.ShouldQuit()) {
+        harness.BeginFrame();
         controller.Update();
         {
             nccu::gfx::DrawScope frame;
             view.Draw(world);
         }
+        harness.EndFrame(world);
     }
 
     // Unload the font BEFORE the Window dtor runs ::CloseWindow(): a
