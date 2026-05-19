@@ -16,6 +16,14 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 include(FetchContent)
 
+# doctest v2.4.11 declares cmake_minimum_required(VERSION 3.0); CMake >= 4.0
+# dropped policy-<3.5 compatibility and aborts configure on it. Bake CMake's
+# documented escape hatch in so a bare `cmake -B build` works without the
+# caller passing -DCMAKE_POLICY_VERSION_MINIMUM=3.5 (a user -D still wins).
+if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif()
+
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
     "${SRC_DIR}/*.cpp"
     "${INCLUDE_DIR}/*.h"
