@@ -244,6 +244,32 @@ void GameController::Update() {
     // closes, instead of burning its TTL behind it.
     world_.TickHud(dt);
     Player* player = world_.GetPlayer();
+
+    // BUGLEDGER I8: conservative wiring of the GDD rain-survival meter.
+    // The meter was dead code (no production caller); drive it once per
+    // frame here so it is naturally frozen during dialog/inventory like
+    // the rest of the sim (both early-return above). Rain only ticks
+    // OUTDOORS: not the market interlude, not an ending, and not while
+    // sheltered inside a building. The building predicate is the existing
+    // BuildingTracker (World::CurrentBuildingName() is non-empty when the
+    // player center is in a building trigger zone — refreshed at the end
+    // of the previous frame, line ~358; one-frame latency on a 5 u/s
+    // drain is imperceptible and stays deterministic). ApplyRain already
+    // self-suppresses on hasUmbrella_, so we do not duplicate that here.
+    // lethal=false: the ≥100→正門 teleport (and any movement-speed
+    // penalty) is deferred to a future dedicated cycle so it cannot
+    // perturb the deterministic goto-based ending scripts.
+    if (player) {
+        const SemesterState ss = world_.Semester().Current();
+        const bool inEnding = ss == SemesterState::Ending_A ||
+                              ss == SemesterState::Ending_B ||
+                              ss == SemesterState::Ending_C;
+        const bool indoors = !world_.CurrentBuildingName().empty();
+        const bool outdoors = ss != SemesterState::Interlude_Market &&
+                              !inEnding && !indoors;
+        if (outdoors) player->ApplyRain(dt, /*lethal=*/false);
+    }
+
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
 
     ForEachActive(world_.Objects(), [dt](GameObject& o) { o.Update(dt); });

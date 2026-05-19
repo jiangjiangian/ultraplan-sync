@@ -66,8 +66,21 @@ inline const std::vector<std::string>& FontCandidates() {
 // unreadable. UTF-8; decoded via raylib's own codepoint loader.
 inline const char* UiLiteralChars() {
     return
-        // EndingView caption + placeholder
-        "這樣以後再也不會有人拿錯你的傘了結局字卡待接入"
+        // EndingView captions (A 真相大白 / B 屠龍者終成惡龍 / C 破財消災)
+        // — every glyph kept here so the cards still render correctly even
+        // on the content-unreadable fallback path (some, e.g. 討/厭, do
+        // not occur in docs/content/*.md at all).
+        "雨過天晴傘還在你手上"
+        "你成為了曾經最討厭的那種人"
+        "這樣以後再也不會有拿錯的了"
+        // Punctuation used by the UI literals above (CJK quotes / comma /
+        // full stop) — full-width, atlas-collected like the ideographs.
+        "「」，。"
+        // DialogView B4 pagination affordance: U+25BC ▼ "more" cue. Not an
+        // ASCII char and absent from every content .md, so without this it
+        // renders as the raylib no-glyph `?` (the V1 tofu bug). DialogView
+        // uses only the down-cue; no ▲ up-cue exists, so none is added.
+        "\xE2\x96\xBC"  // U+25BC ▼
         // InventoryView panel
         "物品欄空";
 }

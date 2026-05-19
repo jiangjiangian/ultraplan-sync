@@ -116,12 +116,12 @@ bool Player::DeductMoney(int amount) noexcept {
     return true;
 }
 
-Player& Player::ApplyRain(float dt) {
+Player& Player::ApplyRain(float dt, bool lethal) {
     if (hasUmbrella_) {
         return *this;  // umbrella nullifies exposure
     }
     rainMeter_ = std::clamp(rainMeter_ + 5.0f * dt, 0.0f, 100.0f);
-    if (rainMeter_ >= 100.0f) {
+    if (lethal && rainMeter_ >= 100.0f) {
         RespawnAtGate();
     }
     return *this;

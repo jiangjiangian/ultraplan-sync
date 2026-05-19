@@ -36,11 +36,11 @@ TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + keeps the penalt
     CursedUmbrella cursed{nccu::gfx::Vec2{0, 0}};
     cursed.beClaimed(&p);
     CHECK(p.HasFlag("Flag_TookCursedUmbrella"));
-    CHECK(p.GetKarma() == k0 - 50);          // existing -50 penalty intact
+    CHECK(p.GetKarma() == k0 - 30);          // F2: locked -30 big-event penalty
 
     cursed.beClaimed(&p);                    // idempotent
     CHECK(p.HasFlag("Flag_TookCursedUmbrella"));
-    CHECK(p.GetKarma() == k0 - 50);          // not double-penalised
+    CHECK(p.GetKarma() == k0 - 30);          // not double-penalised
 }
 
 TEST_CASE("The good/fragile umbrellas do NOT seed the ripple flags") {

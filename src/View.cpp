@@ -110,21 +110,109 @@ void View::Draw(const World& world) {
         }
     }
 
-    TextBuilder{"WASD: move    E: pick up"}
-        .At(Vec2{10, 10}).Size(16).Color(Colors::DarkGray).Draw();
+    // Top-left status: WASD hint, karma/umbrella, optional building,
+    // chapter name, rain meter. Previously plain DarkGray/Blue text drawn
+    // straight onto the bright worldmap — barely legible. Now it reuses
+    // the proven objective-panel idiom (a translucent Color{20,22,30,185}
+    // backing rect + bright text) so every value pops on any background.
+    {
+        constexpr float kHudX    = 10.0f;
+        constexpr float kHudY    = 10.0f;
+        constexpr float kLineH   = 20.0f;
+        constexpr int   kHudSize = 16;
+        constexpr float kPad     = 6.0f;
+
+        const Player* p = world.GetPlayer();
+        char kbuf[64] = {0};
+        if (p)
+            std::snprintf(kbuf, sizeof(kbuf), "karma: %d   umbrella: %s",
+                p->GetKarma(), p->HasUmbrella() ? "yes" : "no");
+        const bool inside = !world.CurrentBuildingName().empty();
+        const std::string insideLine =
+            inside ? ("Inside: " + world.CurrentBuildingName())
+                   : std::string{};
+        const std::string chapter{world.Semester().CurrentName()};
+        char rbuf[32] = {0};
+        if (p)
+            std::snprintf(rbuf, sizeof(rbuf), "rain: %d%%",
+                static_cast<int>(p->GetRainMeter() + 0.5f));
+
+        // Lines actually present (Inside is conditional). Width estimated
+        // from UTF-8 lead-byte count like the objective panel below — the
+        // chapter name is CJK so worst-case ~size px per glyph.
+        int rows = 1;                         // WASD hint
+        if (p)    rows += 1;                  // karma/umbrella
+        if (inside) rows += 1;                // Inside
+        rows += 1;                            // chapter
+        if (p)    rows += 1;                  // rain
+        std::size_t maxGlyphs = std::string("WASD: move    E: pick up").size();
+        auto glyphsOf = [](const std::string& s) {
+            int g = 0;
+            for (unsigned char c : s) if ((c & 0xC0) != 0x80) ++g;
+            return static_cast<std::size_t>(g);
+        };
+        maxGlyphs = std::max(maxGlyphs, glyphsOf(kbuf));
+        if (inside) maxGlyphs = std::max(maxGlyphs, glyphsOf(insideLine));
+        maxGlyphs = std::max(maxGlyphs, glyphsOf(chapter) * 2);  // CJK wide
+        maxGlyphs = std::max(maxGlyphs, glyphsOf(rbuf));
+        const float panelW =
+            static_cast<float>(maxGlyphs) * (kHudSize * 0.55f) + kPad * 2.0f;
+        const float panelH =
+            static_cast<float>(rows) * kLineH + kPad * 2.0f - 4.0f;
+        renderer_.DrawRect(Rect{kHudX - kPad, kHudY - kPad, panelW, panelH},
+                           Color{20, 22, 30, 185});
+
+        float y = kHudY;
+        TextBuilder{"WASD: move    E: pick up"}
+            .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::White).Draw();
+        y += kLineH;
+        if (p) {
+            TextBuilder{kbuf}
+                .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::White).Draw();
+            y += kLineH;
+        }
+        if (inside) {
+            TextBuilder{insideLine}
+                .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::Gold).Draw();
+            y += kLineH;
+        }
+        TextBuilder{chapter}
+            .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::Gold).Draw();
+        y += kLineH;
+        if (p) {
+            // Rain readout colour ramps with the meter so the rising risk
+            // is legible at a glance (tiers mirror the vignette below).
+            const float rm = p->GetRainMeter();
+            const Color rc = rm >= 85.0f ? Colors::Red
+                           : rm >= 60.0f ? Colors::Gold
+                                         : Colors::White;
+            TextBuilder{rbuf}
+                .At(Vec2{kHudX, y}).Size(kHudSize).Color(rc).Draw();
+            y += kLineH;
+        }
+    }
+
+    // Rain "pressure" vignette — PURE render derived only from
+    // GetRainMeter() (no sim/state/input touched: MVC §5). The rain is
+    // non-lethal this cycle; the feedback is purely visual. Screen-edge
+    // darkening in two tiers (≥60 subtle, ≥85 stronger) drawn as four
+    // border bands (cheap, no full-screen texture/alloc, deterministic).
     if (const Player* p = world.GetPlayer()) {
-        char buf[64];
-        std::snprintf(buf, sizeof(buf), "karma: %d   umbrella: %s",
-            p->GetKarma(), p->HasUmbrella() ? "yes" : "no");
-        TextBuilder{buf}
-            .At(Vec2{10, 30}).Size(16).Color(Colors::DarkGray).Draw();
+        const float rm = p->GetRainMeter();
+        unsigned char va = 0;
+        if (rm >= 85.0f)      va = 90;
+        else if (rm >= 60.0f) va = 45;
+        if (va > 0) {
+            const Color v{0, 0, 0, va};
+            const float W = viewportSize_.x;
+            const float H = viewportSize_.y;
+            const float b = std::min(W, H) * 0.12f;  // band thickness
+            renderer_.DrawRect(Rect{0.0f, 0.0f, W, b}, v);          // top
+            renderer_.DrawRect(Rect{0.0f, H - b, W, b}, v);         // bottom
+            renderer_.DrawRect(Rect{0.0f, 0.0f, b, H}, v);          // left
+            renderer_.DrawRect(Rect{W - b, 0.0f, b, H}, v);         // right
+        }
     }
-    if (!world.CurrentBuildingName().empty()) {
-        TextBuilder{"Inside: " + world.CurrentBuildingName()}
-            .At(Vec2{10, 50}).Size(16).Color(Colors::Black).Draw();
-    }
-    TextBuilder{std::string{world.Semester().CurrentName()}}
-        .At(Vec2{10, 70}).Size(16).Color(Colors::Blue).Draw();
 
     // Quest objective: a panel-backed one-liner, top-centre but BELOW
     // the left status column (its lines end ~y86) so it never overlaps

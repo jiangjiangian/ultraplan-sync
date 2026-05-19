@@ -46,6 +46,6 @@ TEST_CASE("CursedUmbrella applies karma penalty on beClaimed") {
     int before = p.GetKarma();
     CursedUmbrella u({0, 0});
     u.beClaimed(&p);
-    CHECK(p.GetKarma() == before - 50);
+    CHECK(p.GetKarma() == before - 30);  // F2: locked -30 big-event penalty
     CHECK(p.HasUmbrella() == true);
 }
