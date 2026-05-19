@@ -1,6 +1,7 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 #include "Character.h"
+#include "gfx/Color.h"
 #include "gfx/Texture.h"
 #include "gfx/Vec2.h"
 #include <optional>
@@ -75,6 +76,16 @@ public:
     // 32x32 each). Replaces any previously loaded sheet.
     void LoadSprite(const std::string& path);
 
+    // Draw-time colour modulate for the chosen persona (character-select
+    // feature). Pure data: Render() passes it to IRenderer::DrawSprite so
+    // five personas sharing a base Pipoya sheet still read as distinct
+    // without committing any new sprite binary. White = no recolour
+    // (the default, also what the autoplay harness uses). Not gameplay
+    // state — purely cosmetic, reset on a fresh World like everything
+    // else (Restart builds a new Player).
+    Player& SetTint(nccu::gfx::Color t) noexcept { tint_ = t; return *this; }
+    [[nodiscard]] nccu::gfx::Color GetTint() const noexcept { return tint_; }
+
     [[nodiscard]] int   GetKarma()      const noexcept { return karma_; }
     [[nodiscard]] float GetRainMeter()  const noexcept { return rainMeter_; }
     [[nodiscard]] bool  HasUmbrella()   const noexcept { return hasUmbrella_; }
@@ -113,6 +124,7 @@ private:
     std::unordered_map<std::string, int>  consumables_;
 
     std::optional<nccu::gfx::Texture> sprite_;
+    nccu::gfx::Color tint_{255, 255, 255, 255};  // persona colour modulate
     nccu::gfx::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down
     float animTimer_{0.0f};
     int   animStep_{0};                       // 0..3 -> column 1,0,1,2
