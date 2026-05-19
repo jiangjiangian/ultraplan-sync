@@ -76,7 +76,7 @@ void Player::Render(nccu::gfx::IRenderer& renderer) const {
         hitBox_.y +  hitBox_.height - kSpriteCell,
         static_cast<float>(kSpriteCell),
         static_cast<float>(kSpriteCell)};
-    renderer.DrawSprite(*sprite_, src, dest);
+    renderer.DrawSprite(*sprite_, src, dest, tint_);
 }
 
 void Player::Interact(Player* /*initiator*/) {

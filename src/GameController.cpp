@@ -145,6 +145,51 @@ void GameController::Update() {
         lastRosterState_ = cur;
     }
 
+    // In-game pause menu (top-right). Opens with Esc or M; while open the
+    // world is fully frozen (we early-return before the object tick /
+    // movement / rain / sweep, exactly like the dialog/inventory
+    // freezes). Placed FIRST so the pause takes precedence over a dialog
+    // or the Tab inventory. Esc/M also closes it (toggle / Resume), so it
+    // is reachable and dismissable with one key. Restart/Quit only RECORD
+    // an intent on the World — the actual World teardown+rebuild happens
+    // in main.cpp's outer loop, the single place that can re-run the
+    // RAII-ordered composition root without leaking EventBus subscribers
+    // (BUGLEDGER B2/H1). The controller never destroys itself.
+    {
+        using nccu::gfx::Input;
+        using nccu::gfx::Key;
+        const bool toggle =
+            Input::IsPressed(Key::Escape) || Input::IsPressed(Key::M);
+        if (world_.MenuOpen()) {
+            if (Input::IsPressed(Key::Up))   world_.MoveMenuCursor(-1);
+            if (Input::IsPressed(Key::Down)) world_.MoveMenuCursor(1);
+            if (toggle) {                       // Esc/M = quick Resume
+                world_.SetMenuOpen(false);
+                return;
+            }
+            if (Input::IsPressed(Key::Enter)) {
+                switch (world_.MenuCursor()) {
+                    case 0:                     // 繼續 (Resume)
+                        world_.SetMenuOpen(false);
+                        break;
+                    case 1:                     // 重新開始 (Restart)
+                        world_.RequestAppAction(
+                            World::AppAction::Restart);
+                        break;
+                    default:                    // 離開 (Quit)
+                        world_.RequestAppAction(
+                            World::AppAction::Quit);
+                        break;
+                }
+            }
+            return;   // frozen while the menu is up
+        }
+        if (toggle) {                           // open from gameplay
+            world_.SetMenuOpen(true);
+            return;
+        }
+    }
+
     // Dialog freeze: while a conversation is open the world is paused —
     // we run ONLY the dialog input and skip the object tick / movement /
     // collision / building-entry / sweep below. IsKeyPressed is edge-
