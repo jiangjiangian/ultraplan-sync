@@ -1,5 +1,6 @@
 #include "doctest/doctest.h"
 #include "Chapter4Quest.h"
+#include "DialogOpener.h"
 #include "Player.h"
 #include "gfx/Vec2.h"
 
@@ -67,6 +68,46 @@ TEST_CASE("TryApplyCh4Ripple: 助教 +10 / -15 are INDEPENDENT (L235)") {
         nccu::TryApplyCh4Ripple(p, "ta", kCh4);
         CHECK(p.GetKarma() == k0 - 5);       // both keys consumed
     }
+}
+
+// B3: the Ch1→Ch4 福利社阿姨 ripple. Flag_BoughtCoffeeForAuntie_Ch1
+// (seeded by the Ch1 阿姨 (d) 請咖啡 choice) cashes in as the +3
+// 直接情報 callback (chapter4.md 阿姨 (a)), once. Without the wiring
+// the flag was set by nothing and read by nothing — dead content.
+TEST_CASE("B3 TryApplyCh4Ripple: 福利社阿姨 +3 on coffee flag, once") {
+    Player p = MakePlayer();
+    const int k0 = p.GetKarma();
+    // No Ch1 coffee -> indirect-info route, no +3.
+    nccu::TryApplyCh4Ripple(p, "shop_auntie", kCh4);
+    CHECK(p.GetKarma() == k0);
+    CHECK_FALSE(p.HasFlag("Flag_Ch4Rippled_Auntie"));
+
+    p.SetFlag("Flag_BoughtCoffeeForAuntie_Ch1");
+    nccu::TryApplyCh4Ripple(p, "shop_auntie", kCh4);
+    CHECK(p.GetKarma() == k0 + 3);                 // 情分 callback landed
+    CHECK(p.HasFlag("Flag_Ch4Rippled_Auntie"));
+    nccu::TryApplyCh4Ripple(p, "shop_auntie", kCh4);
+    CHECK(p.GetKarma() == k0 + 3);                 // once only
+
+    // Wrong state -> no-op even with the flag.
+    Player q = MakePlayer();
+    q.SetFlag("Flag_BoughtCoffeeForAuntie_Ch1");
+    const int qk = q.GetKarma();
+    nccu::TryApplyCh4Ripple(q, "shop_auntie",
+                            SemesterState::Chapter1_AddDrop);
+    CHECK(q.GetKarma() == qk);
+}
+
+// B3: Ch4 阿姨 dialogue routes on the Ch1 coffee flag — (a) 直接情報
+// (subState 0) when the player bought coffee in Ch1, else (d) 間接情報
+// (subState 3). The dead annotation gated nothing before this.
+TEST_CASE("B3 ResolveOpenerSubState: Ch4 shop_auntie coffee routing") {
+    Player p = MakePlayer();
+    // No Ch1 coffee -> (d) 間接情報.
+    CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh4, p) == 3);
+    p.SetFlag("Flag_BoughtCoffeeForAuntie_Ch1");
+    // Coffee情分 -> (a) 直接情報.
+    CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh4, p) == 0);
 }
 
 TEST_CASE("TryApplyCh4Ripple: wrong state / wrong npc -> no-op") {

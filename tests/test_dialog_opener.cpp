@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "DialogOpener.h"
 #include "DialogState.h"
+#include "GameController.h"
 #include "Player.h"
 
 using nccu::DialogState;
@@ -65,10 +66,13 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     // Step through the 4 (a) opener lines into choice mode.
     for (int i = 0; i < 4; ++i) d.Advance();
     CHECK(d.AtChoice());
-    REQUIRE(d.Choices().size() == 2);
-    // Table order: subState 1 first, subState 2 second.
+    // B3: a third Ch1 choice — 請阿姨喝咖啡 — seeds the Ch1→Ch4
+    // 福利社阿姨 ripple the GDD names but engine never read.
+    REQUIRE(d.Choices().size() == 3);
+    // Table order: subState 1, 2, 3 (a<b<c<d, opener is subState 0).
     CHECK(d.Choices()[0].label == "玩家詢問雨傘");
     CHECK(d.Choices()[1].label == "玩家購買醜綠傘後");
+    CHECK(d.Choices()[2].label == "請阿姨喝一杯熱咖啡");
     // C.1 (pre-approved): the Ch1 阿姨 buy branch now seeds
     // Flag_KnowsUglyUmbrella, NOT Flag_BoughtUglyUmbrella. The real
     // purchase (→ Ending C) moved to the Ch4 集英樓 Vendor; the Ch1
@@ -81,6 +85,34 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     CHECK(c->flagValue == true);
     while (d.Active()) d.Advance();    // exhaust -> close
     CHECK_FALSE(d.Active());
+}
+
+// B3 regression: the Ch1 福利社阿姨 (d) 請咖啡 choice is the SEED of
+// Flag_BoughtCoffeeForAuntie_Ch1 — the GDD-named Ch1→Ch4 ripple that
+// was dead content (set by nothing, read by nothing). Picking it must
+// set the flag (+5 karma); WITHOUT the chapter1.md (d) substate +
+// the choice-opener path this choice does not exist and the REQUIRE
+// on its presence fails.
+TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
+    DialogState d;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    const int k0 = p.GetKarma();
+    nccu::OpenNpcDialog(d, p, "shop_auntie", SemesterState::Chapter1_AddDrop);
+    for (int i = 0; i < 4; ++i) d.Advance();          // (a) opener lines
+    REQUIRE(d.AtChoice());
+    REQUIRE(d.Choices().size() == 3);
+    const nccu::DialogChoice& coffee = d.Choices()[2];
+    CHECK(coffee.label == "請阿姨喝一杯熱咖啡");
+    CHECK(coffee.setsFlag == "Flag_BoughtCoffeeForAuntie_Ch1");
+    CHECK(coffee.flagValue == true);
+    CHECK(coffee.karmaDelta == 5);
+    // Confirm the choice end-to-end through the GameController applier.
+    d.MoveChoice(2);
+    const nccu::DialogChoice* c = d.Advance();
+    REQUIRE(c != nullptr);
+    nccu::ApplyDialogChoice(p, *c);
+    CHECK(p.HasFlag("Flag_BoughtCoffeeForAuntie_Ch1"));
+    CHECK(p.GetKarma() == k0 + 5);
 }
 
 TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {

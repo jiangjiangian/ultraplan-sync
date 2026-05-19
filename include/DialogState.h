@@ -28,6 +28,20 @@ public:
         return active_ && cursor_ >= lines_.size() && !choices_.empty();
     }
     [[nodiscard]] const std::string& CurrentLine() const;
+
+    // --- Pagination (presentation; pure data, no raylib) ----------------
+    // The current line is wrapped to the dialog box (DialogLayout cell
+    // width) and split into pages of kBoxRowsPerPage rows. The View draws
+    // CurrentPageRows(); GameController's existing advance key steps a
+    // page before it steps the line, so a long line never overflows or
+    // clips — it paginates. CurrentLineHasMorePages() drives the "▼"
+    // affordance.
+    [[nodiscard]] std::vector<std::string> CurrentPageRows() const;
+    [[nodiscard]] bool CurrentLineHasMorePages() const;
+    // True when advancing will move WITHIN the same conversation (another
+    // page of this line, or a further line) — i.e. the "▼ more" hint
+    // applies. False on the last page of the last line (no choices).
+    [[nodiscard]] bool HasMore() const;
     [[nodiscard]] const std::vector<DialogChoice>& Choices() const noexcept {
         return choices_;
     }
@@ -43,12 +57,14 @@ public:
     void SetNpcContext(std::string npcId) { npcId_ = std::move(npcId); }
     [[nodiscard]] const std::string& NpcId() const noexcept { return npcId_; }
 
-    // Lines mode: step to next line (return nullptr); past last line with
-    // no choices -> Close (nullptr); with choices -> enter choice mode
-    // (nullptr). Choice mode: confirm the highlighted choice -> return a
-    // stable pointer to it; if it carries nextLines, transition back to
-    // lines mode playing those (stay active) instead of closing, else
-    // Close. Inactive: nullptr.
+    // Lines mode: if the current line has another page, turn the page
+    // and stay on the line (return nullptr); otherwise step to the next
+    // line (return nullptr); past last line with no choices -> Close
+    // (nullptr); with choices -> enter choice mode (nullptr). Choice
+    // mode: confirm the highlighted choice -> return a stable pointer to
+    // it; if it carries nextLines, transition back to lines mode playing
+    // those (stay active) instead of closing, else Close. Inactive:
+    // nullptr.
     const DialogChoice* Advance();
 
     void Close() noexcept;
@@ -58,6 +74,7 @@ private:
     std::vector<std::string>  lines_;
     std::vector<DialogChoice> choices_;
     std::size_t               cursor_       = 0;
+    std::size_t               pageCursor_   = 0;  // page within lines_[cursor_]
     int                       choiceCursor_ = 0;
     DialogChoice              picked_;      // stable storage so Advance()'s
                                             // return survives Close

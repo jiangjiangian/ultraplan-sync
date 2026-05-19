@@ -8,6 +8,7 @@
 #include "Chapter2Quest.h"
 #include "Chapter3Quest.h"
 #include "Chapter4Quest.h"
+#include "Vendor.h"
 #include "InterludeExit.h"
 #include "GameObjectQueries.h"
 #include "EventBus.h"
@@ -23,6 +24,52 @@
 #include <string_view>
 
 namespace nccu {
+
+namespace {
+
+// I5: a Vendor has an empty NpcId(), so its open conversation is tagged
+// with this sentinel context (NOT a real npcId — DialogOpener never
+// produces it, the C.3 suit_senior / ta one-shot guards compare against
+// real ids only, so this is inert for every existing routing). The
+// dialog confirm branch reads dlg.NpcId() == kVendorContext to know the
+// confirmed choice is a stock line and route it to Vendor::TryBuy.
+constexpr std::string_view kVendorContext = "__vendor__";
+
+// Build the shop conversation: the greeting line(s) then one choice per
+// in-stock item. The choice label is the vendor's own formatted stock
+// line (NPC::Interact already cycles those, so this reuses the exact
+// same browsing text). No karma/flag on the DialogChoice itself — the
+// economy side-effects (DeductMoney, AddConsumable, the EventBus
+// purchase events, the soft-cap, item.setsFlag) ALL stay inside
+// Vendor::TryBuy, untouched; the choice only carries the stock index
+// (its position in Choices()).
+void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
+    const VendorConfig& cfg = vendor.Config();
+    std::vector<std::string> greeting;
+    if (!cfg.greetingLines.empty()) greeting = cfg.greetingLines;
+    else                            greeting.push_back(cfg.greeting);
+
+    std::vector<DialogChoice> choices;
+    for (const auto& item : cfg.stock) {
+        // Sold-out lines are still shown (TryBuy answers "賣完了" on
+        // confirm) so the stock count stays visible; an unlimited or
+        // in-stock line is buyable. Label mirrors NPC::Interact's
+        // "<id> - <price> 元" preview.
+        choices.push_back(DialogChoice{
+            item.itemId + std::string(" - ") +
+                std::to_string(item.price) + std::string(" 元"),
+            0, std::string{}, false, {}});
+    }
+    if (choices.empty()) {            // nothing to sell -> greeting only
+        dlg.Open(std::move(greeting));
+        dlg.SetNpcContext(std::string(kVendorContext));
+        return;
+    }
+    dlg.Open(std::move(greeting), std::move(choices));
+    dlg.SetNpcContext(std::string(kVendorContext));
+}
+
+}  // namespace
 
 void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
     player.AddKarma(choice.karmaDelta);
@@ -105,6 +152,15 @@ void GameController::Update() {
     // last frame) does not auto-advance it this frame.
     {
         DialogState& dlg = world_.Dialog();
+        // I5: drop the pending-vendor target the instant its menu is no
+        // longer the open conversation (closed greeting-only, advanced
+        // past with no stock, replaced by an NPC dialog, swept by a
+        // chapter transition). Keeps the non-owning Vendor* from ever
+        // outliving the World object it points at — once cleared, the
+        // confirm branch's `pendingVendor_ && ...` guard is inert.
+        if (pendingVendor_ &&
+            (!dlg.Active() || dlg.NpcId() != kVendorContext))
+            pendingVendor_ = nullptr;
         if (dlg.Active()) {
             Player* p = world_.GetPlayer();
             if (dlg.AtChoice()) {
@@ -115,7 +171,33 @@ void GameController::Update() {
                 // Capture the npc BEFORE Advance() — confirming the last
                 // choice can Close() the dialog, which clears NpcId().
                 const std::string npc = dlg.NpcId();
+                // I5: capture the highlighted stock index BEFORE Advance()
+                // — confirming resets choiceCursor_ (Close/next-lines).
+                const bool atChoice = dlg.AtChoice();
+                const std::size_t stockIdx =
+                    static_cast<std::size_t>(dlg.ChoiceCursor());
                 if (const DialogChoice* c = dlg.Advance(); c && p) {
+                    // I5: a confirmed Vendor stock line drives the real
+                    // purchase. ALL economy side-effects (DeductMoney,
+                    // AddConsumable, the ShowMessage + PickupAcquired
+                    // EventBus events, the money soft-cap, item.setsFlag
+                    // → e.g. Flag_BoughtUglyUmbrella for Ending C) stay
+                    // inside Vendor::TryBuy exactly as the pinned
+                    // test_vendor contract asserts — the DialogChoice
+                    // carries no karma/flag of its own, so the generic
+                    // ApplyDialogChoice below is a no-op for it. The Ch2
+                    // EnergyDrink reaches the count inventory through
+                    // this same TryBuy → AddConsumable path, so
+                    // TryRescueBookworm's ConsumeOne("EnergyDrink") can
+                    // now succeed in-engine (Flag_Ch2Cleared reachable).
+                    if (npc == kVendorContext && pendingVendor_ &&
+                        atChoice) {
+                        (void)pendingVendor_->TryBuy(p, stockIdx);
+                        pendingVendor_ = nullptr;
+                        CheckEndingGates(*p, world_.Semester(), dlg);
+                        CheckChapterGates(*p, world_.Semester(), dlg);
+                        return;
+                    }
                     ApplyDialogChoice(*p, *c);
                     // C.3(b): a confirmed 西裝學長 choice locks the
                     // branch menu so re-talking can't stack mutually-
@@ -162,6 +244,36 @@ void GameController::Update() {
     // closes, instead of burning its TTL behind it.
     world_.TickHud(dt);
     Player* player = world_.GetPlayer();
+
+    // BUGLEDGER I8 / Cycle 4: the GDD rain-survival loop, now live &
+    // lethal. Driven once per frame here so it is naturally frozen during
+    // dialog/inventory like the rest of the sim (both early-return above).
+    // Skipped only in the market interlude and endings (safe, non-gameplay
+    // states). Otherwise: SHELTERED — under an umbrella OR inside a
+    // building (the existing BuildingTracker: World::CurrentBuildingName()
+    // is non-empty when the player center is in a building trigger zone,
+    // refreshed at the end of the previous frame ~line 358; one-frame
+    // latency on a ~5-10 u/s rate is imperceptible and deterministic) —
+    // DRAINS the meter (-10 u/s, no teleport); EXPOSED — outdoors and
+    // umbrella-less — ACCRUES (+5 u/s) and at ≥100 RespawnAtGate fires
+    // (teleport to 正門 + reset + ShowMessage). This makes a full meter a
+    // manage-your-exposure failure, not a hidden one-shot timer; the
+    // ending scripts duck into shelter to keep the spine winnable &
+    // deterministic (regression-pinned).
+    if (player) {
+        const SemesterState ss = world_.Semester().Current();
+        const bool inEnding = ss == SemesterState::Ending_A ||
+                              ss == SemesterState::Ending_B ||
+                              ss == SemesterState::Ending_C;
+        if (ss != SemesterState::Interlude_Market && !inEnding) {
+            const bool sheltered =
+                player->HasUmbrella() ||
+                !world_.CurrentBuildingName().empty();
+            if (sheltered) player->DrainRain(dt);
+            else           player->ApplyRain(dt, /*lethal=*/true);
+        }
+    }
+
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
 
     ForEachActive(world_.Objects(), [dt](GameObject& o) { o.Update(dt); });
@@ -194,10 +306,44 @@ void GameController::Update() {
     }
 
     if (Input::IsPressed(Key::E) && player) {
-        const Rect pHit{player->GetPosition().x, player->GetPosition().y, 24, 24};
+        // I3 fix: the movement collider for a BlocksMovement() NPC is a
+        // player-sized box at the NPC origin, and Rect::Intersects is
+        // strict, so physics::ResolveMove halts the player EXACTLY flush
+        // against a static NPC (touching, never strictly overlapping). A
+        // 24x24 E-probe at the player origin therefore never collides —
+        // dialog could never open for a walked-up player (harness OR
+        // human). Give the E-probe an explicit interaction reach: inflate
+        // it by kInteractReach on every side so a flush-blocked player
+        // still overlaps the NPC's hitbox. The MOVEMENT collider is left
+        // exactly as-is (frameColliders_ above, unchanged) — the player
+        // still cannot walk through an NPC; only the talk reach grows.
+        // The margin (8 px, a third of the 24 px box) is far smaller than
+        // the world spacing between NPCs/items, so it can only reach an
+        // object the player is already standing flush against.
+        constexpr float kInteractReach = 8.0f;
+        const Rect pHit{player->GetPosition().x - kInteractReach,
+                        player->GetPosition().y - kInteractReach,
+                        24.0f + 2.0f * kInteractReach,
+                        24.0f + 2.0f * kInteractReach};
         ForEachActiveExcept(world_.Objects(), player,
             [this, player, pHit](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
+                // I5: a Vendor's NpcId() is empty, so without this it
+                // would fall to o.Interact() (NPC line-cycling) and
+                // Vendor::TryBuy would have no runtime caller — Ending C
+                // / the Ch2 EnergyDrink were unreachable. Route a shop
+                // interaction to a buy-choice dialog instead; the purchase
+                // itself (money / inventory / EventBus events / soft-cap /
+                // setsFlag) stays entirely inside Vendor::TryBuy, invoked
+                // on confirm in the dialog branch above. One menu per E
+                // tap: skip if a dialog already opened this pass.
+                if (o.IsVendor()) {
+                    if (world_.Dialog().Active()) return;
+                    auto* vendor = static_cast<Vendor*>(&o);
+                    OpenVendorMenu(world_.Dialog(), *vendor);
+                    pendingVendor_ = vendor;
+                    return;
+                }
                 if (const std::string_view id = o.NpcId(); !id.empty()) {
                     // S5c-2: talking to 學霸 at the rescue moment
                     // consumes the EnergyDrink + sets Flag_Bookworm
