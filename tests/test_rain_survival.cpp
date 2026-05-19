@@ -29,6 +29,7 @@
 #include "GameController.h"
 #include "World.h"
 #include "Player.h"
+#include "Buildings.h"
 #include "DialogState.h"
 #include "DialogSource.h"
 #include "EventBus.h"
@@ -103,6 +104,45 @@ TEST_CASE("rain: DrainRain recovers -10 u/s and clamps at 0, no side effect") {
     CHECK(p.GetPosition().y == doctest::Approx(5678.0f));
 }
 
+// REQUIREMENT #5 unit — ApplyRainSheltered (umbrella-but-outdoors) is a
+// SLOW accrual: +1.5 u/s ≈ 30 % of the exposed +5 u/s, clamped [0,100],
+// lethal-armed (teleports + resets at the cap, like ApplyRain). It must
+// be far slower than ApplyRain over the same time and (unlike ApplyRain)
+// NOT honour the umbrella flag (this IS the umbrella case). Reverting
+// the GC's umbrella-outdoors arm to DrainRain doesn't touch this unit;
+// removing/zeroing ApplyRainSheltered's accrual fails it.
+TEST_CASE("REQ#5 unit: ApplyRainSheltered slow-accrues (~1.5 u/s), lethal-armed") {
+    Player p{Vec2{100.0f, 200.0f}};
+    p.SetHasUmbrella(true);                  // it must accrue ANYWAY
+    REQUIRE(p.GetRainMeter() == doctest::Approx(0.0f));
+
+    // 4 s sheltered-outdoors => ~6 (1.5 u/s), strictly rising.
+    float prev = 0.0f;
+    for (int i = 0; i < 240; ++i) {
+        p.ApplyRainSheltered(1.0f / 60.0f, /*lethal=*/false);
+        const float now = p.GetRainMeter();
+        CHECK(now >= prev);
+        prev = now;
+    }
+    CHECK(p.GetRainMeter() == doctest::Approx(6.0f).epsilon(0.05));
+
+    // Much slower than exposed: a fresh player accruing ApplyRain for the
+    // SAME 4 s reaches ~20 (>3x). Slow ≠ zero, slow ≠ fast.
+    Player q{Vec2{0.0f, 0.0f}};
+    for (int i = 0; i < 240; ++i) q.ApplyRain(1.0f / 60.0f, /*lethal=*/false);
+    CHECK(q.GetRainMeter() > p.GetRainMeter() * 2.5f);
+
+    // Lethal-armed: drive it past the cap with the teleport ON — the
+    // meter resets (not pinned at 100) and the player is moved to 正門.
+    Player r{Vec2{1500.0f, 1500.0f}};
+    r.SetHasUmbrella(true);
+    for (int i = 0; i < 60 * 80; ++i)        // 80 s * 1.5 ≈ 120 >> 100
+        r.ApplyRainSheltered(1.0f / 60.0f, /*lethal=*/true);
+    CHECK(r.GetRainMeter() < 100.0f);        // reset, not stuck at the cap
+    CHECK(r.GetPosition().x == doctest::Approx(500.0f));   // 正門 respawn
+    CHECK(r.GetPosition().y == doctest::Approx(1860.0f));
+}
+
 // Cycle-4 headline (inverts the old conservative case) — an umbrella-less
 // player standing OUTDOORS (Ch1 spawn is south of every building rect, so
 // CurrentBuildingName() is empty) accrues +5 u/s through the REAL GC tick
@@ -166,10 +206,20 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
     EventBus::Instance().Clear();
 }
 
-// Cycle-4 drain via the REAL GC path — accrue some rain outdoors, then
-// equip an umbrella: the player is now SHELTERED, so GC routes to
-// DrainRain and the meter strictly FALLS toward 0 (never teleports).
-TEST_CASE("rain: equipping an umbrella makes the GC tick drain the meter") {
+// REQUIREMENT #5 (replaces the old Cycle-4 "umbrella => GC drains" case;
+// post-design-change rewrite — the I6/F2 precedent). Rain pressure must
+// exist EVERY chapter, so an umbrella no longer grants rain immunity:
+// the GC tick is now 3-way and this pins all three arms via the REAL
+// loop.
+//   * OUTDOORS, NO UMBRELLA  -> accrues fast (+5 u/s, ApplyRain)
+//   * OUTDOORS, WITH UMBRELLA-> still accrues, but SLOWLY (+1.5 u/s,
+//                               ApplyRainSheltered) — an umbrella buys
+//                               time, it is NOT immunity (the #5 fix)
+//   * INSIDE A BUILDING      -> DRAINS to 0 (-10 u/s, the true haven)
+// Revert-verify: restoring the old `sheltered = HasUmbrella() || in
+// building => DrainRain` 2-way tick makes the "umbrella outdoors still
+// accrues" CHECK fail (it would drain instead).
+TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -189,24 +239,48 @@ TEST_CASE("rain: equipping an umbrella makes the GC tick drain the meter") {
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
-    // ~3 s exposed => meter climbs (well below the lethal cap).
+    // (1) ~3 s OUTDOORS, no umbrella => fast accrual (+5 u/s ⇒ ~15).
     for (int f = 0; f < 180; ++f) Frame(controller, in);
     const float wet = p->GetRainMeter();
-    CHECK(wet > 5.0f);
-    CHECK(soakMsgHits == 0);              // nowhere near the cap yet
+    CHECK(wet > 12.0f);                       // ~15 at +5 u/s over 3 s
+    CHECK(soakMsgHits == 0);
 
-    // Shelter under an umbrella — GC must now DRAIN, strictly downward.
+    // (2) Equip an umbrella but STAY OUTDOORS (Ch1 spawn is south of
+    //     every building rect ⇒ CurrentBuildingName() empty). The meter
+    //     must KEEP RISING — slowly (#5: an umbrella is not immunity) —
+    //     strictly upward, far slower than the exposed rate.
     p->SetHasUmbrella(true);
-    float prev = wet;
+    float prev = p->GetRainMeter();
+    for (int f = 0; f < 120; ++f) {           // 2 s sheltered-outdoors
+        Frame(controller, in);
+        const float now = p->GetRainMeter();
+        CHECK(now >= prev);                   // still accruing, not draining
+        prev = now;
+    }
+    const float slowGain = p->GetRainMeter() - wet;
+    CHECK(slowGain > 0.0f);                   // it DID rise (no immunity)
+    // Over 2 s: umbrella ≈ +1.5 u/s ⇒ ~3; exposed would have been +5 u/s
+    // ⇒ ~10. Assert it is in the slow band (well under the fast rate).
+    CHECK(slowGain < 5.0f);
+    CHECK(soakMsgHits == 0);
+
+    // (3) Step INSIDE a building (its trigger rect centre) — only here
+    //     does the meter DRAIN, strictly downward, to 0, no teleport.
+    const auto& b = nccu::buildings::kAll[0];   // 大勇樓
+    p->SetPosition(nccu::gfx::Vec2{
+        b.triggerRect.x + b.triggerRect.width  * 0.5f,
+        b.triggerRect.y + b.triggerRect.height * 0.5f});
+    Frame(controller, in);                      // BuildingTracker latches
+    float dprev = p->GetRainMeter();
     for (int f = 0; f < 60; ++f) {
         Frame(controller, in);
         const float now = p->GetRainMeter();
-        CHECK(now <= prev);
-        prev = now;
+        CHECK(now <= dprev);                    // draining indoors
+        dprev = now;
     }
-    CHECK(p->GetRainMeter() < wet);                       // recovered
+    CHECK(p->GetRainMeter() < slowGain + wet);  // recovered
     for (int f = 0; f < 600; ++f) Frame(controller, in);
-    CHECK(p->GetRainMeter() == doctest::Approx(0.0f));    // fully dried
+    CHECK(p->GetRainMeter() == doctest::Approx(0.0f));   // fully dried
     CHECK(soakMsgHits == 0);                              // never teleported
 
     nccu::gfx::Input::SetSource(nullptr);

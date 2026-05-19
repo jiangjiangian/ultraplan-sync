@@ -337,32 +337,47 @@ void GameController::Update() {
     world_.TickHud(dt);
     Player* player = world_.GetPlayer();
 
-    // BUGLEDGER I8 / Cycle 4: the GDD rain-survival loop, now live &
-    // lethal. Driven once per frame here so it is naturally frozen during
-    // dialog/inventory like the rest of the sim (both early-return above).
-    // Skipped only in the market interlude and endings (safe, non-gameplay
-    // states). Otherwise: SHELTERED — under an umbrella OR inside a
-    // building (the existing BuildingTracker: World::CurrentBuildingName()
-    // is non-empty when the player center is in a building trigger zone,
-    // refreshed at the end of the previous frame ~line 358; one-frame
-    // latency on a ~5-10 u/s rate is imperceptible and deterministic) —
-    // DRAINS the meter (-10 u/s, no teleport); EXPOSED — outdoors and
-    // umbrella-less — ACCRUES (+5 u/s) and at ≥100 RespawnAtGate fires
-    // (teleport to 正門 + reset + ShowMessage). This makes a full meter a
-    // manage-your-exposure failure, not a hidden one-shot timer; the
-    // ending scripts duck into shelter to keep the spine winnable &
-    // deterministic (regression-pinned).
+    // BUGLEDGER I8 / Cycle 4 + REQUIREMENT #5: the GDD rain-survival
+    // loop, live & lethal, in EVERY chapter. Driven once per frame here
+    // so it is naturally frozen during dialog/inventory like the rest of
+    // the sim (both early-return above). Skipped only in the market
+    // interlude and endings (safe, non-gameplay states). THREE states
+    // (was two — the old "has umbrella ⇒ full shelter" made the Ch1
+    // umbrella permanent rain-immunity, so only Ch1 had any pressure;
+    // a full-spine trace showed Ch3 == 0.0 every frame, Ch2/Ch4 avg
+    // ≈2.5):
+    //   INSIDE A BUILDING             -> DrainRain          (-10 u/s,
+    //                                    the true haven, full recovery)
+    //   OUTDOORS, HOLDING AN UMBRELLA -> ApplyRainSheltered (+1.5 u/s,
+    //                                    lethal-armed — an umbrella
+    //                                    SLOWS the soak, doesn't stop
+    //                                    it; chapter2.md's explicit
+    //                                    "still accrues, reduced rate")
+    //   OUTDOORS, NO UMBRELLA         -> ApplyRain           (+5 u/s,
+    //                                    lethal — UNCHANGED; Ch1 is
+    //                                    umbrella-less so Ch1 rain is
+    //                                    byte-identical to before)
+    // CurrentBuildingName() is non-empty when the player center is in a
+    // building trigger zone (refreshed at the end of the previous frame
+    // ~line 360; one-frame latency on a ≤10 u/s rate is imperceptible
+    // and deterministic). The umbrella now buys TIME, not immunity — you
+    // must still periodically duck inside to fully recover — so rain is
+    // a live manage-your-exposure concern EVERY chapter; competent play
+    // (the ending scripts' long in-building dialog stretches drain at
+    // -10 u/s) never reaches 100, so the spine stays winnable &
+    // deterministic (regression-pinned, re-verified 2× byte-identical).
     if (player) {
         const SemesterState ss = world_.Semester().Current();
         const bool inEnding = ss == SemesterState::Ending_A ||
                               ss == SemesterState::Ending_B ||
                               ss == SemesterState::Ending_C;
         if (ss != SemesterState::Interlude_Market && !inEnding) {
-            const bool sheltered =
-                player->HasUmbrella() ||
-                !world_.CurrentBuildingName().empty();
-            if (sheltered) player->DrainRain(dt);
-            else           player->ApplyRain(dt, /*lethal=*/true);
+            if (!world_.CurrentBuildingName().empty())
+                player->DrainRain(dt);                  // full recovery
+            else if (player->HasUmbrella())
+                player->ApplyRainSheltered(dt, /*lethal=*/true);
+            else
+                player->ApplyRain(dt, /*lethal=*/true); // full exposure
         }
     }
 

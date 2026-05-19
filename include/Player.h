@@ -108,10 +108,28 @@ public:
     // hidden one-shot timer.
     Player& ApplyRain(float dt, bool lethal = true);
 
-    // Rain recovery while sheltered (under umbrella or inside a building):
-    // -10 units/sec, clamped [0,100]; never teleports. GameController
-    // calls this XOR ApplyRain each frame based on the shelter predicate.
+    // Rain recovery while FULLY sheltered (inside a building): -10
+    // units/sec, clamped [0,100]; never teleports.
     Player& DrainRain(float dt) noexcept;
+
+    // REQUIREMENT #5: rain pressure must exist in EVERY chapter, not
+    // just Ch1. Before this, holding the Ch1 umbrella made the player
+    // permanently rain-immune (ApplyRain self-noops with an umbrella AND
+    // the GC treated "has umbrella" as full shelter → DrainRain), so
+    // Ch2/Ch3/Ch4 had ~0 rain pressure (Ch3 was literally 0.0 every
+    // frame). An umbrella in the heavy 山下 rain should SLOW the soak,
+    // not stop it (chapter2.md explicitly: a held umbrella still
+    // accrues at a reduced rate). ApplyRainSheltered models exactly
+    // that: a partial accrual (kept ≈30 % of the exposed +5 u/s) that is
+    // still lethal-armed, so an umbrella now buys TIME, not immunity —
+    // the player must still periodically duck into a building to fully
+    // recover (DrainRain). GameController calls, per frame:
+    //   inside a building     -> DrainRain          (full recovery)
+    //   outdoors + umbrella   -> ApplyRainSheltered  (slow accrual)
+    //   outdoors, no umbrella -> ApplyRain           (full accrual)
+    // ApplyRain / DrainRain semantics are byte-unchanged (the pinned
+    // unit contracts hold); this is purely additive.
+    Player& ApplyRainSheltered(float dt, bool lethal = true);
 
 private:
     void RespawnAtGate();

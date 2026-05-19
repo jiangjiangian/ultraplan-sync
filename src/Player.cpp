@@ -132,6 +132,23 @@ Player& Player::DrainRain(float dt) noexcept {
     return *this;
 }
 
+Player& Player::ApplyRainSheltered(float dt, bool lethal) {
+    // REQUIREMENT #5: an umbrella in heavy 山下 rain SLOWS the soak, it
+    // does not stop it (chapter2.md: still accrues, reduced rate). 1.5
+    // u/s ≈ 30 % of the exposed 5 u/s — felt over a chapter but, given
+    // the spine's long in-building dialog stretches drain at -10 u/s, a
+    // competent run never reaches 100 (the ending scripts stay winnable
+    // & deterministic — regression-pinned). Deliberately does NOT honour
+    // hasUmbrella_ (this IS the umbrella-but-still-exposed case); the
+    // exposed-rate ApplyRain keeps its own umbrella no-op untouched so
+    // every pinned ApplyRain/DrainRain unit contract is byte-unchanged.
+    rainMeter_ = std::clamp(rainMeter_ + 1.5f * dt, 0.0f, 100.0f);
+    if (lethal && rainMeter_ >= 100.0f) {
+        RespawnAtGate();
+    }
+    return *this;
+}
+
 void Player::RespawnAtGate() {
     // 正門 gate spawn — half-day passes, no karma penalty per design doc.
     position_ = nccu::gfx::Vec2{500.0f, 1860.0f};
