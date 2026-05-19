@@ -88,9 +88,13 @@ public:
     [[nodiscard]] bool DeductMoney(int amount) noexcept;
 
     // Rain accumulation: 5 units/sec exposure when umbrella-less; clamped
-    // [0,100]. When the meter fills, the player is respawned at the 正門
-    // gate and a ShowMessage event is emitted via EventBus.
-    Player& ApplyRain(float dt);
+    // [0,100]. With lethal=true (default) a full meter respawns the player
+    // at the 正門 gate and emits a ShowMessage event via EventBus.
+    // With lethal=false the meter still accumulates and clamps at 100 but
+    // the gate respawn is suppressed (conservative wiring, BUGLEDGER I8:
+    // the survival meter is observable but the lethal teleport stays off
+    // this cycle so it cannot derail the deterministic ending scripts).
+    Player& ApplyRain(float dt, bool lethal = true);
 
 private:
     void RespawnAtGate();

@@ -14,6 +14,6 @@ void CursedUmbrella::beClaimed(Player* player) {
            .SetFlag("Flag_TookCursedUmbrella");
     isActive_ = false;
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
-    EventBus::Instance().Publish(Event{ EventType::KarmaChanged, "Karma -50" });
+    EventBus::Instance().Publish(Event{ EventType::KarmaChanged, "Karma -30" });
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
 }

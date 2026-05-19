@@ -1,3 +1,14 @@
+> ⚠ **SUPERSEDED in part (Cycle 3 verify, 2026-05-19).** Bughunter
+> fact-checked vs current code: **M1** "`nodiscard` 0 處" — FALSE (≈74
+> `[[nodiscard]]`). **C2** / thread-safety "EventBus 未保護" — FALSE
+> (`shared_mutex`-guarded since B1/H1). **M2/M3/L253** "ApplyRain 每幀
+> Publish" — FALSE (was zero-caller dead code; Cycle 3 I8 wired it
+> conservatively, no per-frame Publish). **"main.cpp god function"** —
+> STALE (`src/main.cpp` is a 67-line composition root; the
+> building→state map lives in `EventWiring.h`). Treat the rest as
+> possibly-stale baseline rationale (CLAUDE.md §2); see
+> `.claude/BUGLEDGER.md` "Cycle 3".
+
 # STRICT_REVIEW.md — 工業級嚴格審查
 
 > 採用 C++ Core Guidelines、Google C++ Style Guide、cppcheck、Sean Parent / Herb Sutter / Jason Turner 設計派的紅線。
