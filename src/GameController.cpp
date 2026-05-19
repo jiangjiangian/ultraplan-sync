@@ -245,29 +245,33 @@ void GameController::Update() {
     world_.TickHud(dt);
     Player* player = world_.GetPlayer();
 
-    // BUGLEDGER I8: conservative wiring of the GDD rain-survival meter.
-    // The meter was dead code (no production caller); drive it once per
-    // frame here so it is naturally frozen during dialog/inventory like
-    // the rest of the sim (both early-return above). Rain only ticks
-    // OUTDOORS: not the market interlude, not an ending, and not while
-    // sheltered inside a building. The building predicate is the existing
-    // BuildingTracker (World::CurrentBuildingName() is non-empty when the
-    // player center is in a building trigger zone — refreshed at the end
-    // of the previous frame, line ~358; one-frame latency on a 5 u/s
-    // drain is imperceptible and stays deterministic). ApplyRain already
-    // self-suppresses on hasUmbrella_, so we do not duplicate that here.
-    // lethal=false: the ≥100→正門 teleport (and any movement-speed
-    // penalty) is deferred to a future dedicated cycle so it cannot
-    // perturb the deterministic goto-based ending scripts.
+    // BUGLEDGER I8 / Cycle 4: the GDD rain-survival loop, now live &
+    // lethal. Driven once per frame here so it is naturally frozen during
+    // dialog/inventory like the rest of the sim (both early-return above).
+    // Skipped only in the market interlude and endings (safe, non-gameplay
+    // states). Otherwise: SHELTERED — under an umbrella OR inside a
+    // building (the existing BuildingTracker: World::CurrentBuildingName()
+    // is non-empty when the player center is in a building trigger zone,
+    // refreshed at the end of the previous frame ~line 358; one-frame
+    // latency on a ~5-10 u/s rate is imperceptible and deterministic) —
+    // DRAINS the meter (-10 u/s, no teleport); EXPOSED — outdoors and
+    // umbrella-less — ACCRUES (+5 u/s) and at ≥100 RespawnAtGate fires
+    // (teleport to 正門 + reset + ShowMessage). This makes a full meter a
+    // manage-your-exposure failure, not a hidden one-shot timer; the
+    // ending scripts duck into shelter to keep the spine winnable &
+    // deterministic (regression-pinned).
     if (player) {
         const SemesterState ss = world_.Semester().Current();
         const bool inEnding = ss == SemesterState::Ending_A ||
                               ss == SemesterState::Ending_B ||
                               ss == SemesterState::Ending_C;
-        const bool indoors = !world_.CurrentBuildingName().empty();
-        const bool outdoors = ss != SemesterState::Interlude_Market &&
-                              !inEnding && !indoors;
-        if (outdoors) player->ApplyRain(dt, /*lethal=*/false);
+        if (ss != SemesterState::Interlude_Market && !inEnding) {
+            const bool sheltered =
+                player->HasUmbrella() ||
+                !world_.CurrentBuildingName().empty();
+            if (sheltered) player->DrainRain(dt);
+            else           player->ApplyRain(dt, /*lethal=*/true);
+        }
     }
 
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
