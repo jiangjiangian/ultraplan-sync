@@ -1,6 +1,8 @@
 #include "doctest/doctest.h"
 #include "gfx/Font.h"
+#include "Buildings.h"
 #include <algorithm>
+#include <iomanip>
 #include <string>
 #include <vector>
 
@@ -60,4 +62,39 @@ TEST_CASE("CollectCodepoints bakes the V3 ending-caption glyphs") {
     CHECK(Contains(cps, 0x300D));   // 」
     // Sanity: ASCII is always present (the always-added 32..126 block).
     CHECK(Contains(cps, static_cast<int>('A')));
+}
+
+// REQUIREMENT #10: every glyph used by a building name must be in the
+// atlas. View.cpp draws "Inside: " + World::CurrentBuildingName() from
+// nccu::buildings::kAll; a name glyph absent from both docs/content and
+// UiLiteralChars() renders as the no-glyph `?` (the reported 缺字 bug —
+// 井/仁/勇/塘/夫/志/泳/雩 were missing because they occur in no content
+// file). This drives the REAL Buildings.h table, so a future rename that
+// introduces an uncovered glyph fails here too. Reverting the Font.h
+// building-name literal block drops those 8 glyphs and this fails.
+TEST_CASE("CollectCodepoints covers every Buildings.h name glyph (#10)") {
+    const std::vector<int> cps = CollectCodepoints();
+    for (const auto& b : nccu::buildings::kAll) {
+        // Decode the UTF-8 building name to codepoints via raylib's own
+        // decoder (same path CollectCodepoints uses for the literals).
+        const std::string name{b.name};
+        int n = 0;
+        int* dec = ::LoadCodepoints(name.c_str(), &n);
+        for (int i = 0; i < n; ++i) {
+            if (dec[i] <= 0) continue;
+            INFO("building '" << name << "' glyph U+" << std::hex << dec[i]);
+            CHECK(Contains(cps, dec[i]));
+        }
+        ::UnloadCodepoints(dec);
+    }
+    // Spot-check the 8 that were the actual reported defect (in no
+    // docs/content file → atlas only via the #10 UiLiteralChars block).
+    CHECK(Contains(cps, 0x4E95));   // 井  (井塘樓)
+    CHECK(Contains(cps, 0x4EC1));   // 仁  (大仁樓)
+    CHECK(Contains(cps, 0x52C7));   // 勇  (大勇樓)
+    CHECK(Contains(cps, 0x5858));   // 塘  (井塘樓)
+    CHECK(Contains(cps, 0x592B));   // 夫  (果夫樓)
+    CHECK(Contains(cps, 0x5FD7));   // 志  (志希樓)
+    CHECK(Contains(cps, 0x6CF3));   // 泳  (游泳館)
+    CHECK(Contains(cps, 0x96E9));   // 雩  (風雩樓/風雩走廊)
 }

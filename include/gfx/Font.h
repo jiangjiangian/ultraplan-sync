@@ -96,7 +96,21 @@ inline const char* UiLiteralChars() {
         "邊緣人圖館落常駐民卷王GPA行事曆排深佛隨修"
         "課丟急金幣元遊戲選單"
         // InventoryView panel
-        "物品欄空";
+        "物品欄空"
+        // REQUIREMENT #10: every glyph used by a building name in
+        // include/Buildings.h kAll. View.cpp renders "Inside: " +
+        // World::CurrentBuildingName() (the building HUD line); any
+        // building-name ideograph absent from BOTH docs/content/*.md AND
+        // this literal set falls to raylib's no-glyph `?` — the reported
+        // "建築物名字出現 ? 缺字" defect (井/仁/勇/塘/夫/志/泳/雩 were
+        // missing). The FULL 56-glyph building-name set is baked here (not
+        // just the 8 currently-missing) so a future Buildings.h rename
+        // cannot silently reintroduce a tofu building name. Same atlas
+        // mechanism / rationale as the U+25BC ▼ fix (BUGLEDGER V1) and
+        // the ending-caption block above. Kept on the content-unreadable
+        // fallback path too, exactly like those.
+        "中井仁勇務友合商四圖堂場塘大夫學小希廊心志思操政新智"
+        "書服果校樂樓正法泳活游研究綜維聞育舖英行訊資走門院集雩風館體";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

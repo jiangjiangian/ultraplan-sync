@@ -35,14 +35,25 @@ namespace {
 // confirmed choice is a stock line and route it to Vendor::TryBuy.
 constexpr std::string_view kVendorContext = "__vendor__";
 
+// The trailing "不買" (decline) label appended to every vendor menu.
+// REQUIREMENT #4: a purchase must never be forced — the player can
+// always walk away without spending money or setting a flag. The
+// confirm branch recognises a chosen index == cfg.stock.size() (this
+// entry, always the LAST choice) as "decline": it closes the dialog
+// and does NOT call Vendor::TryBuy, so no DeductMoney / AddConsumable /
+// item.setsFlag / EventBus purchase event fires.
+constexpr std::string_view kVendorDeclineLabel = "先不買，謝謝";
+
 // Build the shop conversation: the greeting line(s) then one choice per
-// in-stock item. The choice label is the vendor's own formatted stock
-// line (NPC::Interact already cycles those, so this reuses the exact
-// same browsing text). No karma/flag on the DialogChoice itself — the
-// economy side-effects (DeductMoney, AddConsumable, the EventBus
-// purchase events, the soft-cap, item.setsFlag) ALL stay inside
-// Vendor::TryBuy, untouched; the choice only carries the stock index
-// (its position in Choices()).
+// in-stock item, then a final "不買" decline choice. The stock choice
+// label is the vendor's own formatted stock line (NPC::Interact already
+// cycles those, so this reuses the exact same browsing text). No
+// karma/flag on the DialogChoice itself — the economy side-effects
+// (DeductMoney, AddConsumable, the EventBus purchase events, the
+// soft-cap, item.setsFlag) ALL stay inside Vendor::TryBuy, untouched;
+// the stock choice only carries the index (its position in Choices()).
+// The decline choice carries nothing and is detected positionally
+// (index == stock size) so it can never mutate state — REQUIREMENT #4.
 void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
     const VendorConfig& cfg = vendor.Config();
     std::vector<std::string> greeting;
@@ -60,11 +71,14 @@ void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
                 std::to_string(item.price) + std::string(" 元"),
             0, std::string{}, false, {}});
     }
-    if (choices.empty()) {            // nothing to sell -> greeting only
-        dlg.Open(std::move(greeting));
-        dlg.SetNpcContext(std::string(kVendorContext));
-        return;
-    }
+    // REQUIREMENT #4: the always-present decline option. Appended LAST
+    // so a stock choice keeps its 0-based index == its stock slot (the
+    // pinned TryBuy(stockIdx) contract is unchanged); the decline index
+    // is exactly cfg.stock.size(). Present even when stock is empty so a
+    // greeting-only stall is still a real, exitable choice (no forced
+    // dead-end). karmaDelta 0 / setsFlag "" — it carries no side effect.
+    choices.push_back(DialogChoice{
+        std::string(kVendorDeclineLabel), 0, std::string{}, false, {}});
     dlg.Open(std::move(greeting), std::move(choices));
     dlg.SetNpcContext(std::string(kVendorContext));
 }
@@ -237,6 +251,23 @@ void GameController::Update() {
                     // now succeed in-engine (Flag_Ch2Cleared reachable).
                     if (npc == kVendorContext && pendingVendor_ &&
                         atChoice) {
+                        // REQUIREMENT #4: the LAST choice is always the
+                        // "不買" decline (OpenVendorMenu appends it after
+                        // every stock line), so its index is exactly the
+                        // stock size. Picking it must NOT buy — close the
+                        // conversation and drop the pending vendor with
+                        // ZERO economy mutation (no DeductMoney, no
+                        // AddConsumable, no item.setsFlag, no EventBus
+                        // purchase event). Only a real stock index
+                        // (< stock size) reaches Vendor::TryBuy, whose
+                        // pinned side-effect contract is unchanged.
+                        const std::size_t stockN =
+                            pendingVendor_->Config().stock.size();
+                        if (stockIdx >= stockN) {        // decline
+                            pendingVendor_ = nullptr;
+                            dlg.Close();
+                            return;
+                        }
                         (void)pendingVendor_->TryBuy(p, stockIdx);
                         pendingVendor_ = nullptr;
                         CheckEndingGates(*p, world_.Semester(), dlg);
