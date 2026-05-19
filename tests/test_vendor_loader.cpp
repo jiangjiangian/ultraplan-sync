@@ -88,9 +88,23 @@ TEST_CASE("ChapterVendors: Interlude is parser-backed + positioned + cached") {
         nccu::SemesterState::Interlude_Market);
     REQUIRE(m.size() == 10);
     CHECK(m[0].config.name == "熱騰騰雞排攤");
-    // Distinct code-side positions, north of the south exit band.
-    CHECK(m[0].pos.x != m[1].pos.x);
-    CHECK(m[0].pos.y < 1900.0f);
+    // REQUIREMENT #7 reconciliation: the stalls are now a tight bullseye
+    // on the plaza CENTRE (≈1088,960), so two stalls may share an X (or
+    // Y) while still being DISTINCT points — the old `m[0].x != m[1].x`
+    // assumed the scattered layout. Assert the real intent instead: all
+    // ten code-side positions are pairwise distinct, well north of the
+    // south exit band, and clustered at the plaza centre (max radius
+    // small). test_spawn_reachability owns the walkable/reachable proof;
+    // test_vendor_centred_cluster owns the centre/spread geometry.
+    for (std::size_t i = 0; i < m.size(); ++i) {
+        CHECK(m[i].pos.y < 1900.0f);
+        for (std::size_t j = i + 1; j < m.size(); ++j) {
+            // doctest forbids `&&` inside CHECK — reduce to one bool.
+            const bool samePoint = (m[i].pos.x == m[j].pos.x) &&
+                                   (m[i].pos.y == m[j].pos.y);
+            CHECK_FALSE(samePoint);                  // pairwise distinct
+        }
+    }
 
     // Cached: a second call returns the same backing storage.
     const auto& m2 = nccu::ChapterVendors(

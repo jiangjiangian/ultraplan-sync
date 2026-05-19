@@ -4,8 +4,12 @@
 
 class CursedUmbrella final : public TransparentUmbrella {
 public:
+    // REQUIREMENT #9: deep ominous violet + the sagging Drooping canopy
+    // with a pure-black handle — an oppressive "this is wrong" read.
     explicit CursedUmbrella(nccu::gfx::Vec2 position)
-        : TransparentUmbrella(position, "CursedUmbrella", nccu::gfx::Color{120, 100, 140, 255}),
+        : TransparentUmbrella(position, "CursedUmbrella",
+                              nccu::gfx::Color{95, 45, 115, 255},
+                              UmbrellaStyle::Drooping),
           karmaPenalty_(30) {}
 
     void beClaimed(Player* player) override;

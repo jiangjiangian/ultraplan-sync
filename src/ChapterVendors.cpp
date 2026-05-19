@@ -17,30 +17,33 @@ std::string& VendorContentDir() {
 }
 
 // Spatial layout is code's job (the .md owns content/dialogue, not
-// positions — same split as NpcSpawns vs chapter dialog). The ten stalls
-// ring 羅馬廣場 — the campus's circular plaza hub — per the playtest
-// request to gather the market inside the plaza circle and off the
-// radiating road junctions ("路口"). If the parser yields fewer stalls
-// than positions the extra spots are simply unused; if more, the surplus
-// stalls fall back to the last position.
+// positions — same split as NpcSpawns vs chapter dialog). REQUIREMENT
+// #7: the ten stalls are gathered into a TIGHT cluster at the dead
+// CENTRE of 羅馬廣場 (the campus's circular plaza hub) — "全部移到羅馬
+// 廣場正中間". If the parser yields fewer stalls than positions the
+// extra spots are simply unused; if more, the surplus stalls fall back
+// to the last position.
 const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
-    // 2026-05-17: scattered across 羅馬廣場's interior. The plaza disc was
-    // located from worldmap_base.png (densest filled stone blob): centre
-    // ≈(1088,960), rim ≈r200 where the eight roads enter. The earlier
-    // single-radius r90 ring looked like a fence encircling the plaza;
-    // the playtest asked for the stalls SPREAD across the middle, not
-    // ringed. So these ten sit at mixed radii — one at the centre, a
-    // tight inner cluster (~r70) and a looser middle band (~r115-125),
-    // angles jittered — staying well inside the rim (max r≈125 ≪ 200) so
-    // none blocks a road junction. Every point was verified pure-white
-    // (walkable) in collision_mask.png and is flood-fill-reachable from
-    // the player spawn; test_spawn_reachability reads ChapterVendors()
-    // .pos directly and re-checks both invariants on every build.
+    // REQUIREMENT #7: a compact bullseye on the plaza CENTRE. The disc
+    // centre is ≈(1088,960) (densest stone blob in worldmap_base.png;
+    // the eight roads enter at rim ≈r200). collision_mask.png around the
+    // centre is one continuous all-walkable box out to ≈r100 (verified
+    // by sampling — the r=100 box is all-white; the only nearby wall is
+    // the NE corner, outside ±100). Layout: 1 stall on the EXACT centre,
+    // a tight inner ring r≈42 (3 stalls), an outer ring r≈78 (6 stalls)
+    // — max radius 78 ≪ 100 (never near a road junction) and every pair
+    // ≥ 35.9 px apart (> the 24 px Vendor collider, so no two stalls
+    // overlap and the player can thread between them). Every point AND
+    // its 24×24 collider footprint was verified pure-white (walkable) in
+    // collision_mask.png and flood-fill-reachable from the player spawn;
+    // test_spawn_reachability reads ChapterVendors().pos and re-checks
+    // both invariants every build, plus a dedicated centred-cluster test
+    // pins the centre / spread / no-overlap geometry.
     static const std::vector<nccu::gfx::Vec2> kPos = {
-        {1088.0f,  960.0f}, {1155.0f,  982.0f}, {1036.0f, 1007.0f},
-        {1073.0f,  892.0f}, {1207.0f,  999.0f}, {1114.0f, 1082.0f},
-        { 995.0f, 1044.0f}, { 969.0f,  921.0f}, {1065.0f,  849.0f},
-        {1181.0f,  876.0f},
+        {1088.0f,  960.0f},                                        // exact centre
+        {1088.0f, 1002.0f}, {1051.6f,  939.0f}, {1124.4f,  939.0f}, // inner ring r42
+        {1155.5f,  999.0f}, {1088.0f, 1038.0f}, {1020.5f,  999.0f}, // outer ring r78
+        {1020.5f,  921.0f}, {1088.0f,  882.0f}, {1155.5f,  921.0f},
     };
     return kPos;
 }

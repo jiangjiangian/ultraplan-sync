@@ -1,4 +1,5 @@
 #include "TitleScreen.h"
+#include "GameHelp.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Renderer.h"
 #include "gfx/TextBuilder.h"
@@ -21,15 +22,62 @@ constexpr gfx::Color kHighlight{255, 153, 0, 255};
 constexpr gfx::Color kPanel    { 18,  20,  28, 200};
 constexpr gfx::Color kDim      {170, 170, 170, 255};
 
+// REQUIREMENT #9: 「遊戲說明」 is a title-internal page, not a public
+// TitleChoice (the screen flow in main.cpp still only sees Start/Quit).
+// MenuAction is the on-screen action; Help loops back to the menu.
+enum class MenuAction { Start, Help, Quit };
+
 struct MenuItem {
     std::string_view label;
-    TitleChoice      choice;
+    MenuAction       action;
 };
 
-constexpr std::array<MenuItem, 2> kItems{{
-    {"開始遊戲", TitleChoice::StartGame},
-    {"離開",     TitleChoice::Quit},
+constexpr std::array<MenuItem, 3> kItems{{
+    {"開始遊戲", MenuAction::Start},
+    {"遊戲說明", MenuAction::Help},
+    {"離開",     MenuAction::Quit},
 }};
+
+// Renders the shared 遊戲說明 page (same GameHelp text as the in-game
+// 說明 overlay — single source of truth, never drifts). Blocks until
+// the player presses Enter / ESC / E, then returns to the title menu.
+// Returns false iff the window was closed while on the help page (so
+// the caller can exit cleanly instead of looping forever).
+bool RunHelpPage(gfx::Window& win) {
+    using namespace gfx;
+    while (!win.ShouldClose()) {
+        if (Input::IsPressed(Key::Enter) || Input::IsPressed(Key::Escape) ||
+            Input::IsPressed(Key::E))
+            return true;                       // back to the title menu
+        {
+            DrawScope frame;
+            Renderer r;
+            r.Clear(Colors::RayWhite);
+            const Rect panel{24.0f, 24.0f,
+                             static_cast<float>(kWinW) - 48.0f,
+                             static_cast<float>(kWinH) - 48.0f};
+            r.Rect(panel, kPanel);
+            TextBuilder{"遊戲說明"}
+                .At(Vec2{kWinW / 2.0f - 64.0f, 40.0f})
+                .Size(26).Color(Colors::Gold).Draw();
+            float y = 84.0f;
+            for (const std::string_view ln : nccu::kGameHelpLines) {
+                if (!ln.empty())
+                    TextBuilder{std::string{ln}}
+                        .At(Vec2{48.0f, y}).Size(16)
+                        .Color(Colors::White).Draw();
+                y += 22.0f;
+            }
+            TextBuilder{std::string{nccu::kGameHelpClosing}}
+                .At(Vec2{48.0f, y}).Size(16).Color(Colors::White).Draw();
+            TextBuilder{"Enter / ESC 返回"}
+                .At(Vec2{kWinW / 2.0f - 70.0f,
+                         static_cast<float>(kWinH) - 52.0f})
+                .Size(16).Color(Colors::DarkGray).Draw();
+        }
+    }
+    return false;                              // window closed
+}
 
 } // namespace
 
@@ -43,8 +91,17 @@ TitleChoice RunTitleScreen(gfx::Window& win) {
             cursor = (cursor - 1 + kCount) % kCount;
         if (Input::IsPressed(Key::Down) || Input::IsPressed(Key::S))
             cursor = (cursor + 1) % kCount;
-        if (Input::IsPressed(Key::Enter))
-            return kItems[static_cast<std::size_t>(cursor)].choice;
+        if (Input::IsPressed(Key::Enter)) {
+            switch (kItems[static_cast<std::size_t>(cursor)].action) {
+                case MenuAction::Start: return TitleChoice::StartGame;
+                case MenuAction::Quit:  return TitleChoice::Quit;
+                case MenuAction::Help:
+                    // Show the help page; if the window was closed there,
+                    // exit cleanly, else fall back to this title loop.
+                    if (!RunHelpPage(win)) return TitleChoice::Quit;
+                    continue;
+            }
+        }
 
         {
             DrawScope frame;

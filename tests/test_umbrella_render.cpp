@@ -1,8 +1,12 @@
 #include "doctest/doctest.h"
 #include "TrueUmbrella.h"
+#include "FragileUmbrella.h"
+#include "ProfessorTrapUmbrella.h"
 #include "CursedUmbrella.h"
 #include "gfx/IRenderer.h"
 
+#include <set>
+#include <tuple>
 #include <vector>
 
 namespace {
@@ -28,52 +32,90 @@ struct CountingRenderer final : nccu::gfx::IRenderer {
     }
 };
 
-bool SameRect(nccu::gfx::Rect a, nccu::gfx::Rect b) {
-    return a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height;
+// A canonical fingerprint of the whole glyph (every rect's geometry +
+// colour, in draw order). Two umbrella styles are "the same" iff this
+// matches — the pre-#9 defect (all four identical but for tint).
+std::vector<std::tuple<float,float,float,float,int,int,int,int>>
+Fingerprint(const CountingRenderer& spy) {
+    std::vector<std::tuple<float,float,float,float,int,int,int,int>> fp;
+    for (const auto& rc : spy.rects)
+        fp.emplace_back(rc.r.x, rc.r.y, rc.r.width, rc.r.height,
+                        rc.c.r, rc.c.g, rc.c.b, rc.c.a);
+    return fp;
+}
+
+template <class U>
+CountingRenderer DrawOf() {
+    U u{nccu::gfx::Vec2{100.0f, 200.0f}};
+    CountingRenderer spy;
+    u.Render(spy);
+    return spy;
 }
 
 } // namespace
 
-// Template Method evidence: the 3-rect glyph skeleton lives in
-// TransparentUmbrella::Render; each leaf only supplies its canopy tint via
-// the constructor. Same geometry + same DarkGray handle for every subclass;
-// only the two canopy rects' colour differs.
-TEST_CASE("TransparentUmbrella::Render emits the 3-rect glyph via IRenderer") {
-    using nccu::gfx::Vec2;
-    using nccu::gfx::Rect;
-    namespace Colors = nccu::gfx::Colors;
+// REQUIREMENT #9: the umbrellas must look CLEARLY different. The old
+// contract (one shared 3-rect skeleton, only the tint differs) WAS the
+// defect — four near-identical pale glyphs. The new contract: each
+// UmbrellaStyle draws its own distinct silhouette in its own bold,
+// well-separated tint, while staying a pure rect-only vector glyph
+// (no sprite/text — MVC: View renders off the object's own data).
+//
+// Revert-verify: collapsing Render() back to one shared rect set (or
+// restoring the near-identical pale tints) makes the "all four
+// fingerprints distinct" / "tints well separated" CHECKs fail.
+TEST_CASE("REQ#9: the four umbrellas each render a DISTINCT glyph") {
+    const CountingRenderer t = DrawOf<TrueUmbrella>();
+    const CountingRenderer f = DrawOf<FragileUmbrella>();
+    const CountingRenderer p = DrawOf<ProfessorTrapUmbrella>();
+    const CountingRenderer c = DrawOf<CursedUmbrella>();
 
-    const Vec2 pos{100.0f, 200.0f};
-    const Rect canopyTop {102.0f, 204.0f, 16.0f, 3.0f};
-    const Rect canopyBody{100.0f, 207.0f, 20.0f, 3.0f};
-    const Rect handle    {109.0f, 210.0f,  2.0f, 9.0f};
-
-    SUBCASE("TrueUmbrella canopy uses its own tint, handle is DarkGray") {
-        TrueUmbrella u{pos};
-        CountingRenderer spy;
-        u.Render(spy);
-
-        REQUIRE(spy.rects.size() == 3);
-        CHECK(spy.sprites == 0);              // pure vector glyph, no sprite
-        CHECK(spy.texts == 0);                // umbrellas never draw text
-        CHECK(SameRect(spy.rects[0].r, canopyTop));
-        CHECK(SameRect(spy.rects[1].r, canopyBody));
-        CHECK(SameRect(spy.rects[2].r, handle));
-        CHECK(spy.rects[0].c == nccu::gfx::Color{180, 230, 255, 255});
-        CHECK(spy.rects[1].c == nccu::gfx::Color{180, 230, 255, 255});
-        CHECK(spy.rects[2].c == Colors::DarkGray);
+    // Still a pure vector glyph for every style (no sprite, no text).
+    for (const CountingRenderer* s : {&t, &f, &p, &c}) {
+        CHECK(s->sprites == 0);
+        CHECK(s->texts == 0);
+        CHECK(s->rects.size() >= 3);          // a real, drawn umbrella
     }
 
-    SUBCASE("CursedUmbrella reuses the skeleton, only the tint changes") {
-        CursedUmbrella u{pos};
-        CountingRenderer spy;
-        u.Render(spy);
+    // The decisive #9 assertion: all FOUR full glyph fingerprints are
+    // pairwise different (geometry and/or colour) — not "same shape,
+    // different tint". A std::set of the fingerprints must hold 4.
+    using FP = std::vector<std::tuple<float,float,float,float,int,int,int,int>>;
+    std::set<FP> distinct{Fingerprint(t), Fingerprint(f),
+                          Fingerprint(p), Fingerprint(c)};
+    CHECK(distinct.size() == 4);
 
-        REQUIRE(spy.rects.size() == 3);
-        CHECK(SameRect(spy.rects[0].r, canopyTop));   // identical geometry
-        CHECK(SameRect(spy.rects[1].r, canopyBody));
-        CHECK(SameRect(spy.rects[2].r, handle));
-        CHECK(spy.rects[0].c == nccu::gfx::Color{120, 100, 140, 255});
-        CHECK(spy.rects[2].c == Colors::DarkGray);    // handle unchanged
-    }
+    // And the SHAPES differ too (not merely a recolour of one skeleton):
+    // the rect COUNT differs across the styles, so the silhouettes are
+    // genuinely different, not just tinted.
+    std::set<std::size_t> rectCounts{
+        t.rects.size(), f.rects.size(), p.rects.size(), c.rects.size()};
+    CHECK(rectCounts.size() >= 3);            // >=3 of 4 silhouettes differ in rect count
+}
+
+// The bold per-umbrella tints must be FAR apart (the pre-#9 tints were
+// all pale near-blue: |Δ| of ~10–30 per channel — visually the same).
+// Assert every pair of canopy tints differs by a large channel sum so
+// they cannot be confused on the map.
+TEST_CASE("REQ#9: umbrella canopy tints are boldly separated") {
+    auto canopy = [](const CountingRenderer& s) {
+        // rects[0] is the topmost canopy slab for every style — its
+        // colour is that umbrella's signature tint.
+        return s.rects.at(0).c;
+    };
+    const nccu::gfx::Color ct = canopy(DrawOf<TrueUmbrella>());
+    const nccu::gfx::Color cf = canopy(DrawOf<FragileUmbrella>());
+    const nccu::gfx::Color cp = canopy(DrawOf<ProfessorTrapUmbrella>());
+    const nccu::gfx::Color cc = canopy(DrawOf<CursedUmbrella>());
+
+    auto dist = [](nccu::gfx::Color a, nccu::gfx::Color b) {
+        auto d = [](int x, int y) { return x > y ? x - y : y - x; };
+        return d(a.r, b.r) + d(a.g, b.g) + d(a.b, b.b);
+    };
+    // Manhattan colour distance ≥ 120 for every pair — the old pale set
+    // (e.g. {180,230,255} vs {200,220,235}) summed only ~45, well under.
+    const nccu::gfx::Color all[] = {ct, cf, cp, cc};
+    for (int i = 0; i < 4; ++i)
+        for (int j = i + 1; j < 4; ++j)
+            CHECK(dist(all[i], all[j]) >= 120);
 }

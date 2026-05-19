@@ -110,7 +110,17 @@ inline const char* UiLiteralChars() {
         // the ending-caption block above. Kept on the content-unreadable
         // fallback path too, exactly like those.
         "中井仁勇務友合商四圖堂場塘大夫學小希廊心志思操政新智"
-        "書服果校樂樓正法泳活游研究綜維聞育舖英行訊資走門院集雩風館體";
+        "書服果校樂樓正法泳活游研究綜維聞育舖英行訊資走門院集雩風館體"
+        // REQUIREMENT #9: every glyph in the shared 遊戲說明 help text
+        // (include/GameHelp.h kGameHelpLines + kGameHelpClosing), shown
+        // on the title-screen help page AND the in-game 說明 overlay.
+        // Most already appear in docs/content/*.md; 訪 (拜訪) does not, so
+        // without this the help panel would tofu it to `?` — same atlas
+        // mechanism / #10 lesson as the building-name block above. The
+        // FULL help glyph set is baked (not just 訪) so future help-copy
+        // edits cannot silently reintroduce a tofu glyph.
+        "三下不並久了他作偷動取向品善局屠屬建待復惡或戲戶把拿"
+        "撐撿標欄沖消淋災物相破種積終綠者花術被訪購躲透進選醜量錢鍵龍";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

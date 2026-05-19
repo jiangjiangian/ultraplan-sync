@@ -12,9 +12,12 @@ enum class TitleChoice {
 
 // The home screen shown BEFORE gameplay: game title + a keyboard-
 // navigable menu (Up/Down to move the cursor, Enter to confirm).
-// Two items: 「開始遊戲」 (StartGame) and 「離開」 (Quit). Closing the
-// window is treated as Quit. Runs its own draw loop on `win` and blocks
-// until the player confirms.
+// Three items: 「開始遊戲」 (StartGame), 「遊戲說明」 (an in-place help
+// page handled internally — REQUIREMENT #9) and 「離開」 (Quit). Closing
+// the window is treated as Quit. Runs its own draw loop on `win` and
+// blocks until the player confirms Start or Quit (選 遊戲說明 just shows
+// the help page and returns to this menu; the public result stays the
+// 2-valued StartGame/Quit so main.cpp's screen flow is unchanged).
 //
 // HARNESS: never called when the autoplay harness is active — main.cpp
 // bypasses the title (and character-select) exactly as the old
