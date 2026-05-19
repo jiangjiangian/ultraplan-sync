@@ -87,14 +87,20 @@ public:
     // Returns false (no side effect) if amount > money_; otherwise deducts.
     [[nodiscard]] bool DeductMoney(int amount) noexcept;
 
-    // Rain accumulation: 5 units/sec exposure when umbrella-less; clamped
-    // [0,100]. With lethal=true (default) a full meter respawns the player
-    // at the 正門 gate and emits a ShowMessage event via EventBus.
-    // With lethal=false the meter still accumulates and clamps at 100 but
-    // the gate respawn is suppressed (conservative wiring, BUGLEDGER I8:
-    // the survival meter is observable but the lethal teleport stays off
-    // this cycle so it cannot derail the deterministic ending scripts).
+    // Rain exposure (umbrella-less): +5 units/sec, clamped [0,100].
+    // lethal=true (default) respawns the player at the 正門 gate
+    // (resetRainMeter + ShowMessage) when the meter fills; lethal=false
+    // suppresses only that teleport (param kept for unit tests / opt-out).
+    // Cycle 4: the survival loop is live — GameController accrues this
+    // while outdoors-and-umbrella-less and DRAINS (DrainRain) while
+    // sheltered, so a full meter is a manage-your-exposure failure, not a
+    // hidden one-shot timer.
     Player& ApplyRain(float dt, bool lethal = true);
+
+    // Rain recovery while sheltered (under umbrella or inside a building):
+    // -10 units/sec, clamped [0,100]; never teleports. GameController
+    // calls this XOR ApplyRain each frame based on the shelter predicate.
+    Player& DrainRain(float dt) noexcept;
 
 private:
     void RespawnAtGate();

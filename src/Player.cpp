@@ -127,6 +127,11 @@ Player& Player::ApplyRain(float dt, bool lethal) {
     return *this;
 }
 
+Player& Player::DrainRain(float dt) noexcept {
+    rainMeter_ = std::clamp(rainMeter_ - 10.0f * dt, 0.0f, 100.0f);
+    return *this;
+}
+
 void Player::RespawnAtGate() {
     // 正門 gate spawn — half-day passes, no karma penalty per design doc.
     position_ = nccu::gfx::Vec2{500.0f, 1860.0f};
