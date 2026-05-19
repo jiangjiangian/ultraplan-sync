@@ -127,6 +127,13 @@ void View::Draw(const World& world) {
         if (p)
             std::snprintf(kbuf, sizeof(kbuf), "karma: %d   umbrella: %s",
                 p->GetKarma(), p->HasUmbrella() ? "yes" : "no");
+        // Money readout — the player must always see their purse during
+        // play (feature 金幣 HUD). Read-only from World/Player data; the
+        // View never mutates state (MVC purity). Updates live because the
+        // HUD is redrawn every frame from GetMoney().
+        char mbuf[48] = {0};
+        if (p)
+            std::snprintf(mbuf, sizeof(mbuf), "金幣: %d 元", p->GetMoney());
         const bool inside = !world.CurrentBuildingName().empty();
         const std::string insideLine =
             inside ? ("Inside: " + world.CurrentBuildingName())
@@ -142,6 +149,7 @@ void View::Draw(const World& world) {
         // chapter name is CJK so worst-case ~size px per glyph.
         int rows = 1;                         // WASD hint
         if (p)    rows += 1;                  // karma/umbrella
+        if (p)    rows += 1;                  // 金幣 (money)
         if (inside) rows += 1;                // Inside
         rows += 1;                            // chapter
         if (p)    rows += 1;                  // rain
@@ -152,6 +160,10 @@ void View::Draw(const World& world) {
             return static_cast<std::size_t>(g);
         };
         maxGlyphs = std::max(maxGlyphs, glyphsOf(kbuf));
+        // 金幣 line is CJK (3 wide ideographs + digits) — count its
+        // lead-byte glyphs ×2 like the chapter line so the panel is wide
+        // enough on any money value.
+        maxGlyphs = std::max(maxGlyphs, glyphsOf(mbuf) * 2);
         if (inside) maxGlyphs = std::max(maxGlyphs, glyphsOf(insideLine));
         maxGlyphs = std::max(maxGlyphs, glyphsOf(chapter) * 2);  // CJK wide
         maxGlyphs = std::max(maxGlyphs, glyphsOf(rbuf));
@@ -169,6 +181,13 @@ void View::Draw(const World& world) {
         if (p) {
             TextBuilder{kbuf}
                 .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::White).Draw();
+            y += kLineH;
+        }
+        if (p) {
+            // Gold so the purse reads at a glance and matches the coin
+            // motif; stays on the dark panel so it pops on any map tile.
+            TextBuilder{mbuf}
+                .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::Gold).Draw();
             y += kLineH;
         }
         if (inside) {
@@ -261,6 +280,68 @@ void View::Draw(const World& world) {
         if (const Player* ip = world.GetPlayer())
             DrawInventory(renderer_, ip->Consumables(),
                           viewportSize_.x, viewportSize_.y);
+    }
+
+    // Top-right affordance: a small always-on hint that an in-game menu
+    // exists ("ESC 選單"). Panel-backed so it stays legible on any tile;
+    // hidden while the menu itself is open (the menu replaces it).
+    if (!world.MenuOpen()) {
+        constexpr float kAffSize = 14.0f;
+        constexpr float kPad     = 5.0f;
+        const std::string aff = "ESC 選單";
+        int glyphs = 0;
+        for (unsigned char c : aff)
+            if ((c & 0xC0) != 0x80) ++glyphs;
+        // "ESC " is 4 narrow + 選單 2 wide → estimate width generously.
+        const float tw = static_cast<float>(glyphs) * kAffSize;
+        const float panelW = tw + kPad * 2.0f;
+        const float panelH = kAffSize + kPad * 2.0f;
+        const float px = viewportSize_.x - panelW - 6.0f;
+        renderer_.DrawRect(Rect{px, 6.0f, panelW, panelH},
+                           Color{20, 22, 30, 170});
+        TextBuilder{aff}.At(Vec2{px + kPad, 6.0f + kPad})
+            .Size(static_cast<int>(kAffSize)).Color(Colors::White).Draw();
+    }
+
+    // In-game pause menu overlay — drawn LAST so it sits above the world,
+    // HUD, dialog and inventory. Reactive: a pure function of
+    // World::MenuOpen + MenuCursor (no retained UI state in the View).
+    // A full-screen dim then a centred panel; the cursor row gets a
+    // marker + highlight colour so keyboard selection is unambiguous.
+    if (world.MenuOpen()) {
+        const float W = viewportSize_.x;
+        const float H = viewportSize_.y;
+        renderer_.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 150});
+
+        constexpr float kPanelW = 300.0f;
+        constexpr float kPanelH = 250.0f;
+        const float px = W * 0.5f - kPanelW * 0.5f;
+        const float py = H * 0.5f - kPanelH * 0.5f;
+        renderer_.DrawRect(Rect{px, py, kPanelW, kPanelH},
+                           Color{20, 22, 30, 230});
+
+        TextBuilder{"遊戲選單"}
+            .At(Vec2{px + kPanelW * 0.5f - 64.0f, py + 24.0f})
+            .Size(28).Color(Colors::Gold).Draw();
+
+        static const char* kLabels[World::kMenuItemCount] = {
+            "繼續", "重新開始", "離開"};
+        constexpr float kFirstY = 92.0f;
+        constexpr float kRowH   = 46.0f;
+        for (int i = 0; i < World::kMenuItemCount; ++i) {
+            const bool sel = (i == world.MenuCursor());
+            const std::string row =
+                (sel ? std::string("> ") : std::string("  ")) +
+                kLabels[i];
+            TextBuilder{row}
+                .At(Vec2{px + 70.0f, py + kFirstY + i * kRowH})
+                .Size(24)
+                .Color(sel ? Color{255, 153, 0, 255} : Colors::White)
+                .Draw();
+        }
+        TextBuilder{"↑ ↓ 選擇   Enter 確認   ESC 繼續"}
+            .At(Vec2{px + 20.0f, py + kPanelH - 36.0f})
+            .Size(14).Color(Colors::DarkGray).Draw();
     }
 }
 

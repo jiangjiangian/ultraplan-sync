@@ -81,6 +81,20 @@ inline const char* UiLiteralChars() {
         // renders as the raylib no-glyph `?` (the V1 tofu bug). DialogView
         // uses only the down-cue; no ▲ up-cue exists, so none is added.
         "\xE2\x96\xBC"  // U+25BC ▼
+        // U+2190 ← / U+2192 → / U+2191 ↑ / U+2193 ↓ — arrow affordances
+        // used by the title, character-select and in-game menu hint
+        // lines. Not ASCII, absent from docs/content → tofu without this.
+        "\xE2\x86\x90\xE2\x86\x92\xE2\x86\x91\xE2\x86\x93"
+        // Title screen / in-game menu / 5-persona character-select string
+        // literals (TitleScreen.cpp / CharacterSelect.cpp / View.cpp menu
+        // overlay). Kept here so every new UI glyph still renders on the
+        // content-unreadable fallback path, exactly like the ending
+        // captions above. Game title + menu verbs + persona names/blurbs.
+        "尋傘記政大山下篇開始遊戲離開選擇你的角色"
+        "五位學生沒性別之分確認返首頁繼續重新動"
+        "夜貓通宵K書黑眼圈是勳章social咖系活開心果"
+        "邊緣人圖館落常駐民卷王GPA行事曆排深佛隨修"
+        "課丟急金幣元遊戲選單"
         // InventoryView panel
         "物品欄空";
 }

@@ -62,6 +62,33 @@ public:
     [[nodiscard]] bool InventoryOpen() const noexcept { return inventoryOpen_; }
     void SetInventoryOpen(bool v) noexcept { inventoryOpen_ = v; }
 
+    // In-game pause menu (top-right affordance, opened with Esc/M). Pure
+    // UI state on the World — exactly the InventoryOpen idiom — so the
+    // View renders it and GameController freezes the sim while it is
+    // open. World stays pure data: no raylib, no input here. Items:
+    // 0=繼續(Resume) 1=重新開始(Restart) 2=離開(Quit). The Restart/Quit
+    // intent is surfaced to main.cpp's outer loop via PendingAppAction
+    // (the only place a full World teardown+rebuild can safely happen,
+    // so the EventBus subscriber lifetime stays controlled — BUGLEDGER
+    // B2/H1). GameController NEVER tears itself down.
+    enum class AppAction { None, Restart, Quit };
+    [[nodiscard]] bool MenuOpen() const noexcept { return menuOpen_; }
+    void SetMenuOpen(bool v) noexcept {
+        menuOpen_ = v;
+        if (!v) menuCursor_ = 0;   // reopen always starts on Resume
+    }
+    [[nodiscard]] int  MenuCursor() const noexcept { return menuCursor_; }
+    static constexpr int kMenuItemCount = 3;
+    void MoveMenuCursor(int delta) noexcept {
+        menuCursor_ = (menuCursor_ + delta + kMenuItemCount) %
+                      kMenuItemCount;
+    }
+    [[nodiscard]] AppAction PendingAppAction() const noexcept {
+        return pendingAppAction_;
+    }
+    void RequestAppAction(AppAction a) noexcept { pendingAppAction_ = a; }
+    void ClearAppAction() noexcept { pendingAppAction_ = AppAction::None; }
+
     // Transient on-screen notice driven by EventType::ShowMessage. The
     // EventBus subscriber (wired by GameController) calls SetHudMessage;
     // GameController::Update ages it via TickHud; the View renders it as
@@ -105,6 +132,9 @@ private:
     float                       hudAge_{0.0f};
     CollisionMask               terrainMask_;
     bool                        inventoryOpen_{false};
+    bool                        menuOpen_{false};
+    int                         menuCursor_{0};
+    AppAction                   pendingAppAction_{AppAction::None};
 };
 
 } // namespace nccu
