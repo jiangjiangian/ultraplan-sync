@@ -1,3 +1,10 @@
+> ⚠ **SUPERSEDED in part (Cycle 3 verify, 2026-05-19).** Items #2/#3
+> reference code that no longer exists — the `main.cpp` building→state
+> string map and the `main.cpp:210 dynamic_cast<NPC*>` are gone;
+> `src/main.cpp` is now a 67-line composition root and that wiring
+> lives in `include/EventWiring.h`. Possibly-stale baseline rationale
+> (CLAUDE.md §2); see `.claude/BUGLEDGER.md` "Cycle 3".
+
 # SOLID 對抗審查總合 — 《尋傘記：政大山下篇》
 
 > 兩階段審查紀錄：5 個 architecture reviewer × SOLID 各 1，再對所有結論做一輪對抗反駁推回去。

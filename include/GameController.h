@@ -7,6 +7,7 @@
 #include <vector>
 
 class Player;  // global-namespace model object
+class Vendor;  // shop NPC; pending-purchase target across the dialog frame
 
 namespace nccu {
 
@@ -43,6 +44,15 @@ private:
     // future) the next Update() asks World to respawn. Keeps the state
     // machine pure: no World/EventBus dependency, no new EventType.
     nccu::SemesterState                                  lastRosterState_;
+    // I5: the Vendor whose buy menu is currently open. A shop interaction
+    // opens a choice dialog this frame and the purchase is confirmed in a
+    // LATER frame's dialog branch, so the target must survive across the
+    // freeze. A non-owning observer of a World-owned object; cleared the
+    // moment the menu closes (confirm / no-op) and whenever a non-vendor
+    // dialog opens, so it can never dangle past the roster sweep (a
+    // vendor dialog freezes the sim, so the swept-roster path cannot run
+    // while it is set). nullptr = no shop menu open.
+    Vendor*                                              pendingVendor_ = nullptr;
 };
 
 } // namespace nccu

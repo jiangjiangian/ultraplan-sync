@@ -6,7 +6,7 @@ class CursedUmbrella final : public TransparentUmbrella {
 public:
     explicit CursedUmbrella(nccu::gfx::Vec2 position)
         : TransparentUmbrella(position, "CursedUmbrella", nccu::gfx::Color{120, 100, 140, 255}),
-          karmaPenalty_(50) {}
+          karmaPenalty_(30) {}
 
     void beClaimed(Player* player) override;
 

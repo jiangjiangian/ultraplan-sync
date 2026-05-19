@@ -1,3 +1,12 @@
+> ⚠ **SUPERSEDED in part (Cycle 3 verify, 2026-05-19).** The C-1
+> "`Player*` dangling after erase via `RespawnAtGate`/trap-spawn"
+> hazard is hypothetical: `RespawnAtGate` had zero callers and was
+> dead code until Cycle 3 wired it CONSERVATIVELY (`lethal=false` ⇒
+> the respawn path is suppressed this cycle), and it *repositions* the
+> player rather than deactivating it, so the deferred-deletion UAF it
+> posits is not realized. Possibly-stale baseline (CLAUDE.md §2); see
+> `.claude/BUGLEDGER.md` "Cycle 3" (I8).
+
 # STRICT_REVIEW_R3 — 5-Reviewer Consensus
 
 Round 3 of industrial-grade audit on commits `4a9f661`, `0007686`, `5ee0258`

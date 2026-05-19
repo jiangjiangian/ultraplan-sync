@@ -19,6 +19,13 @@ public:
     //   - success                  -> true, ShowMessage + PickupAcquired
     [[nodiscard]] bool TryBuy(class Player* player, std::size_t stockIndex);
 
+    // I5: a Vendor has an empty NpcId() (not a dialog-content NPC), so
+    // GameController needs a virtual it can dispatch on to route a shop
+    // interaction to the buy choice UI instead of NPC::Interact's line
+    // cycling (which never reaches TryBuy). Virtual-not-dynamic_cast,
+    // same rationale as NPC::BlocksMovement().
+    [[nodiscard]] bool IsVendor() const noexcept override { return true; }
+
     [[nodiscard]] const VendorConfig& Config() const noexcept { return config_; }
 
 private:
