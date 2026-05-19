@@ -4,6 +4,7 @@
 
 void FragileUmbrella::beClaimed(Player* player) {
     if (!player) return;
+    if (!isActive_) return;        // idempotent: a second call is a no-op
     player->SetHasUmbrella(true);
     isActive_ = false;
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "FragileUmbrella" });
