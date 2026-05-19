@@ -240,7 +240,15 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
         Frame(controller, in);
     }
     REQUIRE(world.Dialog().AtChoice());
-    REQUIRE(world.Dialog().Choices().size() == 1);     // one stock line
+    // REQUIREMENT #4 reconciliation: the menu is now one stock line PLUS
+    // a trailing "不買" decline choice (a forced purchase is a defect).
+    // choiceCursor_ defaults to 0 (the stock line), so a single E still
+    // confirms the BUY exactly as before — the I5 wiring is unchanged;
+    // only the menu size grew by the decline entry. test_vendor_decline
+    // .cpp owns the proof that picking the decline mutates nothing.
+    REQUIRE(world.Dialog().Choices().size() == 2);     // stock + 不買
+    CHECK(world.Dialog().Choices().back().label == "先不買，謝謝");
+    CHECK(world.Dialog().ChoiceCursor() == 0);         // defaults to buy
 
     in.Tap(Key::E);                                    // confirm the buy
     Frame(controller, in);
