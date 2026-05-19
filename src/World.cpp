@@ -10,6 +10,7 @@
 #include "PipoyaRoster.h"
 #include "QuestFlagPickup.h"
 #include "Vendor.h"
+#include "VendorSprite.h"
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <cassert>
@@ -87,20 +88,28 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // empty for every state until S5b-3 transcribes the Interlude
     // lineup, so today this loop is a no-op — it only proves the spawn
     // MECHANISM, with zero behaviour change.
+    // REQUIREMENT #6: every market stall must be a DIFFERENT person.
+    // The old code passed the literal "vendor" + a single shop_auntie.png
+    // fallback for ALL stalls, so on a clean clone (PIPOYA pack absent →
+    // fallback path) the ten 攤主 rendered as ten clones of the same
+    // sprite. The per-stall selection rule now lives in one pure
+    // function (VendorSprite.h VendorSpriteFor) shared with its
+    // regression test, so the "ten distinct people" guarantee is
+    // exercised through the real production code path.
+    std::size_t vendorIdx = 0;
     for (const auto& vp : ChapterVendors(state)) {
         auto vendor = std::make_unique<Vendor>(vp.pos, vp.config);
-        // Without a sprite a Vendor falls through NPC::Render's
-        // missing-sprite path and draws as a bare green box — the
-        // playtest's "一堆綠色方塊" at the market was the 10 stalls.
-        // Give every stall one shared keeper sprite (design C.7: the
-        // vendors deliberately share a single base sprite; reuse an
-        // existing shopkeeper asset, no new art). Gated by loadSprites_
-        // exactly like the chapter NPCs above, so the headless World
-        // unit tests (loadSprites=false) skip the GPU upload.
+        // Gated by loadSprites_ exactly like the chapter NPCs above, so
+        // the headless World unit tests (loadSprites=false) skip the GPU
+        // upload. VendorSpriteFor keys off the stall's own unique 攤主/
+        // name and picks a distinct curated fallback per spawn index, so
+        // a clean clone still shows ten different people (not ten
+        // shop_auntie clones) and the PIPOYA path no longer collides.
         if (loadSprites_)
-            vendor->LoadSprite(PickNpcSprite(
-                "vendor", vp.pos,
-                "resources/assets/sprites/npc/shop_auntie.png"));
+            vendor->LoadSprite(VendorSpriteFor(
+                vendorIdx, vp.config.stallKeeper, vp.config.name,
+                vp.pos));
+        ++vendorIdx;
         chapterRoster_.push_back(vendor.get());
         objects_.push_back(std::move(vendor));
     }

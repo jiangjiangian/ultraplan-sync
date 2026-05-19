@@ -11,6 +11,7 @@
 #include "InventoryView.h"
 #include "MessageView.h"
 #include "QuestObjective.h"
+#include "GameHelp.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/CameraScope.h"
@@ -324,10 +325,13 @@ void View::Draw(const World& world) {
             .At(Vec2{px + kPanelW * 0.5f - 64.0f, py + 24.0f})
             .Size(28).Color(Colors::Gold).Draw();
 
+        // REQUIREMENT #9: 4 items now — 繼續 / 說明 / 重新開始 / 離開
+        // (order mirrors GameController's switch). 說明 opens the help
+        // overlay drawn below.
         static const char* kLabels[World::kMenuItemCount] = {
-            "繼續", "重新開始", "離開"};
-        constexpr float kFirstY = 92.0f;
-        constexpr float kRowH   = 46.0f;
+            "繼續", "說明", "重新開始", "離開"};
+        constexpr float kFirstY = 78.0f;
+        constexpr float kRowH   = 40.0f;
         for (int i = 0; i < World::kMenuItemCount; ++i) {
             const bool sel = (i == world.MenuCursor());
             const std::string row =
@@ -340,7 +344,38 @@ void View::Draw(const World& world) {
                 .Draw();
         }
         TextBuilder{"↑ ↓ 選擇   Enter 確認   ESC 繼續"}
-            .At(Vec2{px + 20.0f, py + kPanelH - 36.0f})
+            .At(Vec2{px + 20.0f, py + kPanelH - 30.0f})
+            .Size(14).Color(Colors::DarkGray).Draw();
+    }
+
+    // REQUIREMENT #9: the in-game 說明 (how-to-play) overlay — drawn
+    // ABOVE the menu (which is still up behind it). Pure function of
+    // World::HelpOpen(); the same shared GameHelp text the title screen
+    // uses, so the two never drift. A near-full-screen panel so the
+    // ~22-cell help lines fit; ESC/E/Enter (handled in GameController)
+    // dismisses it back to the menu.
+    if (world.MenuOpen() && world.HelpOpen()) {
+        const float W = viewportSize_.x;
+        const float H = viewportSize_.y;
+        renderer_.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 205});
+        const float pad = 24.0f;
+        renderer_.DrawRect(Rect{pad, pad, W - pad * 2.0f, H - pad * 2.0f},
+                           Color{18, 20, 28, 245});
+        TextBuilder{"遊戲說明"}
+            .At(Vec2{W * 0.5f - 64.0f, pad + 14.0f})
+            .Size(26).Color(Colors::Gold).Draw();
+        float hy = pad + 56.0f;
+        for (const std::string_view ln : nccu::kGameHelpLines) {
+            if (!ln.empty())
+                TextBuilder{std::string{ln}}
+                    .At(Vec2{pad + 24.0f, hy})
+                    .Size(16).Color(Colors::White).Draw();
+            hy += 22.0f;
+        }
+        TextBuilder{std::string{nccu::kGameHelpClosing}}
+            .At(Vec2{pad + 24.0f, hy}).Size(16).Color(Colors::White).Draw();
+        TextBuilder{"ESC / E 返回選單"}
+            .At(Vec2{W * 0.5f - 70.0f, H - pad - 28.0f})
             .Size(14).Color(Colors::DarkGray).Draw();
     }
 }

@@ -75,14 +75,24 @@ public:
     [[nodiscard]] bool MenuOpen() const noexcept { return menuOpen_; }
     void SetMenuOpen(bool v) noexcept {
         menuOpen_ = v;
-        if (!v) menuCursor_ = 0;   // reopen always starts on Resume
+        if (!v) { menuCursor_ = 0; helpOpen_ = false; }  // reopen on Resume
     }
     [[nodiscard]] int  MenuCursor() const noexcept { return menuCursor_; }
-    static constexpr int kMenuItemCount = 3;
+    // REQUIREMENT #9: 4 items — 0=繼續 1=說明 2=重新開始 3=離開. 說明
+    // opens an in-place help overlay (HelpOpen) rather than an AppAction.
+    static constexpr int kMenuItemCount = 4;
     void MoveMenuCursor(int delta) noexcept {
         menuCursor_ = (menuCursor_ + delta + kMenuItemCount) %
                       kMenuItemCount;
     }
+
+    // REQUIREMENT #9: the in-game 說明 (how-to-play) overlay. Pure UI
+    // state on the World — exactly the InventoryOpen / MenuOpen idiom —
+    // so the View renders it and GameController keeps the sim frozen
+    // while it (and the menu) is up. Opened from the pause-menu 說明
+    // item; ESC/E/Enter closes it back to the menu. No raylib here.
+    [[nodiscard]] bool HelpOpen() const noexcept { return helpOpen_; }
+    void SetHelpOpen(bool v) noexcept { helpOpen_ = v; }
     [[nodiscard]] AppAction PendingAppAction() const noexcept {
         return pendingAppAction_;
     }
@@ -134,6 +144,7 @@ private:
     bool                        inventoryOpen_{false};
     bool                        menuOpen_{false};
     int                         menuCursor_{0};
+    bool                        helpOpen_{false};
     AppAction                   pendingAppAction_{AppAction::None};
 };
 

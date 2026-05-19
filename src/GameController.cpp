@@ -175,6 +175,19 @@ void GameController::Update() {
         const bool toggle =
             Input::IsPressed(Key::Escape) || Input::IsPressed(Key::M);
         if (world_.MenuOpen()) {
+            // REQUIREMENT #9: the 說明 help overlay sits ON TOP of the
+            // paused menu. While it is up, ESC / E / Enter dismisses it
+            // back to the menu and the menu cursor / sim stay frozen.
+            // Handled FIRST so a key meant for "close help" never also
+            // moves the menu cursor or triggers an AppAction.
+            if (world_.HelpOpen()) {
+                if (Input::IsPressed(Key::Escape) ||
+                    Input::IsPressed(Key::M) ||
+                    Input::IsPressed(Key::Enter) ||
+                    Input::IsPressed(Key::E))
+                    world_.SetHelpOpen(false);
+                return;                         // frozen behind help
+            }
             if (Input::IsPressed(Key::Up))   world_.MoveMenuCursor(-1);
             if (Input::IsPressed(Key::Down)) world_.MoveMenuCursor(1);
             if (toggle) {                       // Esc/M = quick Resume
@@ -186,7 +199,10 @@ void GameController::Update() {
                     case 0:                     // 繼續 (Resume)
                         world_.SetMenuOpen(false);
                         break;
-                    case 1:                     // 重新開始 (Restart)
+                    case 1:                     // 說明 (Help) — overlay
+                        world_.SetHelpOpen(true);
+                        break;
+                    case 2:                     // 重新開始 (Restart)
                         world_.RequestAppAction(
                             World::AppAction::Restart);
                         break;
