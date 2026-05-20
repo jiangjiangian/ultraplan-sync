@@ -199,3 +199,68 @@ TEST_CASE("Player overload: victim with promise flag is line-only recap") {
     CHECK(d.CurrentLine() == "真的？謝謝你……");        // victim sub-1 line 0
     CHECK(p.GetKarma() == k0);   // +5 was the choice's job, flag preset -> skip
 }
+
+// ---------------------------------------------------------------------------
+// Cycle-8 audit Finding 2: restore the GDD §伍 Ch1「斥責學長」漣漪選擇.
+// Pre-fix: chapter1.md suit_senior had (a)/(b)/(c)/(d) with (c) and (d)
+// both annotating `Flag_ScoldedSenior = false`, and NO substate setting
+// `Flag_ScoldedSenior = true`. Yet DialogOpener.cpp:101 (Ch2 suit_senior
+// → (c) cold) + Chapter2Quest.cpp:66 (cold -3 ripple) + chapter4.md:82/
+// 88/405 (學長 不出場) + voice_bible.md:51 (Interlude 側身走開) ALL
+// branch on `Flag_ScoldedSenior = true` — so a whole GDD-named
+// cross-chapter cold-senior arc was permanently unreachable dead
+// narrative. Fix: chapter1.md (b) re-authored from inert "拒絕，no flag"
+// into the GDD §伍 選項 B "憤怒斥責" path (-5 / Flag_ScoldedSenior=true);
+// chose to re-author (b) not append (e) because DialogLoader.cpp:83
+// hard-caps substate letters at 'a'..'d'. Revert-verified: with the
+// chapter1.md (b) change reverted, every CHECK below fails (suit_senior
+// choice index 0 carries no flag → ScoldedSenior never set → Ch2
+// routing falls through to (a) opener, Ch2 ripple TryApplyCh2Ripple
+// finds neither HelpedSenior nor ScoldedSenior so it grants nothing).
+TEST_CASE("F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior") {
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+    DialogState d;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    const int k0 = p.GetKarma();
+
+    nccu::OpenNpcDialog(d, p, "suit_senior", Ch1);
+    CHECK(d.Active());
+    CHECK(d.CurrentLine() == "欸，加退選也沒搶到嗎？");
+    // Step through the 5 opener lines into choice mode.
+    for (int i = 0; i < 5; ++i) d.Advance();
+    REQUIRE(d.AtChoice());
+    REQUIRE(d.Choices().size() == 3);
+
+    // Choice index 0 is the new (b) 憤怒斥責, dressed as GDD §伍 選項 B.
+    // (DialogOpener.cpp:62-68 packs substates ≥ 1 in ascending order, so
+    // b→0, c→1, d→2 — the ending_a.txt `choose 2` for suit_senior still
+    // resolves to (d) HelpedSenior. State.jsonl byte-parity preserved.)
+    const nccu::DialogChoice& scolded = d.Choices()[0];
+    CHECK(scolded.label == "玩家憤怒斥責，奪回雨傘");
+    CHECK(scolded.setsFlag == "Flag_ScoldedSenior");
+    CHECK(scolded.flagValue == true);
+    CHECK(scolded.karmaDelta == -5);
+
+    // End-to-end via the GameController applier — the live confirm path.
+    d.MoveChoice(0);
+    const nccu::DialogChoice* c = d.Advance();
+    REQUIRE(c != nullptr);
+    nccu::ApplyDialogChoice(p, *c);
+    CHECK(p.HasFlag("Flag_ScoldedSenior"));
+    CHECK_FALSE(p.HasFlag("Flag_HelpedSenior"));   // mirror, not set
+    CHECK(p.GetKarma() == k0 - 5);
+}
+
+TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {
+    // DialogOpener.cpp:101 was a read with no setter. After F2 the (b)
+    // 斥責 path lands the flag and this branch fires.
+    const auto Ch2 = SemesterState::Chapter2_Midterms;
+    Player p{nccu::gfx::Vec2{0, 0}};
+    p.SetFlag("Flag_ScoldedSenior");
+    CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, p) == 2);   // (c)
+
+    Player q{nccu::gfx::Vec2{0, 0}};
+    // No flag → (a) opener — the default. (Mirror sanity check; if this
+    // ever changes, the audit-F2 routing is no longer the only path.)
+    CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, q) == 0);
+}
