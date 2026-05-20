@@ -73,16 +73,16 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     CHECK(d.Choices()[0].label == "玩家詢問雨傘");
     CHECK(d.Choices()[1].label == "玩家購買醜綠傘後");
     CHECK(d.Choices()[2].label == "請阿姨喝一杯熱咖啡");
-    // C.1 (pre-approved): the Ch1 阿姨 buy branch now seeds
-    // Flag_KnowsUglyUmbrella, NOT Flag_BoughtUglyUmbrella. The real
-    // purchase (→ Ending C) moved to the Ch4 集英樓 Vendor; the Ch1
-    // buy is now a 伏筆 seed, not an instant ending trigger.
+    // Cycle-8 audit F1: the Ch1 阿姨 (c) buy branch is now a pure
+    // narrative seed — it sets NO flag (the inert Flag_KnowsUglyUmbrella
+    // annotation was removed per the B3 precedent; src/include never
+    // read it). Ending C's real trigger is the Ch4 集英樓 Vendor
+    // (EndingGate.cpp:66 on Flag_BoughtUglyUmbrella).
     d.MoveChoice(1);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "玩家購買醜綠傘後");
-    CHECK(c->setsFlag == "Flag_KnowsUglyUmbrella");
-    CHECK(c->flagValue == true);
+    CHECK(c->setsFlag == "");     // F1: no flag (was Flag_KnowsUglyUmbrella)
     while (d.Active()) d.Advance();    // exhaust -> close
     CHECK_FALSE(d.Active());
 }
