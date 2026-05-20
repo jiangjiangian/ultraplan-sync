@@ -69,11 +69,22 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     CHECK(s_a->setsFlag == "");
     CHECK(s_a->flagValue == false);
 
-    // (b) blockquote has `// karma +0` — gen_dialog only locks karma on the
-    // first NON-ZERO match (`if cur.karma == 0`), so +0 keeps it 0. This is
-    // the regression net for the "first non-zero wins" guard.
-    CHECK(s_b->karmaDelta == 0);
-    CHECK(s_b->setsFlag == "");
+    // (b) GDD §伍 Ch1 漣漪選項 B「憤怒斥責，奪回雨傘」: was the inert
+    // "拒絕，無 flag" stub; cycle-8 audit F2 activated the dead
+    // Flag_ScoldedSenior wiring (DialogOpener.cpp:101 + Chapter2Quest.cpp:66
+    // + chapter4.md:82/88/405 read it; the GDD-named cold-senior cross-
+    // chapter arc was permanently unreachable pre-fix). Blockquote scans
+    // `// karma -5` (confrontational tier, mirrors (c) -5) and
+    // `Flag_ScoldedSenior = true` (first Flag_ line wins). Re-authored as
+    // substate (b) — not (e) — because DialogLoader.cpp:83 hard-caps
+    // substate letters at 'a'..'d'; only ending_a.txt picks suit_senior
+    // (`choose 2` = (d) HelpedSenior), so re-authoring (b) leaves the
+    // deterministic ending scripts byte-identical (choice indices 0/1/2
+    // still b/c/d, ending_a still picks (d)).
+    CHECK(s_b->karmaDelta == -5);
+    CHECK(s_b->setsFlag == "Flag_ScoldedSenior");
+    CHECK(s_b->flagValue == true);
+    CHECK(s_b->choiceLabel == "玩家憤怒斥責，奪回雨傘");
 
     // (c) blockquote: `// karma -5`, `// Flag_ScoldedSenior = false`.
     // Expected: suit_senior subState 2, 5 dialog lines, karmaDelta -5,
