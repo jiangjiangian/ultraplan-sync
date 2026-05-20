@@ -206,8 +206,11 @@
 
 ### (c) 玩家購買醜綠傘後
 
-> `// 觸發 Ending C 路徑種子`
-> `// Flag_KnowsUglyUmbrella = true`
+> 注：Ch1 樂活小舖只是 Ending C 的「敘事種子」——玩家在此認識醜綠傘的存在；
+> Ending-C 的真正觸發點是 Ch4 集英樓便利商店 Vendor 的「再次購買」
+> （src/EndingGate.cpp 讀取 `Flag_BoughtUglyUmbrella`，由 Ch4 Vendor 設定）。
+> Cycle-8 audit Finding 1 比照 B3 SawVictim 先例移除了本 (c) 過去掛的
+> inert 種子旗標註解——該旗標 src/ include/ 從未讀，是 dead annotation。
 > `// karma +0`（實用主義選擇，中性）
 
 - "聰明！醜有醜的好處啦。"

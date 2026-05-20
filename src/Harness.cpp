@@ -30,7 +30,12 @@ const std::vector<std::string>& KnownFlags() {
     static const std::vector<std::string> kFlags = {
         "Flag_FoundForm", "Flag_PromisedVictim", "Flag_HelpedTA_Ch1",
         "Flag_TookCursedUmbrella", "Flag_HasTrueUmbrella",
-        "Flag_KnowsUglyUmbrella", "Flag_BoughtUglyUmbrella",
+        // (Cycle-8 audit F1, B3 precedent: the inert KnowsUgly seed
+        // formerly listed here was removed; the Ch1 阿姨 (c) buy is
+        // now a pure narrative seed with no tracked flag — Ending-C
+        // is driven entirely by Flag_BoughtUglyUmbrella set by the
+        // Ch4 集英樓 Vendor, EndingGate.cpp.)
+        "Flag_BoughtUglyUmbrella",
         "Flag_SuitSeniorChoiceMade", "Flag_ScoldedSenior",
         "Flag_HelpedSenior", "Flag_FoundNote1", "Flag_FoundNote2",
         "Flag_FoundNote3", "Flag_BookwormRecovered", "Flag_Ch2Cleared",

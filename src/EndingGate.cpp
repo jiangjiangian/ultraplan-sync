@@ -8,8 +8,11 @@ namespace nccu {
 
 // S5e-2b: the three endings resolve here, ALL state-guarded to
 // Chapter4_Finals (the old Ch1+Flag_BoughtUglyUmbrella→Ending_C
-// sibling-if is removed — per C.1 the Ch1 阿姨 buy now only seeds
-// Flag_KnowsUglyUmbrella; the real purchase is the Ch4 集英樓 Vendor).
+// sibling-if is removed — the Ch1 阿姨 buy in chapter1.md (c) is now a
+// pure narrative seed with NO tracked flag; the real Ending-C trigger
+// is the Ch4 集英樓 Vendor purchase, which sets Flag_BoughtUglyUmbrella.
+// (Cycle-8 audit F1 — see BUGLEDGER — removed the previous inert
+// KnowsUgly seed annotation per the B3 precedent.)
 // Precedence A → B → C (plan §F.7): the honest high-karma path wins,
 // then the cursed/fallen path, then the buy-out. Each closes any
 // stale dialog and returns so only one fires per poll.

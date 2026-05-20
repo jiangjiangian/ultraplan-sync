@@ -9,10 +9,11 @@ using nccu::SemesterState;
 
 // S5e-2b: the three endings resolve in CheckEndingGates, ALL guarded
 // to Chapter4_Finals. The old Ch1+Flag_BoughtUglyUmbrella→Ending C is
-// gone (C.1: the Ch1 阿姨 buy now only seeds Flag_KnowsUglyUmbrella;
-// the real buy is the Ch4 集英樓 Vendor → Flag_BoughtUglyUmbrella).
-// SemesterStateMachine is non-movable, so each case constructs it
-// inline (same idiom as test_chapter_spine).
+// gone — the Ch1 阿姨 (c) is now a pure narrative seed (cycle-8
+// audit F1 removed the previous inert Flag_KnowsUglyUmbrella per the
+// B3 precedent); the real Ending-C trigger is the Ch4 集英樓 Vendor →
+// Flag_BoughtUglyUmbrella. SemesterStateMachine is non-movable, so
+// each case constructs it inline (same idiom as test_chapter_spine).
 
 TEST_CASE("ending gate: no gate fires outside Chapter4_Finals") {
     for (auto s : {SemesterState::Chapter1_AddDrop,
@@ -95,13 +96,20 @@ TEST_CASE("ending gate C: bought the ugly umbrella -> Ending C") {
     CHECK(m.Current() == SemesterState::Ending_C);
 }
 
-TEST_CASE("ending gate: C.1 — Ch1 seed flag does NOT trigger any ending") {
+TEST_CASE("ending gate: Ch1 阿姨 (c) buy is a pure narrative seed (audit F1)") {
+    // Pre-F1: chapter1.md (c) seeded Flag_KnowsUglyUmbrella; this test
+    // pinned that the gate ignored that seed. Post-F1: the (c) substate
+    // carries no flag at all (B3 precedent removal), so the Ch1 buy
+    // adds nothing to the player state — only Flag_BoughtUglyUmbrella
+    // (Ch4 集英樓 Vendor) triggers Ending C. The contract guarded here
+    // is unchanged: Ending-C never fires on the Ch1 seed path alone.
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::gfx::Vec2{0, 0}};
     nccu::DialogState d;
-    p.SetFlag("Flag_KnowsUglyUmbrella");     // the Ch1 阿姨 seed
+    // Sanity: no Ch1 flag — the seed leaves player state untouched.
+    CHECK_FALSE(p.HasFlag("Flag_BoughtUglyUmbrella"));
     nccu::CheckEndingGates(p, m, d);
-    CHECK(m.Current() == SemesterState::Chapter4_Finals);   // 伏筆, no ending
+    CHECK(m.Current() == SemesterState::Chapter4_Finals);   // no ending
 }
 
 TEST_CASE("ending gate: precedence A > B > C") {
