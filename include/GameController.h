@@ -1,5 +1,7 @@
 #ifndef GAME_CONTROLLER_H_
 #define GAME_CONTROLLER_H_
+#include "InputHandler.h"
+#include "SceneRouter.h"
 #include "SemesterState.h"
 #include "gfx/Rect.h"
 #include "gfx/Vec2.h"
@@ -24,6 +26,12 @@ void ApplyDialogChoice(Player& player, const DialogChoice& choice);
 // EventBus wiring — installed in the ctor, torn down in the dtor so no
 // singleton-bound lambda outlives the World refs it captured. Mutates
 // the World; never renders, never reads input devices for the View.
+//
+// Cycle 10.P0a (awsome_cpp.md §6): the input edge timing has moved into
+// InputHandler and the FSM transition observer has moved into
+// SceneRouter. The Controller stays the orchestrator that wires them to
+// the World — exactly the §6 "Controller stays the orchestrator"
+// shape, with one concrete responsibility per helper class.
 class GameController {
 public:
     explicit GameController(World& world);
@@ -39,11 +47,14 @@ private:
     std::vector<nccu::gfx::Rect>                         frameColliders_;
     nccu::gfx::Vec2                                       worldSize_;
     nccu::gfx::Vec2                                       playerSize_;
-    // The SemesterState the live NPC roster was last spawned for. When
-    // the FSM moves past it (via ANY trigger — EndingGate, EventWiring,
-    // future) the next Update() asks World to respawn. Keeps the state
-    // machine pure: no World/EventBus dependency, no new EventType.
-    nccu::SemesterState                                  lastRosterState_;
+    // Cycle 10.P0a: roster-respawn cursor + interlude-exit latch live
+    // on the SceneRouter now. lastRosterState_ and
+    // interludeExitZoneLatched_ used to be inline members here.
+    SceneRouter                                          sceneRouter_;
+    // Cycle 10.P0a: dialog hold-E auto-advance timer + cooldown live on
+    // the InputHandler now. eHoldMs_ and eAutoAdvanceCooldown_ used to
+    // be inline members here.
+    InputHandler                                         input_;
     // I5: the Vendor whose buy menu is currently open. A shop interaction
     // opens a choice dialog this frame and the purchase is confirmed in a
     // LATER frame's dialog branch, so the target must survive across the
@@ -53,28 +64,6 @@ private:
     // vendor dialog freezes the sim, so the swept-roster path cannot run
     // while it is set). nullptr = no shop menu open.
     Vendor*                                              pendingVendor_ = nullptr;
-
-    // H3 (cycle9): once-per-visit latch for the Interlude exit-zone toast.
-    // GameController polls InInterludeExitZone every non-dialog frame; we
-    // want to publish "準備離開市集" the first frame the player crosses
-    // into the band, and stay silent for every subsequent frame they
-    // linger or wobble in/out. Reset to false each time the FSM enters the
-    // Interlude_Market state (in the roster-respawn branch above), so a
-    // later re-visit reissues the toast exactly once.
-    bool                                                 interludeExitZoneLatched_ = false;
-
-    // Cycle 9.E (audit H2 / D5 / SC 2.2.2): how long (ms) the dialog-
-    // advance key (E) has been held continuously. Reset to 0 the frame E
-    // is not down; ticked by the live frame delta otherwise. Once it
-    // crosses kEHoldAdvanceMs the dialog auto-advances on a slow ~4-
-    // frame guard (eAutoAdvanceCooldown_ counts the frames to skip after
-    // each auto-fire so the human can read each page rather than blinking
-    // through 60 pages/sec). Only relevant while a dialog is active —
-    // the gameplay E-probe uses raylib's edge IsPressed and is
-    // unaffected. Field on the controller, not the World, because it is
-    // pure input timing — no rendering or simulation depends on it.
-    float                                                eHoldMs_ = 0.0f;
-    int                                                  eAutoAdvanceCooldown_ = 0;
 };
 
 } // namespace nccu

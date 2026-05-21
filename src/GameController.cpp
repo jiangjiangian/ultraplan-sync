@@ -98,7 +98,7 @@ GameController::GameController(World& world)
     : world_(world),
       worldSize_{::world::kSize, ::world::kSize},
       playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight},
-      lastRosterState_(world.Semester().Current()) {
+      sceneRouter_(world.Semester().Current()) {
     frameColliders_.reserve(64);  // dynamic actors only; terrain is the mask
     WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
                            world_.CurrentBuildingName());
@@ -128,53 +128,13 @@ void GameController::Update() {
     using nccu::queries::ForEachActiveExcept;
 
     // Roster follows the FSM. Any trigger (EndingGate, EventWiring,
-    // future) only mutates the pure state machine; we observe the change
-    // here and ask World to swap the chapter NPCs. A transition fired
-    // inside CheckEndingGates (in the dialog branch below) is picked up
-    // at the top of the NEXT frame — robust, no new EventType.
-    if (const SemesterState cur = world_.Semester().Current();
-        cur != lastRosterState_) {
-        world_.RespawnChapterRoster(cur);
-        // Arriving at the market: place the player at its entrance, well
-        // north of the south exit band. Without this a chapter that ended
-        // in the south would leave the player already inside the exit
-        // zone, instantly bouncing them straight back out (a skipped
-        // market). Chapter entry points are an S5c/d/e concern; the
-        // Interlude is the only state S5b-2 owns.
-        if (cur == SemesterState::Interlude_Market) {
-            if (Player* ip = world_.GetPlayer()) {
-                ip->SetPosition(nccu::kInterludeEntry);
-                // S5b-4 "消耗品當章用完": re-entering the market wipes
-                // the consumable inventory, so what was bought for one
-                // chapter can't be hoarded across the market boundary
-                // into the next — every market visit is a fresh "buy
-                // for the chapter ahead" decision (the loop's tension).
-                ip->ClearConsumables();
-            }
-            // H3 (cycle9): the previous chapter's clear toast lands the
-            // same frame as the FSM hop; this hint overwrites it ~1
-            // frame later so the player sees BOTH (the snap, then the
-            // direction) on the same arrival. Reset the south-band latch
-            // so the exit toast fires once per visit (and again on
-            // re-entry, never twice in a row).
-            EventBus::Instance().Publish(
-                Event{EventType::ShowMessage, kInterludeArrivalHint});
-            interludeExitZoneLatched_ = false;
-        }
-        // Ch4 entry (chapter4.md L6「傘再度失蹤」): the player walks
-        // out of 集英樓 with no umbrella. Reset both the generic
-        // HasUmbrella bool AND the TrueUmbrella-specific marker, so
-        // Ending A's 持-TrueUmbrella condition only holds if the
-        // player RE-claims the Ch4 TrueUmbrella (not a leftover from
-        // Ch1/Ch3 nor a stray ctor umbrella).
-        if (cur == SemesterState::Chapter4_Finals) {
-            if (Player* ip = world_.GetPlayer()) {
-                ip->SetHasUmbrella(false);
-                ip->ClearFlag("Flag_HasTrueUmbrella");
-            }
-        }
-        lastRosterState_ = cur;
-    }
+    // ChapterGate, future) mutates the pure state machine; the
+    // SceneRouter observes the change here at top-of-Update and asks
+    // World to swap the chapter NPCs + applies per-destination side
+    // effects. Pre-Cycle 10 this was an inline block — now in
+    // SceneRouter::Settle() so the policy lives in one focused class
+    // with its own doctests (awsome_cpp.md §6).
+    sceneRouter_.Settle(world_);
 
     // In-game pause menu (top-right). Opens with Esc or M; while open the
     // world is fully frozen (we early-return before the object tick /
@@ -283,23 +243,16 @@ void GameController::Update() {
             // long-winded NPC can be skimmed without finger pain. The
             // gameplay E-probe (out of this dialog branch, line ~432) is
             // edge-only and untouched — held-E only auto-advances dialog,
-            // never re-triggers interactions / vendor menus. Pure input
-            // timing; the rest of the branch (advance side-effects,
-            // ending gates) is unchanged.
-            constexpr float kEHoldAdvanceMs = 300.0f;
-            constexpr int   kEHoldCooldownFrames = 4;
+            // never re-triggers interactions / vendor menus.
+            //
+            // Cycle 10.P0a: the edge/hold edge timing now lives on
+            // InputHandler::TickDialogAdvance — the exact same edge OR
+            // ≥300 ms held + 4-frame cooldown contract, pinned by
+            // test_input_handler. The Controller asks "should advance
+            // this frame?" and acts.
             const float ddt = Time::DeltaSeconds();
-            if (Input::IsDown(Key::E)) eHoldMs_ += ddt * 1000.0f;
-            else                       { eHoldMs_ = 0.0f; eAutoAdvanceCooldown_ = 0; }
-            const bool edgeE = Input::IsPressed(Key::E);
-            bool autoE = false;
-            if (!edgeE) {
-                if (Input::IsDown(Key::E) && eHoldMs_ >= kEHoldAdvanceMs) {
-                    if (eAutoAdvanceCooldown_ > 0) --eAutoAdvanceCooldown_;
-                    else { autoE = true; eAutoAdvanceCooldown_ = kEHoldCooldownFrames; }
-                }
-            }
-            if (edgeE || autoE) {
+            const bool advanceE = input_.TickDialogAdvance(ddt);
+            if (advanceE) {
                 // Capture the npc BEFORE Advance() — confirming the last
                 // choice can Close() the dialog, which clears NpcId().
                 const std::string npc = dlg.NpcId();
@@ -374,6 +327,13 @@ void GameController::Update() {
                 }
             }
             return;
+        } else {
+            // Dialog not active this tick: drop any stale hold-E
+            // accumulation so the next conversation starts fresh.
+            // Cheap; idempotent — InputHandler tracks IsDown(E) itself
+            // and would reset on release anyway, but an explicit drop
+            // here keeps the contract obvious.
+            input_.ResetDialogAdvance();
         }
     }
 
@@ -597,7 +557,12 @@ void GameController::Update() {
             // against its own latch). The latch is reset in the
             // Interlude-arrival branch above, so a future re-visit
             // reissues the cue exactly once.
-            MaybeAnnounceInterludeExit(interludeExitZoneLatched_);
+            //
+            // Cycle 10.P0a: the latch lives on SceneRouter now —
+            // the latch reset on Interlude arrival is in
+            // SceneRouter::Settle(), so the GameController only needs
+            // to forward the mutable reference here.
+            MaybeAnnounceInterludeExit(sceneRouter_.InterludeExitLatchMut());
             player->SetFlag("Flag_LeaveInterlude");
         }
     }
@@ -626,6 +591,7 @@ void GameController::Update() {
             }),
         objects.end());
     if (playerWillDie) world_.ClearPlayer();
+
 }
 
 } // namespace nccu
