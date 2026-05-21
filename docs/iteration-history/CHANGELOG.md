@@ -5,6 +5,115 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.B: feedback signal closure — quest-giver indicator + karma toasts + chapter-clear visibility
+
+Closes the remaining items the 9.A.2 commit explicitly deferred and
+caps the "player feedback" theme. Three parallel small fixes, one
+new visual primitive.
+
+### What
+- **H4 — NPC `!` quest-giver indicator.** New header
+  `include/QuestGiverIndicator.h` exposes
+  `LayoutQuestGiverIndicator(gfx::Rect hitBox)` (pure geometry) +
+  `DrawQuestGiverIndicator(gfx::IRenderer&, gfx::Rect)` (rendering
+  through the engine-agnostic `IRenderer` interface). View.cpp
+  now calls it inside the `CameraScope` for every `GameObject` whose
+  newly-virtualised `IsQuestGiver()` returns `true`. Layout: 16×16
+  gold `#FFC83D` square + black `!` glyph + 2 px translucent drop
+  shadow, floating 20 px above the NPC sprite top. Previously
+  `View.cpp` ignored `NPC::IsQuestGiver()` entirely — the flag was
+  set on Victim, Chapter-3 trade chain, and the Ch4 finale NPCs but
+  the player got no visual hint where the next interaction lived.
+- **TrueUmbrella publish-order swap.** `src/TrueUmbrella.cpp`
+  switches the two `Publish()` lines so `ShowMessage("你撿到了
+  TrueUmbrella")` fires *before* `UmbrellaClaimed`. The 9.A.2
+  H2 `UmbrellaClaimed` subscriber writes the chapter-clear toast
+  on top of the umbrella message and is now the persistent HUD
+  text at frames 1765 (Ch1→Interlude) and 5084 (Ch3→Interlude). Net
+  player-visible HUD on the pickup-path transitions:
+  `✓ 章節清關 — 進入幕間市集` (was: `你撿到了 TrueUmbrella`).
+  Frame 5835 (Ch4 reclaim, no chapter transition) still shows the
+  umbrella text — pickup outside a transition is unchanged.
+- **H5 — karma toasts via `KarmaChanged` channel.**
+  `Player::AddKarma(int delta)` now publishes
+  `Event{KarmaChanged, "%+d"-formatted delta}` on every non-zero
+  delta (the 0-delta gate keeps `+0` / `-0` banners off the HUD).
+  A new `WireKarmaToastSubscriber()` in `include/EventWiring.h`,
+  wired by `GameController` right after `WireHudMessageSubscriber`,
+  re-publishes the delta as a `ShowMessage` with `業力 ` prefix —
+  so the existing HUD subscriber paints it for free. The dead
+  hand-rolled `KarmaChanged` publish in `CursedUmbrella::beClaimed`
+  removed: it duplicated what now flows through the unified
+  `AddKarma` path. Plan A from the brief (single HUD slot, chapter
+  toast wins simultaneous collisions); a future cycle can promote
+  karma to a dedicated channel if playtesting shows the toast too
+  easy to miss.
+- **L9 — HUD message expiry.** `World::HudExpired()` returns
+  `hudAge_ >= kHudTtl && !hudMessage_.empty()` — a read-only
+  predicate, NOT a clear. `MessageView`'s fade-out animation
+  contract (which reads both `hudMessage_` and `hudAge_`) stays
+  byte-identical. `Harness.cpp:168` checks `HudExpired()` and emits
+  `""` for the `hud` field in `state.jsonl`, so the snapshot stream
+  no longer echoes aged-out toasts forever. 35% of ending_a's
+  7,490 frames now record empty HUD; before this, every frame
+  inherited whatever the last `SetHudMessage` had said.
+
+### Why
+9.A.2 closed three feedback gaps but left two visible:
+(a) at the Ch1→Interlude and Ch3→Interlude pickup paths the H2
+chapter-clear banner was getting overwritten by the second
+TrueUmbrella publish in ~0 frames (commit notes flagged this);
+(b) the diagnosis listed H4 (`!` indicator), H5 (karma toast) and
+L9 (HUD reset) as the natural finishers of the "every gameplay
+signal becomes visible HUD text" arc, with mechanical 5–25-line
+fixes already scoped. 9.B does all four in one parallel pair of
+agent passes — gameplay-quest-designer (TrueUmbrella + H5 + L9)
+and raylib-gfx-uxui (H4).
+
+### Gameplay impact
+- 318/318 doctest cases pass (was 305 → +13 cases, 4424 assertions).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- Three endings still byte-clean: ending_a smoke
+  (frames=7,490, last_hud=`✓ 抵達結局`, last_semester=結局 A,
+  karma_toasts_seen=14, empty_hud_frames=2623/7490 ≈ 35%);
+  ending_b smoke (frames=4,834, last_semester=結局 B);
+  ending_c smoke (frames=4,142, last_semester=結局 C). State.jsonl
+  is no longer byte-identical to pre-9.B snapshots — that's the
+  feature, not a regression. Re-running the same script against
+  this HEAD remains byte-deterministic.
+- Determinism note: bus dispatch is single-threaded in-order; no
+  new RNG, no new threading.
+
+### Revert
+- `git rm include/QuestGiverIndicator.h tests/test_quest_giver_indicator.cpp tests/test_karma_toast.cpp tests/test_hud_reset.cpp`
+- Revert the publish-order swap in `src/TrueUmbrella.cpp`
+- Drop `Player::AddKarma`'s new publish + restore the
+  `CursedUmbrella` hand-rolled publish
+- Remove `World::HudExpired()` and the Harness branch on it
+- Re-virtualise `GameObject::IsQuestGiver()` back to non-virtual /
+  inherited behaviour
+The two paths roll back independently — visual half and logic half
+do not share files.
+
+### Test-suite gotcha (reminder; matches the 9.A.2 note)
+`tests/test_eventbus_isolation.cpp` reporter clears
+`EventBus::Instance()` on every `subcase_start/end` +
+`test_case_start/end`. New listeners must `Subscribe()` inside each
+SUBCASE body, not in the enclosing TEST_CASE. Both new test files
+follow this rule and document it at the top.
+
+### Follow-ups still open (NOT in this PR)
+- H3 view-side ground marker at y=1900 (Interlude exit visual half;
+  raylib-gfx-uxui polish PR; logic half shipped 9.A.2)
+- M7 — Ch4 `Flag_ScoldedSenior` skips suit_senior spawn
+- L8 — same-frame respawn after Transition (race-audit needed)
+- BUGLEDGER B3 — Flag_SawVictim_Ch1 / Flag_BoughtCoffeeForAuntie_Ch1
+  ripple-or-remove decision
+- KB topic STUBs in `docs/kb/` still empty; specialist agents fill
+  on first use per the construction protocol
+
+---
+
 ## 2026-05-21 — Cycle 9.A: UX feedback gaps — chapter-transition toasts + Interlude hints
 
 Direct response to user-reported playtest complaints: (1) 找不到關鍵

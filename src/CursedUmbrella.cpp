@@ -13,7 +13,14 @@ void CursedUmbrella::beClaimed(Player* player) {
            .decreaseKarma(karmaPenalty_)
            .SetFlag("Flag_TookCursedUmbrella");
     isActive_ = false;
+    // KarmaChanged is no longer published here directly: as of Cycle
+    // 9.B H5, Player::AddKarma (which decreaseKarma forwards to)
+    // publishes KarmaChanged itself with a signed-delta payload, so a
+    // second publish from this site would emit a duplicate "業力 -30"
+    // toast for the same penalty. The cursed-umbrella narrative cue is
+    // carried by the ShowMessage line below — the bus subscriber turns
+    // the AddKarma side effect into the numeric toast, and this
+    // ShowMessage delivers the human-readable explanation.
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
-    EventBus::Instance().Publish(Event{ EventType::KarmaChanged, "Karma -30" });
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
 }

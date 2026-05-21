@@ -49,7 +49,7 @@ public:
     // column at row 0 (facing down) is ever drawn.
     void LoadSprite(const std::string& path);
 
-    [[nodiscard]] bool   IsQuestGiver()     const noexcept { return isQuestGiver_; }
+    [[nodiscard]] bool   IsQuestGiver()     const noexcept override { return isQuestGiver_; }
     [[nodiscard]] size_t CurrentLineIndex() const noexcept { return currentLineIndex_; }
     [[nodiscard]] size_t DialogLineCount()  const noexcept { return dialogLines_.size(); }
     [[nodiscard]] const std::string& CurrentLineText() const;

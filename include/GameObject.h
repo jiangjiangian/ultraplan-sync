@@ -56,6 +56,14 @@ public:
     // same closed-under-inheritance rationale as BlocksMovement().
     [[nodiscard]] virtual bool IsVendor() const noexcept { return false; }
 
+    // Quest-giver marker. Default: false (items, the player, Vendor,
+    // decoration, non-quest NPCs). Archetype NPCs whose spawn flagged
+    // them as quest-givers override to return true; the View uses this
+    // to paint a "!" overlay above their sprite so the player can spot
+    // the dialog hook at a glance (H4). Virtual-not-dynamic_cast, same
+    // closed-under-inheritance rationale as BlocksMovement().
+    [[nodiscard]] virtual bool IsQuestGiver() const noexcept { return false; }
+
 protected:
     nccu::gfx::Vec2 position_;
     nccu::gfx::Rect hitBox_;

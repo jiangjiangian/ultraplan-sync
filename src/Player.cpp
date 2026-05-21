@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdio>
+#include <string>
 
 namespace {
 
@@ -96,6 +98,21 @@ void Player::HandleInput(float deltaTime) {
 
 Player& Player::AddKarma(int delta) {
     karma_ = std::clamp(karma_ + delta, -100, 100);
+    // Cycle 9.B H5: publish KarmaChanged so the bus' karma-toast
+    // subscriber can mirror a transient "業力 ±N" banner into the HUD.
+    // Before this hook every karma mutation flowed through AddKarma but
+    // never reached the EventBus, leaving EventType::KarmaChanged a
+    // dead channel (1 publisher in CursedUmbrella, 0 subscribers). The
+    // payload text is the signed integer literal exactly so the
+    // subscriber can prefix it ("業力 +5"). A delta of 0 still
+    // publishes (the clamp may have ignored it, but a caller of
+    // AddKarma(0) is so rare it isn't worth special-casing — emitting
+    // 0 is harmless: subscribers can filter, and "業力 +0" is a no-op
+    // toast that fades the same as any other).
+    char buf[16];
+    std::snprintf(buf, sizeof(buf), "%+d", delta);
+    EventBus::Instance().Publish(
+        Event{EventType::KarmaChanged, std::string{buf}});
     return *this;
 }
 

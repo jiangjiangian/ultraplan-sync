@@ -11,6 +11,7 @@
 #include "InventoryView.h"
 #include "MessageView.h"
 #include "QuestObjective.h"
+#include "QuestGiverIndicator.h"
 #include "GameHelp.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
@@ -109,6 +110,24 @@ void View::Draw(const World& world) {
                     bs.dest);
             }
         }
+
+        // Quest-giver "!" overlay (H4). Drawn AFTER the painter's-order
+        // pass but still inside the CameraScope so the icon follows the
+        // NPC in world space — and on top of buildings/sprites that might
+        // otherwise occlude a quest-giver tucked behind a footprint. The
+        // virtual IsQuestGiver() (default false on GameObject, overridden
+        // by NPC) closes the dispatch under inheritance, so no dynamic_cast.
+        // QuestGiverIndicator routes every primitive through IRenderer,
+        // keeping the View pure-render and the helper headless-testable.
+        ForEachActive(world.Objects(), [this](const GameObject& o) {
+            if (!o.IsQuestGiver()) return;
+            // The hit box lives at the NPC's feet; QuestGiverIndicator
+            // lifts the "!" above the bottom-anchored sprite top.
+            DrawQuestGiverIndicator(
+                renderer_,
+                Rect{o.GetPosition().x, o.GetPosition().y,
+                     ::world::kPlayerWidth, ::world::kPlayerHeight});
+        });
     }
 
     // Top-left status: WASD hint, karma/umbrella, optional building,

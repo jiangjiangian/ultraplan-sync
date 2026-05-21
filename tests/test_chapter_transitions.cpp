@@ -7,6 +7,7 @@
 #include "EventWiring.h"
 #include "Player.h"
 #include "SemesterStateMachine.h"
+#include "TrueUmbrella.h"
 #include "World.h"
 #include "gfx/Vec2.h"
 #include <string>
@@ -211,6 +212,46 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         CHECK(m.Current() == SemesterState::Ending_C);
         CHECK(last == "✓ 抵達結局");
     }
+}
+
+TEST_CASE("TrueUmbrella::beClaimed publishes ShowMessage BEFORE UmbrellaClaimed") {
+    // Cycle 9.B follow-up to 9.A.2. Both publishes feed the same
+    // single-slot HUD channel: the umbrella's own ShowMessage and the
+    // chapter-clear ShowMessage emitted by the UmbrellaClaimed
+    // subscriber (via PublishChapterTransitionToast). Whichever
+    // publishes LAST is what the player reads. The fix swapped the
+    // pair so the chapter-clear toast wins.
+    //
+    // This SUBCASE pattern walks the live wiring: TrueUmbrella, the
+    // bus' UmbrellaClaimed subscriber (chapter-gate), and the HUD
+    // subscriber that mirrors ShowMessage into World. The end state of
+    // World.HudMessage() is the assertion.
+    EventBus::Instance().Clear();
+    nccu::World w("", /*loadSprites=*/false);
+    std::string name;
+    nccu::WireStateTransitionSubscribers(EventBus::Instance(),
+                                          w.Semester(), name);
+    nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
+
+    // Pre-condition: semester is on Chapter 1 (the EventWiring
+    // sibling-if only fires from Chapter1_AddDrop).
+    REQUIRE(w.Semester().Current() == SemesterState::Chapter1_AddDrop);
+
+    TrueUmbrella umb{Vec2{0, 0}};
+    Player player{Vec2{0, 0}};
+    umb.beClaimed(&player);
+
+    // After both publishes have dispatched, the HUD must carry the
+    // chapter-clear toast — NOT the umbrella string. A regression that
+    // re-swaps the publish order would leave the umbrella line stuck
+    // on screen (the original 9.A.2 bug surfaced exactly this way).
+    CHECK(w.HudMessage() == "✓ 章節清關 — 進入幕間市集");
+    CHECK(w.Semester().Current() == SemesterState::Interlude_Market);
+    // The umbrella line briefly transited through the channel but the
+    // chapter toast overwrote it; the player saw the chapter banner.
+    CHECK(w.HudMessage().find("TrueUmbrella") == std::string::npos);
+
+    EventBus::Instance().Clear();
 }
 
 TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
