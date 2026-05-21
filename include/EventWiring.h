@@ -91,6 +91,30 @@ inline void WireHudMessageSubscriber(EventBus& bus, World& world) {
         [&world](const Event& e) { world.SetHudMessage(e.text); });
 }
 
+// Cycle 9.B H5: turn the previously-dead KarmaChanged channel into a
+// visible toast. Player::AddKarma publishes KarmaChanged with the
+// signed delta as text ("+5", "-3"); this subscriber re-publishes it
+// as a ShowMessage prefixed with 業力, which the HUD subscriber above
+// then mirrors into World::HudMessage(). Plan A from the diagnosis:
+// karma toasts share the single HUD slot with chapter / narrative
+// toasts, so a karma change that lands the same frame as a chapter
+// transition is intentionally overwritten by the chapter banner
+// (chapter feedback wins). A skipped 0-delta toast keeps the HUD
+// clean when callers pass AddKarma(0) (rare, but cheap to filter).
+inline void WireKarmaToastSubscriber(EventBus& bus) {
+    bus.Subscribe(EventType::KarmaChanged,
+        [](const Event& e) {
+            if (e.text.empty() || e.text == "+0" || e.text == "-0")
+                return;
+            // "業力 " + signed-delta text fits well under the dialog
+            // box's 28-cell budget (the 業力 ideographs are 2 cells
+            // each, the delta is at most 5 ASCII chars including the
+            // sign for ±100 — well under 28).
+            EventBus::Instance().Publish(
+                Event{EventType::ShowMessage, "業力 " + e.text});
+        });
+}
+
 // Convenience aggregator — preserves the original single-call entry
 // point so existing call sites in main.cpp do not need to change.
 inline void WireDefaultSubscribers(

@@ -14,6 +14,17 @@ void TrueUmbrella::beClaimed(Player* player) {
     // with no leak from a stray ctor Fragile/ProfTrap.
     player->SetFlag("Flag_HasTrueUmbrella");
     isActive_ = false; // mark for end-of-frame sweep
-    EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "TrueUmbrella" });
+    // Publish ORDER matters (Cycle 9.B follow-up to 9.A.2): the
+    // UmbrellaClaimed subscriber wired by EventWiring publishes the
+    // chapter-clear ShowMessage ("✓ 章節清關 — 進入幕間市集") as its
+    // side effect. Both ShowMessage payloads land on the same single-
+    // slot HUD channel, so whichever publishes LAST is what the player
+    // actually reads. ShowMessage first → UmbrellaClaimed second leaves
+    // the chapter toast as the visible banner; the umbrella line gets
+    // mirrored to cout for the log and to HUD for ~0 frames before the
+    // chapter toast overwrites it. Reversing this pair re-introduces
+    // the 9.A.2 regression where the umbrella string masked the chapter
+    // toast. Pinned by tests/test_chapter_transitions.cpp.
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你撿到了 TrueUmbrella，雨停了。" });
+    EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "TrueUmbrella" });
 }

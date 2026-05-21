@@ -106,6 +106,13 @@ GameController::GameController(World& world)
     // world_ for the transient HUD banner. Same lifetime as the
     // subscribers above — torn down by the ~GameController Clear() below.
     WireHudMessageSubscriber(EventBus::Instance(), world_);
+    // Cycle 9.B H5: karma changes feed the same HUD banner via a
+    // KarmaChanged -> ShowMessage hop. Wired AFTER the HUD subscriber
+    // so the order of registration matches the intent (KarmaChanged
+    // re-publishes ShowMessage; the HUD subscriber sees the resulting
+    // ShowMessage on the next dispatch — both subscribers live for the
+    // controller's lifetime and are torn down by the same Clear()).
+    WireKarmaToastSubscriber(EventBus::Instance());
 }
 
 GameController::~GameController() {

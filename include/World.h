@@ -1,6 +1,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 #include "GameObject.h"
+#include "MessageView.h"
 #include "Player.h"
 #include "SemesterState.h"
 #include "SemesterStateMachine.h"
@@ -112,6 +113,18 @@ public:
     }
     [[nodiscard]] const std::string& HudMessage() const noexcept { return hudMessage_; }
     [[nodiscard]] float              HudAge()     const noexcept { return hudAge_; }
+    // Cycle 9.B L9: an aged-out toast (age >= kHudTtl) is invisible
+    // (MessageView's DrawHudMessage already early-returns above the
+    // TTL) but its text is still held by hudMessage_ so the View's
+    // fade-out animation contract stays intact (no abrupt clear).
+    // HudExpired() lets non-View consumers — primarily the autoplay
+    // harness writing state.jsonl — emit an empty hud line for
+    // expired toasts instead of echoing a string that hasn't been
+    // visible on screen for seconds. Pure read-only predicate; no
+    // state mutation, no dependency on rendering.
+    [[nodiscard]] bool HudExpired() const noexcept {
+        return !hudMessage_.empty() && hudAge_ >= kHudTtl;
+    }
 
     // Make the chapter-NPC roster follow the semester FSM. Removes ONLY
     // the chapter NPCs this method last spawned (tracked by raw pointer

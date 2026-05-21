@@ -165,7 +165,15 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
 
     o << ",\"building\":\"" << EscapeJson(world.CurrentBuildingName()) << '"';
     o << ",\"invOpen\":" << (world.InventoryOpen() ? "true" : "false");
-    o << ",\"hud\":\"" << EscapeJson(world.HudMessage()) << '"';
+    // Cycle 9.B L9: don't echo an aged-out toast — the View has
+    // already stopped drawing it (DrawHudMessage early-returns when
+    // age >= kHudTtl), so the state.jsonl should agree with what the
+    // player can see, not with a stale buffer the World holds for the
+    // fade-out contract. HudMessage() itself stays untouched (the View
+    // owns that contract); the harness simply emits "" when expired.
+    o << ",\"hud\":\""
+      << (world.HudExpired() ? "" : EscapeJson(world.HudMessage()))
+      << '"';
 
     int activeObjs = 0;
     std::ostringstream npcs;
