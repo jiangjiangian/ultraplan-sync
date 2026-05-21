@@ -8,18 +8,51 @@
 
 namespace nccu {
 
-void SceneRouter::Settle(World& world) {
+void SceneRouter::SettleRoster(World& world) {
+    // L8 fix (cycle9f §G.1): roster swap ONLY, no observable side
+    // effects. Runs at end-of-Update so the View paints — and
+    // state.jsonl records — npcs[] from the NEW chapter on the
+    // transition frame instead of one frame late. Pre-Cycle 10 the
+    // entire respawn + side-effect block lived at top-of-Update; the
+    // view-only-affected half (chapter NPC list) is hoisted forward
+    // here so the visible lag closes without touching the harness's
+    // {player.pos, consumables, flags, events} observation. The other
+    // half stays at top-of-Update (SettleSideEffects below), so the
+    // 3-ending state.jsonl stream is byte-identical to baseline
+    // EXCEPT for the npcs[] field on the 7 transition frames per
+    // ending run — the documented, intentional byte change.
+    const SemesterState cur = world.Semester().Current();
+    if (cur == lastRosterRespawnState_) return;
+
+    // World owns the actual remove/spawn pass via a single deferred
+    // sweep — never mid-iteration, never reorders element 0 (Player).
+    // Pure data mutation, no event publish, no input dependency.
+    world.RespawnChapterRoster(cur);
+
+    lastRosterRespawnState_ = cur;
+}
+
+void SceneRouter::SettleSideEffects(World& world) {
+    // Side-effect half of the transition observer. Runs at TOP of
+    // Update — exactly when the pre-Cycle 10 inline block fired — so
+    // the harness sees the same observable {player.pos, consumables,
+    // flags, events} timeline as before. The L8 fix above already
+    // closed the npcs[] visible lag; this entry point keeps the rest
+    // of the timeline byte-identical.
     const SemesterState cur = world.Semester().Current();
     if (cur == lastRosterState_) return;
 
-    // ----- Roster swap -----
-    // Make the chapter NPCs follow the FSM. World owns the actual
-    // remove/spawn pass via a single deferred sweep — never mid-
-    // iteration, never reorders element 0 (Player). Pure data
-    // mutation, no event publish, no input dependency.
-    world.RespawnChapterRoster(cur);
+    // Idempotency belt-and-braces: if the roster wasn't already
+    // respawned for this state (the end-of-Update SettleRoster was
+    // skipped for any reason), do it now so SpawnChapterNpcs is not
+    // duplicated. RespawnChapterRoster is itself idempotent, but
+    // calling it twice does redundant work — the cursor avoids that.
+    if (cur != lastRosterRespawnState_) {
+        world.RespawnChapterRoster(cur);
+        lastRosterRespawnState_ = cur;
+    }
 
-    // ----- Per-destination side effects -----
+    // ----- Per-destination side effects (the harness-observable half) -----
 
     // Arriving at the market: place the player at its entrance, well
     // north of the south exit band. Without this a chapter that ended
