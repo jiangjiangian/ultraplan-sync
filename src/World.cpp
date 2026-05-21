@@ -14,6 +14,8 @@
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <string_view>
 #include <unordered_set>
 
@@ -22,6 +24,17 @@ namespace nccu {
 World::World(const std::string& playerSpritePath, bool loadSprites)
     : loadSprites_(loadSprites) {
     using nccu::gfx::Vec2;
+
+    // Cycle 9.E (audit D8 / SC 2.3.3): pick up the reduced-motion
+    // accessibility preference from the environment so the engine side
+    // works without a pause-menu UI yet. Accepts "1" (anything else,
+    // including unset or "0", leaves the default false). A future UI
+    // PR can flip this through SetReducedMotion(); the env-var path
+    // remains for headless / scripted contexts and the harness.
+    if (const char* env = std::getenv("UMBRELLA_REDUCED_MOTION");
+        env != nullptr && std::strcmp(env, "1") == 0) {
+        reducedMotion_ = true;
+    }
 
     // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
     // the AABB resolver never has to rescue them at frame 0. The 4
