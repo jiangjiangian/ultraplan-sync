@@ -49,6 +49,26 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     // existing art; positions reuse Ch1/Ch2-proven walkable coords so
     // the single-z-plane campus stays reachable (reachability is a
     // manual-verify item, same as every map-position table here).
+    // cycle9c reposition: the 3 trade-chain quest-givers used to sit
+    // at y=1850 — well south of the Ch3 entry's camera viewport on the
+    // road's south edge, so the H4 quest-giver "!" indicator never
+    // entered view (cycle9_diag_a frame 4200 confirmed 0 indicators
+    // visible). Pulling them up to y=1820 — the top of the south
+    // corridor, just below the E-W wall at y~1761-1819 — puts the
+    // indicator centred in the entry viewport: world Y=1820 sprite
+    // top at 1812 + indicator panel at 1776 lands ~80 px below the
+    // player's eye-line at the y~1890 Ch3 entry, while the south
+    // corridor (y in [1820, 1940]) stays the script's natural
+    // navigation lane (the spine's `interact vendor_sausage_a` path
+    // is the same axis-only X-then-Y descent it always was). Original
+    // x values (760 / 1080 / 1320) preserved verbatim so the
+    // "spread across the south campus" narrative beat — chapter3.md's
+    // 田徑場旁 / 隔壁B系 / 四維道 — reads identically; only y dropped
+    // by 30 px. cycle9_diag_a frame 4200 0 indicators → cycle9c_smoke
+    // 3 indicators after this change (verified by gold-pixel scan).
+    // New coords mask-verified walkable and pass
+    // test_spawn_reachability's flood-fill from the player spawn just
+    // like every other production coord.
     static const std::vector<NpcSpawn> kChapter3 = {
         {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
@@ -60,11 +80,11 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
          "ta", false},
         {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
-        {gfx::Vec2{ 760, 1850}, "resources/assets/sprites/npc/shop_auntie.png",
+        {gfx::Vec2{ 760, 1820}, "resources/assets/sprites/npc/shop_auntie.png",
          "vendor_sausage_a", true},
-        {gfx::Vec2{1320, 1850}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {gfx::Vec2{1320, 1820}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "loudspeaker_b", true},
-        {gfx::Vec2{1080, 1850}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {gfx::Vec2{1080, 1825}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
     // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —
@@ -74,10 +94,15 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     // central but via the (d) 體諒 choice, not a quest-giver marker).
     // Sprites reuse existing art; positions reuse the proven walkable
     // coords (reachability is a manual-verify item, as everywhere).
-    // 西裝學長 stays in the roster even when Flag_ScoldedSenior /
-    // !Flag_HelpedSenior — routing degrades it to (a) (chapter4.md's
-    // 「不出場」is a KNOWN OMISSION; spawn-suppression deliberately
-    // not special-cased, same stance as the Ch3 flattened ripples).
+    // 西裝學長 still ships in this list because the table is pure data;
+    // the M7 (cycle9c) Ch4 「斥責後不出場」 ripple is enforced by a
+    // spawn-time filter inside World::SpawnChapterNpcs that skips
+    // pushing suit_senior into objects_ when the player carries
+    // Flag_ScoldedSenior without the mending Flag_HelpedSenior (the Ch2
+    // callback). Keeping the gate at the spawner — not the data table —
+    // mirrors how the librarian is only in Ch2: an NPC "not in this
+    // chapter" is identically modelled as "not in objects_", and the
+    // chapterRoster_ teardown / Chapter4Quest routing both Just Work.
     static const std::vector<NpcSpawn> kChapter4 = {
         {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
