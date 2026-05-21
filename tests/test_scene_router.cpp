@@ -15,16 +15,24 @@ using nccu::SceneRouter;
 using nccu::SemesterState;
 using nccu::World;
 
-// Cycle 10.P0a (awsome_cpp.md §6): SceneRouter owns the chapter/
-// interlude/ending transition observer that used to live inline on
-// GameController. These tests pin the contract:
-//   1. ctor cursor initialises from the World's current FSM state.
-//   2. Settle is a no-op when the FSM hasn't moved (idempotent).
-//   3. Settle on a state change actually respawns the NPCs.
-//   4. Settle on Interlude entry moves the player to kInterludeEntry,
-//      wipes consumables, publishes the arrival hint, resets the
-//      south-band latch.
-//   5. Settle on Ch4 entry clears the umbrella state per chapter4.md L6.
+// Cycle 10.P0a (awsome_cpp.md §6) + 10.P0b (L8 fix): SceneRouter owns
+// the chapter/interlude/ending transition observer that used to live
+// inline on GameController. The fix splits the observation into two
+// halves so the visible bug (npcs[] list lagging by 1 frame) closes
+// without touching the harness state.jsonl observable timeline:
+//
+//   SettleRoster        — end-of-Update; roster swap ONLY.
+//   SettleSideEffects   — top-of-Update; player pos / consumables / events.
+//
+// These tests pin the contract:
+//   1. SettleRoster on a state change actually respawns the NPCs.
+//   2. SettleRoster is idempotent on its own cursor.
+//   3. SettleSideEffects on Interlude entry moves the player, wipes
+//      consumables, publishes the arrival hint, resets the exit latch.
+//   4. SettleSideEffects on Ch4 entry clears the umbrella state.
+//   5. Calling SettleRoster THEN SettleSideEffects in the same tick
+//      keeps the side-effect half byte-equivalent to the pre-Cycle 10
+//      single-block behaviour — no double-spawn, no double-publish.
 
 namespace {
 
@@ -45,23 +53,24 @@ SubscribeToLatest(std::string& latest) {
 
 } // namespace
 
-TEST_CASE("SceneRouter ctor: cursor + latch start at the initial state") {
+TEST_CASE("SceneRouter ctor: cursors start at the initial state") {
     SceneRouter r{SemesterState::Chapter1_AddDrop};
     CHECK(r.LastRosterState() == SemesterState::Chapter1_AddDrop);
+    CHECK(r.LastRosterRespawnState() == SemesterState::Chapter1_AddDrop);
     CHECK(r.InterludeExitLatchMut() == false);
 }
 
-TEST_CASE("Settle: no-op when the FSM hasn't moved") {
+TEST_CASE("SettleRoster: no-op when the FSM hasn't moved") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1 roster present
 
-    r.Settle(w);                           // FSM still Ch1
+    r.SettleRoster(w);                     // FSM still Ch1
     CHECK(HasNpcId(w, "victim"));          // unchanged
-    CHECK(r.LastRosterState() == SemesterState::Chapter1_AddDrop);
+    CHECK(r.LastRosterRespawnState() == SemesterState::Chapter1_AddDrop);
 }
 
-TEST_CASE("Settle: respawns the new chapter's NPCs on a transition") {
+TEST_CASE("SettleRoster: respawns the new chapter's NPCs on a transition") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1 NPC
@@ -70,15 +79,31 @@ TEST_CASE("Settle: respawns the new chapter's NPCs on a transition") {
     // CheckChapterGates / EventWiring transition firing during the
     // controller's Update body).
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
-    r.Settle(w);
+    r.SettleRoster(w);
 
-    // Ch2 roster now visible on the View / state.jsonl. Cursor stamped.
+    // Ch2 roster now visible to the View (and state.jsonl npcs[]) on
+    // the SAME frame the FSM moved. Pre-fix this was 1 frame late.
     CHECK(HasNpcId(w, "librarian"));       // Ch2-only quest-giver
-    CHECK(HasNpcId(w, "victim"));          // victim is in Ch2 too
-    CHECK(r.LastRosterState() == SemesterState::Chapter2_Midterms);
+    CHECK(HasNpcId(w, "victim"));          // victim is Ch2 too
+    CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
 }
 
-TEST_CASE("Settle Interlude entry: pos, consumables, hint, latch") {
+TEST_CASE("SettleRoster: SettleSideEffects cursor untouched (split is real)") {
+    World w("", /*loadSprites=*/false);
+    SceneRouter r{w.Semester().Current()};
+
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
+    r.SettleRoster(w);
+
+    // The "side-effect cursor" must NOT have advanced — it tracks the
+    // top-of-Update half, which the test hasn't invoked yet. If both
+    // cursors moved together, the next SettleSideEffects call would
+    // be a no-op and the player would never be repositioned.
+    CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
+    CHECK(r.LastRosterState()        == SemesterState::Chapter1_AddDrop);
+}
+
+TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
     EventBus::Instance().Clear();
     std::string latestHud;
     auto sub = SubscribeToLatest(latestHud);
@@ -99,7 +124,7 @@ TEST_CASE("Settle Interlude entry: pos, consumables, hint, latch") {
 
     // FSM advances to Interlude (mimics the EventWiring Ch1→IL hop).
     w.Semester().Transition(SemesterState::Interlude_Market);
-    r.Settle(w);
+    r.SettleSideEffects(w);
 
     // All four observable side effects fire together:
     CHECK(p->GetPosition().x == doctest::Approx(nccu::kInterludeEntry.x));
@@ -111,15 +136,13 @@ TEST_CASE("Settle Interlude entry: pos, consumables, hint, latch") {
     // Cursor stamped so a re-call is a no-op.
     CHECK(r.LastRosterState() == SemesterState::Interlude_Market);
     p->SetPosition(nccu::gfx::Vec2{42.0f, 42.0f});
-    latestHud.clear();
-    r.Settle(w);                                       // idempotent
+    r.SettleSideEffects(w);                            // idempotent
     CHECK(p->GetPosition().x == doctest::Approx(42.0f));
-    CHECK(latestHud.empty());
 
     EventBus::Instance().Clear();
 }
 
-TEST_CASE("Settle Ch4 entry: umbrella + TrueUmbrella flag reset") {
+TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     EventBus::Instance().Clear();
 
     World w("", /*loadSprites=*/false);
@@ -132,7 +155,7 @@ TEST_CASE("Settle Ch4 entry: umbrella + TrueUmbrella flag reset") {
 
     // FSM jumps straight to Ch4 (mimics ChapterGate Interlude→Ch4).
     w.Semester().Transition(SemesterState::Chapter4_Finals);
-    r.Settle(w);
+    r.SettleSideEffects(w);
 
     // chapter4.md L6「傘再度失蹤」: the player walks out of 集英樓 with
     // no umbrella. The fix's Ch4 branch is the GDD enforcement.
@@ -143,55 +166,75 @@ TEST_CASE("Settle Ch4 entry: umbrella + TrueUmbrella flag reset") {
     EventBus::Instance().Clear();
 }
 
-TEST_CASE("Settle: full spine traversal — every step's roster lands") {
-    // Walk the seven-transition spine — Ch1 -> Interlude -> Ch2 ->
-    // Interlude -> Ch3 -> Interlude -> Ch4 -> Ending_A — calling
-    // Settle at every step. Each step's destination state must be
-    // observable through the cursor stamp + the roster swap.
+TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
+    // Pin the full Cycle 10.P0b flow: a transition fires mid-frame
+    // (after dialog branch / E-probe / CheckChapterGates / etc.); the
+    // controller calls SettleRoster at end-of-Update so the View's
+    // upcoming Draw paints with the new chapter's NPCs. On the NEXT
+    // frame's top-of-Update, SettleSideEffects fires the player-pos
+    // teleport + arrival hint. Both halves run exactly once per
+    // transition (idempotent under their own cursors).
     EventBus::Instance().Clear();
+    std::string latestHud;
+    auto sub = SubscribeToLatest(latestHud);
+
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
+    Player* p = w.GetPlayer();
+    REQUIRE(p != nullptr);
 
-    const SemesterState path[] = {
-        SemesterState::Interlude_Market,
-        SemesterState::Chapter2_Midterms,
-        SemesterState::Interlude_Market,
-        SemesterState::Chapter3_SportsDay,
-        SemesterState::Interlude_Market,
-        SemesterState::Chapter4_Finals,
-        SemesterState::Ending_A,
-    };
+    // Simulate the umbrella-claim transition without driving the full
+    // event bus: just move the FSM (the SceneRouter cares about the
+    // FSM state only — it doesn't poll the EventBus).
+    w.Semester().Transition(SemesterState::Interlude_Market);
 
-    for (SemesterState s : path) {
-        w.Semester().Transition(s);
-        r.Settle(w);
-        CHECK(r.LastRosterState() == s);
-    }
+    // ---- Tick N: end-of-Update SettleRoster ----
+    REQUIRE(HasNpcId(w, "victim"));        // Ch1 NPCs still present pre-call
+    r.SettleRoster(w);
+    CHECK_FALSE(HasNpcId(w, "victim"));    // IL roster is empty
+    // No player teleport yet — the harness observable is unchanged.
+    // (The test doesn't move the player itself; we just verify the
+    // SettleRoster pass did NOT publish the arrival hint or wipe
+    // consumables — that's SettleSideEffects' job on the NEXT tick.)
+    CHECK(latestHud.empty());
+
+    // ---- Tick N+1: top-of-Update SettleSideEffects ----
+    r.SettleSideEffects(w);
+    CHECK(p->GetPosition().x == doctest::Approx(nccu::kInterludeEntry.x));
+    CHECK(p->GetPosition().y == doctest::Approx(nccu::kInterludeEntry.y));
+    CHECK(latestHud == nccu::kInterludeArrivalHint);
+
+    // Both halves idempotent on a repeat call.
+    p->SetPosition(nccu::gfx::Vec2{7.0f, 8.0f});
+    latestHud.clear();
+    r.SettleRoster(w);
+    r.SettleSideEffects(w);
+    CHECK(p->GetPosition().x == doctest::Approx(7.0f));  // not re-teleported
+    CHECK(latestHud.empty());                            // no re-publish
 
     EventBus::Instance().Clear();
 }
 
-TEST_CASE("Settle: latch reset is once-per-Interlude-entry, not every call") {
+TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was skipped") {
+    // The Cycle 10 split keeps both halves runnable individually so
+    // callers that bypass SettleRoster (e.g. tests, or a future code
+    // path that only goes through the top-of-Update branch) still get
+    // a coherent roster. SettleSideEffects calls RespawnChapterRoster
+    // when its respawn cursor disagrees with the FSM state.
+    EventBus::Instance().Clear();
+
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
+    REQUIRE(HasNpcId(w, "victim"));        // Ch1
 
-    // First Interlude entry: latch is reset to false. Caller flips it
-    // true (mirrors the production path's MaybeAnnounceInterludeExit).
-    w.Semester().Transition(SemesterState::Interlude_Market);
-    r.Settle(w);
-    REQUIRE(r.InterludeExitLatchMut() == false);
-    r.InterludeExitLatchMut() = true;
-
-    // Settle again while still in the Interlude — no-op, latch stays
-    // true (the player can't be re-bounced by repeated Settles).
-    r.Settle(w);
-    CHECK(r.InterludeExitLatchMut() == true);
-
-    // Move to Ch2, then back into Interlude — second entry resets the
-    // latch again (per cycle9 H3 once-per-visit contract).
+    // FSM moves without going through SettleRoster first.
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
-    r.Settle(w);
-    w.Semester().Transition(SemesterState::Interlude_Market);
-    r.Settle(w);
-    CHECK(r.InterludeExitLatchMut() == false);
+    r.SettleSideEffects(w);
+
+    // Roster is now Ch2 — the defensive RespawnChapterRoster fired.
+    CHECK(HasNpcId(w, "librarian"));       // Ch2 NPC
+    CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
+    CHECK(r.LastRosterState() == SemesterState::Chapter2_Midterms);
+
+    EventBus::Instance().Clear();
 }

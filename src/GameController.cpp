@@ -127,14 +127,17 @@ void GameController::Update() {
     using nccu::queries::ForEachActive;
     using nccu::queries::ForEachActiveExcept;
 
-    // Roster follows the FSM. Any trigger (EndingGate, EventWiring,
-    // ChapterGate, future) mutates the pure state machine; the
-    // SceneRouter observes the change here at top-of-Update and asks
-    // World to swap the chapter NPCs + applies per-destination side
-    // effects. Pre-Cycle 10 this was an inline block — now in
-    // SceneRouter::Settle() so the policy lives in one focused class
-    // with its own doctests (awsome_cpp.md §6).
-    sceneRouter_.Settle(world_);
+    // Roster + side effects follow the FSM. Any trigger (EndingGate,
+    // EventWiring, ChapterGate, future) mutates the pure state machine;
+    // the SceneRouter observes the change here at TOP-of-Update and
+    // applies the harness-observable side effects (player position
+    // move, consumable wipe, Ch4 flag clear, arrival hint, latch reset).
+    // The view-only roster swap is hoisted forward to END-of-Update
+    // (sceneRouter_.SettleRoster below) so the same frame the
+    // transition fires paints with the new chapter's NPCs — closes the
+    // L8 1-frame npcs[] lag without touching the harness state.jsonl
+    // observable timeline.
+    sceneRouter_.SettleSideEffects(world_);
 
     // In-game pause menu (top-right). Opens with Esc or M; while open the
     // world is fully frozen (we early-return before the object tick /
@@ -292,12 +295,29 @@ void GameController::Update() {
                         if (stockIdx >= stockN) {        // decline
                             pendingVendor_ = nullptr;
                             dlg.Close();
+                            // Cycle 10.P0b: roster settle picks up any
+                            // FSM transition (none expected here, but
+                            // cheap insurance against a future side
+                            // effect inside Close()). View-only — does
+                            // not mutate player.pos / flags / events,
+                            // so the harness state.jsonl observable
+                            // timeline is unchanged.
+                            sceneRouter_.SettleRoster(world_);
                             return;
                         }
                         (void)pendingVendor_->TryBuy(p, stockIdx);
                         pendingVendor_ = nullptr;
                         CheckEndingGates(*p, world_.Semester(), dlg);
                         CheckChapterGates(*p, world_.Semester(), dlg);
+                        // Cycle 10.P0b (L8 fix): the gate calls above
+                        // can Transition() — settle the roster NOW so
+                        // the frame the player sees has a coherent
+                        // npcs[]. Pre-fix, the respawn waited for the
+                        // NEXT frame's top-of-Update() check. View-only:
+                        // SettleSideEffects (player pos, consumables,
+                        // events) still runs at top of NEXT Update so
+                        // the harness state.jsonl is byte-identical.
+                        sceneRouter_.SettleRoster(world_);
                         return;
                     }
                     ApplyDialogChoice(*p, *c);
@@ -326,6 +346,16 @@ void GameController::Update() {
                     CheckChapterGates(*p, world_.Semester(), dlg);
                 }
             }
+            // Cycle 10.P0b (L8 fix): any transition the dialog branch
+            // produced (CheckEndingGates / CheckChapterGates) must
+            // roll its roster into View BEFORE the frame draws. The
+            // early-return paths above already called SettleRoster
+            // themselves; this one covers the fall-through path (a
+            // non-purchase, non-terminal advance). View-only: the
+            // harness-observable side effects (player pos, consumables,
+            // events) wait until top-of-next-Update's SettleSideEffects
+            // so state.jsonl stays byte-identical.
+            sceneRouter_.SettleRoster(world_);
             return;
         } else {
             // Dialog not active this tick: drop any stale hold-E
@@ -592,6 +622,24 @@ void GameController::Update() {
         objects.end());
     if (playerWillDie) world_.ClearPlayer();
 
+    // Cycle 10.P0b (L8 fix): close the same-frame transition window
+    // for the npcs[] list. Any FSM transition produced by the
+    // position-trigger branches above (CheckChapterGates on
+    // Flag_LeaveInterlude consumed -> Transition; Chapter2/3 Clear
+    // flags consumed -> Transition; future) must be rolled into the
+    // ROSTER BEFORE View::Draw paints this frame. Pre-fix, state.jsonl
+    // for transition frames N had semester=NEW but npcs[]=OLD
+    // (cycle9f §G.1 / §J): one of the 7 spine transitions per ending.
+    //
+    // SettleSideEffects (player pos, consumables, arrival hint, etc.)
+    // intentionally stays at TOP-of-Update so the harness's lastWorld
+    // snapshot sees the OLD player position for one tick — matches
+    // the pre-fix harness contract exactly, which the script's
+    // `interact <coord>` "arrived" detection depends on (a player
+    // teleport on the SAME frame as the umbrella claim would make
+    // the next frame's plan resolution think the target is still far
+    // away, stalling the script). View-only here.
+    sceneRouter_.SettleRoster(world_);
 }
 
 } // namespace nccu

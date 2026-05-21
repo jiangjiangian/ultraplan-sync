@@ -1,17 +1,22 @@
 #include "doctest/doctest.h"
 #include "ChapterGate.h"
+#include "ChapterSpawns.h"
 #include "ChapterToast.h"
 #include "DialogState.h"
 #include "EndingGate.h"
 #include "EventBus.h"
 #include "EventWiring.h"
+#include "GameObject.h"
 #include "HudSlot.h"
 #include "Player.h"
+#include "SceneRouter.h"
 #include "SemesterStateMachine.h"
 #include "TrueUmbrella.h"
 #include "World.h"
 #include "gfx/Vec2.h"
+#include <algorithm>
 #include <string>
+#include <vector>
 
 using nccu::SemesterState;
 using nccu::SemesterStateMachine;
@@ -286,4 +291,109 @@ TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
     CHECK(w.HudMessage(nccu::HudSlot::Bottom).empty());
 
     EventBus::Instance().Clear();
+}
+
+// Cycle 10.P0b L8 regression: every chapter/interlude/ending transition
+// rolls the roster into the visible npcs[] list on the SAME frame the
+// FSM moves. Pre-Cycle 10 the roster swap ran at the TOP of the next
+// Update(), so the state.jsonl line for transition frame N had
+// semester=NEW but npcs[]=OLD (the cycle9f §G.1 / §J diagnosis: all 7
+// spine transitions affected, repro in every one of the three ending
+// runs). The SceneRouter::SettleRoster end-of-Update call closes that
+// window. This test pins the contract using SceneRouter directly (no
+// View / Harness needed) so a future change that reverts to the
+// 1-frame lag (or makes it 2-frame, etc.) fails here.
+TEST_CASE("L8: roster follows FSM on the same frame as Transition()") {
+    nccu::World w("", /*loadSprites=*/false);
+    nccu::SceneRouter r{w.Semester().Current()};
+
+    // Helper to count NPCs whose npcId is in a given chapter's roster.
+    // Mimics state.jsonl's npcs[] field (only non-empty NpcIds).
+    auto npcIds = [&w]() {
+        std::vector<std::string> out;
+        for (const auto& o : w.Objects()) {
+            if (!o || !o->IsActive()) continue;
+            const std::string id{o->NpcId()};
+            if (!id.empty()) out.push_back(id);
+        }
+        return out;
+    };
+
+    // ----- Tick N-1: FSM at Ch1, roster is Ch1 (5 archetypes). -----
+    auto ids = npcIds();
+    CHECK(std::find(ids.begin(), ids.end(), "victim") != ids.end());
+
+    // ----- Tick N: a Transition fires mid-frame; SettleRoster runs at
+    // end-of-Update. Same call site as GameController's end-of-Update
+    // call. -----
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
+    r.SettleRoster(w);
+
+    // Within this tick's eventual View::Draw / state.jsonl dump, the
+    // roster MUST already be the new chapter's. Pre-fix this was the
+    // PREVIOUS chapter's, by design accident — the very bug L8.
+    ids = npcIds();
+    CHECK(std::find(ids.begin(), ids.end(), "librarian") != ids.end());
+    // Ch1 and Ch2 share victim/suit_senior/bookworm/ta/shop_auntie;
+    // librarian appears only in Ch2 (the chapter-specific marker).
+
+    // Same one-call-per-transition contract: a second SettleRoster on
+    // the same FSM state is a no-op (idempotent under its own cursor).
+    const std::size_t countAfter = ids.size();
+    r.SettleRoster(w);
+    ids = npcIds();
+    CHECK(ids.size() == countAfter);
+}
+
+TEST_CASE("L8: every transition closes its npcs[] lag (full spine)") {
+    // Walk the seven-transition spine — Ch1 -> Interlude -> Ch2 ->
+    // Interlude -> Ch3 -> Interlude -> Ch4 -> Ending_A — calling
+    // SettleRoster at every step exactly as the production
+    // end-of-Update path does. Each step must surface the destination
+    // state's roster on the same tick.
+    nccu::World w("", /*loadSprites=*/false);
+    nccu::SceneRouter r{w.Semester().Current()};
+
+    const SemesterState path[] = {
+        SemesterState::Interlude_Market,
+        SemesterState::Chapter2_Midterms,
+        SemesterState::Interlude_Market,
+        SemesterState::Chapter3_SportsDay,
+        SemesterState::Interlude_Market,
+        SemesterState::Chapter4_Finals,
+        SemesterState::Ending_A,
+    };
+
+    for (SemesterState s : path) {
+        w.Semester().Transition(s);
+        r.SettleRoster(w);
+
+        // Each transition lands its destination roster on this tick.
+        const auto& expected = nccu::ChapterNpcSpawns(s);
+        std::size_t hits = 0;
+        for (const auto& o : w.Objects()) {
+            if (!o || !o->IsActive()) continue;
+            const std::string id{o->NpcId()};
+            if (id.empty()) continue;
+            for (const auto& sp : expected)
+                if (sp.npcId == id) { ++hits; break; }
+        }
+        CHECK_MESSAGE(hits == expected.size(),
+                      "transition to " << static_cast<int>(s)
+                      << " left npcs[] missing roster entries");
+
+        // No leftover NPCs from a previous chapter. For each observed
+        // NPC, it must be in the new chapter's spawn table.
+        for (const auto& o : w.Objects()) {
+            if (!o || !o->IsActive()) continue;
+            const std::string id{o->NpcId()};
+            if (id.empty()) continue;
+            bool inExpected = false;
+            for (const auto& sp : expected)
+                if (sp.npcId == id) { inExpected = true; break; }
+            CHECK_MESSAGE(inExpected,
+                          "transition to " << static_cast<int>(s)
+                          << " leaked stale NPC: " << id);
+        }
+    }
 }
