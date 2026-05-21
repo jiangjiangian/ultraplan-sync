@@ -1,7 +1,7 @@
 #ifndef GFX_MASK_LOADER_H_
 #define GFX_MASK_LOADER_H_
 #include "raylib.h"
-#include "CollisionMask.h"
+#include "world/CollisionMask.h"
 #include <cstdio>
 #include <string>
 
