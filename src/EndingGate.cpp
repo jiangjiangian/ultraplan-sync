@@ -1,4 +1,5 @@
 #include "EndingGate.h"
+#include "ChapterToast.h"
 #include "Player.h"
 #include "SemesterStateMachine.h"
 #include "SemesterState.h"
@@ -28,6 +29,10 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
         player.HasFlag("Flag_HasTrueUmbrella") &&
         player.HasFlag("Flag_ConsoledTA")) {
         semester.Transition(SemesterState::Ending_A);
+        // H2: even the terminal screen flashes a toast first — without it
+        // the FSM hop into Ending_A was indistinguishable in state.jsonl
+        // from a frame where nothing happened (cycle9 H2 evidence).
+        PublishChapterTransitionToast(SemesterState::Ending_A);
         dialog.Close();
         return;
     }
@@ -49,6 +54,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     if (player.HasFlag("Flag_TookCursedUmbrella") ||
         player.GetKarma() < 0 || coldFinale) {
         semester.Transition(SemesterState::Ending_B);
+        PublishChapterTransitionToast(SemesterState::Ending_B);
         dialog.Close();
         return;
     }
@@ -69,6 +75,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     if (player.HasFlag("Flag_BoughtUglyUmbrella") ||
         player.HasFlag("Flag_TaFinaleChoiceMade")) {
         semester.Transition(SemesterState::Ending_C);
+        PublishChapterTransitionToast(SemesterState::Ending_C);
         dialog.Close();
         return;
     }

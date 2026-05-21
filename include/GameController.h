@@ -53,6 +53,15 @@ private:
     // vendor dialog freezes the sim, so the swept-roster path cannot run
     // while it is set). nullptr = no shop menu open.
     Vendor*                                              pendingVendor_ = nullptr;
+
+    // H3 (cycle9): once-per-visit latch for the Interlude exit-zone toast.
+    // GameController polls InInterludeExitZone every non-dialog frame; we
+    // want to publish "準備離開市集" the first frame the player crosses
+    // into the band, and stay silent for every subsequent frame they
+    // linger or wobble in/out. Reset to false each time the FSM enters the
+    // Interlude_Market state (in the roster-respawn branch above), so a
+    // later re-visit reissues the toast exactly once.
+    bool                                                 interludeExitZoneLatched_ = false;
 };
 
 } // namespace nccu

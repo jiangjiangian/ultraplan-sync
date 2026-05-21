@@ -5,6 +5,104 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.A: UX feedback gaps — chapter-transition toasts + Interlude hints
+
+Direct response to user-reported playtest complaints: (1) 找不到關鍵
+人物 / 地圖上沒有 NPC, (2) 不知道劇情有沒做對, (3) 沒有任務達成
+通知. The bughunter diagnostic (`docs/cycle8-audit/cycle9-ux-diagnosis.md`)
+catalogued 6 spawn gaps + 5 discoverability gaps + 5 feedback gaps,
+prioritised H1–L9. Cycle 9.A.1 (`7c25bda`) shipped M6 (interlude_market
+doc realignment) + non-LLM docs knowledge graph. This cycle (9.A.2)
+ships H1+H2+H3.
+
+### What
+- **H1 — regression-test net for Ch1→Interlude/Ending NPC sweep.** Three
+  new doctest files (`tests/test_world_chapter_roster.cpp` +
+  `tests/test_chapter_transitions.cpp` + `tests/test_interlude_exit_feedback.cpp`
+  ; +17 SUBCASEs / 4367 assertions). **Diagnosis H1 was wrong**: the
+  bughunter inferred Ch1 NPCs leaked because `World.cpp` ctor pushed
+  them to `objects_` but not `chapterRoster_`. Reality is `World.cpp:47`
+  already calls `RespawnChapterRoster(semester_.Current())` →
+  `SpawnChapterNpcs(Chapter1_AddDrop)` → `chapterRoster_.push_back`,
+  so the registration was always intact. The observed 5-NPC residue
+  in Interlude `state.jsonl` is **L8** (1-frame respawn lag): the
+  state log emits AFTER FSM `Transition()` but BEFORE the next-frame
+  `GameController::Update` polls. By frame N+1 the NPCs are gone.
+  Engine left untouched; regression tests now pin the sweep invariant
+  across the full spine (Ch1→Interlude→Ch2→Interlude→Ch3→Interlude→
+  Ch4→Ending_A) so a future ctor refactor that DID break tracking
+  would fail in CI.
+- **H2 — chapter-transition toasts.** New header
+  `include/ChapterToast.h` (~85 lines, header-only) declares
+  `ChapterTransitionToast(SemesterState)` + `PublishChapterTransitionToast()`.
+  Eight Transition sites now publish a `ShowMessage` event with a
+  ≤28-cell CJK string ("✓ 進入第二章 期中考",
+  "✓ 章節清關 — 進入幕間市集", "✓ 抵達結局", etc): two in
+  `EventWiring.h` (Ch1/Ch3 UmbrellaClaimed subscribers), three in
+  `src/ChapterGate.cpp`, three in `src/EndingGate.cpp`. Before this,
+  state.jsonl recorded five consecutive Transitions with `events=[]`,
+  so the HUD only refreshed when a non-transition event happened to
+  fire. Pure additive: no existing Publish was changed, only new ones
+  appended after each `semester_.Transition(...)` call.
+- **H3 — Interlude entry/exit hints.** Two new constants
+  (`kInterludeArrivalHint`, `kInterludeExitPrep`) and a
+  once-per-visit latch helper `MaybeAnnounceInterludeExit(bool&)`
+  live in `ChapterToast.h`. `GameController` got a `bool
+  interludeExitArmed_` field + a fresh publish right after
+  `RespawnChapterRoster` snaps to `Interlude_Market`, and the latch
+  resets on each Interlude arrival so the toast fires exactly once
+  per visit even when the player wobbles across the y=1900 boundary.
+  View-side ground marker explicitly **deferred** per brief — that's
+  a raylib-gfx-uxui follow-up.
+
+### Why
+The user's three complaints share a single root cause: every
+gameplay signal landed in `state.jsonl.events` and was never lifted
+into the HUD. Players never knew the chapter had advanced, never knew
+they were "done", never knew where to leave the Interlude. Adding
+toast text at the Transition sites is a 1:1 wire fix — the data was
+all there; the View just never saw it.
+
+### Gameplay impact
+- All three endings still reachable; `ending_a/b/c.txt` smoke runs
+  end with `last_state=結局 X`, `last_hud='✓ 抵達結局'`, `last_npcs=[]`.
+- Determinism preserved at the byte level for the **deterministic
+  inputs** path (same script ⇒ same `state.jsonl` event sequence);
+  the HUD text added is itself part of the snapshot, so the file
+  is no longer byte-identical to pre-9.A snapshots — but that's the
+  intended behaviour change.
+- 305/305 tests PASS (was 289/289 → +16 new TEST_CASEs).
+- 0 project-code warnings.
+
+### Known follow-up (left intentionally for a polish PR)
+- `src/TrueUmbrella.cpp:17-18` publishes `UmbrellaClaimed` then
+  `ShowMessage("你撿到了 TrueUmbrella")` in that order. The H2
+  chapter-clear toast (published by the `UmbrellaClaimed` subscriber)
+  is overwritten in ~0 frames by the second TrueUmbrella message.
+  Visible at frame=1765 (Ch1→Interlude) and frame=5084 (Ch3→Interlude).
+  Swap the two Publish lines or add a small delay to keep the
+  chapter-clear text on-screen longer.
+- View-side ground marker for the y=1900 exit band (H3 visual half).
+- H4 quest-giver `!` indicator over NPCs (View.cpp ignores
+  `NPC::IsQuestGiver()`).
+- H5 karma toast (`KarmaChanged` is a dead event channel —
+  1 publisher, 0 subscribers).
+
+### Revert
+Three test files are additive; deleting them and reverting the
+publish lines + `bool interludeExitArmed_` field rolls back cleanly.
+`include/ChapterToast.h` would become orphaned — `git rm` it.
+
+### Test gotcha (documented inline in the new tests)
+The suite has a `doctest::Reporter` (`tests/test_eventbus_isolation.cpp`)
+that calls `EventBus::Instance().Clear()` on every
+`subcase_start/end` + `test_case_start/end`. Tests that need a
+listener subscribed across SUBCASE bodies must `Subscribe()` **inside
+each SUBCASE**, not in the parent `TEST_CASE`. The new tests follow
+this rule and document it at the top of each file.
+
+---
+
 ## 2026-05-20 — Cycle 8: narrative conformance — dead-flag activation + seed cleanup
 
 Two read-only-audit findings landed (user pre-approved). Both small
