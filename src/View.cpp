@@ -12,6 +12,7 @@
 #include "MessageView.h"
 #include "QuestObjective.h"
 #include "QuestGiverIndicator.h"
+#include "InterludeExitMarker.h"
 #include "GameHelp.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
@@ -128,6 +129,20 @@ void View::Draw(const World& world) {
                 Rect{o.GetPosition().x, o.GetPosition().y,
                      ::world::kPlayerWidth, ::world::kPlayerHeight});
         });
+
+        // H3 visual ground marker — only paint the dashed gold exit line
+        // while the player is inside the Interlude (other chapters reuse
+        // the same world tile but treat that south band as ordinary
+        // road, so the marker would be misleading). Drawn INSIDE the
+        // CameraScope so the line sits at world y == kInterludeExitMinY
+        // and tracks the camera. Phase ticks with the local accumulator
+        // below so the dashes sweep west-to-east — pure visual flourish,
+        // does not affect the trigger (InterludeExit.h is geometry-only).
+        if (st == SemesterState::Interlude_Market) {
+            interludeMarkerPhase_ +=
+                nccu::gfx::Time::DeltaSeconds() * 30.0f;  // px / second
+            DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
+        }
     }
 
     // Top-left status: WASD hint, karma/umbrella, optional building,
