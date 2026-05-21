@@ -219,7 +219,24 @@ void GameController::Update() {
                     case 1:                     // 說明 (Help) — overlay
                         world_.SetHelpOpen(true);
                         break;
-                    case 2:                     // 重新開始 (Restart)
+                    case 2:                     // 減少動畫 (toggle)
+                        // Cycle 9.E.3: pause-menu UI for the
+                        // ReducedMotion accessibility flag added in
+                        // 9.E.1. Flip in place; the menu stays open so
+                        // the player can see the [開]/[關] state update
+                        // on the same row their cursor is on. Pure
+                        // World mutation — no AppAction, no menu close.
+                        world_.SetReducedMotion(!world_.ReducedMotion());
+                        break;
+                    case 3:                     // 擴大目標 (toggle)
+                        // Cycle 9.E.3: pause-menu UI for the
+                        // LargeTargets accessibility flag added in
+                        // 9.E.2. Same in-place toggle shape as row 2 —
+                        // the next gameplay frame's E-probe reach picks
+                        // up the new value via World::LargeTargets().
+                        world_.SetLargeTargets(!world_.LargeTargets());
+                        break;
+                    case 4:                     // 重新開始 (Restart)
                         world_.RequestAppAction(
                             World::AppAction::Restart);
                         break;

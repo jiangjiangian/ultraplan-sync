@@ -79,9 +79,13 @@ public:
         if (!v) { menuCursor_ = 0; helpOpen_ = false; }  // reopen on Resume
     }
     [[nodiscard]] int  MenuCursor() const noexcept { return menuCursor_; }
-    // REQUIREMENT #9: 4 items — 0=繼續 1=說明 2=重新開始 3=離開. 說明
+    // REQUIREMENT #9 + Cycle 9.E.3: 6 items — 0=繼續 1=說明
+    // 2=減少動畫(toggle) 3=擴大目標(toggle) 4=重新開始 5=離開. 說明
     // opens an in-place help overlay (HelpOpen) rather than an AppAction.
-    static constexpr int kMenuItemCount = 4;
+    // Rows 2/3 are non-destructive a11y toggles intentionally wedged
+    // between 說明 and 重新開始 so the destructive items (Restart/Quit)
+    // sit farthest from the cursor's starting position (audit M2/M3).
+    static constexpr int kMenuItemCount = 6;
     void MoveMenuCursor(int delta) noexcept {
         menuCursor_ = (menuCursor_ + delta + kMenuItemCount) %
                       kMenuItemCount;

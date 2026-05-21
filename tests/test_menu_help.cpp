@@ -11,6 +11,10 @@
 //   * Restore kMenuItemCount=3 / the 3-label menu and drop the case-1
 //     SetHelpOpen branch — confirming index 1 then no longer opens help
 //     (HelpOpen stays false); the "說明 opens help" CHECK fails.
+//   * Cycle 9.E.3 bumped kMenuItemCount from 4 → 6 by inserting the
+//     減少動畫 / 擴大目標 toggle rows at indices 2 and 3. 說明 is still
+//     index 1 (this test's invariant), so only the count CHECK below
+//     needed updating; the index-1-opens-help path is unchanged.
 
 #include "doctest/doctest.h"
 #include "World.h"
@@ -73,8 +77,10 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     const nccu::gfx::Vec2 pos0 = p->GetPosition();
     const float rain0 = p->GetRainMeter();
 
-    // The menu is a 4-item menu now (REQUIREMENT #9).
-    CHECK(World::kMenuItemCount == 4);
+    // The menu is a 6-item menu now (REQUIREMENT #9 + Cycle 9.E.3 added
+    // 減少動畫 and 擴大目標 toggle rows between 說明 and 重新開始). The
+    // 說明 item — what THIS test pins — remains at index 1.
+    CHECK(World::kMenuItemCount == 6);
 
     // Open the pause menu (ESC).
     in.Tap(Key::Escape);

@@ -123,7 +123,14 @@ inline const char* UiLiteralChars() {
         // rain hint line; 結 already in 終, 力/計 not in the old set.
         "三下不並久了他作偷動取向品善局屠屬建待復惡或戲戶把拿"
         "撐撿標欄沖消淋災物相破種積終綠者花術被訪購躲透進選醜量錢鍵龍"
-        "暫停凍結壓力計";
+        "暫停凍結壓力計"
+        // Cycle 9.E.3 pause-menu accessibility toggles ("減少動畫 [開/關]"
+        // / "擴大目標 [開/關]"). 動/標/開 already baked above; 減/少/畫/
+        // 擴/目/關 added here so the toggle rows render correctly on the
+        // content-unreadable fallback path too (every glyph in those two
+        // rows must reach the atlas — same V1/REQ#10 rationale as the
+        // building-name / help blocks).
+        "減少畫擴目關";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint
