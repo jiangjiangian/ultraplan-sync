@@ -5,6 +5,67 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.D.1: H3 view-side ground marker for the Interlude exit
+
+Visual close-out of the H3 split that 9.A.2 documented. The text /
+event track (`市集中央。逛完後往南離開` arrival hint +
+`準備離開市集` exit-zone toast + once-per-visit latch) shipped in
+9.A.2 (commit `1661889`). The view-side ground marker was
+explicitly deferred to a `raylib-gfx-uxui` polish PR — this is it.
+
+### What
+- **New header `include/InterludeExitMarker.h`** (104 lines,
+  header-only). `LayoutInterludeExitMarker(...)` returns the list
+  of dash rects in world coordinates (pure geometry, GL-free, unit-
+  testable). `DrawInterludeExitMarker(gfx::IRenderer&, ...)` walks
+  the layout and paints each dash + a 2-px drop shadow.
+- **Visual style**: horizontal dashed gold line at the kInterludeExitZone
+  y, dashes 40 px long with a 20 px gap (60 px period), Gold
+  `#FFC83D` matching the 9.B H4 quest-giver `!` panel for visual
+  consistency. Optional `phase` parameter shifts the pattern
+  horizontally so the View ticks it for a subtle "the route is
+  open" animation.
+- **`src/View.cpp`** draws the marker inside its `CameraScope`
+  *only* when `semester.Current() == Interlude_Market`, so the
+  band of dashes only appears when the player is actually in the
+  market and the exit gate matters. Same render-loop slot the H4
+  indicator lives in — pure View, no World mutations.
+- **`tests/test_interlude_exit_marker.cpp`** uses the recording
+  IRenderer spy idiom from `test_quest_giver_indicator.cpp`:
+  asserts the dash count for the standard corridor, that each
+  dash lies inside the south-band y range, and that the marker is
+  off when the spy is invoked with a non-Interlude state hint.
+
+### Why
+9.A.2's commit notes flagged the exit zone's silent y>=1900
+trigger as the most player-visible gap, and the agent
+diagnostic listed "no Interlude exit marker" as discoverability
+finding #4. The text toasts close the cognitive half but the
+player still has to map "south" onto the actual scene — a
+dashed band at the exit y is the smallest possible UX intervention
+that turns the corridor into an obvious route.
+
+### Gameplay impact
+- 328/328 doctest cases pass (was 321 → +7 new cases, 4718 total
+  assertions).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- All three ending smokes still rc=0 (the marker is presentation-
+  only; no state change).
+
+### Revert
+`git rm include/InterludeExitMarker.h tests/test_interlude_exit_marker.cpp`
+and drop the +15 / +5 line View.cpp / View.h additions. Pure
+additive — state machine and event wiring untouched.
+
+### Follow-ups still open
+- Accessibility baseline audit (in flight at time of this commit)
+- L8 — same-frame respawn after Transition (race-audit needed)
+- BUGLEDGER B3 — Flag_SawVictim_Ch1 / Flag_BoughtCoffeeForAuntie_Ch1
+  ripple-or-remove decision
+- KB topic STUBs in `docs/kb/` still unfilled
+
+---
+
 ## 2026-05-21 — Cycle 9.C: cold-senior ripple closure + Ch3 trade-chain visibility
 
 Two narrative / discoverability fixes shipped together; gate green

@@ -54,6 +54,11 @@ private:
     std::vector<BuildingSprite>      buildings_;
     std::vector<DrawRef>             drawOrder_;  // per-frame scratch
     float                            endingAlpha_ = 0.0f;  // card fade-in
+    // H3: animation phase (in world px) for the Interlude exit ground
+    // marker. Ticked by DeltaSeconds * speed each frame the player is in
+    // the Interlude, so the dashed line sweeps west-to-east. Not part of
+    // the simulation — pure View visual flourish.
+    float                            interludeMarkerPhase_ = 0.0f;
 };
 
 } // namespace nccu
