@@ -12,7 +12,7 @@ namespace nccu {
 // is baked into gfx::Font.h UiLiteralChars() (the #10 atlas lesson) so
 // the panel never tofus to `?`. Lines are kept short (the help panel is
 // narrower than the dialog box; ~22 full-width cells max).
-inline constexpr std::array<std::string_view, 14> kGameHelpLines = {
+inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     "【操作】",
     "WASD / 方向鍵：移動",
     "E：對話 / 撿取 / 購買",
@@ -23,6 +23,17 @@ inline constexpr std::array<std::string_view, 14> kGameHelpLines = {
     "找回屬於你的那把透明傘。",
     "雨量會在戶外累積——躲進建築或",
     "撐傘可回復，淋太久會被沖回正門。",
+    // Cycle 9.E (audit H3 / D11 / SC 2.2.1): the rain meter is an
+    // unmodifiable timed pressure (5 u/s outdoors → forced respawn at
+    // 100 %). SC 2.2.1 Level A requires the player to know HOW to
+    // extend / pause any sub-20-hour timing; ESC already freezes the
+    // meter (GameController::Update early-returns on MenuOpen, before
+    // ApplyRain on ~line 397) — this line surfaces that affordance so
+    // a player who needs a break knows the path. Pure content; no
+    // engine change. Length: 8 CJK + 1 fullwidth punct + "ESC " = 23
+    // effective cells, well within the ~22-cell help-panel budget the
+    // existing 雨量/撐傘 lines already use.
+    "ESC 暫停會凍結雨壓力計。",
     "",
     "【三種結局】",
     "真相大白：善待他人並找回真傘。",

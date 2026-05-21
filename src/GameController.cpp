@@ -259,7 +259,30 @@ void GameController::Update() {
                 if (Input::IsPressed(Key::Up))   dlg.MoveChoice(-1);
                 if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
             }
-            if (Input::IsPressed(Key::E)) {
+            // Cycle 9.E (audit H2 / D5 / SC 2.2.2): hold-E to fast-advance
+            // dialog. Tap-press (edge IsPressed) keeps its existing
+            // mash-once-per-press semantics; HOLDING E for >= 300 ms then
+            // also fires the same advance branch every ~4 frames so a
+            // long-winded NPC can be skimmed without finger pain. The
+            // gameplay E-probe (out of this dialog branch, line ~432) is
+            // edge-only and untouched — held-E only auto-advances dialog,
+            // never re-triggers interactions / vendor menus. Pure input
+            // timing; the rest of the branch (advance side-effects,
+            // ending gates) is unchanged.
+            constexpr float kEHoldAdvanceMs = 300.0f;
+            constexpr int   kEHoldCooldownFrames = 4;
+            const float ddt = Time::DeltaSeconds();
+            if (Input::IsDown(Key::E)) eHoldMs_ += ddt * 1000.0f;
+            else                       { eHoldMs_ = 0.0f; eAutoAdvanceCooldown_ = 0; }
+            const bool edgeE = Input::IsPressed(Key::E);
+            bool autoE = false;
+            if (!edgeE) {
+                if (Input::IsDown(Key::E) && eHoldMs_ >= kEHoldAdvanceMs) {
+                    if (eAutoAdvanceCooldown_ > 0) --eAutoAdvanceCooldown_;
+                    else { autoE = true; eAutoAdvanceCooldown_ = kEHoldCooldownFrames; }
+                }
+            }
+            if (edgeE || autoE) {
                 // Capture the npc BEFORE Advance() — confirming the last
                 // choice can Close() the dialog, which clears NpcId().
                 const std::string npc = dlg.NpcId();
@@ -346,6 +369,20 @@ void GameController::Update() {
     if (world_.InventoryOpen()) return;
 
     const float dt = Time::DeltaSeconds();
+    // Cycle 9.E (audit H2 / D5 / SC 2.2.2): skip-toast key. While a
+    // banner is on screen (HudMessage non-empty AND not yet expired),
+    // Backspace force-expires it so a player who has read the line can
+    // dismiss it on demand instead of waiting out the 4 s TTL. Read here
+    // (AFTER the menu / dialog / inventory early-returns above so menu-
+    // typed Backspace can't escape the pause, BEFORE TickHud so a one-
+    // frame skip lands the same frame as the press) keeps the keystroke
+    // strictly a HUD-only side effect — no movement, no rain change,
+    // no event publish. SC 2.2.2 expects auto-updating content to be
+    // hide-able by the player; this is the smallest such input.
+    if (Input::IsPressed(Key::Backspace) && !world_.HudMessage().empty() &&
+        !world_.HudExpired()) {
+        world_.DismissHud();
+    }
     // Age the transient banner with the sim. Reached only AFTER the
     // dialog AND Tab-inventory early-returns above, so it freezes while
     // a conversation or the inventory is open — a chapter-clear notice
@@ -444,7 +481,16 @@ void GameController::Update() {
         // The margin (8 px, a third of the 24 px box) is far smaller than
         // the world spacing between NPCs/items, so it can only reach an
         // object the player is already standing flush against.
-        constexpr float kInteractReach = 8.0f;
+        // Cycle 9.E (audit M2 / D7 / SC 2.5.8): a "larger targets"
+        // accessibility profile (World::LargeTargets(),
+        // UMBRELLA_LARGE_TARGETS=1) widens the reach to 16 px on each
+        // side — effective talk box 56x56 instead of 40x40 — so a
+        // tremor-affected player can still trigger NPC dialog without
+        // pixel-precise alignment. The MOVEMENT collider above is
+        // unchanged (the player still cannot walk through an NPC); ONLY
+        // the E-probe reach grows. Default off ⇒ byte-equivalent to
+        // pre-9.E behaviour and to the prior `kInteractReach = 8.0f`.
+        const float kInteractReach = world_.LargeTargets() ? 16.0f : 8.0f;
         const Rect pHit{player->GetPosition().x - kInteractReach,
                         player->GetPosition().y - kInteractReach,
                         24.0f + 2.0f * kInteractReach,

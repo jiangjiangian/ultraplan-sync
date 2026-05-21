@@ -23,14 +23,15 @@ int KeyCode(std::string_view tok) {
     using nccu::gfx::Key;
     if (tok.size() == 1 && tok[0] >= 'A' && tok[0] <= 'Z')
         return KEY_A + (tok[0] - 'A');
-    if (tok == "Enter")  return ToRaylibKey(Key::Enter);
-    if (tok == "Escape") return ToRaylibKey(Key::Escape);
-    if (tok == "Tab")    return ToRaylibKey(Key::Tab);
-    if (tok == "Space")  return ToRaylibKey(Key::Space);
-    if (tok == "Up")     return ToRaylibKey(Key::Up);
-    if (tok == "Down")   return ToRaylibKey(Key::Down);
-    if (tok == "Left")   return ToRaylibKey(Key::Left);
-    if (tok == "Right")  return ToRaylibKey(Key::Right);
+    if (tok == "Enter")     return ToRaylibKey(Key::Enter);
+    if (tok == "Escape")    return ToRaylibKey(Key::Escape);
+    if (tok == "Tab")       return ToRaylibKey(Key::Tab);
+    if (tok == "Space")     return ToRaylibKey(Key::Space);
+    if (tok == "Backspace") return ToRaylibKey(Key::Backspace);
+    if (tok == "Up")        return ToRaylibKey(Key::Up);
+    if (tok == "Down")      return ToRaylibKey(Key::Down);
+    if (tok == "Left")      return ToRaylibKey(Key::Left);
+    if (tok == "Right")     return ToRaylibKey(Key::Right);
     return -1;
 }
 
@@ -299,7 +300,16 @@ void ScriptInput::ResolvePlan(const World* world) {
                 // still falls through to the tap path.
                 if (world->Dialog().Active()) { finishStep(); return; }
                 const auto pp = p->GetPosition();
-                constexpr float kInteractReach = 8.0f;
+                // Cycle 9.E (audit M2 / D7 / SC 2.5.8): mirror the
+                // GameController E-probe reach so the harness's "I'm
+                // close enough to press E now" gate stays byte-identical
+                // to the engine's "the press would land" gate. Reading
+                // World::LargeTargets() (set by UMBRELLA_LARGE_TARGETS=1)
+                // keeps the script's E-press timing correct under the
+                // accessibility profile too. Default off ⇒ 8.0f, matching
+                // every harness regression pinned before this profile.
+                const float kInteractReach =
+                    world->LargeTargets() ? 16.0f : 8.0f;
                 const gfx::Rect pHit{pp.x - kInteractReach,
                                      pp.y - kInteractReach,
                                      24.0f + 2.0f * kInteractReach,
@@ -349,7 +359,12 @@ void ScriptInput::ResolvePlan(const World* world) {
             // the NPC hitbox so we press E — exactly the human-play
             // geometry the landed I3 fix relies on. Pure function of the
             // two live positions => deterministic.
-            constexpr float kInteractReach = 8.0f;
+            // Cycle 9.E (audit M2 / D7 / SC 2.5.8): like the non-NPC arm
+            // above, mirror the engine's larger-targets reach so the
+            // harness's "press E now" gate tracks GameController's "the
+            // press would land" gate under the accessibility profile too.
+            const float kInteractReach =
+                world->LargeTargets() ? 16.0f : 8.0f;
             const gfx::Rect pHit{pos.x - kInteractReach,
                                  pos.y - kInteractReach,
                                  24.0f + 2.0f * kInteractReach,

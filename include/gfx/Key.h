@@ -11,14 +11,15 @@ enum class Key : int {
     P = KEY_P, Q = KEY_Q, R = KEY_R, S = KEY_S, T = KEY_T,
     U = KEY_U, V = KEY_V, W = KEY_W, X = KEY_X, Y = KEY_Y,
     Z = KEY_Z,
-    Space  = KEY_SPACE,
-    Tab    = KEY_TAB,
-    Enter  = KEY_ENTER,
-    Escape = KEY_ESCAPE,
-    Up     = KEY_UP,
-    Down   = KEY_DOWN,
-    Left   = KEY_LEFT,
-    Right  = KEY_RIGHT,
+    Space     = KEY_SPACE,
+    Tab       = KEY_TAB,
+    Enter     = KEY_ENTER,
+    Escape    = KEY_ESCAPE,
+    Backspace = KEY_BACKSPACE,
+    Up        = KEY_UP,
+    Down      = KEY_DOWN,
+    Left      = KEY_LEFT,
+    Right     = KEY_RIGHT,
 };
 
 constexpr int ToRaylibKey(Key k) noexcept { return static_cast<int>(k); }

@@ -36,6 +36,19 @@ World::World(const std::string& playerSpritePath, bool loadSprites)
         reducedMotion_ = true;
     }
 
+    // Cycle 9.E (audit M2 / D7 / SC 2.5.8): pick up the "larger targets"
+    // accessibility profile from the environment, exactly the
+    // UMBRELLA_REDUCED_MOTION shape above. Accepts "1" only; anything
+    // else (unset/"0") leaves the default false. A future pause-menu UI
+    // can flip this via SetLargeTargets(); the env-var path serves
+    // headless / scripted contexts (the harness, an end-user's
+    // accessibility profile script). Read at construction so the choice
+    // is consistent for the whole session.
+    if (const char* env = std::getenv("UMBRELLA_LARGE_TARGETS");
+        env != nullptr && std::strcmp(env, "1") == 0) {
+        largeTargets_ = true;
+    }
+
     // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
     // the AABB resolver never has to rescue them at frame 0. The 4
     // umbrellas sit on the central strip between plaza and Si Wei Blvd.

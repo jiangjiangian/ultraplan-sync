@@ -62,6 +62,19 @@ private:
     // Interlude_Market state (in the roster-respawn branch above), so a
     // later re-visit reissues the toast exactly once.
     bool                                                 interludeExitZoneLatched_ = false;
+
+    // Cycle 9.E (audit H2 / D5 / SC 2.2.2): how long (ms) the dialog-
+    // advance key (E) has been held continuously. Reset to 0 the frame E
+    // is not down; ticked by the live frame delta otherwise. Once it
+    // crosses kEHoldAdvanceMs the dialog auto-advances on a slow ~4-
+    // frame guard (eAutoAdvanceCooldown_ counts the frames to skip after
+    // each auto-fire so the human can read each page rather than blinking
+    // through 60 pages/sec). Only relevant while a dialog is active —
+    // the gameplay E-probe uses raylib's edge IsPressed and is
+    // unaffected. Field on the controller, not the World, because it is
+    // pure input timing — no rendering or simulation depends on it.
+    float                                                eHoldMs_ = 0.0f;
+    int                                                  eAutoAdvanceCooldown_ = 0;
 };
 
 } // namespace nccu
