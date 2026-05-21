@@ -4,7 +4,8 @@
 
 - SemesterState: `Interlude_Market`
 - 觸發: 玩家完成 Ch1 章節結算（任意通關路徑）後自動切換
-- 結束: 玩家走出市集南端觸發區，或主動與「公告板 NPC」對話選擇「離開」→ 進入 `Chapter2_Midterms`
+- 結束: 玩家走出市集南端的離開觸發區（player.y ≥ 1900 自動 set `Flag_LeaveInterlude`）→ 進入 `Chapter2_Midterms`
+  - 設計變更紀錄: 公告板 NPC 對話 → 靜默 trigger zone（配合 `include/InterludeExit.h:13-19` 與 `src/GameController.cpp:511`，玩家從南端走出即觸發 `Flag_LeaveInterlude`；不再有人類型 NPC、不再有「離開」對話選項）
 - 場景: 四維道（與 Ch1 共用同一張 worldmap，差別由 `MapManager::ApplyStateOverlay()` 處理）
 - **特殊規則**:
   - 雨粒子降到 10% 強度（小雨而非暴雨）
@@ -324,13 +325,19 @@ private:
 
 ---
 
-## 公告板 NPC（出 Interlude 的觸發點）
+## 南端離開觸發區（出 Interlude 的觸發點）
 
-- 位置: 四維道南端（接綜合院館那一側）
-- 角色: 「四維道公告版」——可互動的場景物件，不是人類 NPC
-- 對話選項:
-  - 「再逛一下」→ 留在 Interlude
-  - 「準備好去圖書館了」→ 切換 `SemesterState = Chapter2_Midterms`，市集攤位淡出
+- 位置: 四維道南端，跨越走道全寬（`x ∈ [150, 1950]`、`y ∈ [1900, 2048]`）
+- 角色: 靜默 trigger zone——**沒有** NPC、**沒有** 對話選單、**沒有** 互動按鍵
+- 機制: 玩家中心點走進該區即同幀 set `Flag_LeaveInterlude = true`；`ChapterGate` 在下一輪 tick 消費此 flag 並 `Transition` 到 `Chapter2_Midterms`
+- 對應實作:
+  - `include/InterludeExit.h:22-35`（`kInterludeEntry`、`kInterludeExit*` 常數、`InInterludeExitZone()` 純幾何判定）
+  - `src/GameController.cpp:511`（每 tick 偵測 player 中心點，arm flag）
+- 設計變更紀錄: 原 GDD 草案的「公告板 NPC + 對話選項『離開』」於實作期改為資料驅動的觸發區（`InterludeExit.h` 註記 "F.1-board=C"），原因：
+  - 公告板不需要人物互動敘事，純導引功能改為走入即離開更直觀
+  - 省一個 `## NPC：` content section、省一張 sprite、省一輪對話腳本
+  - 與「逛完往南離開」`QuestObjective`（`include/QuestObjective.h:29-30`）的引導文字直接對齊
+- 玩家提示: HUD 上方目標條顯示「目標：在羅馬廣場市集向攤販按 E 採買，逛完往南（校門口方向）離開」，足以引導玩家走到南端離開區
 
 ---
 
@@ -373,15 +380,16 @@ void MapManager::ApplyStateOverlay(SemesterState s) {
 ## 待覆核 / 待後續決定的項目
 
 1. **賺錢上限**: 目前三條管道理論上可累積到 ~250 元（起始 100 + NPC 打賞 50 + Pickup 50 + 二手書 60）。是否要設「金錢上限 999 防超量」？
-2. **市集是否提供存檔點**: GDD 沒寫；建議在公告板 NPC 加「將進度寫入 `resources/save/save.json`」選項。
+2. **市集是否提供存檔點**: GDD 沒寫；目前無存檔系統。若需要，可在 Interlude 進入時自動寫入 `resources/save/save.json`，或於南端離開觸發區同步寫入。
 3. **章魚燒攤的「下章劇情提示」具體要寫什麼**: 等 Ch2 腳本起稿時回填。
-4. **公告板 NPC 視覺**: 是否新生一張 sprite，或重用現有 UI 框？
+4. ~~**公告板 NPC 視覺**~~：已關閉——公告板 NPC 整個取消，改為靜默南端觸發區（見上方「南端離開觸發區」節）。
 5. **Vendor sprite**: 10 個攤主沒有獨立全身像時，可用「同一 vendor 站立 sprite + 不同帽子/圍裙顏色覆蓋」風格化處理，省一輪生圖預算。
+6. **離開觸發區視覺指示**: 目前完全靜默；考慮在 `View` 加南端地面標記（黃線/路牌 sprite）或進入觸發區前一格時 `ShowMessage("準備離開市集...")`——見 cycle9-ux-diagnosis §5 H3 候選工作項。
 
 ---
 
 ## 與 Ch1 / Ch2 / Ending C 的銜接
 
-- **Ch1 的 ProfessorTrap 路線**: 進 Interlude 時若 `Flag_HasProfessorTrap == true`，公告板會出現警告: 「最近校園有人在收手寫陷阱傘，建議丟掉。」（玩家可選擇丟到二手書攤回收 +20 元）
+- **Ch1 的 ProfessorTrap 路線**: 進 Interlude 時若 `Flag_HasProfessorTrap == true`，由二手書攤（畢業學姊）`onPurchase（陷阱傘殘骸）` 對話接手，「拆材料用」回收 +20 元——此 mechanic 目前未實作（見 audit "Ch1 ProfessorTrap 回收 +20" 條目）；先當設計意圖記錄。
 - **Ch1 的 CursedUmbrella 路線**: 攤主對話會出現「看你那把傘怪怪的」flavor，karma 偏低的玩家會被部分攤主拒絕交易
 - **Ending C 的醜綠傘**: **不在這裡賣**——保持 GDD「集英樓便利商店買綠傘」的結局觸發點不變。市集只是 Ch1 福利社阿姨之外的「物資補給站」，與綠傘無直接關係
