@@ -20,8 +20,12 @@ inline constexpr float kHudFade = 1.0f;
 // state. Draws nothing when `message` is empty or `age` >= kHudTtl;
 // otherwise a semi-opaque backdrop plus the (CJK-wrapped) text, the
 // whole banner fading to transparent over the final kHudFade seconds.
+// reducedMotion (audit D8 / SC 2.3.3, default false → existing
+// behaviour) collapses the tail-end fade to a hard cut so flashing-
+// light-sensitive players see a steady toast that disappears at TTL.
 void DrawHudMessage(nccu::gfx::IRenderer& r, const std::string& message,
-                    float age, float screenW, float screenH);
+                    float age, float screenW, float screenH,
+                    bool reducedMotion = false);
 
 } // namespace nccu
 #endif // MESSAGE_VIEW_H_

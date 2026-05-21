@@ -5,6 +5,114 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.E.1: three small a11y fixes — pause-menu contrast + rain HUD colour redundancy + reduced-motion engine flag
+
+First wave of fixes from the Cycle 9.D accessibility baseline audit
+(`docs/cycle9-audit/accessibility-audit.md`). Picked the three
+smallest, most-mechanical items (B1 + M1 + M3); the structural ones
+(D4 keyboard remap, D1 font scale, D5 dialog skip ergonomics) are
+sized for separate cycles.
+
+### What
+- **B1 — pause-menu / help-overlay contrast** (BLOCKING per WCAG SC
+  1.4.3 Contrast Minimum). `src/View.cpp:382` and `src/View.cpp:413`
+  were drawing the navigation-hint lines (`↑ ↓ 選擇   Enter 確認   ESC 繼續`
+  and `ESC / E 返回選單`) in `Colors::DarkGray` on the
+  `Color{20,22,30,230}` pause panel. Actual sRGB-luminance contrast
+  ratio was **~2.24:1** — the audit's prose "~1.05:1" was an
+  approximation but the verdict is identical: failing AA, near-
+  invisible in practice. Swapped to `Color{180,180,180,255}` for
+  **~7:1** (AAA-large, AA-normal).
+- **M1 — rain HUD colour redundancy** (MEDIUM per WCAG SC 1.4.1
+  Use of Color). The rain pressure readout was ramping the text
+  colour `White → Gold → Red` across three tiers; deuteran /
+  protan viewers can't distinguish the gold from the red. Added
+  a 2-cell glyph prefix in front of the digits — `"  "` (calm,
+  fixed-width gap so the line still aligns with karma/money
+  rows), `" !"` (warn), `"!!"` (critical). Colour ramp preserved
+  as amplification. Pure `RainTierPrefix(rm)` helper in new
+  `include/RainHud.h` so the same mapping can be re-used by a
+  future minimap or status banner.
+- **M3 — reduced-motion engine flag** (MEDIUM per WCAG SC 2.3.3).
+  `World` gained a `bool reducedMotion_` field plus
+  `ReducedMotion()` / `SetReducedMotion(bool)` accessors. The ctor
+  reads `UMBRELLA_REDUCED_MOTION=1` (strict — anything else,
+  including `"0"` and unset, leaves the default `false`). Three
+  pure constexpr helpers in new `include/ReducedMotion.h` gate
+  the three places animation drives the renderer:
+  1. Interlude exit marker phase tick → phase frozen to 0
+     (`src/View.cpp:144`).
+  2. Ending fade-in alpha → instant 1.0 (`src/View.cpp:67`).
+  3. HUD toast fade-out T → hard cut at TTL
+     (`src/MessageView.cpp`; `DrawHudMessage` gained an optional
+     `reducedMotion = false` parameter so the call site in
+     `View.cpp` opts in without forcing every caller / test to
+     migrate).
+- **Three regression tests added** (rendering spy + state machine
+  / env-var probes): `test_accessibility_contrast.cpp` (4 cases,
+  WCAG luminance), `test_rain_hud_redundant.cpp` (4 cases incl
+  end-to-end snprintf), `test_reduced_motion.cpp` (2 cases / 8
+  SUBCASEs covering default, setter, three helpers, env-var path).
+
+### Why
+The audit ranked these as the "biggest AA / a11y wins for the
+least code" and recommended them as the opener for Cycle 9.E.
+B1 was outright invisible in the pause menu; M1 is a five-minute
+fix that lifts the rain HUD into SC 1.4.1 compliance; M3 builds
+the *engine* side of reduced-motion so a later UI PR can flip the
+flag from a settings toggle without touching renderer code.
+
+### Gameplay impact
+- 338/338 doctest cases pass (was 328 → +10 new cases, 4760
+  total assertions).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- `ending_a` smoke rc=0, last_state=結局 A, frame_007470.png
+  shows the ending banner with the new HUD contrast.
+- frame_000030.png shows the rain HUD opening at `  rain: 0%`
+  with the 2-space calm-tier prefix preserving column alignment.
+
+### Revert
+Each item is independent:
+- B1: revert the two `Color{180,180,180,255}` literals back to
+  `Colors::DarkGray` at `src/View.cpp:382,413` and delete
+  `tests/test_accessibility_contrast.cpp`.
+- M1: revert the rain-HUD snprintf to drop the prefix; delete
+  `include/RainHud.h` and `tests/test_rain_hud_redundant.cpp`.
+- M3: drop the `reducedMotion_` field + getter/setter from
+  `include/World.h`, the env-var read from the `World` ctor,
+  the three gate sites in `src/View.cpp` and `src/MessageView.cpp`,
+  the optional `DrawHudMessage` param; `git rm include/ReducedMotion.h
+  tests/test_reduced_motion.cpp`.
+
+### Note on the audit's contrast number
+The audit prose quoted "~1.05:1" for `DarkGray` on the pause
+panel; the actual sRGB luminance formula gives **~2.24:1**. Both
+fail AA's 4.5:1 floor and both render the text as essentially
+invisible against the `20,22,30` backing, so the verdict and the
+fix are the same. The test comment captures this nuance so a
+future reader doesn't get confused chasing the round-number
+estimate.
+
+### Follow-ups still open
+- H1 (D1) — `UiScale` multiplier across all font-size constants
+  + pause-menu `字級 +/-` UI (~120 LOC)
+- H2 (D5) — hold-E to fast-advance dialog + Backspace skip
+  toast (~30 LOC)
+- H3 (D11) — help-overlay rain-pause note + pause-menu
+  「降低雨速」 toggle (~20 LOC)
+- M2 (D7) — accessibility-profile flag → wider `kInteractReach`
+  (~15 LOC)
+- B2 (D4) — `Action` enum + `KeyBindings` table + pause-menu
+  remap UI (~200 LOC; the structural one)
+- L1 (D10) — `Locale.h/.cpp` for the ~15 hardcoded UI-chrome
+  CJK strings (~120 LOC)
+- L2 (D9) — live-mode `state.jsonl` emitter on a FIFO for
+  screen-reader sidecars (~30 LOC)
+- Wire a pause-menu toggle to `SetReducedMotion(bool)` (current
+  M3 is engine-only, env-var-driven)
+
+---
+
 ## 2026-05-21 — Cycle 9.D.1: H3 view-side ground marker for the Interlude exit
 
 Visual close-out of the H3 split that 9.A.2 documented. The text /

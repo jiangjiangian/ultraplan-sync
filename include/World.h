@@ -94,6 +94,16 @@ public:
     // item; ESC/E/Enter closes it back to the menu. No raylib here.
     [[nodiscard]] bool HelpOpen() const noexcept { return helpOpen_; }
     void SetHelpOpen(bool v) noexcept { helpOpen_ = v; }
+
+    // Cycle 9.E (audit D8 / SC 2.3.3): the reduced-motion accessibility
+    // preference. Default false; set true by either the ctor (when
+    // UMBRELLA_REDUCED_MOTION=1 is in the environment) or by a future
+    // pause-menu UI. Read by View / MessageView via the pure helpers in
+    // include/ReducedMotion.h so the interlude marker sweep, the
+    // ending-card fade-in and the toast fade-out collapse to instant
+    // changes when on. Pure data — no raylib here.
+    [[nodiscard]] bool ReducedMotion() const noexcept { return reducedMotion_; }
+    void SetReducedMotion(bool v) noexcept { reducedMotion_ = v; }
     [[nodiscard]] AppAction PendingAppAction() const noexcept {
         return pendingAppAction_;
     }
@@ -158,6 +168,7 @@ private:
     bool                        menuOpen_{false};
     int                         menuCursor_{0};
     bool                        helpOpen_{false};
+    bool                        reducedMotion_{false};
     AppAction                   pendingAppAction_{AppAction::None};
 };
 

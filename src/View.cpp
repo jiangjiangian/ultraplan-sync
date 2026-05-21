@@ -14,6 +14,8 @@
 #include "QuestGiverIndicator.h"
 #include "InterludeExitMarker.h"
 #include "GameHelp.h"
+#include "RainHud.h"
+#include "ReducedMotion.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/CameraScope.h"
@@ -61,8 +63,11 @@ void View::Draw(const World& world) {
 
     const SemesterState st = world.Semester().Current();
     if (IsEndingState(st)) {
-        endingAlpha_ = std::min(1.0f, endingAlpha_ +
-                                nccu::gfx::Time::DeltaSeconds());
+        // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
+        // second luminance ramp and see the card opaque on first paint.
+        endingAlpha_ = EndingFadeAlphaStep(
+            endingAlpha_, nccu::gfx::Time::DeltaSeconds(),
+            world.ReducedMotion());
         DrawEndingCard(renderer_, st, world.Semester().CurrentName(),
                        endingAlpha_, viewportSize_.x, viewportSize_.y);
         return;   // ending replaces the world; player has no agency here
@@ -139,8 +144,12 @@ void View::Draw(const World& world) {
         // below so the dashes sweep west-to-east — pure visual flourish,
         // does not affect the trigger (InterludeExit.h is geometry-only).
         if (st == SemesterState::Interlude_Market) {
-            interludeMarkerPhase_ +=
-                nccu::gfx::Time::DeltaSeconds() * 30.0f;  // px / second
+            // Audit D8 / SC 2.3.3: reduced-motion freezes the W→E sweep
+            // (phase stops advancing); the line is still drawn so the
+            // ground-marker affordance is preserved, only animation is.
+            interludeMarkerPhase_ += InterludeMarkerPhaseStep(
+                nccu::gfx::Time::DeltaSeconds(),
+                world.ReducedMotion());
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
         }
     }
@@ -174,10 +183,19 @@ void View::Draw(const World& world) {
             inside ? ("Inside: " + world.CurrentBuildingName())
                    : std::string{};
         const std::string chapter{world.Semester().CurrentName()};
-        char rbuf[32] = {0};
-        if (p)
-            std::snprintf(rbuf, sizeof(rbuf), "rain: %d%%",
+        // Audit D2 / SC 1.4.1: prefix a redundant tier glyph so the
+        // rain readout's three pressure tiers are legible without
+        // relying on the white→gold→red ramp alone (deutera/protan
+        // viewers see gold and red as nearly identical olive/brown).
+        // The colour ramp below is preserved as amplification.
+        char rbuf[40] = {0};
+        if (p) {
+            const std::string_view tag =
+                RainTierPrefix(p->GetRainMeter());
+            std::snprintf(rbuf, sizeof(rbuf), "%.*s rain: %d%%",
+                static_cast<int>(tag.size()), tag.data(),
                 static_cast<int>(p->GetRainMeter() + 0.5f));
+        }
 
         // Lines actually present (Inside is conditional). Width estimated
         // from UTF-8 lead-byte count like the objective panel below — the
@@ -304,7 +322,8 @@ void View::Draw(const World& world) {
     // through the same IRenderer path → it picks up the CJK font (the
     // gfx Font fix), so Chinese cues render, not as `?`.
     DrawHudMessage(renderer_, world.HudMessage(), world.HudAge(),
-                   viewportSize_.x, viewportSize_.y);
+                   viewportSize_.x, viewportSize_.y,
+                   world.ReducedMotion());
 
     DrawDialog(renderer_, world.Dialog());
 
@@ -377,9 +396,13 @@ void View::Draw(const World& world) {
                 .Color(sel ? Color{255, 153, 0, 255} : Colors::White)
                 .Draw();
         }
+        // Audit D3 / SC 1.4.3: was Colors::DarkGray (80,80,80) on the
+        // Color{20,22,30,230} pause-menu panel — ~1.05:1, effectively
+        // invisible. Color{180,180,180,255} hits ~7:1 (AAA-large,
+        // AA-normal) on the same backing.
         TextBuilder{"↑ ↓ 選擇   Enter 確認   ESC 繼續"}
             .At(Vec2{px + 20.0f, py + kPanelH - 30.0f})
-            .Size(14).Color(Colors::DarkGray).Draw();
+            .Size(14).Color(Color{180, 180, 180, 255}).Draw();
     }
 
     // REQUIREMENT #9: the in-game 說明 (how-to-play) overlay — drawn
@@ -408,9 +431,12 @@ void View::Draw(const World& world) {
         }
         TextBuilder{std::string{nccu::kGameHelpClosing}}
             .At(Vec2{pad + 24.0f, hy}).Size(16).Color(Colors::White).Draw();
+        // Audit D3 / SC 1.4.3: same fix as the pause-menu hint above —
+        // help overlay sits on Color{18,20,28,245}, even darker than
+        // the menu, so Colors::DarkGray was effectively invisible.
         TextBuilder{"ESC / E 返回選單"}
             .At(Vec2{W * 0.5f - 70.0f, H - pad - 28.0f})
-            .Size(14).Color(Colors::DarkGray).Draw();
+            .Size(14).Color(Color{180, 180, 180, 255}).Draw();
     }
 }
 

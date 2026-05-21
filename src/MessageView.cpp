@@ -1,4 +1,5 @@
 #include "MessageView.h"
+#include "ReducedMotion.h"
 #include "gfx/IRenderer.h"
 #include "gfx/Rect.h"
 #include "gfx/Vec2.h"
@@ -81,14 +82,19 @@ std::vector<std::string> WrapCjk(const std::string& s, float maxWidth) {
 }  // namespace
 
 void DrawHudMessage(IRenderer& r, const std::string& message,
-                    float age, float screenW, float screenH) {
+                    float age, float screenW, float screenH,
+                    bool reducedMotion) {
     if (message.empty() || age >= kHudTtl) return;  // nothing to show
 
     // Lifetime → alpha. Hold opaque, then ramp 1→0 across the final
     // kHudFade seconds — the raylib-extras Timer idiom (a countdown
     // remaining = lifetime - elapsed, gone at <= 0) recast as a fade.
+    // Audit D8 / SC 2.3.3: HudToastFadeT collapses the fade to a hard
+    // cut when reducedMotion is true (holds opaque until TTL boundary,
+    // then DrawHudMessage's early-return above hides the toast in
+    // one frame).
     const float remaining = kHudTtl - age;
-    const float t = std::clamp(remaining / kHudFade, 0.0f, 1.0f);
+    const float t = HudToastFadeT(remaining, kHudFade, reducedMotion);
     const auto  a = static_cast<unsigned char>(t * 255.0f);
 
     const float maxTextW = screenW * 0.72f;
