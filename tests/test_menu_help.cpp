@@ -137,6 +137,23 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK_FALSE(nccu::kGameHelpClosing.empty());
     CHECK(cells(nccu::kGameHelpClosing) <= 24);
 
+    // Cycle 9.E (audit H3 / D11 / SC 2.2.1): pin the ESC-pauses-rain
+    // hint into the help text so a player can discover the pause-as-
+    // timing-extension affordance. The hint must live on a SINGLE line
+    // (the existing 控制 row already mentions ESC for the menu, so a
+    // line-by-line "contains both 'ESC' and '雨壓力'" assertion is
+    // tighter than two separate "contains X" checks across the whole
+    // array). A future copy-edit that rewrites the wording but keeps
+    // both tokens on one line still passes; only deleting the hint
+    // (or splitting it) fails.
+    bool sawEscRainHint = false;
+    for (std::string_view ln : nccu::kGameHelpLines) {
+        const bool hasEsc  = ln.find("ESC")    != std::string_view::npos;
+        const bool hasRain = ln.find("雨壓力") != std::string_view::npos;
+        if (hasEsc && hasRain) sawEscRainHint = true;
+    }
+    CHECK(sawEscRainHint);
+
     nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();

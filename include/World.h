@@ -104,6 +104,19 @@ public:
     // changes when on. Pure data — no raylib here.
     [[nodiscard]] bool ReducedMotion() const noexcept { return reducedMotion_; }
     void SetReducedMotion(bool v) noexcept { reducedMotion_ = v; }
+
+    // Cycle 9.E (audit M2 / D7 / SC 2.5.8): the "larger targets"
+    // accessibility profile. Default false; set true by either the ctor
+    // (when UMBRELLA_LARGE_TARGETS=1 is in the environment) or by a
+    // future pause-menu UI. Read by GameController::Update and
+    // ScriptInput::ResolvePlan to widen `kInteractReach` from 8 px to
+    // 16 px on every side of the player's E-probe — i.e. the effective
+    // talk-with-NPC box grows from 40x40 to 56x56. The MOVEMENT collider
+    // (frameColliders_) is intentionally unchanged: the player still
+    // cannot walk through an NPC; only the talk reach grows. Pure data
+    // — no raylib here. Mirrors the same shape as ReducedMotion above.
+    [[nodiscard]] bool LargeTargets() const noexcept { return largeTargets_; }
+    void SetLargeTargets(bool v) noexcept { largeTargets_ = v; }
     [[nodiscard]] AppAction PendingAppAction() const noexcept {
         return pendingAppAction_;
     }
@@ -120,6 +133,17 @@ public:
     }
     void TickHud(float dt) noexcept {
         if (!hudMessage_.empty()) hudAge_ += dt;
+    }
+    // Cycle 9.E (audit H2 / D5 / SC 2.2.2): force-expire the on-screen
+    // HUD toast NOW. Used by the Backspace skip-toast input path so an
+    // auto-updating banner is dismissable on demand (SC 2.2.2 expects
+    // the player to be able to pause/stop/hide auto-updating content).
+    // Snapping hudAge_ to kHudTtl is the same boundary `HudExpired()`
+    // already gates on and that `MessageView::DrawHudMessage` already
+    // early-returns above, so no rendering / harness contract changes —
+    // the next View pass simply paints nothing. Pure data; no raylib.
+    void DismissHud() noexcept {
+        if (!hudMessage_.empty()) hudAge_ = kHudTtl;
     }
     [[nodiscard]] const std::string& HudMessage() const noexcept { return hudMessage_; }
     [[nodiscard]] float              HudAge()     const noexcept { return hudAge_; }
@@ -169,6 +193,7 @@ private:
     int                         menuCursor_{0};
     bool                        helpOpen_{false};
     bool                        reducedMotion_{false};
+    bool                        largeTargets_{false};
     AppAction                   pendingAppAction_{AppAction::None};
 };
 

@@ -5,6 +5,129 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.E.2: three more a11y fixes — dialog skip ergonomics + rain pause hint + large-targets profile
+
+Second wave of small fixes from the WCAG baseline audit. Picked
+the remaining items that didn't need new UI (H2 / H3 (a) only / M2),
+deferring H1 UiScale / B2 KeyBindings / L1 Locale as separate
+cycles because each is ≥100 LOC structural work.
+
+### What
+- **H2 — dialog hold-E + Backspace toast skip** (HIGH per SC 2.2.2).
+  - `src/GameController.cpp:262` E was edge-triggered only —
+    long-multiline dialogue forced mash-tapping. Added an
+    `eHoldMs_` accumulator and an `eAutoAdvanceCooldown_` so
+    holding E for ≥300 ms auto-advances pages on a 4-frame
+    guard (≈15 pages/sec). Tap path unchanged; the existing
+    `IsPressed` branch still fires on every fresh press.
+  - Toast: `World::DismissHud()` helper added next to the
+    9.B `HudExpired()` accessor. `GameController` checks
+    `Key::Backspace` (newly listed in `include/gfx/Key.h`
+    + `src/ScriptInput.cpp` parser) before `world_.TickHud(dt)`
+    in the main update loop; if pressed and a toast is
+    visible, the toast force-expires by jumping `hudAge_` to
+    `kHudTtl`. The fade-out then renders for one frame and
+    the next frame is clean.
+  - `tests/test_dialog_skip.cpp` (NEW, 200 lines, 5 SUBCASEs
+    across 2 TEST_CASEs): pins tap-path preservation, hold
+    threshold (300 ms), release resets timer, Backspace
+    dismisses, no-op without a toast, Backspace gating only
+    affects the toast path.
+- **H3 (a) — help overlay rain-pause line** (HIGH per SC 2.2.1
+  Level A).
+  - `kGameHelpLines` (now `std::array<…, 15>`) gained
+    `"ESC 暫停會凍結雨壓力計。"`. The game already pauses the
+    rain accrual when the menu is open (`GameController` early-
+    returns before `ApplyRain`), so this is a documentation
+    fix: surface the pause-stops-rain behaviour to players who
+    need to step away.
+  - `include/gfx/Font.h::UiLiteralChars()` updated so the new
+    CJK characters (暫停凍結壓力計) get baked into the font
+    atlas — otherwise they would render as tofu.
+  - `tests/test_menu_help.cpp` gained 15 lines asserting that a
+    SINGLE help line contains both "ESC" and "雨壓力" — a
+    sharper check than two separate array-wide substring scans
+    (the existing operations row also references ESC).
+  - **(b) deferred**: the audit also suggested a pause-menu
+    `降低雨速 x0.5` toggle. That requires new menu rows + a
+    `Player::SetRainScale(float)`-style setter; left for a
+    follow-up. Engine plumbing for accessibility settings is
+    already in place (see M3 / M2), so the work is just UI.
+- **M2 — large-targets accessibility profile** (MEDIUM per SC
+  2.5.8).
+  - `World::LargeTargets()` + `SetLargeTargets(bool)` follow
+    the same pattern as 9.E.1's `ReducedMotion()` —
+    `World::reducedMotion_` and `largeTargets_` share the env-
+    var ctor block (`UMBRELLA_LARGE_TARGETS=1`).
+  - `kInteractReach` now reads `world_.LargeTargets() ? 16.0f : 8.0f`
+    at all three call sites: `src/GameController.cpp:447`
+    (live play) + `src/ScriptInput.cpp:302,352` (harness).
+    Movement collider untouched — only talk-reach grows.
+    Effective interaction probe doubles from 40×40 to 56×56
+    when the flag is set.
+  - `tests/test_large_targets.cpp` (NEW, 100 lines, 6 SUBCASEs
+    across 2 TEST_CASEs): default false, setter, env-var
+    path, reach value at each site, no leakage into the
+    movement collider, harness/live parity.
+
+### Why
+H2 cuts the dialog-tap-fatigue the user complained about
+indirectly — the diagnosis listed "玩家狂按 E" alongside the
+missing chapter-toast and missing exit cue. H3 (a) closes an
+SC 2.2.1 Level A gap (rain is a < 20 h timed pressure; needs
+user-controllable pause) without any new UI — the pause that
+freezes rain already exists, the player just didn't know.
+M2 lays the engine plumbing for tremor-affected users to hit
+targets more easily; the env-var path lets accessibility
+playtesting begin before the pause-menu UI lands.
+
+### Gameplay impact
+- 342/342 doctest cases pass (was 338 → +4 new cases,
+  4-something assertions; total assertions ticked up alongside).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- `dialog_lint.py` exit 0.
+- `ending_a/b/c` smoke runs all rc=0 (a→結局 A, b→結局 B,
+  c→結局 C). Determinism re-verified at byte level: same
+  script ⇒ same state.jsonl md5 (`914345b8…25522054` stable
+  for ending_a re-run pair).
+- Defaults preserved: `UMBRELLA_LARGE_TARGETS` unset ⇒ reach
+  stays 8.0; existing scripts never press Backspace ⇒ toast
+  path unchanged; existing scripts never hold E ≥ 300 ms ⇒
+  auto-advance never fires.
+
+### Revert
+Each item is independent and additive:
+- H2: drop `eHoldMs_` / `eAutoAdvanceCooldown_` from
+  `GameController.h` + their use-sites in `GameController.cpp`,
+  drop the Backspace dismiss site, drop `DismissHud()` from
+  `World`, drop `Backspace` from `Key.h` + the `ScriptInput`
+  parser line; `git rm tests/test_dialog_skip.cpp`.
+- H3 (a): drop the new help line + restore array size 14;
+  remove the added CJK chars from `UiLiteralChars()`; revert
+  the new `test_menu_help.cpp` assertions.
+- M2: drop `largeTargets_` field + accessors from
+  `World.h/.cpp`, drop the env-var read, restore `8.0f`
+  literals at all three call sites; `git rm
+  tests/test_large_targets.cpp`.
+
+### Follow-ups still open (Cycle 9.E.3+)
+- H1 (D1) — `UiScale` multiplier + pause-menu `字級 +/-` UI
+  (~120 LOC; the biggest single-cycle a11y win left)
+- H3 (b) — pause-menu `降低雨速` toggle wiring +
+  `Player::SetRainScale(float)` plumbing
+- M3 follow-up — pause-menu toggle calling
+  `SetReducedMotion(bool)` (engine done in 9.E.1)
+- M2 follow-up — pause-menu toggle calling
+  `SetLargeTargets(bool)` (engine done in this cycle)
+- B2 (D4) — `Action` enum + `KeyBindings` table + remap UI
+  (~200 LOC; structural)
+- L1 (D10) — `Locale.h/.cpp` for ~15 hardcoded UI-chrome
+  CJK strings (~120 LOC)
+- L2 (D9) — live-mode `state.jsonl` FIFO for screen-reader
+  sidecars (~30 LOC)
+
+---
+
 ## 2026-05-21 — Cycle 9.E.1: three small a11y fixes — pause-menu contrast + rain HUD colour redundancy + reduced-motion engine flag
 
 First wave of fixes from the Cycle 9.D accessibility baseline audit
