@@ -5,6 +5,7 @@
 #include "DialogOpener.h"
 #include "EndingGate.h"
 #include "ChapterGate.h"
+#include "ChapterToast.h"
 #include "Chapter2Quest.h"
 #include "Chapter3Quest.h"
 #include "Chapter4Quest.h"
@@ -143,6 +144,15 @@ void GameController::Update() {
                 // for the chapter ahead" decision (the loop's tension).
                 ip->ClearConsumables();
             }
+            // H3 (cycle9): the previous chapter's clear toast lands the
+            // same frame as the FSM hop; this hint overwrites it ~1
+            // frame later so the player sees BOTH (the snap, then the
+            // direction) on the same arrival. Reset the south-band latch
+            // so the exit toast fires once per visit (and again on
+            // re-entry, never twice in a row).
+            EventBus::Instance().Publish(
+                Event{EventType::ShowMessage, kInterludeArrivalHint});
+            interludeExitZoneLatched_ = false;
         }
         // Ch4 entry (chapter4.md L6「傘再度失蹤」): the player walks
         // out of 集英樓 with no umbrella. Reset both the generic
@@ -508,7 +518,18 @@ void GameController::Update() {
         world_.Semester().Current() == SemesterState::Interlude_Market) {
         const Vec2 c{player->GetPosition().x + playerSize_.x * 0.5f,
                      player->GetPosition().y + playerSize_.y * 0.5f};
-        if (InInterludeExitZone(c)) player->SetFlag("Flag_LeaveInterlude");
+        if (InInterludeExitZone(c)) {
+            // H3 (cycle9): publish "準備離開市集" the FIRST frame the
+            // player steps into the south band on this visit; stay silent
+            // thereafter. Helper owns the latch flip + Publish so the
+            // production path and the regression test exercise the same
+            // code (the test directly drives MaybeAnnounceInterludeExit
+            // against its own latch). The latch is reset in the
+            // Interlude-arrival branch above, so a future re-visit
+            // reissues the cue exactly once.
+            MaybeAnnounceInterludeExit(interludeExitZoneLatched_);
+            player->SetFlag("Flag_LeaveInterlude");
+        }
     }
     if (player) {
         // S5c-2: lift Flag_Ch2Cleared only once 學霸 is recovered AND

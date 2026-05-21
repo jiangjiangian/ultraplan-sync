@@ -1,5 +1,6 @@
 #ifndef EVENT_WIRING_H_
 #define EVENT_WIRING_H_
+#include "ChapterToast.h"
 #include "EventBus.h"
 #include "SemesterStateMachine.h"
 #include "World.h"
@@ -52,6 +53,12 @@ inline void WireStateTransitionSubscribers(
                 // the later Ch2/Ch3 gates re-seed it for markets 2 & 3.
                 semester.SetInterludeReturnTo(SemesterState::Chapter2_Midterms);
                 semester.Transition(SemesterState::Interlude_Market);
+                // H2: cycle9 — the Ch1 -> Interlude hop fires here, not
+                // in ChapterGate (chapter1 has no Flag_ClearChapter1 stub).
+                // Without the toast the only visible change in state.jsonl
+                // was the umbrella claim text, masking the chapter snap.
+                nccu::PublishChapterTransitionToast(
+                    SemesterState::Interlude_Market);
             }
             // S5d-2 Ch3 clear: the 啦啦隊's TrueUmbrella, reclaimed from
             // the 體育館後台道具箱. Same shape as the Ch1 sibling-if
@@ -64,6 +71,8 @@ inline void WireStateTransitionSubscribers(
                 semester.Current() == SemesterState::Chapter3_SportsDay) {
                 semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
                 semester.Transition(SemesterState::Interlude_Market);
+                nccu::PublishChapterTransitionToast(
+                    SemesterState::Interlude_Market);
             }
         });
 }

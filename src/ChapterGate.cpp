@@ -1,4 +1,5 @@
 #include "ChapterGate.h"
+#include "ChapterToast.h"
 #include "Player.h"
 #include "SemesterStateMachine.h"
 #include "SemesterState.h"
@@ -16,6 +17,10 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
         player.HasFlag("Flag_Ch2Cleared")) {
         semester.SetInterludeReturnTo(SemesterState::Chapter3_SportsDay);
         semester.Transition(SemesterState::Interlude_Market);
+        // H2: announce the destination so the player sees the FSM move.
+        // Publish AFTER Transition() so a subscriber that reacts to the
+        // text (HUD mirror) reads the already-current state if it asks.
+        PublishChapterTransitionToast(SemesterState::Interlude_Market);
         dialog.Close();
     }
 
@@ -25,6 +30,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
         player.HasFlag("Flag_Ch3Cleared")) {
         semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
         semester.Transition(SemesterState::Interlude_Market);
+        PublishChapterTransitionToast(SemesterState::Interlude_Market);
         dialog.Close();
     }
 
@@ -36,7 +42,9 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
     if (semester.Current() == SemesterState::Interlude_Market &&
         player.HasFlag("Flag_LeaveInterlude")) {
         player.ClearFlag("Flag_LeaveInterlude");
-        semester.Transition(semester.InterludeReturnTo());
+        const SemesterState target = semester.InterludeReturnTo();
+        semester.Transition(target);
+        PublishChapterTransitionToast(target);
         dialog.Close();
     }
 }
