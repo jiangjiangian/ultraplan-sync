@@ -5,6 +5,131 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.G: two HUD channels — fix the 9.F CRITICAL toast-clobber regression (audit Plan B)
+
+The 9.F diagnostic caught a CRITICAL regression: every chapter-clear
+toast (`✓ 章節清關 — 進入幕間市集`) was being overwritten within one
+frame (~0.02 s) by the IL arrival hint published on the very next
+frame. The 9.B TrueUmbrella publish-order swap fixed the
+umbrella ⇆ chapter collision but left the arrival-hint ⇆ chapter
+collision intact. `World::SetHudMessage` was a single-slot HUD;
+with one slot and three competing publishes per transition the
+last writer always won. The accessibility audit recommended **two
+HUD channels** ("Plan B") back in 9.B; we picked Plan A in 9.B;
+Plan A is now demonstrably broken; this cycle promotes Plan B.
+
+### What
+- **New `include/HudSlot.h`** introduces `enum class HudSlot { Top,
+  Bottom }`. Top is reserved for chapter / ending major-progress
+  toasts; Bottom is everything else (pickup, karma, arrival
+  hint).
+- **`include/EventBus.h`** — `Event` struct gains
+  `nccu::HudSlot slot = nccu::HudSlot::Bottom;` so every existing
+  publisher keeps its behaviour byte-identical (`HudSlot::Bottom`
+  default) and only chapter / ending publishers opt into Top.
+  Ignored for non-`ShowMessage` event types.
+- **`include/World.h`** — split single-slot HUD into:
+  - `topHudMessage_` + `topHudAge_`
+  - `bottomHudMessage_` + `bottomHudAge_`
+  - Slot-aware accessors `HudMessage(slot)`, `HudExpired(slot)`,
+    `SetHudMessage(slot, text)`, `DismissHud(slot)`. Overloads
+    keep `SetHudMessage(text)` / `HudMessage()` / `HudExpired()`
+    pointing at Bottom so call sites that don't care about
+    slotting compile unchanged.
+  - `Tick(dt)` advances both ages; `ReducedMotion` gates both
+    fade-outs.
+- **`include/MessageView.h` / `src/MessageView.cpp`** —
+  `DrawHudMessage(..., slot)` paints the named slot. Bottom
+  banner Y offset +28 px so the two banners read as two stacked
+  rows without visual overlap. Both fade independently.
+- **`src/View.cpp`** calls `DrawHudMessage` twice per frame, once
+  per slot, inside the HUD render block. Position math derived
+  from the existing MessageView constants.
+- **`include/ChapterToast.h::PublishChapterTransitionToast()`**
+  now publishes `Event{ShowMessage, msg, HudSlot::Top}`. Every
+  existing call site (`include/EventWiring.h` Ch1/Ch3
+  UmbrellaClaimed subscribers, `src/ChapterGate.cpp` Ch2/Ch3 /
+  Interlude transitions, `src/EndingGate.cpp` Ending A/B/C)
+  inherits the routing for free.
+- **`src/Harness.cpp:175-186`** — state.jsonl `hud` field split
+  into two fields: `top_hud` and `bottom_hud`. Each emits `""`
+  when its slot is expired (preserving the 9.B L9 reset
+  behaviour per slot). Downstream tooling that reads state.jsonl
+  must migrate from `hud` → `top_hud + bottom_hud`.
+- **`tests/test_two_hud_channels.cpp` (NEW)** — 5 SUBCASEs:
+  Top publish leaves Bottom untouched, simultaneous Top + Bottom
+  coexist, Ch→IL replay sequence still shows both toasts on the
+  next frame, Top fade doesn't leak to Bottom, dismissing one
+  slot leaves the other.
+- **`tests/test_chapter_transitions.cpp`** updated to assert
+  `world.HudMessage(HudSlot::Top)` against the chapter / ending
+  toasts. Default-slot assertions (Bottom) preserved for the
+  karma / pickup paths.
+
+### Why
+The diagnosis is unambiguous: at frame 1765 of every
+`ending_a.txt` run there are three `Publish` calls within two
+frames (UmbrellaClaimed, the chapter-clear sub publish, the
+TrueUmbrella ShowMessage, the IL arrival hint). With a
+single-slot HUD the last call wins; the player saw whatever
+came last, which was the arrival hint. With two slots the
+player now sees the chapter-clear on top AND the pickup line /
+arrival hint on the bottom simultaneously.
+
+### Verified (live state.jsonl evidence)
+A re-run of `ending_a.txt` against this commit's binary records:
+```
+frame 1764: "top_hud":"", "bottom_hud":"業力 +5"
+frame 1765: "top_hud":"✓ 章節清關 — 進入幕間市集",
+            "bottom_hud":"你撿到了 TrueUmbrella，雨停了。"
+```
+The chapter-clear toast is no longer extinguished; both
+messages coexist for their TTLs.
+
+### Gameplay impact
+- 353/353 doctest cases pass (was 346 → +7 new cases, ~4900
+  total assertions).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- dialog_lint exit 0.
+- `ending_a` smoke rc=0, frames=7490, terminates with
+  `top_hud="✓ 抵達結局"` + `bottom_hud=""`.
+- state.jsonl is now larger by one field per frame; re-running
+  the same script still produces deterministic byte-identical
+  files (the new field is fully determined by the existing
+  inputs).
+- Two-banner layout fits the existing 800×450 viewport with no
+  HUD overlap.
+
+### Revert
+- Restore the single-slot `SetHudMessage(text)` /
+  `HudMessage()` / `HudExpired()` in `include/World.h`; drop
+  the slot-aware overloads + the second message_/age_ pair.
+- Drop the `slot` field from `Event` in `include/EventBus.h`.
+- Restore the single `DrawHudMessage(...)` call in
+  `src/View.cpp`.
+- Revert `include/ChapterToast.h` to publish without the slot
+  argument.
+- Restore `state.jsonl` `hud` field in `src/Harness.cpp` (drop
+  the `top_hud` / `bottom_hud` split).
+- `git rm include/HudSlot.h tests/test_two_hud_channels.cpp`.
+- Revert the `HudSlot::Top` assertions in
+  `tests/test_chapter_transitions.cpp` back to plain
+  `HudMessage()`.
+
+### Open follow-ups for the next cycle (still on the diagnosis backlog)
+- Cold-senior script `.claude/scripts/ending_a_cold.txt` to
+  exercise the 9.C M7 ripple.
+- Rain-stress script to reach the `!!` critical tier
+  (the 9.E.1 M1 prefix's last branch is otherwise unverifiable).
+- L8 same-frame respawn race-audit (the diagnosis confirmed
+  the lag is user-visible).
+- Settings persistence (`prefs.json`) so the pause-menu toggles
+  survive a restart.
+- H1 (D1) UiScale multiplier — biggest remaining a11y win.
+- B2 (D4) keyboard remap — structural.
+
+---
+
 ## 2026-05-21 — Cycle 9.F: pause-menu UI for a11y toggles + post-iteration diagnosis
 
 Two parallel deliverables: the user-visible toggles for the two

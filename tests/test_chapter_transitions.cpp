@@ -5,6 +5,7 @@
 #include "EndingGate.h"
 #include "EventBus.h"
 #include "EventWiring.h"
+#include "HudSlot.h"
 #include "Player.h"
 #include "SemesterStateMachine.h"
 #include "TrueUmbrella.h"
@@ -214,18 +215,22 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
     }
 }
 
-TEST_CASE("TrueUmbrella::beClaimed publishes ShowMessage BEFORE UmbrellaClaimed") {
-    // Cycle 9.B follow-up to 9.A.2. Both publishes feed the same
+TEST_CASE("TrueUmbrella::beClaimed: chapter toast Top, pickup line Bottom") {
+    // Cycle 9.G follow-up to 9.B / 9.A.2. Pre-9.G, both publishes fed a
     // single-slot HUD channel: the umbrella's own ShowMessage and the
     // chapter-clear ShowMessage emitted by the UmbrellaClaimed
     // subscriber (via PublishChapterTransitionToast). Whichever
-    // publishes LAST is what the player reads. The fix swapped the
-    // pair so the chapter-clear toast wins.
+    // published last was what the player saw — Plan A (9.B) swapped
+    // the order so chapter-clear won, but the umbrella pickup line
+    // became visible for 0 frames.
     //
-    // This SUBCASE pattern walks the live wiring: TrueUmbrella, the
-    // bus' UmbrellaClaimed subscriber (chapter-gate), and the HUD
-    // subscriber that mirrors ShowMessage into World. The end state of
-    // World.HudMessage() is the assertion.
+    // Plan B (cycle9f §B): chapter-clear publishes on HudSlot::Top;
+    // the umbrella pickup line stays on HudSlot::Bottom. Both bands
+    // are live at once, and BOTH lines are visible. This SUBCASE walks
+    // the live wiring (TrueUmbrella → bus' UmbrellaClaimed subscriber
+    // → chapter-gate → HUD subscriber) and asserts each slot carries
+    // its expected text — the regression net for re-collapsing the two
+    // channels into one.
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
     std::string name;
@@ -241,24 +246,30 @@ TEST_CASE("TrueUmbrella::beClaimed publishes ShowMessage BEFORE UmbrellaClaimed"
     Player player{Vec2{0, 0}};
     umb.beClaimed(&player);
 
-    // After both publishes have dispatched, the HUD must carry the
-    // chapter-clear toast — NOT the umbrella string. A regression that
-    // re-swaps the publish order would leave the umbrella line stuck
-    // on screen (the original 9.A.2 bug surfaced exactly this way).
-    CHECK(w.HudMessage() == "✓ 章節清關 — 進入幕間市集");
+    // Two-channel post-conditions: Top carries the chapter-clear toast,
+    // Bottom carries the umbrella pickup text. Neither overwrites the
+    // other — a regression that re-merged the slots would surface as a
+    // missing line in one of the two channels.
+    CHECK(w.HudMessage(nccu::HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");
+    CHECK(w.HudMessage(nccu::HudSlot::Bottom).find("TrueUmbrella")
+          != std::string::npos);
     CHECK(w.Semester().Current() == SemesterState::Interlude_Market);
-    // The umbrella line briefly transited through the channel but the
-    // chapter toast overwrote it; the player saw the chapter banner.
-    CHECK(w.HudMessage().find("TrueUmbrella") == std::string::npos);
+    // Cross-channel non-leak: each slot is exactly one thing.
+    CHECK(w.HudMessage(nccu::HudSlot::Top).find("TrueUmbrella")
+          == std::string::npos);
+    CHECK(w.HudMessage(nccu::HudSlot::Bottom).find("章節清關")
+          == std::string::npos);
 
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
     // Combined check: when GameController-style wiring is in place, the
-    // ShowMessage from a transition arrives at World.HudMessage() — the
-    // surface the View reads. The diagnostic playtest read this exact
-    // field and saw stale Ch1-era text on every chapter change.
+    // ShowMessage from a transition arrives at the World's Top HUD slot
+    // — the surface the View reads. The diagnostic playtest read this
+    // exact field and saw stale Ch1-era text on every chapter change.
+    // Cycle 9.G: chapter toasts route to HudSlot::Top so they survive
+    // a same-frame Bottom-slot ShowMessage (arrival hint, karma, pickup).
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
@@ -270,7 +281,9 @@ TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
     p.SetFlag("Flag_Ch2Cleared");
     nccu::CheckChapterGates(p, m, d);
 
-    CHECK(w.HudMessage() == "✓ 章節清關 — 進入幕間市集");
+    CHECK(w.HudMessage(nccu::HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");
+    // Bottom slot stays empty — no Bottom publisher fired in this path.
+    CHECK(w.HudMessage(nccu::HudSlot::Bottom).empty());
 
     EventBus::Instance().Clear();
 }

@@ -1,6 +1,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 #include "GameObject.h"
+#include "HudSlot.h"
 #include "MessageView.h"
 #include "Player.h"
 #include "SemesterState.h"
@@ -127,41 +128,99 @@ public:
     void RequestAppAction(AppAction a) noexcept { pendingAppAction_ = a; }
     void ClearAppAction() noexcept { pendingAppAction_ = AppAction::None; }
 
-    // Transient on-screen notice driven by EventType::ShowMessage. The
-    // EventBus subscriber (wired by GameController) calls SetHudMessage;
-    // GameController::Update ages it via TickHud; the View renders it as
-    // a fading banner. Pure data — no raylib, no timing source here.
+    // Transient on-screen notice driven by EventType::ShowMessage.
+    //
+    // Cycle 9.G — TWO independent channels:
+    //   HudSlot::Top    -> chapter / ending major-progress toasts
+    //                      (ChapterToast / EndingGate publish here).
+    //   HudSlot::Bottom -> everything else (pickup / karma / arrival
+    //                      hint / vendor / exit prep). DEFAULT slot so
+    //                      every pre-9.G publisher stays behaviour-
+    //                      identical on the Bottom channel.
+    //
+    // Before 9.G, a single hudMessage_ slot meant the chapter-clear
+    // toast at every Ch->IL transition lived 0.02 s (1 frame) — the IL
+    // arrival hint published right after overwrote it (cycle9f §B).
+    // Plan A (publish-order swap from 9.B) only solved the TrueUmbrella
+    // vs chapter-clear race; the IL arrival hint clobber stayed live
+    // until this Plan B split. Both channels age independently via
+    // TickHud(dt); the View renders both with their own fade. Pure
+    // data — no raylib, no timing source here.
+    void SetHudMessage(HudSlot slot, std::string text) {
+        if (slot == HudSlot::Top) {
+            topHudMessage_ = std::move(text);
+            topHudAge_     = 0.0f;
+        } else {
+            bottomHudMessage_ = std::move(text);
+            bottomHudAge_     = 0.0f;
+        }
+    }
+    // Backward-compat overload — default channel is Bottom so call sites
+    // that pre-date 9.G (tests, ad-hoc SetHudMessage in restart probes)
+    // keep landing on the Bottom slot exactly as they did pre-split.
     void SetHudMessage(std::string text) {
-        hudMessage_ = std::move(text);
-        hudAge_     = 0.0f;
+        SetHudMessage(HudSlot::Bottom, std::move(text));
     }
     void TickHud(float dt) noexcept {
-        if (!hudMessage_.empty()) hudAge_ += dt;
+        if (!topHudMessage_.empty())    topHudAge_    += dt;
+        if (!bottomHudMessage_.empty()) bottomHudAge_ += dt;
     }
     // Cycle 9.E (audit H2 / D5 / SC 2.2.2): force-expire the on-screen
     // HUD toast NOW. Used by the Backspace skip-toast input path so an
     // auto-updating banner is dismissable on demand (SC 2.2.2 expects
     // the player to be able to pause/stop/hide auto-updating content).
-    // Snapping hudAge_ to kHudTtl is the same boundary `HudExpired()`
-    // already gates on and that `MessageView::DrawHudMessage` already
-    // early-returns above, so no rendering / harness contract changes —
-    // the next View pass simply paints nothing. Pure data; no raylib.
-    void DismissHud() noexcept {
-        if (!hudMessage_.empty()) hudAge_ = kHudTtl;
+    // Snapping hudAge_ to kHudTtl is the same boundary HudExpired()
+    // gates on and that DrawHudMessage early-returns above, so no
+    // rendering / harness contract changes — the next View pass simply
+    // paints nothing for that slot. Pure data; no raylib.
+    //
+    // Cycle 9.G: dismisses BOTH slots in one call so the SC 2.2.2 skip-
+    // toast input stays a single keystroke regardless of how many
+    // channels are live. A per-slot DismissHud(slot) overload kept
+    // around so a future caller can dismiss only one if needed.
+    void DismissHud(HudSlot slot) noexcept {
+        if (slot == HudSlot::Top) {
+            if (!topHudMessage_.empty())    topHudAge_    = kHudTtl;
+        } else {
+            if (!bottomHudMessage_.empty()) bottomHudAge_ = kHudTtl;
+        }
     }
-    [[nodiscard]] const std::string& HudMessage() const noexcept { return hudMessage_; }
-    [[nodiscard]] float              HudAge()     const noexcept { return hudAge_; }
+    void DismissHud() noexcept {
+        DismissHud(HudSlot::Top);
+        DismissHud(HudSlot::Bottom);
+    }
+    [[nodiscard]] const std::string& HudMessage(HudSlot slot) const noexcept {
+        return slot == HudSlot::Top ? topHudMessage_ : bottomHudMessage_;
+    }
+    [[nodiscard]] float HudAge(HudSlot slot) const noexcept {
+        return slot == HudSlot::Top ? topHudAge_ : bottomHudAge_;
+    }
+    // Default-slot accessors (Bottom) — keep pre-9.G test code compiling
+    // unchanged. Production callers (View, Harness, GameController)
+    // pass the slot explicitly so they read BOTH channels.
+    [[nodiscard]] const std::string& HudMessage() const noexcept {
+        return bottomHudMessage_;
+    }
+    [[nodiscard]] float HudAge() const noexcept { return bottomHudAge_; }
     // Cycle 9.B L9: an aged-out toast (age >= kHudTtl) is invisible
     // (MessageView's DrawHudMessage already early-returns above the
-    // TTL) but its text is still held by hudMessage_ so the View's
-    // fade-out animation contract stays intact (no abrupt clear).
-    // HudExpired() lets non-View consumers — primarily the autoplay
-    // harness writing state.jsonl — emit an empty hud line for
-    // expired toasts instead of echoing a string that hasn't been
-    // visible on screen for seconds. Pure read-only predicate; no
-    // state mutation, no dependency on rendering.
+    // TTL) but its text is still held so the View's fade-out animation
+    // contract stays intact (no abrupt clear). HudExpired() lets non-
+    // View consumers — primarily the autoplay harness writing
+    // state.jsonl — emit an empty hud line for expired toasts instead
+    // of echoing a string that hasn't been visible on screen for
+    // seconds. Pure read-only predicate; no state mutation, no
+    // dependency on rendering.
+    [[nodiscard]] bool HudExpired(HudSlot slot) const noexcept {
+        if (slot == HudSlot::Top) {
+            return !topHudMessage_.empty()    && topHudAge_    >= kHudTtl;
+        }
+        return     !bottomHudMessage_.empty() && bottomHudAge_ >= kHudTtl;
+    }
+    // Default-slot HudExpired() — Bottom channel, pre-9.G semantic
+    // (test_hud_reset's existing assertions key off this).
     [[nodiscard]] bool HudExpired() const noexcept {
-        return !hudMessage_.empty() && hudAge_ >= kHudTtl;
+        return HudExpired(HudSlot::Bottom);
     }
 
     // Make the chapter-NPC roster follow the semester FSM. Removes ONLY
@@ -189,8 +248,13 @@ private:
     BuildingTracker             tracker_;
     DialogState                 dialog_;
     std::string                 currentBuildingName_;
-    std::string                 hudMessage_;
-    float                       hudAge_{0.0f};
+    // Cycle 9.G — two independent HUD channels (see SetHudMessage above
+    // for the why). Top: chapter/ending major-progress toasts. Bottom:
+    // every other ShowMessage. Each ages independently via TickHud.
+    std::string                 topHudMessage_;
+    float                       topHudAge_{0.0f};
+    std::string                 bottomHudMessage_;
+    float                       bottomHudAge_{0.0f};
     CollisionMask               terrainMask_;
     bool                        inventoryOpen_{false};
     bool                        menuOpen_{false};

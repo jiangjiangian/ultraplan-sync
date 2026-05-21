@@ -47,10 +47,19 @@ namespace nccu {
 // caller protects against a no-op transition. Empty toast text (should
 // never happen post-switch coverage) becomes a no-op so a future enum
 // addition cannot accidentally emit a blank banner.
+//
+// Cycle 9.G: chapter / ending transition toasts go on HudSlot::Top so
+// the same-frame Bottom-slot publishes (TrueUmbrella pickup line, IL
+// arrival hint, karma toasts) coexist with — instead of clobbering —
+// the chapter banner. Before the split, the arrival hint published one
+// frame after the chapter toast and overwrote the same single slot;
+// the chapter line was visible for 0.02 s (cycle9f-post-iteration-
+// diagnosis §B).
 inline void PublishChapterTransitionToast(SemesterState target) {
     const std::string msg = ChapterTransitionToast(target);
     if (msg.empty()) return;
-    EventBus::Instance().Publish(Event{EventType::ShowMessage, msg});
+    EventBus::Instance().Publish(
+        Event{EventType::ShowMessage, msg, nccu::HudSlot::Top});
 }
 
 // H3 (Cycle 9): the Interlude's south-band exit zone is a silent trigger

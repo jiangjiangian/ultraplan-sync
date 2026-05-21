@@ -86,9 +86,16 @@ inline void WireStateTransitionSubscribers(
 // WireStateTransitionSubscribers captures currentBuildingName: the
 // caller (GameController) must outlive the subscription OR call
 // EventBus::Clear() first — GameController's dtor does the latter.
+//
+// Cycle 9.G: the event's `slot` field routes the text to the Top or
+// Bottom HUD channel on the World (see HudSlot.h). Default Bottom for
+// every pre-9.G publisher (handler bodies don't have to change), Top
+// only for the three ChapterToast / EndingGate sites that explicitly
+// opt in. Same-frame Top + Bottom publishes therefore coexist instead
+// of clobbering each other.
 inline void WireHudMessageSubscriber(EventBus& bus, World& world) {
     bus.Subscribe(EventType::ShowMessage,
-        [&world](const Event& e) { world.SetHudMessage(e.text); });
+        [&world](const Event& e) { world.SetHudMessage(e.slot, e.text); });
 }
 
 // Cycle 9.B H5: turn the previously-dead KarmaChanged channel into a
