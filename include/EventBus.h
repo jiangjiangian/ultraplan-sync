@@ -1,5 +1,6 @@
 #ifndef EVENT_BUS_H_
 #define EVENT_BUS_H_
+#include "HudSlot.h"
 #include <cstdint>
 #include <functional>
 #include <shared_mutex>
@@ -18,9 +19,17 @@ enum class EventType {
     PickupAcquired,
 };
 
+// Cycle 9.G — `slot` routes a ShowMessage to one of two independent HUD
+// channels so a chapter-clear / ending toast can coexist with a regular
+// pickup / karma / arrival-hint toast on the same frame (was: single
+// slot; later publish clobbered the earlier — cycle9f §B). Default
+// HudSlot::Bottom keeps every existing publisher's behaviour byte-
+// identical; only the three ChapterToast / EndingGate sites opt in to
+// HudSlot::Top. Ignored for non-ShowMessage event types.
 struct Event {
-    EventType   type;
-    std::string text;
+    EventType        type;
+    std::string      text;
+    nccu::HudSlot    slot = nccu::HudSlot::Bottom;
 };
 
 class EventBus {

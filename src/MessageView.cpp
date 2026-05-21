@@ -83,7 +83,7 @@ std::vector<std::string> WrapCjk(const std::string& s, float maxWidth) {
 
 void DrawHudMessage(IRenderer& r, const std::string& message,
                     float age, float screenW, float screenH,
-                    bool reducedMotion) {
+                    bool reducedMotion, HudSlot slot) {
     if (message.empty() || age >= kHudTtl) return;  // nothing to show
 
     // Lifetime → alpha. Hold opaque, then ramp 1→0 across the final
@@ -100,8 +100,17 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     const float maxTextW = screenW * 0.72f;
     const std::vector<std::string> lines = WrapCjk(message, maxTextW);
 
-    // Banner box sized to the widest wrapped line, centred horizontally,
-    // anchored kMarginB above the screen bottom.
+    // Banner box sized to the widest wrapped line, centred horizontally.
+    // Cycle 9.G — vertical anchor depends on slot:
+    //   Bottom -> screen-bottom - kMarginB - boxH (pre-9.G position).
+    //   Top    -> bottomBaseline - kSlotGap - boxH (a fixed visual band
+    //             above the bottom slot, sized for a 1-line bottom toast
+    //             so the Top band is stable even when only Top is live).
+    // The gap is a layout constant rather than reading the live Bottom
+    // height: the View calls Top BEFORE Bottom and the two are pure
+    // functions of their own state, so coupling them would force a
+    // measurement pass. ~25-30 px between bands keeps both lines
+    // legible without overlap; the GUI manual-verify confirms it.
     float widest = 0.0f;
     for (const std::string& ln : lines) {
         float w = 0.0f;
@@ -119,7 +128,15 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     const float boxH = static_cast<float>(lines.size()) * kLineH +
                        kPadY * 2.0f;
     const float boxX = (screenW - boxW) * 0.5f;
-    const float boxY = screenH - kMarginB - boxH;
+    // Bottom-slot baseline: pre-9.G position. Top-slot floats above it
+    // by the fixed bottom-slot single-line height plus a 12 px gap.
+    const float bottomBaseline = screenH - kMarginB;
+    constexpr float kSlotGap   = 12.0f;
+    const float kSingleLineH   = kLineH + kPadY * 2.0f;  // 1-line tall
+    const float boxY =
+        slot == HudSlot::Top
+            ? bottomBaseline - kSingleLineH - kSlotGap - boxH
+            : bottomBaseline - boxH;
 
     // Backdrop carries the same alpha as the text so the whole toast
     // fades as one (mirrors DrawEndingCard's self-contained fade).

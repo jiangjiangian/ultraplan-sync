@@ -315,15 +315,28 @@ void View::Draw(const World& world) {
         }
     }
 
-    // Transient ShowMessage toast: above the world/HUD labels, BELOW the
+    // Transient ShowMessage toasts: above the world/HUD labels, BELOW the
     // dialog box — an open conversation takes visual precedence, matching
     // the existing DrawDialog ordering. Suppressed during endings since
     // Draw already early-returned above for IsEndingState. Text flows
     // through the same IRenderer path → it picks up the CJK font (the
     // gfx Font fix), so Chinese cues render, not as `?`.
-    DrawHudMessage(renderer_, world.HudMessage(), world.HudAge(),
+    //
+    // Cycle 9.G — TWO independent channels are drawn each frame so a
+    // chapter-clear toast (Top) and a regular ShowMessage (Bottom) can
+    // coexist (cycle9f-post-iteration-diagnosis §B). Top is drawn
+    // FIRST so its painter order sits below Bottom on the z-layer —
+    // overlap is moot at the kSlotGap MessageView uses, but the
+    // ordering keeps Bottom (the more recent everyday toast) on top
+    // if a future layout shrinks the gap.
+    DrawHudMessage(renderer_, world.HudMessage(HudSlot::Top),
+                   world.HudAge(HudSlot::Top),
                    viewportSize_.x, viewportSize_.y,
-                   world.ReducedMotion());
+                   world.ReducedMotion(), HudSlot::Top);
+    DrawHudMessage(renderer_, world.HudMessage(HudSlot::Bottom),
+                   world.HudAge(HudSlot::Bottom),
+                   viewportSize_.x, viewportSize_.y,
+                   world.ReducedMotion(), HudSlot::Bottom);
 
     DrawDialog(renderer_, world.Dialog());
 
