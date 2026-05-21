@@ -5,6 +5,114 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.F: pause-menu UI for a11y toggles + post-iteration diagnosis
+
+Two parallel deliverables: the user-visible toggles for the two
+engine-side a11y flags shipped in 9.E.1/E.2, AND a fresh playtest
+diagnosis that catches what eight commits of UX work have actually
+made visible on screen.
+
+### A. Pause-menu UI wiring (raylib-gfx-uxui)
+- The pause menu's row list grew from 4 to 6 rows. New rows
+  「減少動畫 [開/關]」and「擴大目標 [開/關]」slot between
+  「說明」 and 「重新開始」 so destructive options (restart/quit)
+  stay farthest from the cursor's default landing.
+- `src/View.cpp` pause-menu render: each toggle row paints its
+  label + a state suffix `[開]` / `[關]`. Colour follows 9.E.1
+  B1's `Color{180,180,180,255}` hint colour so all menu hint
+  text passes WCAG AA in the dark panel.
+- `src/GameController.cpp` pause-menu input: cursor range 0..3
+  → 0..5; Enter on the toggle rows calls
+  `world_.SetReducedMotion(!world_.ReducedMotion())` /
+  `SetLargeTargets(…)`. Cursor stays on the toggled row so the
+  player can flip it on/off without re-navigating.
+- `gfx/Font.h::UiLiteralChars()` gained the new CJK characters
+  (減/動/畫/擴/目/標/開/關) so the atlas renders them instead
+  of tofu.
+- `tests/test_pause_menu_toggle.cpp` (NEW): cursor range, Enter
+  on each toggle row mutates the World flag, repeated Enter
+  flips back, cursor doesn't drift on toggle. Existing
+  `tests/test_menu_help.cpp` lightly updated to reflect the new
+  6-row layout.
+- Deferred: persisted preferences (settings.json). Toggling
+  during a session takes effect immediately; restarting the
+  game drops back to env-var defaults. A follow-up PR can add
+  a `~/.config/尋傘記/prefs.json` round-trip.
+
+### B. Post-iteration diagnosis (playtest-bughunter)
+- Driven the harness against the three ending scripts plus
+  re-runs + env-var variants (UMBRELLA_REDUCED_MOTION=1 /
+  UMBRELLA_LARGE_TARGETS=1). Six total runs.
+- Saved to `docs/cycle9-audit/cycle9f-post-iteration-diagnosis.md`
+  with executive summary, per-feature review (H4 indicator,
+  chapter toast timing, karma collisions, H3 marker, rain
+  HUD prefix, cold-senior path, determinism, M2/M3 env-var
+  flag verification), new-issue list, and Cycle 9.G+ candidates.
+- **Regressions caught: 2.** The headline finding is a
+  CRITICAL clobber on every Ch→IL transition: the 9.A.2
+  chapter-clear toast (`✓ 章節清關 — 進入幕間市集`) lives 0.02 s
+  (one frame) before being overwritten by the IL arrival hint
+  (`市集中央。逛完後往南離開`) the bughunter showed publishing
+  at `src/GameController.cpp:154-163`. The 9.B TrueUmbrella
+  publish-order swap fixed the umbrella ⇆ chapter-clear collision
+  but did NOT fix this arrival-hint ⇆ chapter-clear collision
+  one frame later. `World::SetHudMessage`
+  (`include/World.h:134`) is a single-slot HUD; with one slot
+  and three competing publishes per transition (UmbrellaClaimed,
+  arrival hint, eventual karma deltas) the last writer wins,
+  always. The audit recommended **two HUD channels** ("Plan B")
+  back in 9.B; we picked Plan A; Plan A is broken; Plan B is the
+  next cycle's H1.
+- L8 1-frame respawn-lag confirmed present at 7/7 ending_a
+  transitions (no engine fix landed in 9.A.2 either, only the
+  regression test net — which is now demonstrably valuable).
+- **No coverage regression** for the cold-senior path either:
+  no script triggers `Flag_ScoldedSenior`, so the 9.C M7 ripple
+  is mechanically correct but un-exercised. Cycle 9.G should
+  ship a `.claude/scripts/ending_a_cold.txt` that takes the
+  斥責 branch.
+- The 9.E.1 M1 rain `!!` critical tier prefix is implemented
+  correctly but never reached by any existing script (C maxes
+  at 80.8%). Same coverage gap class — needs a rain-stress
+  script.
+- Determinism PASSED at the byte level: re-running ending_a
+  produces md5-identical `state.jsonl` (`914345b8…22054`).
+  Setting UMBRELLA_REDUCED_MOTION=1 leaves the jsonl unchanged
+  (View-only flag, as designed). UMBRELLA_LARGE_TARGETS=1
+  diverges the run at frame 893 (talk reach widens from 8 px
+  to 16 px → player triggers a dialog 3 px earlier), terminating
+  in 7,450 frames vs 7,490 — exactly the design intent.
+
+### Gate
+- 346/346 doctest TEST_CASEs pass (was 342 → +4 new cases,
+  4,841 total assertions).
+- 0 project-code warnings.
+- dialog_lint exit 0.
+- ending_a/b/c smoke runs all rc=0 with the new menu layout
+  unchanged by deterministic scripts (they never press M to
+  open the pause menu in the first place).
+
+### Cycle 9.G — committed priorities
+1. **Two HUD channels** to fix the chapter-clear toast clobber
+   (the audit's deferred Plan B). Top channel renders chapter /
+   ending toasts on the dedicated upper banner; bottom channel
+   renders regular ShowMessage events at the existing position.
+   Both fade independently. Estimated ~60-80 LOC + tests.
+2. **Cold-senior script** + a **rain-stress script** to close
+   the coverage gaps the diagnosis surfaced.
+3. **L8 same-frame respawn**: revisit the race-audit need that
+   9.A.2 punted on; the diagnosis confirms the lag is
+   user-visible in screenshots.
+
+### Revert (per-deliverable)
+- Pause-menu UI: shrink cursor range back to 0..3, drop the two
+  toggle rows from `View.cpp`, drop the toggle Enter branch in
+  `GameController.cpp`, restore the `UiLiteralChars()` string,
+  `git rm tests/test_pause_menu_toggle.cpp`.
+- Diagnosis: it's read-only; safe to keep regardless.
+
+---
+
 ## 2026-05-21 — Cycle 9.E.2: three more a11y fixes — dialog skip ergonomics + rain pause hint + large-targets profile
 
 Second wave of small fixes from the WCAG baseline audit. Picked
