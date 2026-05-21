@@ -14,6 +14,7 @@
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <cassert>
+#include <string_view>
 #include <unordered_set>
 
 namespace nccu {
@@ -71,7 +72,29 @@ World::World(const std::string& playerSpritePath, bool loadSprites)
 }
 
 void World::SpawnChapterNpcs(nccu::SemesterState state) {
+    // M7 (cycle9c): Ch4 「斥責學長後不出場」 ripple. chapter4.md L6 promises
+    // a player who scolded the suit_senior in Ch1 (Flag_ScoldedSenior) won't
+    // see him again at the finals — unless they later mended the
+    // relationship (Flag_HelpedSenior, the Ch2 callback note). Filter at
+    // spawn-time so the suit_senior is simply absent from objects_, which
+    // is identically how every other "NPC not in this chapter" case looks
+    // (e.g. librarian only in Ch2): the dialog opener cannot target him,
+    // the routing in Chapter4Quest sees nothing to scold/help further, and
+    // the chapterRoster_ sweep already handles teardown if he stays absent
+    // through the next Transition. Conditioning on player_ keeps the
+    // headless World unit tests (no Player) defensive even though the
+    // ctor caches player_ before the first respawn.
+    const bool skipScoldedSenior =
+        state == SemesterState::Chapter4_Finals &&
+        player_ != nullptr &&
+        player_->HasFlag("Flag_ScoldedSenior") &&
+        !player_->HasFlag("Flag_HelpedSenior");
+
     for (const auto& spawn : ChapterNpcSpawns(state)) {
+        if (skipScoldedSenior &&
+            std::string_view(spawn.npcId) == "suit_senior") {
+            continue;
+        }
         auto npc = std::make_unique<NPC>(spawn.pos, std::vector<std::string>{},
                                          spawn.isQuestGiver, spawn.npcId);
         if (loadSprites_)

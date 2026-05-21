@@ -5,6 +5,92 @@ first. Bugs cross-reference `.claude/BUGLEDGER.md`.
 
 ---
 
+## 2026-05-21 — Cycle 9.C: cold-senior ripple closure + Ch3 trade-chain visibility
+
+Two narrative / discoverability fixes shipped together; gate green
+(321 doctest cases, 0 project warnings, all three ending smokes
+clean).
+
+### What
+- **M7 — `Flag_ScoldedSenior` now hides 西裝學長 from Ch4.**
+  Cycle 8 F2 lit the dormant Ch1 「斥責學長」 path; the closing half
+  of the GDD §伍 promise — "斥責後不出場" at the finals — was still
+  tagged `KNOWN OMISSION` in `ChapterSpawns.h`. Landed as a
+  spawn-time filter inside `World::SpawnChapterNpcs`
+  (`src/World.cpp`): when
+  `state == Chapter4_Finals && Flag_ScoldedSenior && !Flag_HelpedSenior`,
+  the `suit_senior` is not pushed into `objects_` /
+  `chapterRoster_`. Same shape as "librarian is only in Ch2" —
+  absent from `objects_` identically models absent from the
+  chapter, so the dialog opener, the M7 ripple in
+  `Chapter4Quest`, the H4 indicator, and the `chapterRoster_`
+  teardown all behave correctly with zero new branches. Guarding
+  on `player_ != nullptr` keeps the headless `World` unit tests
+  defensive.
+- **Ch3 trade-chain reposition.**
+  `vendor_sausage_a` / `loudspeaker_b` / `senior_c` y
+  `1850 → 1820 / 1820 / 1825` — top of the south corridor, just
+  below the E-W wall at y~1761-1819. Original x (`760 / 1080 /
+  1320`) preserved so `chapter3.md`'s siting (田徑場旁 / 隔壁B系 /
+  四維道) reads identically.
+  Brief had suggested y in `[1500, 1650]` but the wall (gap
+  `x=880..1042` only) blocks the script's axis-only `interact`
+  pathfinder from reaching anything north of it outside the gap;
+  picked the reachability-preserving alternative at the top of
+  the south corridor. Brief's other premise — that the player
+  enters Ch3 at y~1430 — was also wrong; actual Ch3 entry is
+  y~1890 (the Interlude exit zone south band, no Ch3 entry
+  teleport). The fix still lands the brief's *intent* (visible
+  indicators on Ch3 entry) — frame 4020 of the new
+  `cycle9c_smoke` shows 3 `!` indicators in the viewport vs
+  0 in the `cycle9_diag_a` baseline at the same frame.
+
+### Why
+- M7: GDD §伍 and `chapter4.md` L6 explicitly promise the
+  cold-senior player won't see the `suit_senior` at the finals.
+  Without the spawn filter this was 100% drift — every player
+  saw `suit_senior` regardless of choice. The H4 9.B indicator
+  made the drift more visible by *highlighting* an NPC the
+  player thought they had banished.
+- Ch3 reposition: zero rule change — same interaction tree,
+  same `// karma ±N`, same flags; pure UX.
+- 0 indicators visible in `cycle9_diag_a` frame 4200 → 3
+  indicators in `cycle9c_smoke` frame 4020.
+
+### Gameplay impact
+- 321/321 doctest cases pass (was 318 → +3 new TEST_CASEs,
+  4455 total assertions).
+- 0 project-code warnings under `-Wall -Wextra -Wpedantic`.
+- `ending_a` smoke: rc=0, last_state=結局 A, karma=100,
+  28 結局-A frames.
+- `ending_b` smoke: rc=0, last_state=結局 B, karma=48,
+  28 結局-B frames.
+- `ending_c` smoke: rc=0, last_state=結局 C, karma=63,
+  28 結局-C frames.
+- M7 is strictly additive — only a player who Ch1-(b)-`choose 2`
+  斥責 AND skipped Ch2 「請學長喝熱咖啡」 (i.e. `Flag_HelpedSenior`
+  remains false) sees any change. None of the existing scripts
+  exercise that combination, so all three smokes are unaffected.
+
+### Revert
+- M7: drop the `skipScoldedSenior` block at the head of
+  `World::SpawnChapterNpcs`. Delete
+  `tests/test_chapter4_senior_skip.cpp`.
+- Ch3 reposition: revert the three y values in `kChapter3` to
+  `1850` and drop the new SUBCASE at the tail of
+  `tests/test_world_chapter_roster.cpp`.
+- Each part stands alone.
+
+### Brief-vs-reality lessons for future briefs
+1. Ch3 entry y is **~1890** (south of the Interlude exit zone),
+   not 1430 — the diagnosis took the player position from a
+   different frame.
+2. Map walls constrain reachability for the script pathfinder;
+   any reposition must check the wall geometry (`World.cpp`
+   blocked-tile mask) before committing to coordinates.
+
+---
+
 ## 2026-05-21 — Cycle 9.B: feedback signal closure — quest-giver indicator + karma toasts + chapter-clear visibility
 
 Closes the remaining items the 9.A.2 commit explicitly deferred and
