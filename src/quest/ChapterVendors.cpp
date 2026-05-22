@@ -85,14 +85,18 @@ const std::vector<VendorPlacement>& BuildInterlude() {
 // the market can still wake 學霸. One stall, EnergyDrink at the same 35
 // the market charges (unlimited stock — a machine never sells out). A
 // hand-written 3-field VendorConfig literal (the pinned aggregate
-// contract); positioned on the playtested-walkable south band.
+// contract). Positioned at the 中正圖書館 front (just south of the
+// library rect, beside the 管理員 desk) so the "圖書館地下室自販機" name
+// matches where it stands — the old (660,1850) south-band spot sat
+// ~1.3k px from the library it is named after (caught by
+// map_registry.py's Ch2 vendor↔中正圖書館 expectation check).
 const std::vector<VendorPlacement>& Chapter2Vendors() {
     static const std::vector<VendorPlacement> kCh2 = {
         VendorPlacement{
             VendorConfig{"圖書館地下室自動販賣機",
                          "（投幣口閃著微光，機器嗡嗡作響）",
                          {VendorItem{"EnergyDrink", 35}}},
-            nccu::gfx::Vec2{660.0f, 1850.0f}},
+            nccu::gfx::Vec2{980.0f, 560.0f}},
     };
     return kCh2;
 }
