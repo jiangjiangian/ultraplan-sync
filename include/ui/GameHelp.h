@@ -16,7 +16,7 @@ inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     "【操作】",
     "WASD / 方向鍵：移動",
     "E：對話 / 撿取 / 購買",
-    "Tab：物品欄    ESC：選單",
+    "Tab：物品欄  M：選單  ESC：離開",
     "",
     "【目標】",
     "你的傘被拿走了。走訪政大山下，",
@@ -26,14 +26,13 @@ inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     // Cycle 9.E (audit H3 / D11 / SC 2.2.1): the rain meter is an
     // unmodifiable timed pressure (5 u/s outdoors → forced respawn at
     // 100 %). SC 2.2.1 Level A requires the player to know HOW to
-    // extend / pause any sub-20-hour timing; ESC already freezes the
-    // meter (GameController::Update early-returns on MenuOpen, before
-    // ApplyRain on ~line 397) — this line surfaces that affordance so
-    // a player who needs a break knows the path. Pure content; no
-    // engine change. Length: 8 CJK + 1 fullwidth punct + "ESC " = 23
-    // effective cells, well within the ~22-cell help-panel budget the
-    // existing 雨量/撐傘 lines already use.
-    "ESC 暫停會凍結雨壓力計。",
+    // extend / pause any sub-20-hour timing; opening the pause menu (M)
+    // freezes the meter (GameController::Update early-returns on
+    // MenuOpen, before ApplyRain) — this line surfaces that affordance
+    // so a player who needs a break knows the path. (ESC is the direct
+    // quit key, not pause — see main.cpp.) Pure content; no engine
+    // change, well within the ~22-cell help-panel budget.
+    "M 暫停會凍結雨壓力計。",
     "",
     "【三種結局】",
     "真相大白：善待他人並找回真傘。",

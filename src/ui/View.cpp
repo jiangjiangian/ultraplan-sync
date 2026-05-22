@@ -353,16 +353,16 @@ void View::Draw(const World& world) {
     }
 
     // Top-right affordance: a small always-on hint that an in-game menu
-    // exists ("ESC 選單"). Panel-backed so it stays legible on any tile;
+    // exists ("M 選單"). Panel-backed so it stays legible on any tile;
     // hidden while the menu itself is open (the menu replaces it).
     if (!world.MenuOpen()) {
         constexpr float kAffSize = 14.0f;
         constexpr float kPad     = 5.0f;
-        const std::string aff = "ESC 選單";
+        const std::string aff = "M 選單";
         int glyphs = 0;
         for (unsigned char c : aff)
             if ((c & 0xC0) != 0x80) ++glyphs;
-        // "ESC " is 4 narrow + 選單 2 wide → estimate width generously.
+        // "M " is 1 narrow + 選單 2 wide → estimate width generously.
         const float tw = static_cast<float>(glyphs) * kAffSize;
         const float panelW = tw + kPad * 2.0f;
         const float panelH = kAffSize + kPad * 2.0f;
@@ -433,7 +433,7 @@ void View::Draw(const World& world) {
         // Color{20,22,30,230} pause-menu panel — ~1.05:1, effectively
         // invisible. Color{180,180,180,255} hits ~7:1 (AAA-large,
         // AA-normal) on the same backing.
-        TextBuilder{"↑ ↓ 選擇   Enter 確認   ESC 繼續"}
+        TextBuilder{"↑ ↓ 選擇   Enter 確認   M 繼續"}
             .At(Vec2{px + 20.0f, py + kPanelH - 30.0f})
             .Size(14).Color(Color{180, 180, 180, 255}).Draw();
     }
@@ -442,8 +442,8 @@ void View::Draw(const World& world) {
     // ABOVE the menu (which is still up behind it). Pure function of
     // World::HelpOpen(); the same shared GameHelp text the title screen
     // uses, so the two never drift. A near-full-screen panel so the
-    // ~22-cell help lines fit; ESC/E/Enter (handled in GameController)
-    // dismisses it back to the menu.
+    // ~22-cell help lines fit; M/E/Enter (handled in GameController)
+    // dismisses it back to the menu (ESC quits the program).
     if (world.MenuOpen() && world.HelpOpen()) {
         const float W = viewportSize_.x;
         const float H = viewportSize_.y;
@@ -452,23 +452,25 @@ void View::Draw(const World& world) {
         renderer_.DrawRect(Rect{pad, pad, W - pad * 2.0f, H - pad * 2.0f},
                            Color{18, 20, 28, 245});
         TextBuilder{"遊戲說明"}
-            .At(Vec2{W * 0.5f - 64.0f, pad + 14.0f})
+            .At(Vec2{W * 0.5f - 64.0f, pad + 12.0f})
             .Size(26).Color(Colors::Gold).Draw();
-        float hy = pad + 56.0f;
+        // Blank separator lines get half height so all rows + the closing
+        // line clear the footer in the 450 px window (no scroll needed).
+        float hy = pad + 50.0f;
         for (const std::string_view ln : nccu::kGameHelpLines) {
             if (!ln.empty())
                 TextBuilder{std::string{ln}}
                     .At(Vec2{pad + 24.0f, hy})
                     .Size(16).Color(Colors::White).Draw();
-            hy += 22.0f;
+            hy += ln.empty() ? 11.0f : 20.0f;
         }
         TextBuilder{std::string{nccu::kGameHelpClosing}}
             .At(Vec2{pad + 24.0f, hy}).Size(16).Color(Colors::White).Draw();
         // Audit D3 / SC 1.4.3: same fix as the pause-menu hint above —
         // help overlay sits on Color{18,20,28,245}, even darker than
         // the menu, so Colors::DarkGray was effectively invisible.
-        TextBuilder{"ESC / E 返回選單"}
-            .At(Vec2{W * 0.5f - 70.0f, H - pad - 28.0f})
+        TextBuilder{"M / E 返回選單"}
+            .At(Vec2{W * 0.5f - 64.0f, H - pad - 26.0f})
             .Size(14).Color(Color{180, 180, 180, 255}).Draw();
     }
 }

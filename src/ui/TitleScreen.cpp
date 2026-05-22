@@ -41,7 +41,7 @@ constexpr std::array<MenuItem, 3> kItems{{
 
 // Renders the shared 遊戲說明 page (same GameHelp text as the in-game
 // 說明 overlay — single source of truth, never drifts). Blocks until
-// the player presses Enter / ESC / E, then returns to the title menu.
+// the player presses Enter / E, then returns to the title menu (ESC quits).
 // Returns false iff the window was closed while on the help page (so
 // the caller can exit cleanly instead of looping forever).
 bool RunHelpPage(gfx::Window& win) {
@@ -49,11 +49,12 @@ bool RunHelpPage(gfx::Window& win) {
     // The Enter that opened this page is still held on the first frame (no
     // input poll runs between RunTitleScreen reading it and here), so gate
     // Enter through a release-latch — otherwise the page would close on the
-    // same press that opened it. Esc / E are never inherited from the title
-    // menu, so they may dismiss immediately.
+    // same press that opened it. E is never inherited from the title menu,
+    // so it may dismiss immediately. (ESC is the program's quit key — it
+    // falls through to WindowShouldClose below, exiting cleanly.)
     PressLatch enter;
     while (!win.ShouldClose()) {
-        if (Input::IsPressed(Key::Escape) || Input::IsPressed(Key::E))
+        if (Input::IsPressed(Key::E))
             return true;                       // back to the title menu
         if (enter.Fired(Input::IsDown(Key::Enter), Input::IsPressed(Key::Enter)))
             return true;
@@ -68,19 +69,21 @@ bool RunHelpPage(gfx::Window& win) {
             TextBuilder{"遊戲說明"}
                 .At(Vec2{kWinW / 2.0f - 64.0f, 40.0f})
                 .Size(26).Color(Colors::Gold).Draw();
-            float y = 84.0f;
+            // Blank separator lines get half height so every row + the
+            // closing line clears the footer in the 450 px window.
+            float y = 74.0f;
             for (const std::string_view ln : nccu::kGameHelpLines) {
                 if (!ln.empty())
                     TextBuilder{std::string{ln}}
                         .At(Vec2{48.0f, y}).Size(16)
                         .Color(Colors::White).Draw();
-                y += 22.0f;
+                y += ln.empty() ? 11.0f : 20.0f;
             }
             TextBuilder{std::string{nccu::kGameHelpClosing}}
                 .At(Vec2{48.0f, y}).Size(16).Color(Colors::White).Draw();
-            TextBuilder{"Enter / ESC 返回"}
-                .At(Vec2{kWinW / 2.0f - 70.0f,
-                         static_cast<float>(kWinH) - 52.0f})
+            TextBuilder{"Enter / E 返回"}
+                .At(Vec2{kWinW / 2.0f - 64.0f,
+                         static_cast<float>(kWinH) - 46.0f})
                 .Size(16).Color(Colors::DarkGray).Draw();
         }
     }

@@ -2,7 +2,7 @@
 // This pins (a) the 4-item menu order (繼續 / 說明 / 重新開始 / 離開)
 // via GameController's real input loop, (b) that 說明 opens an in-place
 // help overlay (World::HelpOpen) instead of an AppAction, (c) that the
-// help overlay is dismissable (ESC/E/Enter) back to the still-open menu,
+// help overlay is dismissable (M/E/Enter) back to the still-open menu,
 // and (d) that the sim stays frozen the whole time (no movement / no
 // rain tick) — so adding help can never perturb gameplay or the
 // deterministic ending scripts.
@@ -82,8 +82,8 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     // 說明 item — what THIS test pins — remains at index 1.
     CHECK(World::kMenuItemCount == 6);
 
-    // Open the pause menu (ESC).
-    in.Tap(Key::Escape);
+    // Open the pause menu (M — ESC is reserved for quitting the program).
+    in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
     CHECK(world.MenuCursor() == 0);              // starts on 繼續
@@ -120,9 +120,9 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK(world.MenuOpen());
     CHECK(world.MenuCursor() == 1);
 
-    // ESC from the menu now resumes the game (closing the menu also
+    // M from the menu now resumes the game (closing the menu also
     // clears any help latch via SetMenuOpen(false)).
-    in.Tap(Key::Escape);
+    in.Tap(Key::M);
     Frame(controller, in);
     CHECK_FALSE(world.MenuOpen());
     CHECK_FALSE(world.HelpOpen());
@@ -143,22 +143,21 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK_FALSE(nccu::kGameHelpClosing.empty());
     CHECK(cells(nccu::kGameHelpClosing) <= 24);
 
-    // Cycle 9.E (audit H3 / D11 / SC 2.2.1): pin the ESC-pauses-rain
+    // Cycle 9.E (audit H3 / D11 / SC 2.2.1): pin the pause-pauses-rain
     // hint into the help text so a player can discover the pause-as-
-    // timing-extension affordance. The hint must live on a SINGLE line
-    // (the existing 控制 row already mentions ESC for the menu, so a
-    // line-by-line "contains both 'ESC' and '雨壓力'" assertion is
-    // tighter than two separate "contains X" checks across the whole
-    // array). A future copy-edit that rewrites the wording but keeps
-    // both tokens on one line still passes; only deleting the hint
-    // (or splitting it) fails.
-    bool sawEscRainHint = false;
+    // timing-extension affordance. The hint must live on a SINGLE line;
+    // a line-by-line "contains both '暫停' and '雨壓力'" assertion is
+    // key-agnostic (the menu key moved from ESC to M, but the pause
+    // affordance is the same). A future copy-edit that rewrites the
+    // wording but keeps both tokens on one line still passes; only
+    // deleting the hint (or splitting it) fails.
+    bool sawPauseRainHint = false;
     for (std::string_view ln : nccu::kGameHelpLines) {
-        const bool hasEsc  = ln.find("ESC")    != std::string_view::npos;
-        const bool hasRain = ln.find("雨壓力") != std::string_view::npos;
-        if (hasEsc && hasRain) sawEscRainHint = true;
+        const bool hasPause = ln.find("暫停")   != std::string_view::npos;
+        const bool hasRain  = ln.find("雨壓力") != std::string_view::npos;
+        if (hasPause && hasRain) sawPauseRainHint = true;
     }
-    CHECK(sawEscRainHint);
+    CHECK(sawPauseRainHint);
 
     nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);
