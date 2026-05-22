@@ -70,8 +70,8 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     // 福利社阿姨 ripple the GDD names but engine never read.
     REQUIRE(d.Choices().size() == 3);
     // Table order: subState 1, 2, 3 (a<b<c<d, opener is subState 0).
-    CHECK(d.Choices()[0].label == "玩家詢問雨傘");
-    CHECK(d.Choices()[1].label == "玩家購買醜綠傘後");
+    CHECK(d.Choices()[0].label == "詢問雨傘");
+    CHECK(d.Choices()[1].label == "購買醜綠傘");
     CHECK(d.Choices()[2].label == "請阿姨喝一杯熱咖啡");
     // Cycle-8 audit F1: the Ch1 阿姨 (c) buy branch is now a pure
     // narrative seed — it sets NO flag (the inert Flag_KnowsUglyUmbrella
@@ -81,7 +81,7 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     d.MoveChoice(1);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
-    CHECK(c->label == "玩家購買醜綠傘後");
+    CHECK(c->label == "購買醜綠傘");
     CHECK(c->setsFlag == "");     // F1: no flag (was Flag_KnowsUglyUmbrella)
     while (d.Active()) d.Advance();    // exhaust -> close
     CHECK_FALSE(d.Active());
