@@ -48,12 +48,11 @@ int main() {
     // human path may revisit the title (back from select, or Restart
     // from the in-game menu); the harness path runs exactly once.
     //
-    // ESC = quit the program, directly, from every screen: it is raylib's
-    // default exit key, so WindowShouldClose() (checked by every loop here
-    // and in the title / select / help screens) goes true the moment it is
-    // pressed. SetExitKey is intentionally never called and no handler
-    // consumes ESC for anything else — the in-game menu lives on M — so
-    // ESC's one and only role is a clean exit to `return 0`.
+    // ESC is INERT everywhere (player request): Window::Open calls
+    // SetExitKey(KEY_NULL), so WindowShouldClose() only fires on the window
+    // close button, never on ESC. Quitting is the 離開 menu item — on the
+    // title menu and the in-game pause menu (M). The title/select/help
+    // screens no longer consume ESC at all.
     bool running = true;
     while (running && !win.ShouldClose()) {
         nccu::CharacterSelectResult selection;
@@ -68,10 +67,11 @@ int main() {
                 break;                       // 離開 / window closed
             if (win.ShouldClose()) break;
 
-            // Character select. Esc backs out to the title (loop again).
+            // Character select. ESC is inert now; the player picks a
+            // persona with ← → + Enter. (selection.closed stays false.)
             selection = nccu::RunCharacterSelect(win);
             if (win.ShouldClose()) break;
-            if (selection.closed) continue;  // back to the title screen
+            if (selection.closed) continue;  // (defensive; unused now)
         }
 
         // Per-run scope. Declaration order matters: reverse-destruction
