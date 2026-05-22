@@ -1,4 +1,5 @@
 #include "ui/CharacterSelect.h"
+#include "ui/PressLatch.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Renderer.h"
 #include "gfx/TextBuilder.h"
@@ -59,13 +60,18 @@ CharacterSelectResult RunCharacterSelect(gfx::Window& win) {
     constexpr int kRowX = (kWinW - kRowW) / 2;
     constexpr int kRowY = 150;
     int cursor = 0;
+    // Ignore the Enter inherited from the title's 開始遊戲 (still held when
+    // this screen starts) — without this, that one press would confirm
+    // persona 0 on frame 1 and the player would never see this screen.
+    PressLatch confirm;
 
     while (!win.ShouldClose()) {
         if (Input::IsPressed(Key::Right) || Input::IsPressed(Key::D))
             cursor = (cursor + 1) % kCount;
         if (Input::IsPressed(Key::Left)  || Input::IsPressed(Key::A))
             cursor = (cursor - 1 + kCount) % kCount;
-        if (Input::IsPressed(Key::Enter)) {
+        if (confirm.Fired(Input::IsDown(Key::Enter),
+                          Input::IsPressed(Key::Enter))) {
             const Persona& p = kPersonas[static_cast<std::size_t>(cursor)];
             result.spritePath = std::string{p.spritePath};
             result.tint       = p.tint;

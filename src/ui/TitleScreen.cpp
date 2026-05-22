@@ -1,5 +1,6 @@
 #include "ui/TitleScreen.h"
 #include "ui/GameHelp.h"
+#include "ui/PressLatch.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Renderer.h"
 #include "gfx/TextBuilder.h"
@@ -45,10 +46,17 @@ constexpr std::array<MenuItem, 3> kItems{{
 // the caller can exit cleanly instead of looping forever).
 bool RunHelpPage(gfx::Window& win) {
     using namespace gfx;
+    // The Enter that opened this page is still held on the first frame (no
+    // input poll runs between RunTitleScreen reading it and here), so gate
+    // Enter through a release-latch — otherwise the page would close on the
+    // same press that opened it. Esc / E are never inherited from the title
+    // menu, so they may dismiss immediately.
+    PressLatch enter;
     while (!win.ShouldClose()) {
-        if (Input::IsPressed(Key::Enter) || Input::IsPressed(Key::Escape) ||
-            Input::IsPressed(Key::E))
+        if (Input::IsPressed(Key::Escape) || Input::IsPressed(Key::E))
             return true;                       // back to the title menu
+        if (enter.Fired(Input::IsDown(Key::Enter), Input::IsPressed(Key::Enter)))
+            return true;
         {
             DrawScope frame;
             Renderer r;
@@ -85,13 +93,21 @@ TitleChoice RunTitleScreen(gfx::Window& win) {
     using namespace gfx;
     constexpr int kCount = static_cast<int>(kItems.size());
     int cursor = 0;
+    // Gate the confirm key so a press inherited from a previous screen
+    // (the Enter that returned from the help page, or a Restart/back-out)
+    // can't auto-trigger a menu item — it must be released and pressed
+    // again here. After firing for 遊戲說明 the latch stays disarmed, so
+    // the held dismiss-Enter coming back from the help page won't re-open
+    // it.
+    PressLatch confirm;
 
     while (!win.ShouldClose()) {
         if (Input::IsPressed(Key::Up) || Input::IsPressed(Key::W))
             cursor = (cursor - 1 + kCount) % kCount;
         if (Input::IsPressed(Key::Down) || Input::IsPressed(Key::S))
             cursor = (cursor + 1) % kCount;
-        if (Input::IsPressed(Key::Enter)) {
+        if (confirm.Fired(Input::IsDown(Key::Enter),
+                          Input::IsPressed(Key::Enter))) {
             switch (kItems[static_cast<std::size_t>(cursor)].action) {
                 case MenuAction::Start: return TitleChoice::StartGame;
                 case MenuAction::Quit:  return TitleChoice::Quit;
