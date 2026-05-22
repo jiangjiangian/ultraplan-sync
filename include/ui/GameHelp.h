@@ -16,7 +16,7 @@ inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     "【操作】",
     "WASD / 方向鍵：移動",
     "E：對話 / 撿取 / 購買",
-    "Tab：物品欄  M：選單  ESC：離開",
+    "Tab：物品欄  M：選單",
     "",
     "【目標】",
     "你的傘被拿走了。走訪政大山下，",
@@ -29,9 +29,9 @@ inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     // extend / pause any sub-20-hour timing; opening the pause menu (M)
     // freezes the meter (GameController::Update early-returns on
     // MenuOpen, before ApplyRain) — this line surfaces that affordance
-    // so a player who needs a break knows the path. (ESC is the direct
-    // quit key, not pause — see main.cpp.) Pure content; no engine
-    // change, well within the ~22-cell help-panel budget.
+    // so a player who needs a break knows the path. (Quitting is the 離開
+    // item INSIDE that menu, not ESC — ESC is inert, see Window.h
+    // SetExitKey.) Pure content; no engine change, within the help budget.
     "M 暫停會凍結雨壓力計。",
     "",
     "【三種結局】",

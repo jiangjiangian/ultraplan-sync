@@ -16,6 +16,12 @@ public:
 
         Window Open() {
             ::InitWindow(width_, height_, title_.c_str());
+            // ESC must never abruptly quit the program — quitting is the
+            // 離開 menu item (title + in-game pause menu). Disabling
+            // raylib's default exit key keeps ESC inert on the title /
+            // character-select / 說明 screens (player request); only the
+            // window close button still ends WindowShouldClose().
+            ::SetExitKey(KEY_NULL);
             if (fps_ > 0) ::SetTargetFPS(fps_);
             return Window{true};
         }

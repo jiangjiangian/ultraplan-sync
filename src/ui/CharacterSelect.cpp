@@ -78,10 +78,8 @@ CharacterSelectResult RunCharacterSelect(gfx::Window& win) {
             result.closed     = false;
             return result;
         }
-        if (Input::IsPressed(Key::Escape)) {
-            result.closed = true;   // back to the title screen
-            return result;
-        }
+        // ESC is intentionally inert here (player request): the player
+        // picks a persona with ← → + Enter; there is no ESC-to-title.
 
         {
             DrawScope frame;
@@ -125,8 +123,8 @@ CharacterSelectResult RunCharacterSelect(gfx::Window& win) {
                 .At(Vec2{panel.x + 16.0f, kPanelY + 44.0f})
                 .Size(18).Color(Colors::White).Draw();
 
-            TextBuilder{"← → 選擇    Enter 確認    Esc 返回首頁"}
-                .At(Vec2{kWinW / 2.0f - 196.0f,
+            TextBuilder{"← → 選擇    Enter 確認"}
+                .At(Vec2{kWinW / 2.0f - 120.0f,
                          static_cast<float>(kWinH) - 44.0f})
                 .Size(18).Color(Colors::DarkGray).Draw();
         }
