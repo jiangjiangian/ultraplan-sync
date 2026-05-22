@@ -108,7 +108,7 @@ ultraplan-sync/
 │   ├── state/       (10)  SemesterStateMachine / 各章 State / Interlude / EndingGate
 │   ├── dialog/       (6)  DialogLoader / Layout / View / State / Source / Opener
 │   ├── vendor/       (5)  Vendor / Config / Loader / Messages / Sprite
-│   ├── ui/          (12)  View / HUD / 選單 / 標題 / 角色選擇 / 結局卡 / 無障礙
+│   ├── ui/          (13)  View / HUD / 選單 / 標題 / 角色選擇 / 結局卡 / 無障礙
 │   ├── controller/   (7)  GameController / InputHandler / SceneRouter / EventBus / Factory
 │   └── harness/      (2)  Harness / ScriptInput（自動遊玩感知層；正常遊玩 inert）
 │
@@ -119,7 +119,7 @@ ultraplan-sync/
 │
 ├── tests/                        doctest（89 檔，369 cases / 5006 asserts）
 │   ├── gfx/(7)  entities/(11)  world/(4)  quest/(23)  state/(5)
-│   ├── dialog/(8)  vendor/(5)  ui/(15)  controller/(8)  harness/(3)
+│   ├── dialog/(8)  vendor/(5)  ui/(16)  controller/(8)  harness/(3)
 │   └── fixtures/                 測試資料（非 .cpp）
 │
 ├── docs/

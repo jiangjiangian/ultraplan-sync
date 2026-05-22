@@ -13,6 +13,7 @@
 - `test_chapter_toast.cpp` (none; covered by `test_two_hud_channels`)
 - `test_font_ui_glyphs.cpp` — CJK font atlas glyph coverage
 - `test_menu_help.cpp` — pause-menu help
+- `test_press_latch.cpp` — title/select/help keypress-leak latch
 - `test_pause_menu_toggle.cpp` — pause toggle UI
 - `test_reduced_motion.cpp` — a11y reduced-motion toggle
 - `test_large_targets.cpp` — a11y large target hitboxes

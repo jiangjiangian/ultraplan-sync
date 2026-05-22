@@ -9,6 +9,8 @@ Pure-render layer; nothing here mutates world state.
 - `View.h` — top-level scene render entry
 - `TitleScreen.h` — start screen
 - `CharacterSelect.h` — sprite picker
+- `PressLatch.h` — release-then-press latch so one keypress can't leak
+  across the title/select/help blocking screens
 - `EndingView.h` — A/B/C ending card
 - `InventoryView.h` — inventory grid
 - `MessageView.h` — transient HUD messages
