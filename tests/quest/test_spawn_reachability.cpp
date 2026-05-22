@@ -85,7 +85,7 @@ std::vector<Spot> GameplaySpots() {
         for (const auto& v : nccu::ChapterVendors(st))
             s.push_back(Spot{"vendor", v.pos.x, v.pos.y});
     }
-    s.push_back(Spot{"Ch3/Ch4 道具箱 TrueUmbrella", 1500.0f, 1430.0f});
+    s.push_back(Spot{"Ch3/Ch4 道具箱 TrueUmbrella", 1640.0f, 375.0f});
     return s;
 }
 

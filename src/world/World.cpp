@@ -209,12 +209,16 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // (chapter4.md L6 傘再度失蹤 — the player re-finds the TrueUmbrella;
     // claiming it does NOT clear Ch4, it only satisfies Ending A's
     // 持-TrueUmbrella condition via Flag_HasTrueUmbrella, since no
-    // EventWiring Ch4 sibling-if exists). Same proven coord; different
-    // state so no overlap. Roster-tracked, swept on state change.
+    // EventWiring Ch4 sibling-if exists). Coord (1640,375) is the walkable
+    // 體育館後台 pocket INSIDE the gym footprint (mask-verified, flood-
+    // reachable up from the 操場) so it finally matches the "體育館後台
+    // 道具箱" the comment AND the 學姊 (C) reveal both name; the old
+    // (1500,1430) mid-campus spot contradicted that narrative (player-
+    // reported "傘沒出現在體育館"). Roster-tracked, swept on state change.
     if (state == SemesterState::Chapter3_SportsDay ||
         state == SemesterState::Chapter4_Finals) {
         auto umb = GameObjectFactory::Create(
-            ObjectType::TrueUmbrella, nccu::gfx::Vec2{1500.0f, 1430.0f});
+            ObjectType::TrueUmbrella, nccu::gfx::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
     }
