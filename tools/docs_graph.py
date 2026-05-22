@@ -6,11 +6,10 @@ Walks docs/, parses each markdown file for:
   - Flag_* references (the SCRIPT_HANDOFF whitelist)
   - NPC headings (`## <name>：` with full-width colon U+FF1A)
   - karma annotations (`// karma ±N`)
-  - cycle8-audit conflict counts (parsed from cycle8-audit/**/*.md summaries)
 
-Emits docs/cycle8-audit/docs-graph.md with:
+Emits docs/docs-graph.md with:
   1. a mermaid flowchart of file-to-file references (via shared flags / NPC names)
-  2. a per-file stats table (heading count, flag mentions, NPC mentions, conflicts)
+  2. a per-file stats table (heading count, flag mentions, NPC mentions, karma)
   3. a global flag-usage matrix
   4. a karma-flow summary
 """
@@ -22,16 +21,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
-AUDIT = DOCS / "cycle8-audit"
-OUT = AUDIT / "docs-graph.md"
+OUT = DOCS / "docs-graph.md"
+
+# Directories under docs/ that are reference/archive material, not part of the
+# live cross-reference surface: archive/ = historical snapshots, kb/ = the
+# Raylib knowledge base, superpowers/ = local-only planning notes.
+SKIP_DIRS = {"archive", "kb", "superpowers"}
 
 FLAG_RX = re.compile(r"Flag_[A-Za-z][A-Za-z0-9_]*")
 KARMA_RX = re.compile(r"karma\s*([+\-]?\d+)")
 NPC_HEADING_RX = re.compile(r"^##\s*(.+?)：")  # full-width colon
-SUMMARY_COUNTS_RX = re.compile(
-    r"\b(Implemented|Yes|Partial|No|N/A|Conflicts?|Stale[- ]doc[- ]only)\b[^\d]{0,20}(\d+)",
-    re.IGNORECASE,
-)
 
 
 def parse_file(path: Path) -> dict:
@@ -53,21 +52,10 @@ def parse_file(path: Path) -> dict:
     }
 
 
-def parse_audit_conflicts(path: Path) -> int | None:
-    text = path.read_text(encoding="utf-8", errors="replace")
-    explicit = re.compile(r"[Cc]onflicts?\s*[:=][^\d\n]{0,8}(\d+)")
-    matches = explicit.findall(text)
-    if matches:
-        return int(matches[-1])
-    return None
-
-
 def short(rel: str) -> str:
     base = rel.replace("docs/", "")
     if base.startswith("content/"):
         return base.removeprefix("content/").removesuffix(".md")
-    if base.startswith("superpowers/"):
-        return base.removeprefix("superpowers/").removesuffix(".md")
     return base.removesuffix(".md")
 
 
@@ -78,20 +66,9 @@ def mermaid_id(rel: str) -> str:
 def main() -> int:
     files: list[dict] = []
     for p in sorted(DOCS.rglob("*.md")):
-        if "cycle8-audit" in p.parts or "iteration-history" in p.parts or "kb" in p.parts:
+        if p == OUT or SKIP_DIRS & set(p.parts):
             continue
         files.append(parse_file(p))
-
-    audit_conflicts: dict[str, int] = {}
-    if AUDIT.exists():
-        for p in sorted(AUDIT.rglob("*.md")):
-            if p.name in {"README.md", "cycle9-ux-diagnosis.md", "docs-graph.md"}:
-                continue
-            n = parse_audit_conflicts(p)
-            if n is None:
-                continue
-            stem = str(p.relative_to(AUDIT)).removesuffix(".md")
-            audit_conflicts[stem] = n
 
     # build cross-ref edges via shared flags
     edges = defaultdict(int)
@@ -113,8 +90,7 @@ def main() -> int:
     lines.append("")
     lines.append("Domain-specific extractor (`tools/docs_graph.py`). Walks `docs/`,")
     lines.append("parses heading tree + `Flag_*` references + NPC headings + karma")
-    lines.append("annotations + cycle8-audit conflict counts. **No LLM required**.")
-    lines.append("Replaces the abandoned `/graphify` attempt (required an LLM key).")
+    lines.append("annotations. **No LLM required.**")
     lines.append("")
     lines.append("## 1. Cross-reference graph (edges = shared `Flag_*` between files)")
     lines.append("")
@@ -123,33 +99,23 @@ def main() -> int:
     for f in files:
         nid = mermaid_id(f["rel"])
         label = short(f["rel"])
-        confl = audit_conflicts.get(
-            f["rel"].removeprefix("docs/").removesuffix(".md"), 0
-        )
-        suffix = f" ⚠{confl}" if confl > 0 else ""
-        lines.append(f'    {nid}["{label}{suffix}"]')
+        lines.append(f'    {nid}["{label}"]')
     for (a, b), weight in sorted(edges.items(), key=lambda kv: -kv[1]):
         if weight < 1:
             continue
         lines.append(f"    {mermaid_id(a)} -- {weight} --- {mermaid_id(b)}")
     lines.append("```")
     lines.append("")
-    lines.append("Node label suffix `⚠N` = N `[邏輯衝突?] Yes` items in")
-    lines.append("`cycle8-audit/<same-path>.md` summary.")
-    lines.append("")
 
     lines.append("## 2. Per-file stats")
     lines.append("")
-    lines.append("| File | Lines | Headings | Flags | NPCs | karma Σ (+/−) | Conflicts |")
-    lines.append("|------|-------|----------|-------|------|---------------|-----------|")
+    lines.append("| File | Lines | Headings | Flags | NPCs | karma Σ (+/−) |")
+    lines.append("|------|-------|----------|-------|------|---------------|")
     for f in files:
-        confl = audit_conflicts.get(
-            f["rel"].removeprefix("docs/").removesuffix(".md"), "—"
-        )
         karma_cell = f"{f['karma_sum']:+d} ({f['karma_pos']:+d}/{f['karma_neg']:+d})"
         lines.append(
             f"| `{f['rel']}` | {f['lines']} | {f['headings']} | "
-            f"{len(f['flags'])} | {len(f['npcs'])} | {karma_cell} | {confl} |"
+            f"{len(f['flags'])} | {len(f['npcs'])} | {karma_cell} |"
         )
     lines.append("")
 
