@@ -1,10 +1,11 @@
-// REQUIREMENT #7 + #6 regression for the Interlude market stalls.
+// Layout + #6 regression for the Interlude market stalls.
 //
-// #7: the ten 羅馬廣場 stalls must sit in a TIGHT cluster on the plaza
-//     CENTRE — pin the centre, the small spread, and that no two stalls
-//     overlap (their 24 px colliders) so the layout is "正中間", not the
-//     old wide scatter. test_spawn_reachability separately proves every
-//     one is walkable + flood-reachable on the shipped mask.
+// Layout (player request, supersedes the old "正中間 tight cluster"
+//     REQUIREMENT #7): the ten 羅馬廣場 stalls form TWO ROWS OF FIVE — a
+//     north row and a south row — with a walkable middle aisle, all inside
+//     the r≈200 plaza disc and non-overlapping (24 px colliders).
+//     test_spawn_reachability separately proves every one is walkable +
+//     flood-reachable on the shipped mask.
 //
 // #6: every stall must be a DIFFERENT person — the per-stall sprite key
 //     (built from the stall's unique 攤主/name) and the curated
@@ -13,9 +14,8 @@
 //     for every stall → ten clones on a clean clone).
 //
 // Revert-verify:
-//   * #7: restore the old scattered kPos — the "all within R of centre"
-//     / max-radius CHECKs fail (old max radius ≈125, several stalls far
-//     off the exact centre).
+//   * layout: collapse kPos back to one Y (or to the old centred bullseye)
+//     — the "exactly two rows of five" / aisle CHECKs fail.
 //   * #6: restore the single `PickNpcSprite("vendor", …, shop_auntie)`
 //     for every stall — the "10 distinct fallback sprites" CHECK fails
 //     (all ten identical).
@@ -26,6 +26,8 @@
 #include "state/SemesterState.h"
 
 #include <cmath>
+#include <iterator>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -34,30 +36,32 @@
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif
 
-TEST_CASE("REQ#7: the 10 market stalls form a tight cluster at the plaza centre") {
+TEST_CASE("market stalls form two rows of five across the plaza") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
     const auto& m = nccu::ChapterVendors(
         nccu::SemesterState::Interlude_Market);
     REQUIRE(m.size() == 10);
 
-    // The documented plaza centre (also exactly stall[0]).
-    constexpr float kCx = 1088.0f, kCy = 960.0f;
-    CHECK(m[0].pos.x == doctest::Approx(kCx));
-    CHECK(m[0].pos.y == doctest::Approx(kCy));
+    // Two rows (two distinct Y bands), five stalls each, with a walkable
+    // middle aisle the player walks down to shop either side.
+    std::map<float, int> rows;
+    for (const auto& v : m) rows[v.pos.y]++;
+    CHECK(rows.size() == 2);
+    for (const auto& [y, n] : rows) CHECK(n == 5);
+    const float y0 = rows.begin()->first;
+    const float y1 = std::next(rows.begin())->first;
+    CHECK(std::fabs(y1 - y0) >= 60.0f);          // aisle wide enough to walk
 
-    float maxR = 0.0f;
-    for (const auto& v : m) {
-        const float r = std::hypot(v.pos.x - kCx, v.pos.y - kCy);
-        maxR = std::max(maxR, r);
-    }
-    // Tight: every stall within ~80 px of the centre (the verified
-    // all-walkable plaza box is ≈r100; the old scatter reached ≈r125).
-    CHECK(maxR <= 80.0f);
+    // Every stall sits inside the walkable 羅馬廣場 disc (centre
+    // ≈1088,960, the r≈200 stone circle), clear of the rim road junctions.
+    constexpr float kCx = 1088.0f, kCy = 960.0f;
+    for (const auto& v : m)
+        CHECK(std::hypot(v.pos.x - kCx, v.pos.y - kCy) <= 160.0f);
 
     // No two stalls overlap: the Vendor collider is 24 px, so every
-    // pair must be > 24 px apart (we use a comfortable 30 px floor —
-    // the authored layout's true minimum is ≈35.9 px).
+    // pair must be > 24 px apart (30 px comfort floor; the two-row pitch
+    // is 66 px columns / 120 px rows, true minimum 66 px).
     for (std::size_t i = 0; i < m.size(); ++i)
         for (std::size_t j = i + 1; j < m.size(); ++j) {
             const float d = std::hypot(m[i].pos.x - m[j].pos.x,
