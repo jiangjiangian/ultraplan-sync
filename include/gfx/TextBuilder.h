@@ -36,6 +36,24 @@ public:
         }
     }
 
+    // Exact rendered size of this text at the current font/size, so a
+    // backing panel can hug it precisely instead of guessing from a glyph
+    // count. Uses the loaded CJK font when present (the same path Draw()
+    // takes), else raylib's default-font measure; both honour the size/10
+    // spacing Draw() uses. Falls back to a width-only estimate if no font
+    // /GL context exists (headless tests never call this on a live panel).
+    Vec2 Measure() const {
+        const float spacing = static_cast<float>(size_) / 10.0f;
+        if (IsCJKFontLoaded()) {
+            const ::Vector2 m = ::MeasureTextEx(
+                CJKFont(), text_.c_str(),
+                static_cast<float>(size_), spacing);
+            return Vec2{m.x, m.y};
+        }
+        return Vec2{static_cast<float>(::MeasureText(text_.c_str(), size_)),
+                    static_cast<float>(size_)};
+    }
+
     Vec2                GetPosition() const noexcept { return position_; }
     int                 GetSize()     const noexcept { return size_; }
     struct Color        GetColor()    const noexcept { return color_; }

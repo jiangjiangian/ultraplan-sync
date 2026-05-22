@@ -297,21 +297,24 @@ void View::Draw(const World& world) {
     if (const Player* p = world.GetPlayer()) {
         const std::string obj = CurrentObjective(st, *p);
         if (!obj.empty()) {
-            int glyphs = 0;
-            for (unsigned char c : obj)
-                if ((c & 0xC0) != 0x80) ++glyphs;
-            constexpr float kObjSize = 14.0f;
+            constexpr int   kObjSize = 14;
             constexpr float kPad     = 6.0f;
-            const float tw = glyphs * kObjSize;
-            const float panelW = tw + kPad * 2.0f;
-            const float panelH = kObjSize + kPad * 2.0f;
+            // Measure the actual rendered text so the backing panel hugs it
+            // exactly — it grows and shrinks with the objective string
+            // instead of guessing a fixed width from a glyph count.
+            const Vec2 m = TextBuilder{obj}.Size(kObjSize).Measure();
+            const float panelW = m.x + kPad * 2.0f;
+            const float panelH = m.y + kPad * 2.0f;
             float px = viewportSize_.x * 0.5f - panelW * 0.5f;
             if (px < 4.0f) px = 4.0f;
-            constexpr float kPanelY = 88.0f;   // clears the 4 status lines
+            // Sit BELOW the top-left status panel (≤6 rows reaches ~y132),
+            // so a wide objective bar never touches the karma/money/rain
+            // readout — the playtest's "任務指引往下一點不要碰到數值面板".
+            constexpr float kPanelY = 138.0f;
             renderer_.DrawRect(Rect{px, kPanelY, panelW, panelH},
                                Color{20, 22, 30, 185});
             TextBuilder{obj}.At(Vec2{px + kPad, kPanelY + kPad})
-                .Size(static_cast<int>(kObjSize)).Color(Colors::White).Draw();
+                .Size(kObjSize).Color(Colors::White).Draw();
         }
     }
 
