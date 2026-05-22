@@ -3,7 +3,7 @@
 // help-overlay hint lines on the Color{20,22,30,*} dark panels — with
 // the brighter Color{180,180,180,255}. The DarkGray-on-dark-panel
 // pairing measured ~1.05:1 luminance ratio (audit
-// docs/cycle9-audit/accessibility-audit.md §3), well below the
+// docs/archive/cycle9-audit/accessibility-audit.md §3), well below the
 // SC 1.4.3 AA threshold of 4.5:1 for normal text; the 180-grey hits
 // ~7:1 against the same backing.
 //
