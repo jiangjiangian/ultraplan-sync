@@ -154,10 +154,18 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         // name and picks a distinct curated fallback per spawn index, so
         // a clean clone still shows ten different people (not ten
         // shop_auntie clones) and the PIPOYA path no longer collides.
-        if (loadSprites_)
-            vendor->LoadSprite(VendorSpriteFor(
-                vendorIdx, vp.config.stallKeeper, vp.config.name,
-                vp.pos));
+        if (loadSprites_) {
+            // A spriteOverride (the 自動販賣機 machine art) renders as a
+            // whole static image; otherwise pick a distinct Pipoya person.
+            if (!vp.config.spriteOverride.empty()) {
+                vendor->LoadSprite(vp.config.spriteOverride);
+                vendor->SetStaticSprite(true);
+            } else {
+                vendor->LoadSprite(VendorSpriteFor(
+                    vendorIdx, vp.config.stallKeeper, vp.config.name,
+                    vp.pos));
+            }
+        }
         ++vendorIdx;
         chapterRoster_.push_back(vendor.get());
         objects_.push_back(std::move(vendor));
