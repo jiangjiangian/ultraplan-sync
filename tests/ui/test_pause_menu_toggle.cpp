@@ -107,7 +107,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     Frame(controller, in);                         // settle
     CHECK(World::kMenuItemCount == 6);
 
-    in.Tap(Key::Escape);
+    in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
     CHECK(world.MenuCursor() == 0);
@@ -148,7 +148,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     Frame(controller, in);
     REQUIRE_FALSE(world.ReducedMotion());
 
-    in.Tap(Key::Escape);
+    in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
 
@@ -196,7 +196,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     Frame(controller, in);
     REQUIRE_FALSE(world.LargeTargets());
 
-    in.Tap(Key::Escape);
+    in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
 
@@ -248,7 +248,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         nccu::gfx::Input::SetSource(&in);
         Frame(controller, in);
 
-        in.Tap(Key::Escape);
+        in.Tap(Key::M);
         Frame(controller, in);
         for (int i = 0; i < 4; ++i) {
             in.Tap(Key::Down);
@@ -274,7 +274,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         nccu::gfx::Input::SetSource(&in);
         Frame(controller, in);
 
-        in.Tap(Key::Escape);
+        in.Tap(Key::M);
         Frame(controller, in);
         for (int i = 0; i < 5; ++i) {
             in.Tap(Key::Down);
@@ -289,6 +289,49 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         nccu::gfx::Input::SetSource(nullptr);
     }
 
+    nccu::gfx::Time::SetFixedStep(0.0f);
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
+    // The pause menu used to toggle on ESC. But ESC is raylib's default
+    // exit key, so main.cpp's WindowShouldClose loops quit on it — binding
+    // the menu to ESC also flashed the menu for one frame before the
+    // window closed. The menu now lives on M; GameController never reads
+    // ESC, so a frozen Update treats it as a no-op and ESC's only role
+    // (in the real app) is the clean program exit owned by main.cpp.
+    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    EventBus::Instance().Clear();
+    unsetenv("UMBRELLA_REDUCED_MOTION");
+    unsetenv("UMBRELLA_LARGE_TARGETS");
+
+    World world("", /*loadSprites=*/false);
+    GameController controller{world};
+    TestInput in;
+    nccu::gfx::Input::SetSource(&in);
+    Frame(controller, in);                         // settle
+
+    // ESC must NOT open the menu.
+    in.Tap(Key::Escape);
+    Frame(controller, in);
+    CHECK_FALSE(world.MenuOpen());
+
+    // M opens it.
+    in.Tap(Key::M);
+    Frame(controller, in);
+    REQUIRE(world.MenuOpen());
+
+    // ESC must NOT close it either (no resume-on-ESC).
+    in.Tap(Key::Escape);
+    Frame(controller, in);
+    CHECK(world.MenuOpen());
+
+    // M toggles it back closed.
+    in.Tap(Key::M);
+    Frame(controller, in);
+    CHECK_FALSE(world.MenuOpen());
+
+    nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

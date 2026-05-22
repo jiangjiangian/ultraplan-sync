@@ -139,30 +139,32 @@ void GameController::Update() {
     // observable timeline.
     sceneRouter_.SettleSideEffects(world_);
 
-    // In-game pause menu (top-right). Opens with Esc or M; while open the
+    // In-game pause menu (top-right). Opens with M; while open the
     // world is fully frozen (we early-return before the object tick /
     // movement / rain / sweep, exactly like the dialog/inventory
     // freezes). Placed FIRST so the pause takes precedence over a dialog
-    // or the Tab inventory. Esc/M also closes it (toggle / Resume), so it
-    // is reachable and dismissable with one key. Restart/Quit only RECORD
-    // an intent on the World — the actual World teardown+rebuild happens
-    // in main.cpp's outer loop, the single place that can re-run the
-    // RAII-ordered composition root without leaking EventBus subscribers
-    // (BUGLEDGER B2/H1). The controller never destroys itself.
+    // or the Tab inventory. M also closes it (toggle / Resume), so it
+    // is reachable and dismissable with one key. ESC is deliberately NOT
+    // a menu key — it is the program's direct-quit key (raylib's default
+    // exit key drives main.cpp's WindowShouldClose loops), so it must
+    // never be consumed here. Restart/Quit only RECORD an intent on the
+    // World — the actual World teardown+rebuild happens in main.cpp's
+    // outer loop, the single place that can re-run the RAII-ordered
+    // composition root without leaking EventBus subscribers (BUGLEDGER
+    // B2/H1). The controller never destroys itself.
     {
         using nccu::gfx::Input;
         using nccu::gfx::Key;
-        const bool toggle =
-            Input::IsPressed(Key::Escape) || Input::IsPressed(Key::M);
+        const bool toggle = Input::IsPressed(Key::M);
         if (world_.MenuOpen()) {
             // REQUIREMENT #9: the 說明 help overlay sits ON TOP of the
-            // paused menu. While it is up, ESC / E / Enter dismisses it
+            // paused menu. While it is up, M / E / Enter dismisses it
             // back to the menu and the menu cursor / sim stay frozen.
-            // Handled FIRST so a key meant for "close help" never also
-            // moves the menu cursor or triggers an AppAction.
+            // (ESC is not a dismiss key — it quits the program.) Handled
+            // FIRST so a key meant for "close help" never also moves the
+            // menu cursor or triggers an AppAction.
             if (world_.HelpOpen()) {
-                if (Input::IsPressed(Key::Escape) ||
-                    Input::IsPressed(Key::M) ||
+                if (Input::IsPressed(Key::M) ||
                     Input::IsPressed(Key::Enter) ||
                     Input::IsPressed(Key::E))
                     world_.SetHelpOpen(false);
@@ -170,7 +172,7 @@ void GameController::Update() {
             }
             if (Input::IsPressed(Key::Up))   world_.MoveMenuCursor(-1);
             if (Input::IsPressed(Key::Down)) world_.MoveMenuCursor(1);
-            if (toggle) {                       // Esc/M = quick Resume
+            if (toggle) {                       // M = quick Resume
                 world_.SetMenuOpen(false);
                 return;
             }

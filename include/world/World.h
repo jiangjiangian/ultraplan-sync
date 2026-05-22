@@ -96,7 +96,7 @@ public:
     // state on the World — exactly the InventoryOpen / MenuOpen idiom —
     // so the View renders it and GameController keeps the sim frozen
     // while it (and the menu) is up. Opened from the pause-menu 說明
-    // item; ESC/E/Enter closes it back to the menu. No raylib here.
+    // item; M/E/Enter closes it back to the menu. No raylib here.
     [[nodiscard]] bool HelpOpen() const noexcept { return helpOpen_; }
     void SetHelpOpen(bool v) noexcept { helpOpen_ = v; }
 

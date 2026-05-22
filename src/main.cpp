@@ -45,8 +45,15 @@ int main() {
     auto harness = nccu::MaybeAttach();
 
     // Outer screen-flow loop. One iteration == one prepared run. The
-    // human path may revisit the title (Esc-back from select, or Restart
+    // human path may revisit the title (back from select, or Restart
     // from the in-game menu); the harness path runs exactly once.
+    //
+    // ESC = quit the program, directly, from every screen: it is raylib's
+    // default exit key, so WindowShouldClose() (checked by every loop here
+    // and in the title / select / help screens) goes true the moment it is
+    // pressed. SetExitKey is intentionally never called and no handler
+    // consumes ESC for anything else — the in-game menu lives on M — so
+    // ESC's one and only role is a clean exit to `return 0`.
     bool running = true;
     while (running && !win.ShouldClose()) {
         nccu::CharacterSelectResult selection;

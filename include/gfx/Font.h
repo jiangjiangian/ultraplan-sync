@@ -119,7 +119,7 @@ inline const char* UiLiteralChars() {
         // mechanism / #10 lesson as the building-name block above. The
         // FULL help glyph set is baked (not just 訪) so future help-copy
         // edits cannot silently reintroduce a tofu glyph. Cycle 9.E
-        // (audit H3) appended 暫停凍壓力計 for the new ESC-pause-freezes-
+        // (audit H3) appended 暫停凍壓力計 for the menu (M) pause-freezes-
         // rain hint line; 結 already in 終, 力/計 not in the old set.
         "三下不並久了他作偷動取向品善局屠屬建待復惡或戲戶把拿"
         "撐撿標欄沖消淋災物相破種積終綠者花術被訪購躲透進選醜量錢鍵龍"
