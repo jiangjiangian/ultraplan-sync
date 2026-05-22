@@ -24,26 +24,24 @@ std::string& VendorContentDir() {
 // extra spots are simply unused; if more, the surplus stalls fall back
 // to the last position.
 const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
-    // REQUIREMENT #7: a compact bullseye on the plaza CENTRE. The disc
-    // centre is ≈(1088,960) (densest stone blob in worldmap_base.png;
-    // the eight roads enter at rim ≈r200). collision_mask.png around the
-    // centre is one continuous all-walkable box out to ≈r100 (verified
-    // by sampling — the r=100 box is all-white; the only nearby wall is
-    // the NE corner, outside ±100). Layout: 1 stall on the EXACT centre,
-    // a tight inner ring r≈42 (3 stalls), an outer ring r≈78 (6 stalls)
-    // — max radius 78 ≪ 100 (never near a road junction) and every pair
-    // ≥ 35.9 px apart (> the 24 px Vendor collider, so no two stalls
-    // overlap and the player can thread between them). Every point AND
-    // its 24×24 collider footprint was verified pure-white (walkable) in
-    // collision_mask.png and flood-fill-reachable from the player spawn;
-    // test_spawn_reachability reads ChapterVendors().pos and re-checks
-    // both invariants every build, plus a dedicated centred-cluster test
-    // pins the centre / spread / no-overlap geometry.
+    // Two tidy rows of five across the 羅馬廣場 disc (player request,
+    // superseding the old "正中間 tight cluster" REQUIREMENT #7): a north
+    // row at y=900 and a south row at y=1020, leaving a ~120-px middle
+    // aisle (y≈960) the player walks down to press E on either side.
+    // Columns at x∈{944,998,1052,1106,1160} (54-px pitch ⇒ 30-px gaps >
+    // the 24-px Vendor collider, so stalls never overlap). The grid is
+    // centred on x≈1052 — ~36 px WEST of the disc centre (1088) — because
+    // the plaza's NE and SE corners are walled (map_registry.py walkability
+    // map): the walkable box only reaches x≈1160 on the east, so a disc-
+    // centred grid would be too cramped to thread. Every point was mask-
+    // verified STRICTLY walkable (no solid pixel under its 24×24 box) and
+    // reachable (test_spawn_reachability re-checks ChapterVendors().pos
+    // every build; test_vendor_centred_cluster pins the two-row geometry).
     static const std::vector<nccu::gfx::Vec2> kPos = {
-        {1088.0f,  960.0f},                                        // exact centre
-        {1088.0f, 1002.0f}, {1051.6f,  939.0f}, {1124.4f,  939.0f}, // inner ring r42
-        {1155.5f,  999.0f}, {1088.0f, 1038.0f}, {1020.5f,  999.0f}, // outer ring r78
-        {1020.5f,  921.0f}, {1088.0f,  882.0f}, {1155.5f,  921.0f},
+        { 944.0f,  900.0f}, { 998.0f,  900.0f}, {1052.0f,  900.0f},
+        {1106.0f,  900.0f}, {1160.0f,  900.0f},                       // north row
+        { 944.0f, 1020.0f}, { 998.0f, 1020.0f}, {1052.0f, 1020.0f},
+        {1106.0f, 1020.0f}, {1160.0f, 1020.0f},                       // south row
     };
     return kPos;
 }
