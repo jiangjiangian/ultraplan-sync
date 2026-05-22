@@ -77,6 +77,19 @@ void NPC::Render(nccu::gfx::IRenderer& renderer) const {
         renderer.DrawRect(hitBox_, nccu::gfx::Colors::Green);
         return;
     }
+    // Static full-image sprite (e.g. a 自動販賣機): draw the WHOLE texture
+    // scaled to ~48 px tall, bottom-centred on the hitbox — machine art is
+    // a single 45×94 image, not a Pipoya 32×32 walk sheet.
+    if (staticSprite_) {
+        const float tw = static_cast<float>(sprite_->Width());
+        const float th = static_cast<float>(sprite_->Height());
+        const float dh = 48.0f;
+        const float dw = (th > 0.0f) ? tw * (dh / th) : 24.0f;
+        const Rect dest{hitBox_.x + (hitBox_.width - dw) * 0.5f,
+                        hitBox_.y + hitBox_.height - dh, dw, dh};
+        renderer.DrawSprite(*sprite_, Rect{0.0f, 0.0f, tw, th}, dest);
+        return;
+    }
     // Pipoya cell + facing: stationary NPCs always show col 1 (idle), row 0
     // (facing the camera). Bottom-centre the 32x32 sprite on the 24x24 hit
     // box so feet sit at the hitbox base — same convention as Player.

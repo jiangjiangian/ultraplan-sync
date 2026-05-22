@@ -49,6 +49,10 @@ public:
     // column at row 0 (facing down) is ever drawn.
     void LoadSprite(const std::string& path);
 
+    // Render the WHOLE texture (not a 32×32 Pipoya cell) — for a vendor
+    // whose art is a single static image, e.g. the 自動販賣機 machine.
+    void SetStaticSprite(bool v) noexcept { staticSprite_ = v; }
+
     [[nodiscard]] bool   IsQuestGiver()     const noexcept override { return isQuestGiver_; }
     [[nodiscard]] size_t CurrentLineIndex() const noexcept { return currentLineIndex_; }
     [[nodiscard]] size_t DialogLineCount()  const noexcept { return dialogLines_.size(); }
@@ -74,6 +78,7 @@ private:
     std::string              npcId_;
 
     std::optional<nccu::gfx::Texture> sprite_;
+    bool                              staticSprite_ = false;
 
     bool                                       wander_;
     float                                      retargetTimer_;

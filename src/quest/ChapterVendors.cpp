@@ -91,9 +91,12 @@ const std::vector<VendorPlacement>& BuildInterlude() {
 const std::vector<VendorPlacement>& Chapter2Vendors() {
     static const std::vector<VendorPlacement> kCh2 = {
         VendorPlacement{
-            VendorConfig{"圖書館地下室自動販賣機",
-                         "（投幣口閃著微光，機器嗡嗡作響）",
-                         {VendorItem{"EnergyDrink", 35}}},
+            VendorConfig{.name = "圖書館地下室自動販賣機",
+                         .greeting = "（投幣口閃著微光，機器嗡嗡作響）",
+                         .stock = {VendorItem{"EnergyDrink", 35}},
+                         .spriteOverride = "resources/assets/Pixel Art "
+                             "Vending Machines Pack/Machine 1/"
+                             "Vending Machine 1.1.png"},
             nccu::gfx::Vec2{980.0f, 560.0f}},
     };
     return kCh2;

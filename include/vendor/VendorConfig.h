@@ -48,6 +48,13 @@ struct VendorConfig {
                                                   // `greeting` in BuildDialogLines)
     std::vector<std::string> onPurchase{};        // post-transaction flavour
     std::vector<std::string> onLeave{};           // farewell flavour
+
+    // Optional full-image sprite path (e.g. the 自動販賣機 machine art).
+    // "" → the vendor uses the per-index Pipoya person fallback
+    // (VendorSpriteFor). When set, World loads it AND flags the Vendor
+    // staticSprite_ so NPC::Render draws the WHOLE texture, not a 32×32
+    // Pipoya cell — machine art is a single image, not a character sheet.
+    std::string              spriteOverride{};
 };
 
 #endif // VENDOR_CONFIG_H_
