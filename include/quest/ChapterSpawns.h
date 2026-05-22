@@ -22,24 +22,30 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     static const std::vector<NpcSpawn> kInterlude;     // TODO(S5b): chapter roster
 
     // Ch2 圖書館期中考 (S5c-1). chapter2.md has 6 NPC sections; sprites
-    // reuse Ch1's (art polish later). Positions reuse Ch1-proven walkable
-    // coordinates (test_spawn_reachability / playtested) so the same
-    // single-z-plane campus stays reachable: librarian takes the central
-    // 集英樓-south spot, the rest sit on their Ch1 anchors. Only the
-    // librarian is the quest-giver (chapter2.md: 純資訊關鍵 NPC); 助教 /
-    // 學霸 / 苦主 / 阿姨 / 學長 are isQuestGiver=false there.
+    // reuse Ch1's (art polish later). Placement now matches the narrative
+    // geography instead of parking everyone on Ch1 anchors:
+    //   • 圖書館管理員 (quest-giver) sits at the 中正圖書館 服務台 — just
+    //     south of the library rect (rect bottom y=509; desk at y=545) —
+    //     because chapter2.md routes the whole main line through her desk.
+    //   • 學霸 (bookworm) sits under the 羅馬廣場 statue (plaza centre
+    //     ≈1088,960; placed at the south rim 1088,1100) — the rescue beat
+    //     every direction (note3 / 管理員(b) / 旁白) points the player to.
+    // The other 4 archetypes stay on their Ch1 anchors (optional / ripple,
+    // isQuestGiver=false). All coords mask-verified walkable via
+    // .claude/tools/map_registry.py, whose Ch2 expectation checks pin
+    // librarian↔中正圖書館 and bookworm↔羅馬廣場.
     static const std::vector<NpcSpawn> kChapter2 = {
         {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
         {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        {gfx::Vec2{ 480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        {gfx::Vec2{1088, 1100}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
         {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
         {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
-        {gfx::Vec2{1140, 1725}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {gfx::Vec2{ 820,  545}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "librarian", true},
     };
     // Ch3 校慶運動會 (S5d-1). chapter3.md has 8 ## NPC：sections — the

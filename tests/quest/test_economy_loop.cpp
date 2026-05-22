@@ -44,15 +44,27 @@ TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
     CHECK_FALSE(p.ConsumeOne("HotPack"));
 }
 
-TEST_CASE("ChapterPickups: Ch1 carries ~50 money; market/others empty") {
+TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
     const auto& ch1 = nccu::ChapterPickups(SemesterState::Chapter1_AddDrop);
     REQUIRE(ch1.size() == 5);
     int total = 0;
     for (const auto& p : ch1) total += p.value;
     CHECK(total == 50);
 
+    // Ch2 funds the 35-money EnergyDrink for a player who arrives broke
+    // (the anti-softlock floor chapter2.md §五.3 promises): 10+10+20 = 40.
+    // The `> 35` check is the invariant — it must stay above the
+    // 圖書館地下室自販機 price (ChapterVendors Chapter2Vendors) so a future
+    // tweak can't silently re-introduce the wake-學霸 soft-lock.
+    const auto& ch2 = nccu::ChapterPickups(SemesterState::Chapter2_Midterms);
+    REQUIRE(ch2.size() == 3);
+    int ch2total = 0;
+    for (const auto& p : ch2) ch2total += p.value;
+    CHECK(ch2total == 40);
+    CHECK(ch2total > 35);
+
     CHECK(nccu::ChapterPickups(SemesterState::Interlude_Market).empty());
-    CHECK(nccu::ChapterPickups(SemesterState::Chapter2_Midterms).empty());
+    CHECK(nccu::ChapterPickups(SemesterState::Chapter3_SportsDay).empty());
     CHECK(nccu::ChapterPickups(SemesterState::Chapter4_Finals).empty());
 }
 

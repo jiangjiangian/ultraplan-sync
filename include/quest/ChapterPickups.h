@@ -33,7 +33,16 @@ inline const std::vector<PickupPlacement>& ChapterPickups(SemesterState state) {
         {{1500.0f, 1430.0f},  5},
         {{ 600.0f, 1850.0f},  5},
     };
-    static const std::vector<PickupPlacement> kChapter2;  // TODO(S5c)
+    // Ch2 spread: 10+10+20 = 40 (> the 35 the 圖書館地下室自販機 charges
+    // for the EnergyDrink), strung along the note tour so a player who
+    // arrives broke can still scrape together the wake-學霸 drink — the
+    // anti-softlock floor chapter2.md §五.3 promises. Mask-verified
+    // walkable and clear of the notes / NPCs (map_registry.py).
+    static const std::vector<PickupPlacement> kChapter2 = {
+        {{ 700.0f, 1750.0f}, 10},
+        {{1050.0f, 1380.0f}, 10},
+        {{ 950.0f,  700.0f}, 20},
+    };
     static const std::vector<PickupPlacement> kChapter3;  // TODO(S5d)
     static const std::vector<PickupPlacement> kChapter4;  // TODO(S5e)
     static const std::vector<PickupPlacement> kNone;

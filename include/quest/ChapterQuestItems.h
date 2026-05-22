@@ -32,17 +32,21 @@ ChapterQuestItems(SemesterState state) {
     // collected LAST sees every flag set and grants 學霸 (b) +3 exactly
     // once (QuestFlagPickup::OnPickup — the earlier siblings see a
     // missing flag and skip, and a collected sibling has deactivated).
-    // Coordinates reuse the playtested-walkable central-campus band (the
-    // y≈1380/1640/1850 strip the Ch1 cash spread proved reachable),
-    // spread across 圖書館 / 四維道 so collecting them tours the map.
+    // Coordinates now trace the gate→廣場→圖書館 climb the player walks
+    // anyway: note1 mid-campus (900,1500), note2 just south of 羅馬廣場
+    // (1088,1230 — passing the slumped 學霸 at the statue), note3 at the
+    // 中正圖書館 front (920,620) so the last page lands the player AT the
+    // 管理員 desk, whose (b) line then points back to the plaza. Replaces
+    // the old all-south y≈1430/1850 cluster that toured nothing. All
+    // mask-verified walkable via .claude/tools/map_registry.py.
     static const std::vector<std::string> kNoteSet = {
         kFlagFoundNote1, kFlagFoundNote2, kFlagFoundNote3};
     static const std::vector<QuestItemPlacement> kChapter2 = {
-        {{ 900.0f, 1850.0f}, kFlagFoundNote1,
+        {{ 900.0f, 1500.0f}, kFlagFoundNote1,
          "撿到一頁學霸的筆記。字跡工整，但順序不對。", kNoteSet, 3},
-        {{1500.0f, 1430.0f}, kFlagFoundNote2,
+        {{1088.0f, 1230.0f}, kFlagFoundNote2,
          "又一頁筆記——空白處寫著「期末準備就從現在開始」。", kNoteSet, 3},
-        {{1320.0f, 1850.0f}, kFlagFoundNote3,
+        {{ 920.0f,  620.0f}, kFlagFoundNote3,
          "最後一頁找齊了。管理員說他在外面——大雨裡。", kNoteSet, 3},
     };
     static const std::vector<QuestItemPlacement> kNone;
