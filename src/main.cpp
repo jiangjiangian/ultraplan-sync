@@ -7,6 +7,8 @@
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Font.h"
+#include <cstdlib>
+#include <cstring>
 
 // MVC composition root. Model = World (pure data), View = rendering,
 // Controller = input + simulation + event wiring. The inner game loop is
@@ -82,6 +84,27 @@ int main() {
         // set — a clean reset with no dangling EventBus handlers.
         {
             nccu::World          world{selection.spritePath};
+            // Harness-only debug warp: UMBRELLA_START_STATE jumps the FSM at
+            // startup so a screenshot can reach a later chapter without
+            // scripting the whole spine. Off by default — guarded by
+            // harness.Active() AND the env var, so normal play and the
+            // classic timed harness are byte-for-byte unchanged.
+            if (harness.Active()) {
+                if (const char* s = std::getenv("UMBRELLA_START_STATE"); s) {
+                    using S = nccu::SemesterState;
+                    S target = world.Semester().Current();
+                    bool warp = true;
+                    if      (std::strcmp(s, "Chapter2")  == 0) target = S::Chapter2_Midterms;
+                    else if (std::strcmp(s, "Chapter3")  == 0) target = S::Chapter3_SportsDay;
+                    else if (std::strcmp(s, "Chapter4")  == 0) target = S::Chapter4_Finals;
+                    else if (std::strcmp(s, "Interlude") == 0) target = S::Interlude_Market;
+                    else warp = false;
+                    if (warp) {                       // FSM + roster, so the
+                        world.Semester().Transition(target);   // chapter's NPCs
+                        world.RespawnChapterRoster(target);     // actually spawn
+                    }
+                }
+            }
             nccu::View           view{kWinW, kWinH};
             nccu::GameController  controller{world};
 
