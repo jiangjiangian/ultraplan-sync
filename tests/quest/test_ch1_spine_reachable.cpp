@@ -42,15 +42,18 @@ using nccu::World;
 // (test_spawn_reachability's flood-fill passes); it just requires routing
 // through the gap.
 //
-// This test pins a robust, mask+NPC-verified route that walks the
-// MINIMAL Ch1 spine — talk to 苦主 (Flag_PromisedVictim, the umbrella
-// claim gate), claim the TrueUmbrella (the Ch1 clear → Interlude via the
-// UmbrellaClaimed EventWiring sibling-if), then exit the Interlude south
-// (→ Chapter2_Midterms) — entirely through the x≈1041 gap and the
-// wall-north y≈1750 corridor. It drives the REAL ScriptInput+
-// GameController harness seam (exactly the Harness ordering). If a future
-// mask edit re-seals the gap, or the route regresses, the semester never
-// reaches Ch2 and this fails.
+// 善有善報 redesign: this test pins a robust, mask+NPC-verified route that
+// walks the MINIMAL Ch1 reciprocity spine — talk to 苦主 at 綜合院館
+// (Flag_PromisedVictim), find HIS transparent umbrella near 集英樓
+// (Flag_HasVictimUmbrella), then carry it BACK to him (the GRANT:
+// TryReturnVictimUmbrella sets Flag_HasTrueUmbrella + publishes
+// UmbrellaClaimed → Ch1 clears → Interlude via the EventWiring sibling-if),
+// then exit the Interlude south (→ Chapter2_Midterms). The chapter clears
+// on RETURNING the umbrella, NOT on grabbing one off the ground. All legs
+// route through the x≈1041 gap / wall-north corridor / the clear x=1660
+// column. It drives the REAL ScriptInput+GameController harness seam
+// (exactly the Harness ordering). If a future mask edit re-seals the gap,
+// or the route regresses, the semester never reaches Ch2 and this fails.
 //
 // Companion guarantees: test_scriptinput_plan.cpp (goto reaches a clear
 // target / drive+E claims a non-blocking Item, both on this same mask)
@@ -102,20 +105,36 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
         f};
 }
 
-// The verified minimal-Ch1-spine route. Every leg was traced against the
-// real CollisionMask + DefaultNpcSpawns hitboxes (see the in-suite
-// "wall gap" sanity case below) and run end-to-end through the harness.
+// The verified minimal-Ch1-reciprocity-spine route. Every leg was traced
+// against the real CollisionMask + DefaultNpcSpawns hitboxes (see the
+// in-suite "wall gap" sanity case below) via map_registry.py --route and
+// run end-to-end through the harness.
 const char* kSpineScript =
-    "interact victim\n"               // → Flag_PromisedVictim (+karma)
+    // (1) spawn → 苦主 @綜合院館 (1660,1010) through the gap, then promise.
+    "goto 1040 1712\n" "goto 1048 1704\n" "goto 1264 1632\n"
+    "goto 1280 1624\n" "goto 1296 1616\n" "goto 1312 1608\n"
+    "goto 1328 1600\n" "goto 1408 1512\n" "goto 1416 1504\n"
+    "goto 1424 1496\n" "goto 1432 1488\n" "goto 1448 1480\n"
+    "goto 1496 1456\n" "goto 1504 1448\n" "goto 1512 1440\n"
+    "goto 1520 1432\n" "goto 1528 1424\n" "goto 1544 1328\n"
+    "goto 1552 1320\n" "goto 1568 1312\n" "goto 1584 1304\n"
+    "goto 1592 1296\n" "goto 1660 1120\n"
+    "interact victim\n"               // → Flag_PromisedVictim (+5 karma)
     "choose 0\n"
     "advance\nadvance\nadvance\nadvance\nadvance\nadvance\n"
-    "goto 500 1900\n"                 // onto the open south road
-    "goto 1041 1900\n"                // east to the ONLY wall gap
-    "goto 1041 1750\n"                // up the gap, north of the S wall
-    "goto 380 1750\n"                 // west on the clear wall-north corridor
-    "goto 380 1290\n"                 // up the clean x=380 column
-    "interact trueumb 320 1280\n"     // claim TrueUmbrella → Ch1 clears → IL
+    // (2) → 苦主's umbrella S of 集英樓 (1700,1610) down the clear EAST
+    //     corridor (x≈1744-1752 — avoids the thin western slots); pick it up.
+    "goto 1744 1168\n" "goto 1752 1520\n" "goto 1736 1528\n"
+    "goto 1720 1536\n" "goto 1700 1610\n"
+    "interact victimumb 1700 1610\n"  // → Flag_HasVictimUmbrella
+    "wait 10\n"
+    // (3) carry it BACK to 苦主 up the east corridor; GRANT clears Ch1 → IL.
+    "goto 1752 1480\n" "goto 1744 1344\n" "goto 1728 1336\n"
+    "goto 1704 1328\n" "goto 1688 1320\n" "goto 1672 1312\n"
+    "goto 1660 1120\n"
+    "interact victim\n"               // GRANT → Flag_HasTrueUmbrella → IL
     "wait 20\n"
+    // (4) Interlude exit (entry repositions to {500,1500}) → Chapter2.
     "goto 380 1750\n"                 // IL entry is {500,1500}; back to the
     "goto 1041 1750\n"                // gap (x=500 column is walled), then
     "goto 1041 1965\n"                // down through it into the IL exit zone

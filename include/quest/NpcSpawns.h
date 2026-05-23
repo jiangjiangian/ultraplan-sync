@@ -27,13 +27,22 @@ struct NpcSpawn {
 
 inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
     static const std::vector<NpcSpawn> kAll = {
-        // 苦主 — quest-giver, on Zhinan Rd east of the 正門 gate footprint.
-        {gfx::Vec2{380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        // 苦主 — Ch1 quest-giver, now at 綜合院館 (rect 1681,677,371x326),
+        // where the 善有善報 redesign opens: the player's own透明傘 vanished
+        // from the 綜院 1 樓傘架 (chapter1.md 開場), and the victim — who
+        // ALSO lost his there — is found just outside the building's SW
+        // corner. (1660,1010) is mask-verified STRICTLY walkable (100%, all
+        // 4 neighbours 100%, in no building trigger) and flood-reachable
+        // from the (500,1860) spawn via the gap column (map_registry.py
+        // --route). Quest-giver `!` marks him as the first stop.
+        {gfx::Vec2{1660, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", true},
-        // 西裝學長 — at 集英樓's south entrance, where the 助教 reward
-        // clue ("集英樓 2 樓有個穿西裝的") sends the player. "2F" is
-        // narrative flavour; the campus is a single z-plane.
-        {gfx::Vec2{1140, 1725}, "resources/assets/sprites/npc/suit_senior.png",
+        // 西裝學長 — at 集英樓 (rect 1524,1353,224x192), the building the
+        // 苦主 says he "拿著透明傘往集英樓方向跑" toward (chapter1.md 苦主
+        // (a)). (1620,1560) is just south of the 集英樓 rect, mask-verified
+        // STRICTLY walkable (100%, all 4 neighbours 100%) and flood-
+        // reachable; the victim's-umbrella pickup sits nearby at (1450,1450).
+        {gfx::Vec2{1620, 1560}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
         // 學霸 — on the central umbrella strip (same row as the umbrellas),
         // west of the planter prop so the spawn box stays walkable.

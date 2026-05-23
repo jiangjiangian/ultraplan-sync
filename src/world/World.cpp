@@ -52,10 +52,16 @@ World::World(const std::string& playerSpritePath, bool loadSprites)
     }
 
     // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
-    // the AABB resolver never has to rescue them at frame 0. The 4
+    // the AABB resolver never has to rescue them at frame 0. The 3 morality
     // umbrellas sit on the central strip between plaza and Si Wei Blvd.
+    //
+    // 善有善報 redesign: the world TrueUmbrella is GONE. The player's真傘 is
+    // no longer claimable off the ground — the 苦主 grants it once the
+    // player carries HIS umbrella back (TryReturnVictimUmbrella). The
+    // Cursed / Fragile / ProfessorTrap umbrellas REMAIN as the morality /
+    // Ending-B-etc. paths and still clear Ch1 via their own beClaimed (the
+    // three-ending architecture is untouched — CLAUDE.md §5).
     objects_.push_back(GameObjectFactory::Create(ObjectType::Player,                Vec2{500, 1860}));
-    objects_.push_back(GameObjectFactory::Create(ObjectType::TrueUmbrella,          Vec2{ 320, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1200, 1256}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));

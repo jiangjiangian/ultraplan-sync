@@ -6,6 +6,7 @@
 #include "state/EndingGate.h"
 #include "quest/ChapterGate.h"
 #include "ui/ChapterToast.h"
+#include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
 #include "quest/Chapter4Quest.h"
@@ -535,6 +536,16 @@ void GameController::Update() {
                     return;
                 }
                 if (const std::string_view id = o.NpcId(); !id.empty()) {
+                    // Ch1 善有善報: returning the 苦主 his umbrella (carried
+                    // back after finding it) sets Flag_HasTrueUmbrella +
+                    // publishes UmbrellaClaimed("TrueUmbrella") BEFORE the
+                    // opener runs, so the opener then routes the victim to
+                    // his (d) thank-you recap and the EventWiring Ch1
+                    // sibling-if clears Ch1. No-op for every other NPC /
+                    // state, and before the promise / before the player
+                    // holds the victim's umbrella (early-returns inside).
+                    TryReturnVictimUmbrella(*player, id,
+                                            world_.Semester().Current());
                     // S5c-2: talking to 學霸 at the rescue moment
                     // consumes the EnergyDrink + sets Flag_Bookworm
                     // Recovered BEFORE the opener runs, so the opener

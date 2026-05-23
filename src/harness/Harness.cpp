@@ -29,6 +29,11 @@ namespace {
 const std::vector<std::string>& KnownFlags() {
     static const std::vector<std::string> kFlags = {
         "Flag_FoundForm", "Flag_PromisedVictim", "Flag_HelpedTA_Ch1",
+        // 善有善報: the findable 苦主's-umbrella pickup flag (set by the
+        // Ch1 QuestFlagPickup, cleared by the grant in
+        // TryReturnVictimUmbrella). Whitelisted so the Ch1 reciprocity
+        // spine is observable in state.jsonl, like Flag_FoundForm.
+        "Flag_HasVictimUmbrella",
         "Flag_TookCursedUmbrella", "Flag_HasTrueUmbrella",
         // (Cycle-8 audit F1, B3 precedent: the inert KnowsUgly seed
         // formerly listed here was removed; the Ch1 阿姨 (c) buy is
