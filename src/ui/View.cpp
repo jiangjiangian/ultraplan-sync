@@ -85,6 +85,46 @@ void View::Draw(const World& world) {
         CameraScope cam{camera_};
         Renderer{}.Texture(worldmap_, Vec2{0.0f, 0.0f});
 
+        // 操場 校慶 lap track — a dotted STADIUM outline (running-track
+        // shape: top + bottom straights joined by left + right semicircles)
+        // on the field the player laps; dots already passed disappear so it
+        // shrinks as the lap completes (走完動態消除). Drawn HERE — right
+        // after the base map, BEFORE the building/object painter's pass — so
+        // it is a GROUND DECAL: 綜合院館 (which overlaps the 操場's east
+        // edge) and the runners paint OVER it (layering request:
+        // 地圖 → 線條 → 綜院). World space (inside the CameraScope).
+        if (world.SportsLapActive()) {
+            const float prog = world.SportsLapProgress();
+            constexpr int kDots = 48;
+            constexpr float kPi = 3.14159265f;
+            const float cx = nccu::kSportsTrackCx, cy = nccu::kSportsTrackCy;
+            const float a  = nccu::kSportsTrackHalfLen, r = nccu::kSportsTrackR;
+            const float straight = 2.0f * a, arc = kPi * r;
+            const float perim = 2.0f * straight + 2.0f * arc;
+            for (int i = 0; i < kDots; ++i) {
+                const float frac = static_cast<float>(i) /
+                                   static_cast<float>(kDots);
+                if (frac < prog) continue;          // already walked → erased
+                const float d = frac * perim;       // distance along perimeter
+                float x, y;
+                if (d < straight) {                 // top straight, L→R
+                    x = cx - a + d;            y = cy - r;
+                } else if (d < straight + arc) {    // right end-cap (east)
+                    const float th = (d - straight) / r;        // 0..pi
+                    x = cx + a + r * std::sin(th);
+                    y = cy - r * std::cos(th);
+                } else if (d < 2.0f * straight + arc) {  // bottom straight, R→L
+                    x = cx + a - (d - straight - arc);  y = cy + r;
+                } else {                            // left end-cap (west)
+                    const float th = (d - 2.0f * straight - arc) / r;
+                    x = cx - a - r * std::sin(th);
+                    y = cy + r * std::cos(th);
+                }
+                renderer_.DrawRect(Rect{x - 5.0f, y - 5.0f, 10.0f, 10.0f},
+                                   Color{255, 255, 255, 240});  // lane-marker white
+            }
+        }
+
         // Painter's order: buildings keyed on their ground line, objects
         // on their feet (top-left + player height). Lower y paints first,
         // so a character above a building's base is covered by it; one
@@ -159,44 +199,6 @@ void View::Draw(const World& world) {
                 nccu::gfx::Time::DeltaSeconds(),
                 world.ReducedMotion());
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
-        }
-
-        // 操場 校慶 lap track — a dotted STADIUM outline (running-track
-        // shape: top + bottom straights joined by a left + right
-        // semicircle) on the field the player runs a lap around. Dots
-        // already passed disappear, so the track visibly shrinks as the lap
-        // completes (走完動態消除). In the CameraScope so it sits on the
-        // field in world space.
-        if (world.SportsLapActive()) {
-            const float prog = world.SportsLapProgress();
-            constexpr int kDots = 48;
-            constexpr float kPi = 3.14159265f;
-            const float cx = nccu::kSportsTrackCx, cy = nccu::kSportsTrackCy;
-            const float a  = nccu::kSportsTrackHalfLen, r = nccu::kSportsTrackR;
-            const float straight = 2.0f * a, arc = kPi * r;
-            const float perim = 2.0f * straight + 2.0f * arc;
-            for (int i = 0; i < kDots; ++i) {
-                const float frac = static_cast<float>(i) /
-                                   static_cast<float>(kDots);
-                if (frac < prog) continue;          // already walked → erased
-                const float d = frac * perim;       // distance along perimeter
-                float x, y;
-                if (d < straight) {                 // top straight, L→R
-                    x = cx - a + d;            y = cy - r;
-                } else if (d < straight + arc) {    // right end-cap (east)
-                    const float th = (d - straight) / r;        // 0..pi
-                    x = cx + a + r * std::sin(th);
-                    y = cy - r * std::cos(th);
-                } else if (d < 2.0f * straight + arc) {  // bottom straight, R→L
-                    x = cx + a - (d - straight - arc);  y = cy + r;
-                } else {                            // left end-cap (west)
-                    const float th = (d - 2.0f * straight - arc) / r;
-                    x = cx - a - r * std::sin(th);
-                    y = cy + r * std::cos(th);
-                }
-                renderer_.DrawRect(Rect{x - 5.0f, y - 5.0f, 10.0f, 10.0f},
-                                   Color{255, 255, 255, 240});  // lane-marker white
-            }
         }
     }
 
