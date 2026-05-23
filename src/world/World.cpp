@@ -14,6 +14,7 @@
 #include "gfx/Vec2.h"
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <string_view>
@@ -221,6 +222,65 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             ObjectType::TrueUmbrella, nccu::gfx::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
+    }
+
+    // 操場 校慶 crowd (player request): 5 students RUN the track at distinct
+    // speeds + 10 IDLE/mill, each a DIFFERENT shipped sprite (no new art).
+    // All decorative — isQuestGiver=false, non-blocking (NPC::BlocksMovement
+    // is false for circular_/wander_) — so the crowd never gates or walls
+    // the player. Sprites load only under loadSprites_ (headless tests skip
+    // the GPU upload, as the archetype/ambient loops do). This Ch3 path runs
+    // AFTER the ctor's terrainMask_ load (it is a state-change spawn, never
+    // the initial ctor call), so the idlers get a valid wander mask.
+    if (state == SemesterState::Chapter3_SportsDay) {
+        static const char* const kCrowd[15] = {
+            "resources/assets/sprites/school_uniform_3/male_01.png",
+            "resources/assets/sprites/school_uniform_3/male_04.png",
+            "resources/assets/sprites/school_uniform_3/male_05.png",
+            "resources/assets/sprites/school_uniform_3/male_07.png",
+            "resources/assets/sprites/school_uniform_3/male_08.png",
+            "resources/assets/sprites/school_uniform_3/male_09.png",
+            "resources/assets/sprites/school_uniform_3/male_11.png",
+            "resources/assets/sprites/school_uniform_3/female_02.png",
+            "resources/assets/sprites/school_uniform_3/female_04.png",
+            "resources/assets/sprites/school_uniform_3/female_05.png",
+            "resources/assets/sprites/school_uniform_3/female_06.png",
+            "resources/assets/sprites/school_uniform_3/female_07.png",
+            "resources/assets/sprites/school_uniform_3/female_10.png",
+            "resources/assets/sprites/school_uniform_3/female_11.png",
+            "resources/assets/sprites/school_uniform_3/female_12.png",
+        };
+        const nccu::gfx::Vec2 trackC{1680.0f, 710.0f};
+        const float trackR = 140.0f;
+        for (int i = 0; i < 5; ++i) {                 // runners
+            const float a0 = static_cast<float>(i) * 1.25664f;   // 72° apart
+            auto run = std::make_unique<NPC>(
+                nccu::gfx::Vec2{trackC.x + trackR * std::cos(a0),
+                                trackC.y + trackR * std::sin(a0)},
+                std::vector<std::string>{}, false, std::string_view{});
+            run->EnableCircularRun(trackC, trackR,
+                                   0.30f + 0.08f * static_cast<float>(i), a0);
+            if (loadSprites_) run->LoadSprite(kCrowd[i]);
+            chapterRoster_.push_back(run.get());
+            objects_.push_back(std::move(run));
+        }
+        static const nccu::gfx::Vec2 kIdle[10] = {
+            {1500.0f, 640.0f}, {1620.0f, 600.0f}, {1760.0f, 640.0f},
+            {1860.0f, 700.0f}, {1560.0f, 800.0f}, {1700.0f, 820.0f},
+            {1820.0f, 800.0f}, {1480.0f, 720.0f}, {1640.0f, 700.0f},
+            {1900.0f, 660.0f}};
+        unsigned seed = 0x5A17C0DEu;
+        for (int i = 0; i < 10; ++i) {                // idlers
+            auto npc = std::make_unique<NPC>(
+                kIdle[i], std::vector<std::string>{}, false,
+                std::string_view{});
+            npc->EnableWander(40.0f, seed);
+            npc->SetWanderMask(terrainMask_);
+            if (loadSprites_) npc->LoadSprite(kCrowd[5 + i]);
+            chapterRoster_.push_back(npc.get());
+            objects_.push_back(std::move(npc));
+            seed = seed * 1664525u + 1013904223u;
+        }
     }
 }
 

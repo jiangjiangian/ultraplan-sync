@@ -7,6 +7,22 @@
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
 #include <algorithm>
+#include <array>
+#include <cmath>
+
+namespace {
+// Pipoya 32x32 walk cycle (idle col 1, left 0, idle 1, right 2) + the
+// direction→row map — mirrors Player.cpp so a crowd runner animates the
+// same way the player does.
+constexpr int kCell = 32;
+constexpr std::array<int, 4> kWalkCols = {1, 0, 1, 2};
+constexpr float kFrameDur = 0.15f;
+int RowFor(nccu::gfx::Vec2 f) {
+    const float ax = std::fabs(f.x), ay = std::fabs(f.y);
+    if (ax > ay) return f.x < 0.0f ? 1 : 2;
+    return f.y < 0.0f ? 3 : 0;
+}
+}  // namespace
 
 NPC::NPC(nccu::gfx::Vec2 position,
          std::vector<std::string> dialogLines,
@@ -33,7 +49,32 @@ NPC& NPC::EnableWander(float speed, unsigned seed) noexcept {
     return *this;
 }
 
+NPC& NPC::EnableCircularRun(nccu::gfx::Vec2 center, float radius,
+                            float angularSpeed, float startAngle) noexcept {
+    circular_     = true;
+    circleCenter_ = center;
+    circleRadius_ = radius;
+    circleSpeed_  = angularSpeed;
+    circleAngle_  = startAngle;
+    return *this;
+}
+
 void NPC::Update(float deltaTime) {
+    if (circular_) {  // 校慶 crowd runner: glide the fixed track + animate
+        const nccu::gfx::Vec2 prev = position_;
+        circleAngle_ += circleSpeed_ * deltaTime;
+        SetPosition(nccu::gfx::Vec2{
+            circleCenter_.x + circleRadius_ * std::cos(circleAngle_),
+            circleCenter_.y + circleRadius_ * std::sin(circleAngle_)});
+        const nccu::gfx::Vec2 d{position_.x - prev.x, position_.y - prev.y};
+        if (d.x != 0.0f || d.y != 0.0f) facing_ = d;
+        animTimer_ += deltaTime;
+        if (animTimer_ >= kFrameDur) {
+            animTimer_ -= kFrameDur;
+            animStep_ = (animStep_ + 1) % 4;
+        }
+        return;
+    }
     if (!wander_) return;  // archetype NPCs stand at their post
 
     retargetTimer_ -= deltaTime;
@@ -90,15 +131,16 @@ void NPC::Render(nccu::gfx::IRenderer& renderer) const {
         renderer.DrawSprite(*sprite_, Rect{0.0f, 0.0f, tw, th}, dest);
         return;
     }
-    // Pipoya cell + facing: stationary NPCs always show col 1 (idle), row 0
-    // (facing the camera). Bottom-centre the 32x32 sprite on the 24x24 hit
-    // box so feet sit at the hitbox base — same convention as Player.
-    constexpr int kCell = 32;
-    constexpr int kIdleCol = 1;
-    constexpr int kDownRow = 0;
+    // A 校慶 crowd runner (circular_) walk-animates and faces its motion;
+    // every other NPC (stationary archetype / wanderer) shows the idle
+    // column facing the camera. Bottom-centre the 32x32 sprite on the
+    // 24x24 hitbox so feet sit at the base — same convention as Player.
+    const int col = circular_ ? kWalkCols[static_cast<std::size_t>(animStep_)]
+                              : 1;
+    const int row = circular_ ? RowFor(facing_) : 0;
     const Rect src{
-        static_cast<float>(kIdleCol * kCell),
-        static_cast<float>(kDownRow * kCell),
+        static_cast<float>(col * kCell),
+        static_cast<float>(row * kCell),
         static_cast<float>(kCell),
         static_cast<float>(kCell)};
     const Rect dest{

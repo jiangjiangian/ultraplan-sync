@@ -4,6 +4,7 @@
 #include "entities/NPC.h"
 #include "entities/Player.h"
 #include "world/World.h"
+#include <cmath>
 #include <set>
 #include <string>
 #include <string_view>
@@ -140,37 +141,42 @@ TEST_CASE("Player invariant survives the full spine traversal") {
     }
 }
 
-TEST_CASE("Ch3 trade-chain NPCs sit on the natural exploration path") {
-    // cycle9c: the 3 物物交換鏈 quest-givers (vendor_sausage_a /
-    // loudspeaker_b / senior_c) used to spawn at y=1850 — close to the
-    // very bottom of the camera viewport at the Ch3 entry (player
-    // y~1890, camera target.y clamped to 1823 → visible y in [1598,
-    // 2048]), so the H4 quest-giver "!" indicator rendered at the
-    // extreme bottom edge and was occluded / cut off (cycle9_diag_a
-    // frame 4200 had 0 visible indicators). Pulling them up to y=1820
-    // — the very top of the south corridor, immediately below the E-W
-    // wall at y~1761-1819 — puts the indicator panel at world y~1776,
-    // ~190 px from the screen top at the entry viewport while keeping
-    // the south corridor (y > 1820) as the script's existing axis-only
-    // navigation lane. The cutoff in this assertion is the practical
-    // "above the south road's bottom edge" line: a future tweak that
-    // pushes them back below y=1840 would regress visibility for the
-    // same reason the cycle8 baseline did. cycle9c_smoke verifies
-    // 3 "!" indicators ARE visible in the entry viewport.
+TEST_CASE("Ch3 trade-chain NPCs sit scattered in 羅馬廣場") {
+    // The 3 物物交換鏈 quest-givers (vendor_sausage_a / loudspeaker_b /
+    // senior_c) moved from the old south corridor into 羅馬廣場 (player
+    // request), where the player heads after running the 操場 lap. Pin them
+    // inside the walkable plaza disc (centre ~1088,960, r~200) so a future
+    // tweak can't scatter them back across the south campus.
     World w("", /*loadSprites=*/false);
     w.RespawnChapterRoster(SemesterState::Chapter3_SportsDay);
 
-    constexpr float kCutoffY = 1840.0f;
     for (const char* id : {"vendor_sausage_a", "loudspeaker_b", "senior_c"}) {
         const GameObject* hit = nullptr;
         for (const auto& o : w.Objects())
             if (o->NpcId() == std::string_view(id)) { hit = o.get(); break; }
         REQUIRE_MESSAGE(hit != nullptr,
                         "Ch3 trade-chain NPC missing: " << id);
-        const float y = hit->GetPosition().y;
-        CHECK_MESSAGE(y < kCutoffY,
-                      id << " spawned at y=" << y
-                         << " (>= " << kCutoffY
-                         << "); regressed off the discoverability path");
+        const auto p = hit->GetPosition();
+        const float d = std::hypot(p.x - 1088.0f, p.y - 960.0f);
+        CHECK_MESSAGE(d < 220.0f,
+                      id << " at (" << p.x << "," << p.y
+                         << ") is " << d << " px from 羅馬廣場 centre");
     }
+}
+
+TEST_CASE("Ch3: the 操場 校慶 crowd spawns (5 runners + 10 idlers)") {
+    // The decorative crowd populates the 操場 (x1384-2005, y541-940) so the
+    // sports day actually has people (player-reported "沒人在操場"). Counted
+    // at spawn-time: the umbrella (y375) / archetypes / ABC (plaza) / ambient
+    // students (south) all fall outside the field box, so this counts crowd.
+    World w("", /*loadSprites=*/false);
+    w.RespawnChapterRoster(SemesterState::Chapter3_SportsDay);
+
+    int crowd = 0;
+    for (const auto& o : w.Objects()) {
+        const auto p = o->GetPosition();
+        if (p.x >= 1384.0f && p.x <= 2005.0f && p.y >= 541.0f && p.y <= 940.0f)
+            ++crowd;
+    }
+    CHECK(crowd >= 15);
 }
