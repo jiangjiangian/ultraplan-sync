@@ -64,9 +64,11 @@ TEST_CASE("Vendor::TryBuy success: deducts money, emits ShowMessage + PickupAcqu
 
     // Both events should have fired exactly once.
     CHECK(cap.msgHits    == 1);
-    CHECK(cap.lastMsg    == "買了 HotPack");
+    // Item 5b: the toast shows the 中文 catalog name + price spent +
+    // remaining balance (start 100 - 30 = 70), not the raw itemId.
+    CHECK(cap.lastMsg    == "買了暖暖包，花了 30 元（剩 70 元）");
     CHECK(cap.pickupHits == 1);
-    CHECK(cap.lastPickup == "HotPack");
+    CHECK(cap.lastPickup == "HotPack");   // inventory event still the id
 }
 
 TEST_CASE("Vendor::TryBuy insufficient funds: no deduction, ShowMessage 錢不夠, no pickup event") {
