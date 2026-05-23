@@ -35,13 +35,26 @@ private:
         bool            flipX;
         bool            flipY;
     };
-    // A single entry in the per-frame painter's-order list. Exactly one
-    // of {obj, building} is meaningful: obj!=nullptr → a GameObject,
-    // otherwise `building` indexes buildings_.
+    // A single entry in the per-frame painter's-order list, depth-sorted
+    // by `y`. `kind` selects the payload: Object → `obj` is the
+    // GameObject; Building → `index` is into buildings_; Decoration →
+    // `index` is into decorations_. (Decorations join the SAME sort so an
+    // ambient "statue" walk-behinds correctly against NPCs/buildings.)
+    enum class DrawKind { Object, Building, Decoration };
     struct DrawRef {
         float               y;
-        const ::GameObject* obj;
-        std::size_t         building;
+        DrawKind            kind;
+        const ::GameObject* obj;     // valid iff kind == Object
+        std::size_t         index;   // buildings_/decorations_ index otherwise
+    };
+    // One LOADED ambient decoration strip: which kDecorations[] def it
+    // realises + its loaded texture. Built in the ctor; a def whose PNG
+    // is missing is simply skipped (no entry), so the missing-asset path
+    // draws nothing. These are View-side cosmetics — never GameObjects,
+    // never in World::Objects() — so the harness state.jsonl is unchanged.
+    struct DecorationSprite {
+        std::size_t        defIndex;   // into nccu::gfx::kDecorations
+        nccu::gfx::Texture texture;    // the loaded strip (move-only)
     };
 
     nccu::gfx::RaylibRenderer        renderer_;
@@ -52,8 +65,14 @@ private:
     nccu::gfx::Vec2                  viewportSize_;
     std::vector<nccu::gfx::Texture>  buildingTextures_;
     std::vector<BuildingSprite>      buildings_;
+    std::vector<DecorationSprite>    decorations_;  // ambient strips (cosmetic)
     std::vector<DrawRef>             drawOrder_;  // per-frame scratch
     float                            endingAlpha_ = 0.0f;  // card fade-in
+    // Render clock (seconds) for the ping-pong decoration animation —
+    // accumulates Time::DeltaSeconds() each frame the world is drawn. NOT
+    // simulation state (pure View flourish, mirrors interludeMarkerPhase_
+    // / endingAlpha_), so the harness timeline / state.jsonl is unchanged.
+    double                           decorationClock_ = 0.0;
     // H3: animation phase (in world px) for the Interlude exit ground
     // marker. Ticked by DeltaSeconds * speed each frame the player is in
     // the Interlude, so the dashed line sweeps west-to-east. Not part of
