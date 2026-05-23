@@ -60,14 +60,19 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);   // re-talk
         CHECK(p.GetKarma() == k0 + 3);                     // not doubled
     }
-    SUBCASE("西裝學長 ScoldedSenior -> -3 once") {
+    SUBCASE("西裝學長 ScoldedSenior -> karma-neutral, key set once") {
+        // T1 reframe: the Ch1 (b) call-out is now RATIONAL (+3), so the
+        // Ch2 "保持距離" ripple no longer claws it back with -3 — it is
+        // karma-neutral (mild embarrassment, not a penalty). The once-key
+        // is still set so the arc routes exactly once.
         Player p = MakePlayer();
         const int k0 = p.GetKarma();
         p.SetFlag("Flag_ScoldedSenior");
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);
-        CHECK(p.GetKarma() == k0 - 3);
+        CHECK(p.GetKarma() == k0);                        // no penalty
+        CHECK(p.HasFlag(nccu::kFlagCh2RippledSuitSenior)); // but consumed once
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);
-        CHECK(p.GetKarma() == k0 - 3);
+        CHECK(p.GetKarma() == k0);
     }
     SUBCASE("助教 ProfessorTrap -> -10 once") {
         Player p = MakePlayer();

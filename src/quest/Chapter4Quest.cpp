@@ -13,6 +13,20 @@ bool Ch4IndicatorVisible(std::string_view npcId, const Player& player) {
     return false;
 }
 
+void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
+                              SemesterState state) {
+    if (state != SemesterState::Chapter4_Finals) return;
+    if (npcId != "ta") return;
+    if (!player.HasFlag("Flag_ConsoledTA")) return;   // gentle branch only
+    if (player.HasFlag("Flag_HasTrueUmbrella")) return;  // idempotent
+    // The 助教 hands YOUR umbrella back when you're kind — Ending A's 持傘
+    // condition on the gentle path. EndingGate keeps the karma>80 gate, so
+    // this does not by itself force Ending A; it only makes 體諒+high-karma
+    // sufficient WITHOUT the hidden Ch4 umbrella.
+    player.SetHasUmbrella(true);
+    player.SetFlag("Flag_HasTrueUmbrella");
+}
+
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
                        SemesterState state) {
     if (state != SemesterState::Chapter4_Finals) return;

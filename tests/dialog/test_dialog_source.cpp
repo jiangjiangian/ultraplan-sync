@@ -53,18 +53,20 @@ TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
     REQUIRE(s0->lines.size() == 5);
     CHECK(s0->lines[0] == "欸，加退選也沒搶到嗎？");
 
-    // subState 2: karma -5, Flag_ScoldedSenior = false.
-    CHECK(s2->karmaDelta == -5);
+    // subState 2 (c) 接受取傘: T1 reframe — karma 0 (the act itself is
+    // neutral; the cost is the later ProfTrap recognition / ripples),
+    // Flag_ScoldedSenior = false.
+    CHECK(s2->karmaDelta == 0);
     CHECK(s2->setsFlag == "Flag_ScoldedSenior");
     CHECK(s2->flagValue == false);
-    CHECK(s2->choiceLabel == "玩家接受，取傘後交給學長");
+    CHECK(s2->choiceLabel == "接受，取傘後交給學長");
 
-    // subState 3: NEW (d) positive branch (C.2). karma +3,
-    // Flag_HelpedSenior = true (first Flag_ line wins).
-    CHECK(s3->karmaDelta == 3);
+    // subState 3 (d) 點破疑點: T1 reframe — the best rational option,
+    // karma +5, Flag_HelpedSenior = true (first Flag_ line wins).
+    CHECK(s3->karmaDelta == 5);
     CHECK(s3->setsFlag == "Flag_HelpedSenior");
     CHECK(s3->flagValue == true);
-    CHECK(s3->choiceLabel == "玩家點破傘的疑點，轉而提供正規協助");
+    CHECK(s3->choiceLabel == "點破傘的疑點，轉而提供正規協助");
 }
 
 TEST_CASE("DialogSource: Ch1 ta reward substate parity") {
@@ -122,6 +124,6 @@ TEST_CASE("DialogSource: Reload() rebuilds the cache, data unchanged") {
     REQUIRE(a2 != nullptr);
     CHECK(a0->choiceLabel == "初次接觸");
     CHECK(a2->karmaDelta == karmaBefore);
-    CHECK(a2->karmaDelta == -5);
+    CHECK(a2->karmaDelta == 0);                  // T1 reframe: (c) is now 0
     CHECK(a2->setsFlag == "Flag_ScoldedSenior");
 }

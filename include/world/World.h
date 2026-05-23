@@ -69,6 +69,17 @@ public:
     // state change. Returns true on the frame it spawns (for the test).
     bool MaybeSpawnChapter2Notes();
 
+    // T5: Ch3 TrueUmbrella reveal-after-clue deferred spawn (sibling of
+    // MaybeSpawnChapter2Notes): tick once per frame from the controller. The
+    // umbrella is NOT spawned at chapter entry — it appears ONLY after the
+    // C-系 學姊 reveals its location (Flag_KnowsUmbrellaLoc). Self-gates on
+    // Chapter3 / clue-flag / not-yet-spawned, a cheap no-op otherwise, and
+    // fires exactly once per Ch3 visit (ch3UmbrellaSpawned_). Roster-tracked
+    // so it is swept on the next state change. Spawned LEFT of the gym
+    // (kChapter3UmbrellaPos) so it is no longer occluded. Returns true on the
+    // frame it spawns (for the test).
+    bool MaybeSpawnChapter3Umbrella();
+
     [[nodiscard]] DialogState&       Dialog()       noexcept { return dialog_; }
     [[nodiscard]] const DialogState& Dialog() const noexcept { return dialog_; }
 
@@ -308,6 +319,11 @@ private:
     // by RespawnChapterRoster (a fresh chapter visit re-arms it), exactly
     // like the lap fields above are conceptually per-Ch3-visit.
     bool                        ch2NotesSpawned_{false};
+    // T5: Ch3 TrueUmbrella one-shot guard — true once
+    // MaybeSpawnChapter3Umbrella has dropped it this Ch3 visit. Reset by
+    // RespawnChapterRoster (a fresh Ch3 visit re-arms it), exactly like
+    // ch2NotesSpawned_ above.
+    bool                        ch3UmbrellaSpawned_{false};
     bool                        inventoryOpen_{false};
     int                         inventoryCursor_{0};
     bool                        menuOpen_{false};

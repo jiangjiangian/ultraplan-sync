@@ -128,12 +128,16 @@ const char* kSpineScript =
     "goto 1720 1536\n" "goto 1700 1610\n"
     "interact victimumb 1700 1610\n"  // → Flag_HasVictimUmbrella
     "wait 10\n"
-    // (3) carry it BACK to 苦主 up the east corridor; GRANT clears Ch1 → IL.
+    // (3) carry it BACK to 苦主 up the east corridor; GRANT (silent) + the
+    //     (d) 重逢致謝 exchange dialogue. T2: the chapter clear is DEFERRED
+    //     until that dialogue CLOSES, so we must read it through (advance)
+    //     before LiftChapter1Clear fires UmbrellaClaimed → Interlude.
     "goto 1752 1480\n" "goto 1744 1344\n" "goto 1728 1336\n"
     "goto 1704 1328\n" "goto 1688 1320\n" "goto 1672 1312\n"
     "goto 1660 1120\n"
-    "interact victim\n"               // GRANT → Flag_HasTrueUmbrella → IL
-    "wait 20\n"
+    "interact victim\n"               // GRANT (flags) + opens (d) exchange
+    "advance\nadvance\nadvance\nadvance\nadvance\n"  // read + close the (d) scene
+    "wait 20\n"                       // → LiftChapter1Clear fires → Interlude
     // (4) Interlude exit (entry repositions to {500,1500}) → Chapter2.
     "goto 380 1750\n"                 // IL entry is {500,1500}; back to the
     "goto 1041 1750\n"                // gap (x=500 column is walled), then

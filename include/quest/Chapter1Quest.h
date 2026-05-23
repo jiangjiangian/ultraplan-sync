@@ -7,6 +7,8 @@ class Player;                       // mutated by the return / grant
 
 namespace nccu {
 
+class DialogState;                  // read const by LiftChapter1Clear
+
 // Ch1 加退選之亂 「善有善報」 quest flags — single source of truth, shared
 // by the victim's-umbrella pickup table (ChapterQuestItems), the return
 // hook below and DialogOpener's Ch1 victim routing so the names never
@@ -25,6 +27,12 @@ namespace nccu {
 // count-only consumable inventory.
 inline constexpr const char* kFlagHasVictimUmbrella = "Flag_HasVictimUmbrella";
 
+// T2 once-key: the Ch1 clear (UmbrellaClaimed publish → Interlude) has
+// already fired. LiftChapter1Clear is polled every non-dialog frame, so
+// this guard makes the publish happen exactly once after the (d) exchange
+// dialogue closes. Mirrors Chapter2Quest's kFlagCh2Cleared once-guard.
+inline constexpr const char* kFlagCh1ClearFired = "Flag_ClearChapter1";
+
 // E-interact hook: returning the 苦主 (victim) his umbrella in Ch1. The
 // reciprocity heart of the redesigned chapter — the chapter clears only
 // AFTER the player carries the victim's umbrella BACK to him, never the
@@ -42,16 +50,13 @@ inline constexpr const char* kFlagHasVictimUmbrella = "Flag_HasVictimUmbrella";
 //                 change — the player must still find the pickup.
 //   GRANT       — has the promise AND Flag_HasVictimUmbrella: the payoff.
 //                 Clears Flag_HasVictimUmbrella (the victim takes his傘
-//                 back), then REPLICATES TrueUmbrella::beClaimed's effect
-//                 — SetHasUmbrella(true) + SetFlag(Flag_HasTrueUmbrella)
-//                 (Ending A's precise condition, EndingGate.cpp) — and
-//                 publishes, in beClaimed's exact order, the 苦主's
-//                 "這是我的傘…我也撿到你的，還你" ShowMessage THEN
-//                 UmbrellaClaimed("TrueUmbrella"). The UmbrellaClaimed
-//                 subscriber (EventWiring) then transitions Ch1→Interlude
-//                 (returnTo Ch2), exactly as the world TrueUmbrella used
-//                 to. Idempotent: the grant clears nothing it re-reads, and
-//                 the DONE guard above stops a second grant on a re-talk.
+//                 back) + SetHasUmbrella(true) + SetFlag(Flag_HasTrueUmbrella)
+//                 (Ending A's precise condition, EndingGate.cpp). T2: it
+//                 does NOT publish UmbrellaClaimed here — that (which drives
+//                 the Ch1→Interlude transition) is DEFERRED to
+//                 LiftChapter1Clear so the (d) 重逢致謝 exchange dialogue
+//                 plays FIRST. Idempotent: the grant clears nothing it
+//                 re-reads, and the DONE guard above stops a second grant.
 //
 // The world TrueUmbrella is REMOVED in the redesign (the victim grants it
 // now); the Cursed / Fragile / ProfessorTrap umbrellas stay on the ground
@@ -59,6 +64,34 @@ inline constexpr const char* kFlagHasVictimUmbrella = "Flag_HasVictimUmbrella";
 // this hook is the ONLY non-cursed clear path.
 void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
                              SemesterState state);
+
+// T2: deferred Ch1 clear, the sibling of Chapter2Quest's LiftChapter2Clear.
+// Once TryReturnVictimUmbrella has granted Flag_HasTrueUmbrella, this fires
+// the chapter clear — but only AFTER the 苦主's (d) 重逢致謝 exchange dialogue
+// has CLOSED (the `dialog.Active()` guard), so the player reads the exchange
+// scene before Ch1 snaps to the Interlude. Publishes ShowMessage THEN
+// UmbrellaClaimed("TrueUmbrella") (beClaimed's HUD-slot order) and the
+// EventWiring Ch1 sibling-if then transitions Ch1→Interlude (returnTo Ch2).
+// Once-guarded (kFlagCh1ClearFired) so it fires exactly once though polled
+// every non-dialog frame. No-op outside Ch1 / before the grant / while the
+// dialogue is up / after it has already fired. Called by GameController next
+// to LiftChapter2Clear, BEFORE CheckChapterGates, so the published
+// transition is observed the same frame.
+void LiftChapter1Clear(Player& player, SemesterState state,
+                       const DialogState& dialog);
+
+// T3: sequential quest-giver `!` gate for the Ch1 MAIN spine — the sibling
+// of Ch3IndicatorVisible. The Ch1 main line is single-NPC: 苦主(承諾) →
+// [find the victim's umbrella] → 苦主(歸還). So the `!` rides the 苦主
+// throughout, and turns OFF once the chapter objective is met (the grant set
+// Flag_HasTrueUmbrella → the (d) reunion is a recap, no longer an objective).
+// Side / optional quest-givers (the 助教 申請書 errand) are isQuestGiver=false
+// in DefaultNpcSpawns, so they never light here and never masquerade as the
+// main objective. Returns true for any OTHER quest-giver (none in Ch1) so the
+// && isQuestGiver in QuestIndicatorVisible still governs them. View calls
+// this (via QuestIndicatorVisible) when state == Chapter1_AddDrop.
+[[nodiscard]] bool Ch1IndicatorVisible(std::string_view npcId,
+                                       const Player& player);
 
 } // namespace nccu
 
