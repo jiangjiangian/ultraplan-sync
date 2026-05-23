@@ -161,26 +161,41 @@ void View::Draw(const World& world) {
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
         }
 
-        // 操場 校慶 lap track — a dotted ring on the field the player runs a
-        // lap around; dots already passed disappear, so the ring visibly
-        // shrinks as the lap completes (走完動態消除). In the CameraScope so
-        // it sits on the field in world space.
+        // 操場 校慶 lap track — a dotted STADIUM outline (running-track
+        // shape: top + bottom straights joined by a left + right
+        // semicircle) on the field the player runs a lap around. Dots
+        // already passed disappear, so the track visibly shrinks as the lap
+        // completes (走完動態消除). In the CameraScope so it sits on the
+        // field in world space.
         if (world.SportsLapActive()) {
             const float prog = world.SportsLapProgress();
-            constexpr int kDots = 32;
-            constexpr float kTwoPi = 6.2831853f;
-            const float start = kTwoPi * 0.25f;   // south point (player entry)
+            constexpr int kDots = 48;
+            constexpr float kPi = 3.14159265f;
+            const float cx = nccu::kSportsTrackCx, cy = nccu::kSportsTrackCy;
+            const float a  = nccu::kSportsTrackHalfLen, r = nccu::kSportsTrackR;
+            const float straight = 2.0f * a, arc = kPi * r;
+            const float perim = 2.0f * straight + 2.0f * arc;
             for (int i = 0; i < kDots; ++i) {
                 const float frac = static_cast<float>(i) /
                                    static_cast<float>(kDots);
                 if (frac < prog) continue;          // already walked → erased
-                const float a = start + frac * kTwoPi;
-                const float x = nccu::kSportsTrackCx +
-                                nccu::kSportsTrackR * std::cos(a);
-                const float y = nccu::kSportsTrackCy +
-                                nccu::kSportsTrackR * std::sin(a);
-                renderer_.DrawRect(Rect{x - 4.0f, y - 4.0f, 8.0f, 8.0f},
-                                   Color{255, 230, 90, 220});
+                const float d = frac * perim;       // distance along perimeter
+                float x, y;
+                if (d < straight) {                 // top straight, L→R
+                    x = cx - a + d;            y = cy - r;
+                } else if (d < straight + arc) {    // right end-cap (east)
+                    const float th = (d - straight) / r;        // 0..pi
+                    x = cx + a + r * std::sin(th);
+                    y = cy - r * std::cos(th);
+                } else if (d < 2.0f * straight + arc) {  // bottom straight, R→L
+                    x = cx + a - (d - straight - arc);  y = cy + r;
+                } else {                            // left end-cap (west)
+                    const float th = (d - 2.0f * straight - arc) / r;
+                    x = cx - a - r * std::sin(th);
+                    y = cy + r * std::cos(th);
+                }
+                renderer_.DrawRect(Rect{x - 5.0f, y - 5.0f, 10.0f, 10.0f},
+                                   Color{255, 255, 255, 240});  // lane-marker white
             }
         }
     }

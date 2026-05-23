@@ -32,8 +32,8 @@ inline std::string CurrentObjective(SemesterState state,
             return "目標：先到中正圖書館找管理員問線索，"
                    "再去羅馬廣場雕像下喚醒學霸";
         case SemesterState::Chapter3_SportsDay:
-            return "目標：到操場參加校慶，在四維道攤位完成物物交換、"
-                   "取回真傘";
+            return "目標：先繞操場跑一圈參加校慶，再到羅馬廣場找 ABC "
+                   "三系換情報、取回真傘";
         case SemesterState::Chapter4_Finals:
             return "目標：期末考終焉——回集英樓面對你的最終選擇";
         case SemesterState::Ending_A:
