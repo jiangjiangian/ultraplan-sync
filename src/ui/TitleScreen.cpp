@@ -70,14 +70,18 @@ bool RunHelpPage(gfx::Window& win) {
                 .At(Vec2{kWinW / 2.0f - 64.0f, 40.0f})
                 .Size(26).Color(Colors::Gold).Draw();
             // Blank separator lines get half height so every row + the
-            // closing line clears the footer in the 450 px window.
+            // closing line clears the footer in the 450 px window. Item 1e
+            // grew the endings section by two lines; the per-row pitch is
+            // tightened (20->18, blanks 11->9) to match the in-game help
+            // overlay (View.cpp) and keep header + 17 rows + closing above
+            // the footer at kWinH-46 without scrolling.
             float y = 74.0f;
             for (const std::string_view ln : nccu::kGameHelpLines) {
                 if (!ln.empty())
                     TextBuilder{std::string{ln}}
                         .At(Vec2{48.0f, y}).Size(16)
                         .Color(Colors::White).Draw();
-                y += ln.empty() ? 11.0f : 20.0f;
+                y += ln.empty() ? 9.0f : 18.0f;
             }
             TextBuilder{std::string{nccu::kGameHelpClosing}}
                 .At(Vec2{48.0f, y}).Size(16).Color(Colors::White).Draw();

@@ -42,10 +42,16 @@ TEST_CASE("CellWidth: full-width CJK = 2, ASCII = 1 (matches dialog_lint)") {
     CHECK(CellWidth("") == 0);
 }
 
-TEST_CASE("A 42-cell mixed CJK/ASCII line wraps into rows each <=28 cells") {
-    // 21 CJK glyphs = 42 cells; > 28 so it must wrap.
-    const std::string line = "順手幫我把一樓傘架的那把透明傘帶上來就好欸";
-    REQUIRE(CellWidth(line) == 42);
+TEST_CASE("A CJK line just over the box width wraps into rows each <=kBoxCells") {
+    // Scale the input to kBoxCells (not a literal 28/80) so this stays a
+    // wrap test for ANY box width: kBoxCells+1 cells of CJK is the
+    // smallest input that MUST spill past one row. Built from one CJK
+    // glyph (2 cells) repeated, so the cell count is exact and the test
+    // doesn't pin the renderer's wrap constant to a magic number.
+    std::string line;
+    const int targetCells = kBoxCells + 1;        // guarantees a 2nd row
+    while (CellWidth(line) <= targetCells) line += "傘";  // 2 cells each
+    REQUIRE(CellWidth(line) > kBoxCells);
     const auto rows = WrapToCells(line, kBoxCells);
     CHECK(rows.size() >= 2);
     for (const std::string& r : rows) {
@@ -59,13 +65,16 @@ TEST_CASE("A 42-cell mixed CJK/ASCII line wraps into rows each <=28 cells") {
     CHECK(joined == line);
 }
 
-TEST_CASE("The longest authored line (54 cells) wraps with no >28 row") {
-    // chapter*.md peak length found by dialog_lint (54 full-width cells).
-    const std::string line =
-        "這是一段非常長的章節旁白用來模擬內容檔裡最長的那一句它有五十"
-        "四個全形字格遠遠超過對話框的二十八格寬度必須換行";
-    REQUIRE(CellWidth(line) > 28);
-    for (const std::string& r : WrapToCells(line, kBoxCells))
+TEST_CASE("A very long CJK line wraps with no row wider than kBoxCells") {
+    // Far longer than one box width (sized to kBoxCells so it stays a
+    // wrap test at any box width): kBoxCells*4 cells of CJK must produce
+    // ~4 rows, none wider than the box.
+    std::string line;
+    while (CellWidth(line) < kBoxCells * 4) line += "傘";
+    REQUIRE(CellWidth(line) > kBoxCells);
+    const auto rows = WrapToCells(line, kBoxCells);
+    CHECK(rows.size() >= 4);
+    for (const std::string& r : rows)
         CHECK(CellWidth(r) <= kBoxCells);
 }
 
@@ -114,21 +123,27 @@ TEST_CASE("Paginate / LayoutPages always return at least one page") {
 
 TEST_CASE("DialogState paginates a long line; advance turns the page") {
     nccu::DialogState d;
-    // 60 CJK glyphs = 120 cells -> >1 page at 28 cells x 3 rows (84/pg).
+    // Size the line to kBoxCells so this stays a TWO-PAGE pagination test
+    // for ANY box width: one full page holds kBoxCells*kBoxRowsPerPage
+    // cells; +1 cell more spills onto a 2nd page. Building it as a count
+    // of 2-cell CJK glyphs keeps the cell total exact without pinning a
+    // literal page capacity.
+    const int onePageCells = kBoxCells * kBoxRowsPerPage;
     std::string longLine;
-    for (int i = 0; i < 60; ++i) longLine += "傘";
+    while (CellWidth(longLine) <= onePageCells) longLine += "傘";
+    REQUIRE(CellWidth(longLine) > onePageCells);  // guaranteed > 1 page
     d.Open({longLine, "短"});
     CHECK(d.Active());
-    // Page 1: 3 rows, each <=28 cells, more pages pending.
+    // Page 1: a full page of rows, each <=kBoxCells, more pages pending.
     auto p1 = d.CurrentPageRows();
-    CHECK(p1.size() == kBoxRowsPerPage);
+    CHECK(p1.size() == static_cast<std::size_t>(kBoxRowsPerPage));
     for (const std::string& r : p1) CHECK(CellWidth(r) <= kBoxCells);
     CHECK(d.CurrentLineHasMorePages());
     CHECK(d.HasMore());
 
     CHECK(d.Advance() == nullptr);               // turn page, SAME line
     CHECK(d.CurrentLine() == longLine);          // still on line 0
-    CHECK_FALSE(d.CurrentLineHasMorePages());    // 120 cells -> 2 pages
+    CHECK_FALSE(d.CurrentLineHasMorePages());    // spilled exactly 1 row
     auto p2 = d.CurrentPageRows();
     for (const std::string& r : p2) CHECK(CellWidth(r) <= kBoxCells);
     CHECK(d.HasMore());                          // a further line remains

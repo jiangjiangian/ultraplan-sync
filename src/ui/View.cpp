@@ -71,7 +71,24 @@ void View::Draw(const World& world) {
         endingAlpha_ = EndingFadeAlphaStep(
             endingAlpha_, nccu::gfx::Time::DeltaSeconds(),
             world.ReducedMotion());
-        DrawEndingCard(renderer_, st, world.Semester().CurrentName(),
+        // Item 1: the ending .md (its narrative + the new 字卡 reason
+        // callbacks) is NEVER drawn because this branch early-returns —
+        // so the "why you reached this ending" must be surfaced IN CODE.
+        // Extract the render primitives (karma + the EndingGate flags)
+        // into a render-only DTO here, where the View still owns World/
+        // Player, and hand it to the EndingView. EndingView never touches
+        // World/Player itself (MVC purity) — it just renders the DTO.
+        EndingSummary es;
+        es.state = st;
+        if (const Player* ep = world.GetPlayer()) {
+            es.karma            = ep->GetKarma();
+            es.hasTrueUmbrella  = ep->HasFlag("Flag_HasTrueUmbrella");
+            es.consoledTA       = ep->HasFlag("Flag_ConsoledTA");
+            es.tookCursed       = ep->HasFlag("Flag_TookCursedUmbrella");
+            es.boughtUgly       = ep->HasFlag("Flag_BoughtUglyUmbrella");
+            es.finaleChoiceMade = ep->HasFlag("Flag_TaFinaleChoiceMade");
+        }
+        DrawEndingCard(renderer_, es, world.Semester().CurrentName(),
                        endingAlpha_, viewportSize_.x, viewportSize_.y);
         return;   // ending replaces the world; player has no agency here
     }
@@ -527,13 +544,18 @@ void View::Draw(const World& world) {
             .Size(26).Color(Colors::Gold).Draw();
         // Blank separator lines get half height so all rows + the closing
         // line clear the footer in the 450 px window (no scroll needed).
+        // Item 1e grew the endings section by two lines, so the per-row
+        // pitch is tightened (20->18, blanks 11->9) to keep the whole
+        // panel — header + 17 rows + closing — above the footer at
+        // H-pad-26 without scrolling. 15 text rows*18 + 2 blanks*9 = 288;
+        // from hy0=74 the closing lands ~362, well clear of the ~400 footer.
         float hy = pad + 50.0f;
         for (const std::string_view ln : nccu::kGameHelpLines) {
             if (!ln.empty())
                 TextBuilder{std::string{ln}}
                     .At(Vec2{pad + 24.0f, hy})
                     .Size(16).Color(Colors::White).Draw();
-            hy += ln.empty() ? 11.0f : 20.0f;
+            hy += ln.empty() ? 9.0f : 18.0f;
         }
         TextBuilder{std::string{nccu::kGameHelpClosing}}
             .At(Vec2{pad + 24.0f, hy}).Size(16).Color(Colors::White).Draw();
