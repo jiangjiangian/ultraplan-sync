@@ -4,6 +4,7 @@
 #include "gfx/Rect.h"
 #include "gfx/Vec2.h"
 #include "gfx/Color.h"
+#include "gfx/UmbrellaGlyph.h"
 #include <algorithm>
 #include <cstdio>
 #include <string>
@@ -154,6 +155,21 @@ Color endingTextColor(SemesterState s, unsigned char a) {
     return Color{255, 255, 255, a};
 }
 
+// The owner's "Ch4 結局顯示最終雨傘樣貌": the card shows the umbrella the run
+// ENDED with, drawn with the SAME shared glyph the in-world umbrellas / the
+// pickup use. Keying it off the ENDING (not raw flags) guarantees it can never
+// mismatch the verdict — the fix for "體諒卻顯示醜傘":
+//   A 完美結局 → 真傘 (blue)   B 墮落結局 → 詛咒傘 (dark purple)
+//   C 務實結局 → 醜傘 (green)
+[[nodiscard]] nccu::gfx::UmbrellaLook endingUmbrellaLook(SemesterState s) {
+    switch (s) {
+        case SemesterState::Ending_A: return nccu::gfx::UmbrellaLook::TrueBlue;
+        case SemesterState::Ending_B: return nccu::gfx::UmbrellaLook::CursedPurple;
+        case SemesterState::Ending_C: return nccu::gfx::UmbrellaLook::UglyGreen;
+        default:                      return nccu::gfx::UmbrellaLook::TrueBlue;
+    }
+}
+
 }  // namespace
 
 std::vector<std::string> EndingCardStrings() {
@@ -200,11 +216,22 @@ void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
     // spy test sees a real card even though View also early-returns.
     r.DrawRect(Rect{0.0f, 0.0f, screenW, screenH}, Color{0, 0, 0, a});
 
+    // ---- The final umbrella (owner: "Ch4 結局顯示最終雨傘樣貌") --------
+    // A hero swatch of the umbrella this run ended with, drawn with the
+    // SAME shared glyph the in-world umbrellas + the pickup use, keyed off
+    // the ENDING so it can never mismatch the verdict (A 真傘藍 / B 詛咒傘
+    // 暗紫 / C 醜傘綠). Centred at the top, alpha-scaled with the card fade.
+    constexpr float kUmbW = 56.0f;
+    constexpr float kUmbH = 50.0f;
+    nccu::gfx::DrawUmbrellaGlyph(
+        r, endingUmbrellaLook(state),
+        Rect{screenW * 0.5f - kUmbW * 0.5f, 8.0f, kUmbW, kUmbH}, a);
+
     // ---- Title + opening 字卡 (centred via the cell model) ------------
     // Ending B is greyed per the GDD; A/C stay white. Sizes/positions
-    // chosen for the 800x450 window so the title, caption, reason block
-    // and 結算 card all fit one screen (single-screen — preserves the
-    // simple endingAlpha_ fade; no paging needed at this density).
+    // chosen for the 800x450 window so the umbrella swatch, title, caption,
+    // reason block and 結算 card all fit one screen (single-screen —
+    // preserves the simple endingAlpha_ fade; no paging needed).
     constexpr int kTitleSize   = 28;
     constexpr int kCaptionSize = 18;
     constexpr int kReasonSize  = 16;
@@ -212,9 +239,9 @@ void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
     const Color tint = endingTextColor(state, a);
     const std::string ttl{title};
     const std::string cap{caption(state)};
-    r.DrawText(ttl, Vec2{CenteredX(ttl, kTitleSize, screenW), 44.0f},
+    r.DrawText(ttl, Vec2{CenteredX(ttl, kTitleSize, screenW), 64.0f},
                kTitleSize, tint);
-    r.DrawText(cap, Vec2{CenteredX(cap, kCaptionSize, screenW), 88.0f},
+    r.DrawText(cap, Vec2{CenteredX(cap, kCaptionSize, screenW), 100.0f},
                kCaptionSize, tint);
 
     // ---- "why you're here" reason block (the STORY lines) -------------

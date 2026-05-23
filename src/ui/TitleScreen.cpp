@@ -67,28 +67,37 @@ bool RunHelpPage(gfx::Window& win) {
                              static_cast<float>(kWinH) - 48.0f};
             r.Rect(panel, kPanel);
             TextBuilder{"遊戲說明"}
-                .At(Vec2{kWinW / 2.0f - 64.0f, 40.0f})
-                .Size(26).Color(Colors::Gold).Draw();
-            // Blank separator lines get half height so every row + the
-            // closing line clears the footer in the 450 px window. Item 1e
-            // grew the endings section by two lines; the per-row pitch is
-            // tightened (20->18, blanks 11->9) to match the in-game help
-            // overlay (View.cpp) and keep header + 17 rows + closing above
-            // the footer at kWinH-46 without scrolling.
-            float y = 74.0f;
+                .At(Vec2{kWinW / 2.0f - 52.0f, 30.0f})
+                .Size(24).Color(Colors::Gold).Draw();
+            // T4: matches the in-game overlay (View.cpp). The help text grew
+            // (keys split one-per-line + a 【雨傘外觀】 section), so the pitch
+            // is 15 (blanks 5) to keep header + 20 text rows + 3 blanks above
+            // the footer chip in the 450 px window. Section headers (【…】)
+            // are gold so the four sections read apart at a glance.
+            float y = 64.0f;
+            const auto isHeader = [](std::string_view s) {
+                return !s.empty() && s.front() == static_cast<char>('\xE3');
+            };  // 【 is U+3010 → lead byte 0xE3
             for (const std::string_view ln : nccu::kGameHelpLines) {
                 if (!ln.empty())
                     TextBuilder{std::string{ln}}
-                        .At(Vec2{48.0f, y}).Size(16)
-                        .Color(Colors::White).Draw();
-                y += ln.empty() ? 9.0f : 18.0f;
+                        .At(Vec2{46.0f, y}).Size(15)
+                        .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
+                y += ln.empty() ? 5.0f : 15.0f;
             }
             TextBuilder{std::string{nccu::kGameHelpClosing}}
-                .At(Vec2{48.0f, y}).Size(16).Color(Colors::White).Draw();
+                .At(Vec2{46.0f, y}).Size(15).Color(Colors::White).Draw();
+            // T4c: a PROMINENT 返回 prompt — a gold-bordered chip + bright
+            // gold label so the way out is unmistakable (was faint dark-grey).
+            const float chipW = 188.0f, chipH = 26.0f;
+            const float chipX = kWinW / 2.0f - chipW * 0.5f;
+            const float chipY = static_cast<float>(kWinH) - 24.0f - chipH - 8.0f;
+            r.Rect(Rect{chipX, chipY, chipW, chipH}, Color{62, 52, 18, 255});
+            r.Rect(Rect{chipX, chipY, chipW, 2.0f}, Colors::Gold);
+            r.Rect(Rect{chipX, chipY + chipH - 2.0f, chipW, 2.0f}, Colors::Gold);
             TextBuilder{"Enter / E 返回"}
-                .At(Vec2{kWinW / 2.0f - 64.0f,
-                         static_cast<float>(kWinH) - 46.0f})
-                .Size(16).Color(Colors::DarkGray).Draw();
+                .At(Vec2{kWinW / 2.0f - 56.0f, chipY + 5.0f})
+                .Size(17).Color(Colors::Gold).Draw();
         }
     }
     return false;                              // window closed

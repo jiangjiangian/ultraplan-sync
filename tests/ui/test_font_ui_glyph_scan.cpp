@@ -2,6 +2,9 @@
 #include "gfx/Font.h"
 #include "ui/EndingView.h"
 #include "ui/GameHelp.h"
+#include "quest/ItemCatalog.h"
+#include "quest/QuestObjective.h"
+#include "vendor/VendorMessages.h"
 #include <algorithm>
 #include <iomanip>
 #include <string>
@@ -17,6 +20,13 @@
 // tofu. The strings come from the SAME source the renderer draws:
 // EndingCardStrings() (every ending-screen branch) + GameHelp + the
 // View.cpp HUD/menu/inventory literals.
+//
+// T5 broadens the scan to EVERY code-built UI string the owner saw `?` in:
+// the HUD 目標 objective text (QuestObjectiveStrings — 綜合院館 / 集英樓 /
+// 羅馬廣場 / 操場 / 校慶 / 期末考終焉…), the ItemCatalog names+descriptions
+// (bag rows + vendor toast), the Vendor toast pieces (VendorMessages), the
+// new 【雨傘外觀】 help lines, and the ending strings. So an uncovered glyph
+// anywhere on those surfaces fails the build, not the player's screen.
 //
 // Headless-safe: CollectCodepoints() + raylib's codepoint decoder need
 // no GL context (same as the sibling font test).
@@ -87,4 +97,33 @@ TEST_CASE("5c: every View.cpp HUD/menu/inventory literal glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string& s : ViewLiterals())
         RequireAllCovered(atlas, s, "view-literal");
+}
+
+TEST_CASE("T5: every HUD 目標 objective-text glyph is baked") {
+    const std::vector<int> atlas = CollectCodepoints();
+    const std::vector<std::string> objs = nccu::QuestObjectiveStrings();
+    CHECK(objs.size() >= 9);          // sanity: every chapter/state enumerated
+    for (const std::string& s : objs)
+        RequireAllCovered(atlas, s, "objective");
+}
+
+TEST_CASE("T5: every ItemCatalog name + description glyph is baked") {
+    const std::vector<int> atlas = CollectCodepoints();
+    const std::vector<std::string> cat = nccu::CatalogStrings();
+    CHECK(cat.size() > 10);           // sanity: the catalog table was flattened
+    for (const std::string& s : cat)
+        RequireAllCovered(atlas, s, "catalog");
+}
+
+TEST_CASE("T5: every Vendor toast / message glyph is baked") {
+    const std::vector<int> atlas = CollectCodepoints();
+    namespace m = nccu::vendor::msg;
+    const std::vector<std::string> v = {
+        std::string{m::kInsufficientFunds}, std::string{m::kPurchasedPrefix},
+        std::string{m::kSpentMid},          std::string{m::kSpentUnitOpen},
+        std::string{m::kSpentUnitClose},    std::string{m::kSoldOut},
+        std::string{m::kStockLineSep},      std::string{m::kStockLineUnit},
+    };
+    for (const std::string& s : v)
+        RequireAllCovered(atlas, s, "vendor-msg");
 }

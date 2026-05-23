@@ -82,6 +82,16 @@ ItemInfo ItemInfoFor(std::string_view itemId) {
     return ItemInfo{itemId, std::string_view{}};
 }
 
+std::vector<std::string> CatalogStrings() {
+    std::vector<std::string> out;
+    for (const auto& [id, info] : Table()) {
+        (void)id;
+        out.emplace_back(info.displayName);
+        if (!info.description.empty()) out.emplace_back(info.description);
+    }
+    return out;
+}
+
 bool IsUsableConsumable(std::string_view itemId) {
     return itemId == "EnergyDrink" || itemId == "HotPack" ||
            itemId == "WaterproofSpray";

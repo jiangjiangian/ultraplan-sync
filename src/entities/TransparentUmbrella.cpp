@@ -2,6 +2,7 @@
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "gfx/IRenderer.h"
+#include "gfx/UmbrellaGlyph.h"
 
 #include <string>
 
@@ -29,65 +30,17 @@ void TransparentUmbrella::OnPickup(Player* player) {
 }
 
 void TransparentUmbrella::Render(nccu::gfx::IRenderer& renderer) const {
-    // REQUIREMENT #9: a distinct silhouette PER umbrella style inside the
-    // 20x20 footprint (all rect-only — IRenderer has no circle/triangle),
-    // so the three Ch1 choices read apart at a glance even at map scale
-    // and on displays where the tints alone are subtle. Template Method —
-    // the skeleton lives here; each subclass supplies its bold tint AND
-    // its UmbrellaStyle via the constructor. MVC clean: pure render off
-    // the object's own data, no sim/state touched.
-    using nccu::gfx::Rect;
-    namespace C = nccu::gfx::Colors;
-    const float x = position_.x;
-    const float y = position_.y;
-    const nccu::gfx::Color t = umbrellaTint_;
-
-    switch (style_) {
-        case UmbrellaStyle::Domed: {
-            // True — a wide, full, rounded 3-tier canopy: the "complete /
-            // correct" read. Light handle so the clear umbrella looks
-            // intact and tidy.
-            renderer.DrawRect(Rect{x + 6.0f, y + 2.0f,  8.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 3.0f, y + 4.0f, 14.0f, 3.0f}, t);
-            renderer.DrawRect(Rect{x + 0.0f, y + 7.0f, 20.0f, 3.0f}, t);
-            renderer.DrawRect(Rect{x + 9.0f, y + 10.0f, 2.0f, 9.0f}, C::DarkGray);
-            renderer.DrawRect(Rect{x + 7.0f, y + 18.0f, 6.0f, 2.0f}, C::DarkGray);
-            break;
-        }
-        case UmbrellaStyle::Broken: {
-            // Fragile — a small, narrow canopy with a missing right rib
-            // (the gap) and a bent handle: reads as cheap / about to fail.
-            renderer.DrawRect(Rect{x + 5.0f, y + 5.0f, 8.0f, 3.0f}, t);
-            renderer.DrawRect(Rect{x + 3.0f, y + 8.0f, 9.0f, 3.0f}, t); // short — torn rib gap on the right
-            renderer.DrawRect(Rect{x + 14.0f, y + 8.0f, 3.0f, 2.0f}, t); // detached rib tip
-            renderer.DrawRect(Rect{x + 8.0f, y + 11.0f, 2.0f, 6.0f}, C::DarkGray);
-            renderer.DrawRect(Rect{x + 8.0f, y + 17.0f, 4.0f, 2.0f}, C::DarkGray); // bent foot
-            break;
-        }
-        case UmbrellaStyle::Spiked: {
-            // ProfessorTrap — an angular STEPPED pyramid canopy with a
-            // sharp tip: an alarming, weaponised silhouette (the trap).
-            renderer.DrawRect(Rect{x + 9.0f, y + 1.0f,  2.0f, 3.0f}, t);  // spike tip
-            renderer.DrawRect(Rect{x + 7.0f, y + 4.0f,  6.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 4.0f, y + 6.0f, 12.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 1.0f, y + 8.0f, 18.0f, 2.0f}, t);
-            // jagged barbs at the canopy hem
-            renderer.DrawRect(Rect{x + 2.0f, y + 10.0f, 2.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 9.0f, y + 10.0f, 2.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 16.0f, y + 10.0f, 2.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 9.0f, y + 12.0f, 2.0f, 7.0f}, C::DarkGray);
-            break;
-        }
-        case UmbrellaStyle::Drooping: {
-            // Cursed — a sagging, heavy canopy whose ribs hang DOWN at the
-            // sides, plus a pure-black handle: an oppressive "wrong" read.
-            renderer.DrawRect(Rect{x + 7.0f, y + 3.0f,  6.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 3.0f, y + 5.0f, 14.0f, 3.0f}, t);
-            renderer.DrawRect(Rect{x + 1.0f, y + 8.0f, 18.0f, 2.0f}, t);
-            renderer.DrawRect(Rect{x + 1.0f, y + 10.0f, 3.0f, 4.0f}, t);  // left rib drooping down
-            renderer.DrawRect(Rect{x + 16.0f, y + 10.0f, 3.0f, 4.0f}, t); // right rib drooping down
-            renderer.DrawRect(Rect{x + 9.0f, y + 10.0f, 2.0f, 9.0f}, C::Black);
-            break;
-        }
-    }
+    // The owner pinned each umbrella's look (真傘=藍 / 破傘=剩手柄 /
+    // 詛咒傘=暗紫 / 醜傘=綠, ProfessorTrap a danger-red trap). All four
+    // silhouettes + their signature colours live in ONE place,
+    // gfx::DrawUmbrellaGlyph, which is ALSO what the ground pickup and the
+    // ending card draw — so a given umbrella reads identically wherever it
+    // appears. The per-subclass UmbrellaStyle just selects which look; the
+    // colour now comes from the shared glyph (umbrellaTint_ is retained on
+    // the object for any caller that wants the tint, but Render no longer
+    // needs it). Rect-only, no sprite/text — MVC clean (the View renders
+    // off the object's own data; no sim/state touched).
+    nccu::gfx::DrawUmbrellaGlyph(renderer, LookForStyle(style_),
+                                 nccu::gfx::Rect{position_.x, position_.y,
+                                                 20.0f, 20.0f});
 }
