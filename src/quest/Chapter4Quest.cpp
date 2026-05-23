@@ -3,6 +3,16 @@
 
 namespace nccu {
 
+// Item 1b: 助教 is the finale `!` until the (d) 結算 choice is committed
+// (Flag_TaFinaleChoiceMade, set by GameController on confirm; the 1c exit
+// does NOT set it, so backing out keeps the `!` lit for a re-approach).
+// Every other Ch4 npcId is dark — the finale is gate-driven, so a `!` on
+// the ripple-flavour archetypes would be pure noise.
+bool Ch4IndicatorVisible(std::string_view npcId, const Player& player) {
+    if (npcId == "ta") return !player.HasFlag("Flag_TaFinaleChoiceMade");
+    return false;
+}
+
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
                        SemesterState state) {
     if (state != SemesterState::Chapter4_Finals) return;

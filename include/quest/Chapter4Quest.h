@@ -29,6 +29,20 @@ inline constexpr const char* kFlagCh4RippledAuntie   = "Flag_Ch4Rippled_Auntie";
 inline constexpr const char* kFlagBoughtCoffeeForAuntie =
     "Flag_BoughtCoffeeForAuntie_Ch1";
 
+// Item 1b — Ch4 finale `!` target hint. The Ch4 roster is gate-driven so
+// every NPC ships isQuestGiver=false (ChapterSpawns.h kChapter4), which
+// meant the finale chapter painted NO `!` at all and the player had no
+// visual cue WHERE the ending is decided. This predicate is the Ch4
+// counterpart of Ch3IndicatorVisible: it returns true for 助教 (the NPC
+// whose (d) 結算 choice gates Ending A/B/C) until the choice is locked in
+// (Flag_TaFinaleChoiceMade), and false for every other npcId — so the
+// finale `!` marks exactly the one NPC that advances the spine, and clears
+// once the decision is made. View consults it (via QuestIndicatorVisible)
+// when state == Chapter4_Finals; because it is keyed on npcId (not on the
+// roster's isQuestGiver bit) the gate-driven roster stays byte-unchanged.
+[[nodiscard]] bool Ch4IndicatorVisible(std::string_view npcId,
+                                       const Player& player);
+
 // E-interact hook, sibling of TryApplyCh2Ripple / TryApplyCh3Ripple.
 // Per-NPC, once each (independent keys):
 //   西裝學長  HelpedSenior && karma>70 → +10  (chapter4.md L109 (b))

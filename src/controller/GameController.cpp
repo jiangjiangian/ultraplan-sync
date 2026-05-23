@@ -324,11 +324,20 @@ void GameController::Update() {
                         return;
                     }
                     ApplyDialogChoice(*p, *c);
+                    // 1c: the trailing "我再想想…" exit (kDialogExitLabel)
+                    // is a no-commit back-out — it must NOT trip any
+                    // menu's post-choice bookkeeping below. ApplyDialog
+                    // Choice was already a no-op for it (zero karma /
+                    // empty flag); the guard here additionally stops the
+                    // 助教 finale self-lock from firing, so the moral
+                    // choice stays UNMADE and re-approachable (mirrors the
+                    // vendor decline's "no side effect" contract).
+                    const bool exitChoice = c->label == kDialogExitLabel;
                     // C.3(b): a confirmed 西裝學長 choice locks the
                     // branch menu so re-talking can't stack mutually-
                     // exclusive ripple flags. DialogOpener reads this
                     // flag and recaps line-only thereafter.
-                    if (npc == "suit_senior")
+                    if (!exitChoice && npc == "suit_senior")
                         p->SetFlag("Flag_SuitSeniorChoiceMade");
                     // S5e-2d: a confirmed 助教 (d) 結算 choice in Ch4
                     // locks the menu (one-shot, like C.3(b)) so the
@@ -336,8 +345,11 @@ void GameController::Update() {
                     // be flipped/re-applied on a re-talk. ApplyDialog
                     // Choice already set Flag_ConsoledTA + karma; the
                     // CheckEndingGates below routes Ending A if its
-                    // karma>80 + TrueUmbrella conditions also hold.
-                    if (npc == "ta" && world_.Semester().Current() ==
+                    // karma>80 + TrueUmbrella conditions also hold. The
+                    // 1c exit is excluded so backing out does NOT set
+                    // Flag_TaFinaleChoiceMade (no premature Ending C/B).
+                    if (!exitChoice && npc == "ta" &&
+                        world_.Semester().Current() ==
                             SemesterState::Chapter4_Finals)
                         p->SetFlag("Flag_TaFinaleChoiceMade");
                     // Ending gates first, then chapter gates (existing

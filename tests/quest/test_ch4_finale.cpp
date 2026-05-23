@@ -34,9 +34,16 @@ TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問
     REQUIRE(d.Active());
     StepToChoice(d);
     REQUIRE(d.AtChoice());
-    REQUIRE(d.Choices().size() == 2);
+    // 1c: the menu now carries a trailing no-commit exit (index 2). 體諒/質問
+    // keep indices 0/1 (appended LAST, vendor-decline contract), so the
+    // routing/karma CHECKs below are unchanged.
+    REQUIRE(d.Choices().size() == 3);
     CHECK(d.Choices()[0].label == "體諒助教的辛勞");
     CHECK(d.Choices()[1].label == "質問／強硬索回");
+    CHECK(d.Choices()[2].label == nccu::kDialogExitLabel);
+    // The exit option carries NO side effect at all.
+    CHECK(d.Choices()[2].karmaDelta == 0);
+    CHECK(d.Choices()[2].setsFlag.empty());
 
     // 體諒 (index 0): +15 karma, sets Flag_ConsoledTA (Ending A key).
     const nccu::DialogChoice* c = d.Advance();

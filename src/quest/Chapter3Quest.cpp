@@ -72,15 +72,24 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
 
 // Sequential `!` gating for the Ch3 物物交換鏈: only the NEXT link in the
 // A→B→C chain shows its indicator, so the three light up in turn instead of
-// all at once (player request). View calls this when state==Chapter3.
-// NOTE: A's gate will also require the 操場-lap flag once the lap mechanic
-// lands; for now A is visible from chapter entry.
+// all at once (player request). View calls this (via QuestIndicatorVisible)
+// when state==Chapter3.
+//
+// Item 4a (the "dead first step" fix): A now lights from chapter ENTRY,
+// BEFORE the 操場 lap, not after it. Pre-fix, A stayed dark until
+// Flag_SportsLapDone, so on entering Ch3 the player saw NO `!` anywhere and
+// had only the HUD objective to go on — "wandered lost". Lighting A
+// immediately gives a concrete target: walking up to A pre-lap triggers
+// TryAdvanceCh3Trade's "先去操場跑一圈…回來我請你吃香腸" redirect, which
+// teaches step 1 in-fiction; after the lap the same `!` on A now hands over
+// the sausage. So A is the visible chain head whenever the chain has not
+// started (no sausage / loudspeaker / known-loc yet), lap or not.
 bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
     const bool sausage = player.HasFlag(kFlagHasSausage);
     const bool loud    = player.HasFlag(kFlagHasLoudspeaker);
     const bool known   = player.HasFlag(kFlagKnowsUmbrellaLoc);
     if (npcId == "vendor_sausage_a")
-        return player.HasFlag(kFlagLapDone) && !sausage;        // A: after the lap
+        return !sausage && !loud && !known;   // A: chain head, incl. pre-lap
     if (npcId == "loudspeaker_b")    return sausage && !loud;   // B: after A
     if (npcId == "senior_c")         return loud && !known;     // C: after B
     return true;   // any other quest-giver: unchanged (always shown)
