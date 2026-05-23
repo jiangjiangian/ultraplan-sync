@@ -23,7 +23,9 @@ QuestFlagPickup::QuestFlagPickup(nccu::gfx::Vec2 position,
                                  std::vector<std::string> completionFlags,
                                  int completionKarma,
                                  std::vector<std::string> countMessages)
-    : Item(position,
+    // Direct base is WithRoles<QuestFlagPickup, Item>; its `using Base::Base`
+    // inherits Item's ctor so this 3-arg form still resolves.
+    : WithRoles(position,
            nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f},
            "QuestItem"),
       flagName_(std::move(flagName)),

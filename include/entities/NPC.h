@@ -11,7 +11,14 @@
 #include <string_view>
 #include <vector>
 
-class NPC : public Character {
+// ISP roles: all three (IUpdatable + IDrawable + IInteractable). Every body
+// is real — Update drives wander / crowd-runner motion, Render draws the
+// sprite, Interact cycles dialog lines. Vendor (the only NPC subclass)
+// shares this exact role set (it only adds TryBuy + overrides IsVendor), so
+// WithRoles is keyed on this intermediate (Derived = NPC); static_cast<NPC*>
+// is valid for a Vendor too.
+class NPC : public WithRoles<NPC, Character>,
+            public IUpdatable, public IDrawable, public IInteractable {
 public:
     NPC(nccu::gfx::Vec2 position,
         std::vector<std::string> dialogLines,

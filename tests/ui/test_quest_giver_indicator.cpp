@@ -128,12 +128,12 @@ TEST_CASE("Plain GameObject defaults IsQuestGiver to false") {
     // The base class default must stay false so items, the player, Vendor,
     // decorative objects and ambient students never paint a stray "!".
     // Use a non-NPC GameObject subclass to prove inheritance closure.
+    // GameObject is no longer a fat interface (the ISP role split removed
+    // its Update/Render/Interact pure-virtuals — those are now opt-in role
+    // interfaces), so a bare subclass plays no roles and needs no overrides.
     struct StubObj final : GameObject {
         StubObj() : GameObject(nccu::gfx::Vec2{0, 0},
                                nccu::gfx::Rect{0, 0, 1, 1}) {}
-        void Update(float) override {}
-        void Render(nccu::gfx::IRenderer&) const override {}
-        void Interact(Player*) override {}
     };
     StubObj o;
     const GameObject& base = o;

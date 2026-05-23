@@ -2,12 +2,13 @@
 #define GAME_OBJECT_H_
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
+#include "entities/Roles.h"   // IUpdatable / IDrawable / IInteractable + WithRoles
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace nccu::gfx { class IRenderer; }
-class Player; // forward decl — avoids circular include from Interact()
+class Player; // forward decl — avoids circular include from the role hooks
 
 class GameObject {
 public:
@@ -16,9 +17,17 @@ public:
 
     virtual ~GameObject() = default;
 
-    virtual void Update(float deltaTime) = 0;
-    virtual void Render(nccu::gfx::IRenderer& renderer) const = 0;
-    virtual void Interact(Player* initiator) = 0;
+    // Role-capability accessors (ISP). Update / Render / Interact are no
+    // longer fat pure-virtuals every entity must implement; instead a
+    // concrete entity inherits exactly the role interfaces it plays
+    // (IUpdatable / IDrawable / IInteractable) and the CRTP WithRoles
+    // mixin STATICALLY implements these to hand back a typed pointer (or
+    // null) — no dynamic_cast. The scene container dispatches through
+    // them: `if (auto* u = o.AsUpdatable()) u->Update(dt);`. Default null
+    // = "does not play this role" (skipped by the loop). See Roles.h.
+    virtual IUpdatable*      AsUpdatable()      noexcept { return nullptr; }
+    virtual const IDrawable* AsDrawable() const noexcept { return nullptr; }
+    virtual IInteractable*   AsInteractable()   noexcept { return nullptr; }
 
     [[nodiscard]] bool CheckCollision(nccu::gfx::Rect other) const noexcept {
         return hitBox_.Intersects(other);

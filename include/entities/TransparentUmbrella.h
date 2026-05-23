@@ -16,15 +16,22 @@ enum class UmbrellaStyle {
     Drooping  // Cursed — sagging dark canopy + black handle (wrong)
 };
 
-class TransparentUmbrella : public Item {
+// ISP roles: IDrawable + IInteractable. The old Update body was an empty
+// no-op (umbrellas don't tick), so that role is dropped; Render (the
+// per-style glyph) and Interact (the quest-gated claim) are real and kept.
+// All four leaves (True/Fragile/ProfessorTrap/Cursed) only override
+// beClaimed() — they share this exact role set — so WithRoles is keyed on
+// this intermediate (Derived = TransparentUmbrella); static_cast to it is
+// valid for every leaf.
+class TransparentUmbrella : public WithRoles<TransparentUmbrella, Item>,
+                            public IDrawable, public IInteractable {
 public:
     TransparentUmbrella(nccu::gfx::Vec2 position, std::string name,
                         nccu::gfx::Color tint,
                         UmbrellaStyle style = UmbrellaStyle::Domed)
-        : Item(position, nccu::gfx::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
+        : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
           umbrellaTint_(tint), style_(style) {}
 
-    void Update(float /*deltaTime*/) override {}
     void Render(nccu::gfx::IRenderer& renderer) const override; // per-style glyph via IRenderer (Template Method)
 
     [[nodiscard]] UmbrellaStyle Style() const noexcept { return style_; }
