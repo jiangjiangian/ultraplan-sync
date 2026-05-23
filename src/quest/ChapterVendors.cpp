@@ -110,14 +110,22 @@ const std::vector<VendorPlacement>& Chapter2Vendors() {
 // money-equal price would be fragile); unlimited stock. The ugly
 // umbrella is deliberately NOT in the Interlude market (kept here so
 // Ending C stays a Ch4 集英樓 act, per SCRIPT_HANDOFF / C.1).
+// Rendered as a vending machine (player request) and moved to the west
+// face of 集英樓 (1524,1353)-(1748,1545) so it finally stands AT the
+// 集英樓 it is named after — the old (1180,1725) spot sat ~340 px west,
+// nowhere near the building (position audit). Machine 3 art distinguishes
+// it from the Ch2 圖書館 machine (Machine 1).
 const std::vector<VendorPlacement>& Chapter4Vendors() {
     static const std::vector<VendorPlacement> kCh4 = {
         VendorPlacement{
-            VendorConfig{"集英樓便利商店",
-                         "（貨架最下層，一把螢光綠到刺眼的傘）",
-                         {VendorItem{"UglyUmbrella", 100, -1,
-                                     "Flag_BoughtUglyUmbrella"}}},
-            nccu::gfx::Vec2{1180.0f, 1725.0f}},
+            VendorConfig{.name = "集英樓便利商店",
+                         .greeting = "（貨架最下層，一把螢光綠到刺眼的傘）",
+                         .stock = {VendorItem{"UglyUmbrella", 100, -1,
+                                              "Flag_BoughtUglyUmbrella"}},
+                         .spriteOverride = "resources/assets/Pixel Art "
+                             "Vending Machines Pack/Machine 3/"
+                             "Vending Machine 3.1.png"},
+            nccu::gfx::Vec2{1500.0f, 1450.0f}},
     };
     return kCh4;
 }
