@@ -43,8 +43,10 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     CHECK(d.AtChoice());
     REQUIRE(d.Choices().size() == 2);
     // Table order: subState 1 (b) first, subState 2 (c) second.
+    // T1 first-person POV: the (c) ignore choice no longer carries a
+    // 「玩家」 subject — re-authored to 「別過頭，當作沒看見」.
     CHECK(d.Choices()[0].label == "我去幫你追");
-    CHECK(d.Choices()[1].label == "玩家無視走過");
+    CHECK(d.Choices()[1].label == "別過頭，當作沒看見");
     // Pick the help branch (index 0) -> its (b) consequence plays.
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
@@ -260,23 +262,21 @@ TEST_CASE("Player overload: victim with promise flag is line-only recap") {
 }
 
 // ---------------------------------------------------------------------------
-// Cycle-8 audit Finding 2: restore the GDD §伍 Ch1「斥責學長」漣漪選擇.
-// Pre-fix: chapter1.md suit_senior had (a)/(b)/(c)/(d) with (c) and (d)
-// both annotating `Flag_ScoldedSenior = false`, and NO substate setting
-// `Flag_ScoldedSenior = true`. Yet DialogOpener.cpp:101 (Ch2 suit_senior
-// → (c) cold) + Chapter2Quest.cpp:66 (cold -3 ripple) + chapter4.md:82/
-// 88/405 (學長 不出場) + voice_bible.md:51 (Interlude 側身走開) ALL
-// branch on `Flag_ScoldedSenior = true` — so a whole GDD-named
-// cross-chapter cold-senior arc was permanently unreachable dead
-// narrative. Fix: chapter1.md (b) re-authored from inert "拒絕，no flag"
-// into the GDD §伍 選項 B "憤怒斥責" path (-5 / Flag_ScoldedSenior=true);
-// chose to re-author (b) not append (e) because DialogLoader.cpp:83
-// hard-caps substate letters at 'a'..'d'. Revert-verified: with the
-// chapter1.md (b) change reverted, every CHECK below fails (suit_senior
-// choice index 0 carries no flag → ScoldedSenior never set → Ch2
-// routing falls through to (a) opener, Ch2 ripple TryApplyCh2Ripple
-// finds neither HelpedSenior nor ScoldedSenior so it grants nothing).
-TEST_CASE("F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior") {
+// Ch1 suit_senior (b) seeds the Flag_ScoldedSenior arc KEY. The flag drives
+// the cross-chapter "保持距離" arc — DialogOpener Ch2 suit_senior → (c)
+// 尷尬讓開, Ch3 距離, Ch4 不出場 (World spawn filter) — so it must be
+// reachable from a Ch1 choice.
+//
+// T1 reframe (CHANGELOG): the (b) choice is no longer a hostile 斥責 (-5).
+// It is now a RATIONAL firm call-out — 「理性指出他品行不該，要回雨傘」,
+// karma +3 — and the downstream reactions were softened from resentment to
+// mild embarrassment (Chapter2Quest's Ch2 ScoldedSenior ripple is now
+// karma-neutral). The flag KEY is retained so no branch goes dead; only the
+// framing and karma sign changed. First-person POV: the choice label carries
+// no 「玩家」 subject. Revert-verify: revert the chapter1.md (b) change and
+// every CHECK below fails (choice 0 carries no flag → ScoldedSenior never
+// set → the whole arc unreachable).
+TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     DialogState d;
     Player p{nccu::gfx::Vec2{0, 0}};
@@ -290,15 +290,19 @@ TEST_CASE("F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior") {
     REQUIRE(d.AtChoice());
     REQUIRE(d.Choices().size() == 3);
 
-    // Choice index 0 is the new (b) 憤怒斥責, dressed as GDD §伍 選項 B.
-    // (DialogOpener.cpp:62-68 packs substates ≥ 1 in ascending order, so
-    // b→0, c→1, d→2 — the ending_a.txt `choose 2` for suit_senior still
-    // resolves to (d) HelpedSenior. State.jsonl byte-parity preserved.)
+    // Choice index 0 is the (b) call-out branch. T1 reframe: it is now a
+    // RATIONAL firm call-out (+3), not a hostile 斥責 (-5). It still sets
+    // Flag_ScoldedSenior — kept as the "保持距離" arc KEY — so the Ch2/3/4
+    // routing is unchanged; only the framing (embarrassment, not resentment)
+    // and the karma sign moved. First-person label, no 「玩家」 subject.
+    // (DialogOpener.cpp packs substates ≥ 1 ascending, so b→0, c→1, d→2 —
+    // the ending_a.txt `choose 2` for suit_senior still resolves to (d)
+    // HelpedSenior. State.jsonl byte-parity preserved.)
     const nccu::DialogChoice& scolded = d.Choices()[0];
-    CHECK(scolded.label == "玩家憤怒斥責，奪回雨傘");
+    CHECK(scolded.label == "理性指出他品行不該，要回雨傘");
     CHECK(scolded.setsFlag == "Flag_ScoldedSenior");
     CHECK(scolded.flagValue == true);
-    CHECK(scolded.karmaDelta == -5);
+    CHECK(scolded.karmaDelta == 3);
 
     // End-to-end via the GameController applier — the live confirm path.
     d.MoveChoice(0);
@@ -307,7 +311,7 @@ TEST_CASE("F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior") {
     nccu::ApplyDialogChoice(p, *c);
     CHECK(p.HasFlag("Flag_ScoldedSenior"));
     CHECK_FALSE(p.HasFlag("Flag_HelpedSenior"));   // mirror, not set
-    CHECK(p.GetKarma() == k0 - 5);
+    CHECK(p.GetKarma() == k0 + 3);
 }
 
 TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {

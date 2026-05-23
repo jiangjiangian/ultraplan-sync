@@ -370,8 +370,23 @@ void GameController::Update() {
                     // Flag_TaFinaleChoiceMade (no premature Ending C/B).
                     if (!exitChoice && npc == "ta" &&
                         world_.Semester().Current() ==
-                            SemesterState::Chapter4_Finals)
+                            SemesterState::Chapter4_Finals) {
                         p->SetFlag("Flag_TaFinaleChoiceMade");
+                        // T4: the gentle finale returns YOUR umbrella. When
+                        // the player chose 體諒 (ApplyDialogChoice just set
+                        // Flag_ConsoledTA), the 助教 presses the true
+                        // umbrella back — TryGrantTaFinaleUmbrella sets
+                        // Flag_HasTrueUmbrella + HasUmbrella so the gentle
+                        // path can reach Ending A WITHOUT also finding the
+                        // hidden Ch4 umbrella (both routes now reach A;
+                        // EndingGate keeps the karma>80 gate). The harsh
+                        // 質問 branch never sets Flag_ConsoledTA, so the
+                        // helper no-ops and that path resolves to Ending B
+                        // (coldFinale). The spoken "拿回你的傘" beat lives in
+                        // the 體諒 choice's nextLines (DialogOpener T4).
+                        TryGrantTaFinaleUmbrella(
+                            *p, npc, world_.Semester().Current());
+                    }
                     // Ending gates first, then chapter gates (existing
                     // precedent: EndingGate predates this). Order is safe
                     // either way — once an ending fires, Current() is
@@ -567,6 +582,14 @@ void GameController::Update() {
     // tick (MVC).
     world_.MaybeSpawnChapter2Notes();
 
+    // T5: Ch3 reveal-after-clue TrueUmbrella deferred spawn (Ch3 + the C-系
+    // 學姊 clue only; a cheap no-op every other state) — once
+    // Flag_KnowsUmbrellaLoc is set, the umbrella appears LEFT of the gym
+    // (no longer occluded). Self-gates + one-shot inside, sibling of the
+    // notes spawn above. World stays pure data; the controller owns the
+    // per-frame tick (MVC).
+    world_.MaybeSpawnChapter3Umbrella();
+
     if (Input::IsPressed(Key::E) && player) {
         // I3 fix: the movement collider for a BlocksMovement() NPC is a
         // player-sized box at the NPC origin, and Rect::Intersects is
@@ -701,6 +724,15 @@ void GameController::Update() {
         }
     }
     if (player) {
+        // T2: fire the Ch1 clear (UmbrellaClaimed → Interlude) only AFTER
+        // the 苦主's (d) 重逢致謝 exchange dialogue has closed, so the
+        // player reads the exchange scene before Ch1 snaps to the Interlude.
+        // Sibling of LiftChapter2Clear; runs here (a non-dialog frame, after
+        // the dialog early-return above) so the deferred publish lands once
+        // the exchange box is dismissed. No-op outside Ch1 / before the
+        // grant / while the dialogue is up.
+        LiftChapter1Clear(*player, world_.Semester().Current(),
+                          world_.Dialog());
         // S5c-2: lift Flag_Ch2Cleared only once 學霸 is recovered AND
         // the (d) thanks dialog has closed (deferred so the gate does
         // not close that dialog the frame it opens). Runs BEFORE

@@ -5,6 +5,7 @@
 #include "quest/ChapterQuestItems.h"
 #include "quest/ChapterPickups.h"
 #include "quest/ChapterVendors.h"
+#include "quest/Chapter3Quest.h"
 #include "state/SemesterState.h"
 #include <array>
 #include <queue>
@@ -85,7 +86,17 @@ std::vector<Spot> GameplaySpots() {
         for (const auto& v : nccu::ChapterVendors(st))
             s.push_back(Spot{"vendor", v.pos.x, v.pos.y});
     }
-    s.push_back(Spot{"Ch3/Ch4 道具箱 TrueUmbrella", 1640.0f, 375.0f});
+    // Ch4 hidden-behind-gym TrueUmbrella (World.cpp entry spawn, KEPT inside
+    // the gym footprint as an easter egg — it only needs to be walkable +
+    // reachable, occlusion is intentional).
+    s.push_back(Spot{"Ch4 體育館後台 TrueUmbrella", 1640.0f, 375.0f});
+    // T5: the Ch3 reveal-after-clue TrueUmbrella, repositioned LEFT of the
+    // gym so it is NOT occluded (World::MaybeSpawnChapter3Umbrella spawns it
+    // at kChapter3UmbrellaPos once Flag_KnowsUmbrellaLoc). Must still be
+    // walkable + reachable from the player spawn.
+    s.push_back(Spot{"Ch3 TrueUmbrella (left of gym)",
+                     nccu::kChapter3UmbrellaPos.x,
+                     nccu::kChapter3UmbrellaPos.y});
     return s;
 }
 

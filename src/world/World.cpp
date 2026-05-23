@@ -204,32 +204,30 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     if (state != SemesterState::Chapter2_Midterms)
         SpawnChapterQuestItems(state);
 
-    // Ch3 校慶運動會 (S5d-2): the TrueUmbrella the 啦啦隊 took, sitting
-    // in the 體育館後台道具箱. Claiming it is the chapter clear, exactly
-    // Ch1-isomorphic — beClaimed fires UmbrellaClaimed and the
-    // EventWiring Ch3 sibling-if routes to the Interlude (returnTo Ch4).
-    // The 物物交換鏈 (TryAdvanceCh3Trade) is the karma / narrative path,
-    // not a hard gate (mirrors Ch1's optional umbrella quest). One
-    // single-chapter object, so it is spawned inline rather than via a
-    // 5th per-state table (no speculative no-caller infra). Roster-
-    // tracked, so it is swept if the player leaves Ch3 uncleared.
-    // Ch3 道具箱 (claim = Ch1-isomorphic clear via EventWiring) AND Ch4
-    // (chapter4.md L6 傘再度失蹤 — the player re-finds the TrueUmbrella;
-    // claiming it does NOT clear Ch4, it only satisfies Ending A's
-    // 持-TrueUmbrella condition via Flag_HasTrueUmbrella, since no
-    // EventWiring Ch4 sibling-if exists). Coord (1640,375) is the walkable
-    // 體育館後台 pocket INSIDE the gym footprint (mask-verified, flood-
-    // reachable up from the 操場) so it finally matches the "體育館後台
-    // 道具箱" the comment AND the 學姊 (C) reveal both name; the old
-    // (1500,1430) mid-campus spot contradicted that narrative (player-
-    // reported "傘沒出現在體育館"). Roster-tracked, swept on state change.
-    if (state == SemesterState::Chapter3_SportsDay ||
-        state == SemesterState::Chapter4_Finals) {
+    // Ch4 期末考終焉: the TrueUmbrella re-found behind the 體育館
+    // (chapter4.md L6 傘再度失蹤). Claiming it does NOT clear Ch4 — it only
+    // satisfies Ending A's 持-TrueUmbrella condition via Flag_HasTrueUmbrella
+    // (no EventWiring Ch4 sibling-if). Coord (1640,375) is the walkable
+    // 體育館後台 pocket INSIDE the gym footprint — INTENTIONALLY hidden
+    // behind the gym building (an easter-egg alternate route to Ending A,
+    // parallel to the gentle 助教 finale of T4). KEEP it hidden — T5 only
+    // moves the Ch3 umbrella, never this one. Roster-tracked, swept on state
+    // change. Spawned at chapter entry (ungated).
+    if (state == SemesterState::Chapter4_Finals) {
         auto umb = GameObjectFactory::Create(
             ObjectType::TrueUmbrella, nccu::gfx::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
     }
+    // Ch3 校慶運動會: the TrueUmbrella the 啦啦隊 took. T5 — it is now
+    // DEFERRED (MaybeSpawnChapter3Umbrella), spawned only AFTER the C-系
+    // 學姊 reveals its location (Flag_KnowsUmbrellaLoc), and at a coord
+    // LEFT of the gym so it is no longer occluded by the 體育館 building
+    // (the old (1640,375) sat inside the gym footprint — visible only once
+    // you walked behind it; players reported "傘沒出現"). Claiming it is
+    // the Ch3 clear (Ch1-isomorphic: beClaimed → UmbrellaClaimed → the
+    // EventWiring Ch3 sibling-if → Interlude returnTo Ch4). So it is NOT
+    // spawned here at entry — see MaybeSpawnChapter3Umbrella below.
 
     // 操場 校慶 crowd (player request): 5 students RUN the track at distinct
     // speeds + 10 IDLE/mill, each a DIFFERENT shipped sprite (no new art).
@@ -314,6 +312,28 @@ bool World::MaybeSpawnChapter2Notes() {
     return true;
 }
 
+bool World::MaybeSpawnChapter3Umbrella() {
+    // T5: the Ch3 TrueUmbrella is REVEAL-AFTER-CLUE, the sibling of
+    // MaybeSpawnChapter2Notes. It appears ONLY after the C-系 學姊 reveals
+    // its location (Flag_KnowsUmbrellaLoc, set by TryAdvanceCh3Trade's final
+    // link) — so it does not exist before the clue is earned. One-shot per
+    // Ch3 visit (ch3UmbrellaSpawned_). Spawned at kChapter3UmbrellaPos —
+    // LEFT of the 體育館 (gym left edge x=1493), in the open gap between
+    // 風雩樓 and the gym, so it is visible/reachable instead of occluded
+    // inside the gym footprint as the old (1640,375) was. Roster-tracked,
+    // so it is swept if the player leaves Ch3 uncleared. Claiming it is the
+    // Ch3 clear (beClaimed → UmbrellaClaimed → EventWiring → Interlude).
+    if (ch3UmbrellaSpawned_) return false;
+    if (semester_.Current() != SemesterState::Chapter3_SportsDay) return false;
+    if (!player_ || !player_->HasFlag(kFlagKnowsUmbrellaLoc)) return false;
+    auto umb = GameObjectFactory::Create(
+        ObjectType::TrueUmbrella, kChapter3UmbrellaPos);
+    chapterRoster_.push_back(umb.get());
+    objects_.push_back(std::move(umb));
+    ch3UmbrellaSpawned_ = true;
+    return true;
+}
+
 void World::UpdateSportsLap() noexcept {
     if (semester_.Current() != SemesterState::Chapter3_SportsDay) return;
     if (!player_ || player_->HasFlag(kFlagLapDone)) return;
@@ -377,6 +397,8 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
     // with the deferred spawn re-armed. MaybeSpawnChapter2Notes then only
     // fires once the player re-wakes the 學霸 in a new Ch2 visit.
     ch2NotesSpawned_ = false;
+    // T5: same re-arm for the Ch3 reveal-after-clue umbrella one-shot.
+    ch3UmbrellaSpawned_ = false;
 
     SpawnChapterNpcs(state);
 

@@ -74,6 +74,18 @@ void LiftChapter2Clear(Player& player, SemesterState state,
     player.SetFlag(kFlagCh2Cleared);
 }
 
+bool Ch2IndicatorVisible(std::string_view npcId, bool isQuestGiver,
+                         const Player& player) {
+    const bool woken     = player.HasFlag(kFlagBookwormWoken);
+    const bool recovered = player.HasFlag(kFlagBookwormRecovered);
+    if (npcId == "librarian")
+        return !woken;                 // chain head: lit until 學霸 is woken
+    if (npcId == "bookworm")
+        return woken && !recovered;    // lit after waking, through 換回
+    // Any other NPC: unchanged — honour its roster isQuestGiver bit.
+    return isQuestGiver;
+}
+
 void TryApplyCh2Ripple(Player& player, std::string_view npcId,
                        SemesterState state) {
     if (state != SemesterState::Chapter2_Midterms) return;
@@ -83,12 +95,20 @@ void TryApplyCh2Ripple(Player& player, std::string_view npcId,
         // HelpedSenior / ScoldedSenior are mutually exclusive (the Ch1
         // C.3(b) choice guard). chapter2.md 學長 (b) `// karma +3`
         // (callback note carries Flag_HelpedSenior=true, already held,
-        // so the opener's once-apply skips it) / (c) `// karma -3`
-        // (no flag note -> opener never applies it).
+        // so the opener's once-apply skips it).
+        //
+        // T1 reframe (CHANGELOG): the Ch1 (b) choice is no longer a hostile
+        // 斥責 (-5) but a RATIONAL call-out (+3). Flag_ScoldedSenior is kept
+        // only as the "保持距離" arc KEY (Ch2 (c) 尷尬讓開 / Ch3 距離 / Ch4
+        // 不主動出場); the senior keeps a respectful distance out of mild
+        // embarrassment, NOT resentment, so it carries NO karma penalty —
+        // a follow-on -3 would wrongly claw back the rational +3 the choice
+        // just earned. The flag is still consumed via the once-key so the
+        // arc routes exactly once; only the karma debt is gone.
         if (player.HasFlag("Flag_HelpedSenior")) {
             player.AddKarma(3).SetFlag(kFlagCh2RippledSuitSenior);
         } else if (player.HasFlag("Flag_ScoldedSenior")) {
-            player.AddKarma(-3).SetFlag(kFlagCh2RippledSuitSenior);
+            player.SetFlag(kFlagCh2RippledSuitSenior);          // karma-neutral
         }
         return;
     }

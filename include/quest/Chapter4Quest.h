@@ -43,6 +43,20 @@ inline constexpr const char* kFlagBoughtCoffeeForAuntie =
 [[nodiscard]] bool Ch4IndicatorVisible(std::string_view npcId,
                                        const Player& player);
 
+// T4: the gentle-finale umbrella grant. When the player chose 體諒 with
+// the 助教 (Flag_ConsoledTA, set by the S5e-2d choice's ApplyDialogChoice),
+// the 助教 presses the player's true umbrella back into their hands — so
+// the gentle path sets Flag_HasTrueUmbrella + HasUmbrella (the spoken
+// "拿回你的傘" beat is in the choice's nextLines). This is Ending A's 持傘
+// condition: with karma>80, 體諒 alone now reaches Ending A, parallel to
+// (and not requiring) the hidden Ch4 umbrella. The harsh 質問 branch never
+// sets Flag_ConsoledTA, so it never reaches here and resolves to Ending B
+// (coldFinale). Idempotent (HasFlag guard). No-op outside Ch4 / wrong npc /
+// before 體諒. Called by GameController on a confirmed 助教 finale choice,
+// AFTER ApplyDialogChoice has landed Flag_ConsoledTA.
+void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
+                              SemesterState state);
+
 // E-interact hook, sibling of TryApplyCh2Ripple / TryApplyCh3Ripple.
 // Per-NPC, once each (independent keys):
 //   西裝學長  HelpedSenior && karma>70 → +10  (chapter4.md L109 (b))

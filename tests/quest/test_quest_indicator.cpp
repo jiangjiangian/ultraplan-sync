@@ -17,6 +17,8 @@
 
 #include "doctest/doctest.h"
 #include "quest/QuestIndicator.h"
+#include "quest/Chapter1Quest.h"
+#include "quest/Chapter2Quest.h"
 #include "quest/Chapter4Quest.h"
 #include "quest/Chapter3Quest.h"
 #include "entities/Player.h"
@@ -29,6 +31,7 @@ Player MakePlayer() { return Player{nccu::gfx::Vec2{0.0f, 0.0f}}; }
 constexpr auto kCh3 = SemesterState::Chapter3_SportsDay;
 constexpr auto kCh4 = SemesterState::Chapter4_Finals;
 constexpr auto kCh1 = SemesterState::Chapter1_AddDrop;
+constexpr auto kCh2 = SemesterState::Chapter2_Midterms;
 }  // namespace
 
 TEST_CASE("Ch4IndicatorVisible: 助教 is the finale `!` until the choice is made") {
@@ -80,12 +83,62 @@ TEST_CASE("QuestIndicatorVisible Ch3: chain head lit pre-lap, archetypes dark") 
     CHECK_FALSE(nccu::QuestIndicatorVisible("senior_c", true, kCh3, p));
 }
 
-TEST_CASE("QuestIndicatorVisible default: Ch1/Ch2 pass through isQuestGiver") {
-    // Outside Ch3/Ch4 the predicate is a pure pass-through of the roster
-    // bit — Ch1 苦主 (quest-giver) lit, a non-quest-giver dark — so existing
-    // chapters are byte-unchanged.
+// T3: Ch1 single-NPC spine — the 苦主's `!` rides the chapter and goes dark
+// once the grant fires. The 助教 side errand (isQuestGiver=false) never lights.
+TEST_CASE("T3: QuestIndicatorVisible Ch1 sequences the 苦主 `!`") {
     Player p = MakePlayer();
+    // 苦主 lit from entry (the承諾 → 找傘 → 歸還 target).
+    CHECK(nccu::Ch1IndicatorVisible("victim", p));
     CHECK(nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
+    // The grant (Flag_HasTrueUmbrella) completes the objective -> dark.
+    p.SetFlag("Flag_HasTrueUmbrella");
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", p));
     CHECK_FALSE(
-        nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh1, p));
+        nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
+    // The 助教 errand is isQuestGiver=false, so it is never a main `!`.
+    Player q = MakePlayer();
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("ta", /*isQuestGiver=*/false, kCh1, q));
+}
+
+// T3: Ch2 spine 圖書館管理員 → 學霸 sequences by main-quest order, and 學霸
+// lights despite shipping isQuestGiver=false in the Ch2 roster.
+TEST_CASE("T3: QuestIndicatorVisible Ch2 sequences 管理員 -> 學霸") {
+    Player p = MakePlayer();
+    // Entry: 管理員 (chain head) lit, 學霸 dark (guides to the librarian).
+    CHECK(nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+
+    // Wake the 學霸: the head goes dark, the `!` moves to 學霸 — even though
+    // his roster bit is FALSE (revert-verify: AND isQuestGiver in the Ch2
+    // branch and this CHECK fails — 學霸 could never light).
+    p.SetFlag(nccu::kFlagBookwormWoken);
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+    CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+
+    // 學霸 stays lit through the note hunt + the 換回 return…
+    p.SetFlag(nccu::kFlagFoundNote1);
+    p.SetFlag(nccu::kFlagFoundNote2);
+    p.SetFlag(nccu::kFlagFoundNote3);
+    CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+
+    // …until recovered (換回 done) -> dark.
+    p.SetFlag(nccu::kFlagBookwormRecovered);
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+}
+
+// A non-spine Ch2 NPC keeps its roster bit (the gate only special-cases the
+// two spine NPCs; everything else passes isQuestGiver straight through).
+TEST_CASE("T3: Ch2 non-spine NPC keeps its isQuestGiver bit") {
+    Player p = MakePlayer();
+    CHECK(nccu::Ch2IndicatorVisible("suit_senior", /*isQuestGiver=*/true, p));
+    CHECK_FALSE(nccu::Ch2IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
+    // An empty-id object (player / item / ambient) never lights.
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("", /*isQuestGiver=*/false, kCh2, p));
 }

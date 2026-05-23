@@ -321,13 +321,22 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
             return;
         }
         std::vector<DialogChoice> taChoices;
+        // S5e-2d / T4: 體諒 is the gentle finale. It sets Flag_ConsoledTA
+        // (Ending A's moral key) AND — because being kind makes the 助教
+        // press YOUR umbrella back into your hands — GameController also
+        // grants Flag_HasTrueUmbrella on this branch (the gentle reclaim
+        // route to Ending A, parallel to the hidden Ch4 umbrella). The
+        // "拿回你的傘" beat is spoken HERE so the return is on-screen, not
+        // implicit. DialogChoice carries one flag (Flag_ConsoledTA); the
+        // HasTrueUmbrella grant is wired in GameController on confirm.
         taChoices.push_back(DialogChoice{
             "體諒助教的辛勞", 15, "Flag_ConsoledTA", true,
-            {"（你選擇體諒——他愣了一下）",
-             "「……你不追究？」",
-             "（他把考卷整理了一下，低聲）",
-             "「你這學期……做了蠻多的。我有看到。」",
-             "（轉身，低聲）歐趴糖，之後找你。"}});
+            {"（你接過那把傘，順手替他把懷裡的考卷扶正）",
+             "「辛苦了，先去睡一下吧。」",
+             "（助教愣了一下）「……你不追究？」",
+             "（他低聲）「你這學期……做了蠻多的。我有看到。」",
+             "（你握緊了傘柄——這把手感紮實的傘，終於回到你手上了）",
+             "（轉身前，他塞給你一顆糖）歐趴糖，之後再找你。"}});
         taChoices.push_back(DialogChoice{
             "質問／強硬索回", -5, std::string{}, false,
             {"（你伸手，語氣不軟）",

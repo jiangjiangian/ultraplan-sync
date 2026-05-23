@@ -42,11 +42,13 @@ struct Capture {
 
 }  // namespace
 
-// REGRESSION 1 — the reciprocity grant. Returning the 苦主 his umbrella
-// sets Flag_HasTrueUmbrella + publishes UmbrellaClaimed("TrueUmbrella")
-// ONLY when the player BOTH promised AND holds the victim's umbrella; every
-// other state (wrong state/npc, no promise, promised-but-empty-handed,
-// already-granted) is a no-op for the grant.
+// REGRESSION 1 — the reciprocity grant (T2: a real exchange SCENE before
+// the chapter clears). Returning the 苦主 his umbrella sets
+// Flag_HasTrueUmbrella + HasUmbrella ONLY when the player BOTH promised AND
+// holds the victim's umbrella; every other state (wrong state/npc, no
+// promise, promised-but-empty-handed, already-granted) is a no-op. T2: the
+// grant NO LONGER publishes UmbrellaClaimed inline — that is deferred to
+// LiftChapter1Clear (so the (d) exchange dialogue plays first).
 TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
@@ -59,7 +61,7 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     CHECK(cap.umbrellaClaims.empty());
 
     // Promised? NO -> no-op (the (a)/(b) dialogue owns the promise; nothing
-    // to return yet). No grant, no UmbrellaClaimed.
+    // to return yet). No grant.
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
     CHECK(cap.umbrellaClaims.empty());
@@ -72,18 +74,19 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     CHECK(cap.umbrellaClaims.empty());
     CHECK_FALSE(cap.lastMessage.empty());           // a nudge was shown
 
-    // Promised AND holding the victim's umbrella -> the GRANT fires.
+    // Promised AND holding the victim's umbrella -> the GRANT fires (flags
+    // only — T2: NO UmbrellaClaimed yet, the (d) exchange must play first).
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(p.HasFlag("Flag_HasTrueUmbrella"));        // Ending A's condition
     CHECK(p.HasUmbrella());
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasVictimUmbrella));  // 苦主 took his傘
-    REQUIRE(cap.umbrellaClaims.size() == 1);
-    CHECK(cap.umbrellaClaims[0] == "TrueUmbrella");  // drives the Ch1 clear
+    CHECK(cap.umbrellaClaims.empty());               // T2: clear is DEFERRED
+    CHECK_FALSE(p.HasFlag(nccu::kFlagCh1ClearFired)); // not fired yet
 
-    // Idempotent on a re-talk: already granted -> no second UmbrellaClaimed.
+    // Idempotent on a re-talk: already granted -> still no UmbrellaClaimed.
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
-    CHECK(cap.umbrellaClaims.size() == 1);
+    CHECK(cap.umbrellaClaims.empty());
     EventBus::Instance().Clear();
 }
 
@@ -100,24 +103,48 @@ TEST_CASE("TryReturnVictimUmbrella: umbrella without a promise never grants") {
     EventBus::Instance().Clear();
 }
 
-// REGRESSION 1c — the grant drives the existing Ch1→Interlude spine via the
-// EventWiring UmbrellaClaimed sibling-if (returnTo Ch2), exactly as the
-// removed world TrueUmbrella did.
-TEST_CASE("Ch1 reciprocity grant reaches the Interlude via EventWiring") {
+// REGRESSION 1c (T2) — the exchange SEQUENCES correctly: the grant is silent
+// (the (d) exchange dialogue plays first), and only LiftChapter1Clear, AFTER
+// the dialogue has CLOSED, publishes UmbrellaClaimed → the EventWiring Ch1
+// sibling-if transitions Ch1→Interlude (returnTo Ch2). While the dialogue is
+// still ACTIVE, the clear must NOT fire (the player must read the scene).
+TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
     EventBus::Instance().Clear();
     nccu::SemesterStateMachine m;
     std::string buildingName;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, buildingName);
+    Capture cap = MakeCapture();
     REQUIRE(m.Current() == SemesterState::Chapter1_AddDrop);
 
     Player p = MakePlayer();
     p.SetFlag("Flag_PromisedVictim");
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
-    nccu::TryReturnVictimUmbrella(p, "victim", m.Current());
 
+    // 1) The grant: flags set, but NO transition yet (UmbrellaClaimed held).
+    nccu::TryReturnVictimUmbrella(p, "victim", m.Current());
     CHECK(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK(m.Current() == SemesterState::Chapter1_AddDrop);   // still Ch1
+    CHECK(cap.umbrellaClaims.empty());
+
+    // 2) The (d) exchange dialogue is on screen -> the clear is BLOCKED.
+    nccu::DialogState d;
+    d.Open({"這就是我的傘，太好了，謝謝你！", "還你。雨還沒停，路上小心。"});
+    REQUIRE(d.Active());
+    nccu::LiftChapter1Clear(p, m.Current(), d);
+    CHECK(m.Current() == SemesterState::Chapter1_AddDrop);   // not yet
+    CHECK(cap.umbrellaClaims.empty());
+
+    // 3) The player finishes reading; the dialogue closes -> NOW it fires.
+    d.Close();
+    nccu::LiftChapter1Clear(p, m.Current(), d);
+    REQUIRE(cap.umbrellaClaims.size() == 1);
+    CHECK(cap.umbrellaClaims[0] == "TrueUmbrella");
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter2_Midterms);
+
+    // 4) Once-guard: a later poll does not re-publish / re-transition.
+    nccu::LiftChapter1Clear(p, SemesterState::Chapter1_AddDrop, d);
+    CHECK(cap.umbrellaClaims.size() == 1);
     EventBus::Instance().Clear();
 }
 

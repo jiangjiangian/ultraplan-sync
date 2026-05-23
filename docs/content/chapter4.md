@@ -79,13 +79,13 @@
 
 ## NPC：西裝學長
 
-> 場景：行政大樓門口（Flag_HelpedSenior = true 路徑）或不出場（Flag_ScoldedSenior = true / Flag_HelpedSenior = false）
+> 場景：行政大樓門口（Flag_HelpedSenior = true 路徑）；若 Flag_ScoldedSenior = true / Flag_HelpedSenior = false 則本章不出現在期末考場（保持距離，無台詞、無背景出現）
 > 本章是學長 voice arc 的頂點：偽裝崩潰，對 karma 高的玩家說出四個章節中最接近真心的話。
 > `Flag_HelpedSenior` 決定是否出場；`karma` 決定 (b)/(c) 分支。
 
 ### (a) 假笑面具（初次接觸）
 
-> `Flag_HelpedSenior = false` / `Flag_ScoldedSenior = true` → 本段不觸發，學長不出現。
+> `Flag_HelpedSenior = false` / `Flag_ScoldedSenior = true` → 本段不觸發；Ch1 被理性指正後他在期末對玩家保持距離，沒有出現在考場。
 > `Flag_HelpedSenior = true` → 學長站在行政大樓門口，西裝換成了深灰外套，手機沒有在滑。
 > 他主動走過來，這是這個學期第一次他主動找你，不是要你幫他。
 
@@ -417,7 +417,7 @@
 以下設定在 GDD 與 voice bible 中均未明確說明，由本章文件自行推斷補入。實作前請製作人確認是否採納。
 
 1. **助教取傘動機**：GDD 說「三天沒睡、趕著送交期末成績的崩潰助教」，本章設定為「無意識把玩家的傘夾進考卷堆帶走」。Voice bible 說他是「靜態崩潰」而非「情緒爆發型」，本章延伸為「他自己發現傘不對，而非玩家指控」，維持人設一致。
-2. **學長 Flag_ScoldedSenior 處理**：GDD 與 voice bible 均說此旗標下學長「遠遠看到就走開」。本章設定為完全不出場（無台詞、無背景出現），確保沒有旗標衝突。
+2. **學長 Flag_ScoldedSenior 處理**：T1 重構後此旗標代表 Ch1 被「理性指正」，學長對玩家略感難為情而保持距離（非敵意）。本章沿用「不出現在期末考場」的處理（無台詞、無背景出現）作為這份距離感的表現，確保沒有旗標衝突。
 3. **助教 (b)/(c) 互斥邏輯**：`Flag_HelpedTA_Ch1 = true` 且 `Flag_HasProfessorTrap = true` 同時存在時，(b) 坦白分支優先觸發，但 (c) 的 karma -15 仍以獨立事件計算（在 (b) 段觸發後以系統訊息補扣，不顯示對峙台詞）。
 4. **Ending B 新觸發行為**：GDD 描述 Ending B 觸發為「直接在傘架前觸發 CursedUmbrella」。本章在研究大樓走廊額外設計一個「傘架場景」，讓 Ch4 的 Ending B 可以在不依賴 Ch1 舊旗標的情況下獨立觸發，確保玩家在 Ch4 仍有選擇路徑的機會。
 5. **苦主 Ch4 出場位置**：GDD 說「若玩家 karma 足夠，她出現在正門旁」。本章設定她固定出現在正門廊柱下（不論 karma），但台詞依旗標分歧，確保玩家不會「找不到她」。

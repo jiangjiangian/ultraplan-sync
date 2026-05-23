@@ -69,43 +69,42 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     CHECK(s_a->setsFlag == "");
     CHECK(s_a->flagValue == false);
 
-    // (b) GDD §伍 Ch1 漣漪選項 B「憤怒斥責，奪回雨傘」: was the inert
-    // "拒絕，無 flag" stub; cycle-8 audit F2 activated the dead
-    // Flag_ScoldedSenior wiring (DialogOpener.cpp:101 + Chapter2Quest.cpp:66
-    // + chapter4.md:82/88/405 read it; the GDD-named cold-senior cross-
-    // chapter arc was permanently unreachable pre-fix). Blockquote scans
-    // `// karma -5` (confrontational tier, mirrors (c) -5) and
-    // `Flag_ScoldedSenior = true` (first Flag_ line wins). Re-authored as
-    // substate (b) — not (e) — because DialogLoader.cpp:83 hard-caps
-    // substate letters at 'a'..'d'; only ending_a.txt picks suit_senior
-    // (`choose 2` = (d) HelpedSenior), so re-authoring (b) leaves the
-    // deterministic ending scripts byte-identical (choice indices 0/1/2
-    // still b/c/d, ending_a still picks (d)).
-    CHECK(s_b->karmaDelta == -5);
+    // (b) T1 reframe: the Ch1 (b) choice is no longer a hostile 斥責 (-5)
+    // but a RATIONAL firm call-out — 「理性指出他品行不該，要回雨傘」 —
+    // scanned as `// karma +3` (positive small-good) and
+    // `Flag_ScoldedSenior = true` (first Flag_ line wins). The flag KEY is
+    // retained so the "保持距離" arc (Ch2 (c) 尷尬讓開 / Ch3 距離 / Ch4
+    // 不出場) still routes; only the framing (embarrassment, not resentment)
+    // and the karma sign changed. First-person POV: NO 「玩家」 subject in
+    // the choice label. Re-authored as substate (b) — DialogLoader.cpp
+    // hard-caps substate letters at 'a'..'d'; choice indices 0/1/2 stay
+    // b/c/d (ending scripts byte-identical).
+    CHECK(s_b->karmaDelta == 3);
     CHECK(s_b->setsFlag == "Flag_ScoldedSenior");
     CHECK(s_b->flagValue == true);
-    CHECK(s_b->choiceLabel == "玩家憤怒斥責，奪回雨傘");
+    CHECK(s_b->choiceLabel == "理性指出他品行不該，要回雨傘");
 
-    // (c) blockquote: `// karma -5`, `// Flag_ScoldedSenior = false`.
-    // Expected: suit_senior subState 2, 5 dialog lines, karmaDelta -5,
-    // setsFlag "Flag_ScoldedSenior" -> false,
-    // choiceLabel "玩家接受，取傘後交給學長".
+    // (c) blockquote: `// karma 0`, `// Flag_ScoldedSenior = false`.
+    // T1 reframe: 接受取傘 is karma-neutral at the moment of choice (the
+    // real cost is the later ProfTrap recognition / ripples). First-person
+    // label, no 「玩家」 subject. suit_senior subState 2, 5 dialog lines.
     REQUIRE(s_c->lines.size() == 5);
-    CHECK(s_c->karmaDelta == -5);
+    CHECK(s_c->karmaDelta == 0);
     CHECK(s_c->setsFlag == "Flag_ScoldedSenior");
     CHECK(s_c->flagValue == false);
-    CHECK(s_c->choiceLabel == "玩家接受，取傘後交給學長");
+    CHECK(s_c->choiceLabel == "接受，取傘後交給學長");
 
-    // (d) NEW positive branch (C.2). Blockquote order: `// karma +3`,
+    // (d) the rational best option (C.2). Blockquote order: `// karma +5`,
     // `// Flag_HelpedSenior = true`, `// Flag_ScoldedSenior = false` —
     // first Flag_ line wins, so setsFlag is Flag_HelpedSenior / true.
-    // 5 lines; choiceLabel from heading (no 「」/（）override).
+    // T1 reframe: raised +3 -> +5 (best rational communication option).
+    // 5 lines; first-person label from heading (no 「」/（）override).
     REQUIRE(s_d->lines.size() == 5);
     CHECK(s_d->lines[0] == "……怪怪的？你什麼意思？");
-    CHECK(s_d->karmaDelta == 3);
+    CHECK(s_d->karmaDelta == 5);
     CHECK(s_d->setsFlag == "Flag_HelpedSenior");
     CHECK(s_d->flagValue == true);
-    CHECK(s_d->choiceLabel == "玩家點破傘的疑點，轉而提供正規協助");
+    CHECK(s_d->choiceLabel == "點破傘的疑點，轉而提供正規協助");
 
     // --- 學霸: (a) subState 0; (b) karmaDelta == 3 -------------------
     const auto& bookworm = chapter.npcs.at("學霸");

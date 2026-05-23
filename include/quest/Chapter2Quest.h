@@ -82,6 +82,25 @@ void LiftChapter2Clear(Player& player, SemesterState state,
 void TryApplyCh2Ripple(Player& player, std::string_view npcId,
                        SemesterState state);
 
+// T3: sequential quest-giver `!` gate for the Ch2 MAIN spine — the sibling
+// of Ch3IndicatorVisible. Spine: 圖書館管理員(線索) → 學霸(喚醒) →
+// [find the 3 notes] → 學霸(換回). The `!` advances by main-quest order:
+//   • 圖書館管理員 (librarian): the chain head, lit from chapter entry until
+//     the 學霸 is woken (kFlagBookwormWoken). She gives the clue pointing to
+//     羅馬廣場; once the 學霸 is up, her job is done and she goes dark.
+//   • 學霸 (bookworm): lit ONLY after he is woken, and stays lit through the
+//     note hunt + the 換回 return, until Flag_BookwormRecovered. Before he is
+//     woken he is DARK (the `!` guides the player to the librarian first),
+//     exactly like Ch3's B stays dark until A is traded.
+// Keyed purely on npcId (NOT the roster bit): the Ch2 roster ships 學霸 as
+// isQuestGiver=false, so QuestIndicatorVisible must consult this WITHOUT
+// AND-ing isQuestGiver (mirrors the Ch4 finale gate) — otherwise 學霸 could
+// never light. Every other npcId returns its isQuestGiver bit so non-spine
+// NPCs are unaffected. View calls this when state == Chapter2_Midterms.
+[[nodiscard]] bool Ch2IndicatorVisible(std::string_view npcId,
+                                       bool isQuestGiver,
+                                       const Player& player);
+
 } // namespace nccu
 
 #endif // CHAPTER2_QUEST_H_

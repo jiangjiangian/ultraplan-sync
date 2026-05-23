@@ -1,6 +1,7 @@
 #ifndef CHAPTER3_QUEST_H_
 #define CHAPTER3_QUEST_H_
 #include "state/SemesterState.h"
+#include "gfx/Vec2.h"
 #include <string_view>
 
 class Player;                       // mutated by the trade hooks
@@ -19,6 +20,15 @@ inline constexpr const char* kFlagKnowsUmbrellaLoc =
 // Set once the player completes a lap of the 操場 (校慶 participation),
 // which unlocks the A→B→C 物物交換鏈 (走完操場 → 觸發找 ABC).
 inline constexpr const char* kFlagLapDone = "Flag_SportsLapDone";
+
+// T5: where the Ch3 TrueUmbrella appears once Flag_KnowsUmbrellaLoc is set
+// (World::MaybeSpawnChapter3Umbrella). LEFT of the 體育館 (gym rect
+// x[1493,1911] y[306,541]) — in the open gap between 風雩樓 (right edge
+// x≈1269) and the gym — so it is VISIBLE/reachable instead of occluded
+// inside the gym footprint as the old (1640,375) spot was. Mask-verified
+// box-walkable AND flood-reachable from the 操場 centre (map probe). The
+// Ch4 hidden-behind-gym umbrella is unrelated and stays at (1640,375).
+inline constexpr nccu::gfx::Vec2 kChapter3UmbrellaPos{1320.0f, 520.0f};
 
 // 操場 校慶 lap geometry — one source of truth for the crowd runners
 // (World spawn), the lap-progress tracking (World::UpdateSportsLap) and
