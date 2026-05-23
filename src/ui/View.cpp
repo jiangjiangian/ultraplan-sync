@@ -11,6 +11,7 @@
 #include "ui/InventoryView.h"
 #include "ui/MessageView.h"
 #include "quest/QuestObjective.h"
+#include "quest/Chapter3Quest.h"
 #include "ui/QuestGiverIndicator.h"
 #include "state/InterludeExitMarker.h"
 #include "ui/GameHelp.h"
@@ -125,8 +126,14 @@ void View::Draw(const World& world) {
         // by NPC) closes the dispatch under inheritance, so no dynamic_cast.
         // QuestGiverIndicator routes every primitive through IRenderer,
         // keeping the View pure-render and the helper headless-testable.
-        ForEachActive(world.Objects(), [this](const GameObject& o) {
+        const Player* qgPlayer = world.GetPlayer();
+        const nccu::SemesterState qgState = world.Semester().Current();
+        ForEachActive(world.Objects(), [&](const GameObject& o) {
             if (!o.IsQuestGiver()) return;
+            // Ch3 物物交換鏈: reveal the "!" sequentially (only the next
+            // A→B→C link), not all three at once.
+            if (qgState == nccu::SemesterState::Chapter3_SportsDay && qgPlayer
+                && !nccu::Ch3IndicatorVisible(o.NpcId(), *qgPlayer)) return;
             // The hit box lives at the NPC's feet; QuestGiverIndicator
             // lifts the "!" above the bottom-anchored sprite top.
             DrawQuestGiverIndicator(
