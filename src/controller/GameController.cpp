@@ -475,6 +475,10 @@ void GameController::Update() {
         }
     }
 
+    // 操場 校慶 lap progress (Ch3 only; a cheap no-op every other state) —
+    // ticked after the player's position is finalised this frame.
+    world_.UpdateSportsLap();
+
     if (Input::IsPressed(Key::E) && player) {
         // I3 fix: the movement collider for a BlocksMovement() NPC is a
         // player-sized box at the NPC origin, and Rect::Intersects is

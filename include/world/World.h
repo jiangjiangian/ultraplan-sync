@@ -48,6 +48,16 @@ public:
     [[nodiscard]] const SemesterStateMachine& Semester() const noexcept { return semester_; }
     [[nodiscard]] BuildingTracker&            Tracker()        noexcept { return tracker_; }
 
+    // 操場 校慶 lap (Ch3): tick once per frame from the controller. Reads
+    // the player position, accumulates the angle swept around the track
+    // centre, and sets Flag_SportsLapDone after a full lap. Self-gates on
+    // Chapter3 / not-yet-done, so it is a cheap no-op elsewhere.
+    void UpdateSportsLap() noexcept;
+    // Lap completion fraction [0,1] for the track-ring + HUD-ring render.
+    [[nodiscard]] float SportsLapProgress() const noexcept;
+    // True while the lap ring should be drawn (Ch3 and not yet completed).
+    [[nodiscard]] bool  SportsLapActive() const noexcept;
+
     [[nodiscard]] DialogState&       Dialog()       noexcept { return dialog_; }
     [[nodiscard]] const DialogState& Dialog() const noexcept { return dialog_; }
 
@@ -256,6 +266,11 @@ private:
     std::string                 bottomHudMessage_;
     float                       bottomHudAge_{0.0f};
     CollisionMask               terrainMask_;
+    // 操場 lap progress (Ch3): cumulative signed angle swept around the
+    // track centre; |Σ| ≥ ~2π (one lap) → Flag_SportsLapDone.
+    bool                        lapStarted_{false};
+    float                       lapPrevAngle_{0.0f};
+    float                       lapSwept_{0.0f};
     bool                        inventoryOpen_{false};
     bool                        menuOpen_{false};
     int                         menuCursor_{0};

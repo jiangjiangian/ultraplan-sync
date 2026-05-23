@@ -16,6 +16,16 @@ inline constexpr const char* kFlagHasSausage    = "Flag_HasSausage";
 inline constexpr const char* kFlagHasLoudspeaker = "Flag_HasLoudspeaker";
 inline constexpr const char* kFlagKnowsUmbrellaLoc =
     "Flag_KnowsUmbrellaLoc";
+// Set once the player completes a lap of the 操場 (校慶 participation),
+// which unlocks the A→B→C 物物交換鏈 (走完操場 → 觸發找 ABC).
+inline constexpr const char* kFlagLapDone = "Flag_SportsLapDone";
+
+// 操場 校慶 lap geometry — one source of truth for the crowd runners
+// (World spawn), the lap-progress tracking (World::UpdateSportsLap) and
+// the track-ring render (View). Centre + radius of the run circle.
+inline constexpr float kSportsTrackCx = 1680.0f;
+inline constexpr float kSportsTrackCy = 710.0f;
+inline constexpr float kSportsTrackR  = 140.0f;
 
 // S5d-3 once-key: the Ch3 ProfessorTrap ripple already landed.
 // chapter3.md 章節結尾分支二 L329 「助教旗標若已在 Ch2 扣過，本次 -10
