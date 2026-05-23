@@ -20,6 +20,8 @@
 #include "ui/ReducedMotion.h"
 #include "gfx/Renderer.h"
 #include "gfx/Time.h"
+#include "gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
+#include "gfx/Decorations.h"     // kDecorations — the placed ambient strips
 #include "gfx/CameraScope.h"
 #include "gfx/TextBuilder.h"
 #include "gfx/Color.h"
@@ -57,6 +59,21 @@ View::View(int windowWidth, int windowHeight)
             idx, b.triggerRect,
             b.triggerRect.y + b.triggerRect.height,
             b.flipX, b.flipY});
+    }
+
+    // Ambient decoration strips (cosmetic, no gameplay effect). Load each
+    // strip's texture ONCE here; a def whose PNG is missing (the empty-
+    // resources path) yields !IsValid() and is skipped — so the missing-
+    // asset case simply has no DecorationSprite to draw, no crash. Loaded
+    // after InitWindow (the View is built once the window/GL context is
+    // live) and torn down with the View, so the RAII-vs-GL order holds
+    // (raylib-core KB). These never enter World::Objects(), so the harness
+    // is unaffected.
+    decorations_.reserve(nccu::gfx::kDecorations.size());
+    for (std::size_t i = 0; i < nccu::gfx::kDecorations.size(); ++i) {
+        auto tex = nccu::gfx::Texture::Load(nccu::gfx::kDecorations[i].stripPath);
+        if (!tex.IsValid()) continue;   // art not dropped in → no sprite
+        decorations_.push_back(DecorationSprite{i, std::move(tex)});
     }
 }
 
@@ -147,26 +164,51 @@ void View::Draw(const World& world) {
         // on their feet (top-left + player height). Lower y paints first,
         // so a character above a building's base is covered by it; one
         // standing below it draws on top — classic JRPG walk-behind.
+        // Ambient decorations: advance the render clock ONCE per drawn
+        // frame, then resolve the ping-pong frame index per visible def
+        // below. DeltaSeconds() is the fixed 1/60 step under the harness,
+        // so the animation is deterministic; this accumulator is pure View
+        // state and never reaches state.jsonl (MVC §5).
+        decorationClock_ += static_cast<double>(Time::DeltaSeconds());
+
         drawOrder_.clear();
-        drawOrder_.reserve(buildings_.size() + world.Objects().size());
+        drawOrder_.reserve(buildings_.size() + decorations_.size() +
+                           world.Objects().size());
         for (std::size_t i = 0; i < buildings_.size(); ++i) {
-            drawOrder_.push_back(DrawRef{buildings_[i].baseY, nullptr, i});
+            drawOrder_.push_back(
+                DrawRef{buildings_[i].baseY, DrawKind::Building, nullptr, i});
+        }
+        // Decorations of the CURRENT chapter only — keyed by the def's
+        // `chapter` so the chiikawa shows in Ch2 and the cat in Ch3, never
+        // both. Depth key is the sprite's bottom edge (its feet), so it
+        // walk-behinds against NPCs exactly like a building does.
+        for (std::size_t i = 0; i < decorations_.size(); ++i) {
+            const auto& def = nccu::gfx::kDecorations[decorations_[i].defIndex];
+            if (def.chapter != st) continue;
+            const Texture& tex = decorations_[i].texture;
+            const Rect dest = nccu::gfx::DecorationDestRect(
+                def, tex.Width(), tex.Height());
+            drawOrder_.push_back(
+                DrawRef{dest.y + dest.height, DrawKind::Decoration, nullptr, i});
         }
         ForEachActive(world.Objects(), [this](const GameObject& o) {
             drawOrder_.push_back(DrawRef{
-                o.GetPosition().y + ::world::kPlayerHeight, &o, 0});
+                o.GetPosition().y + ::world::kPlayerHeight,
+                DrawKind::Object, &o, 0});
         });
         std::sort(drawOrder_.begin(), drawOrder_.end(),
                   [](const DrawRef& a, const DrawRef& b) { return a.y < b.y; });
         for (const DrawRef& d : drawOrder_) {
-            if (d.obj) {
+            switch (d.kind) {
+            case DrawKind::Object:
                 // ISP role dispatch: render only objects that play the
                 // IDrawable role. d.obj is const, so use the const
                 // accessor; a non-drawable object (none today, but the
                 // contract allows it) is simply skipped.
                 if (const auto* dr = d.obj->AsDrawable()) dr->Render(renderer_);
-            } else {
-                const BuildingSprite& bs  = buildings_[d.building];
+                break;
+            case DrawKind::Building: {
+                const BuildingSprite& bs  = buildings_[d.index];
                 const Texture&        tex = buildingTextures_[bs.texIndex];
                 const float sw = static_cast<float>(tex.Width());
                 const float sh = static_cast<float>(tex.Height());
@@ -178,6 +220,26 @@ void View::Draw(const World& world) {
                          bs.flipX ? -sw : sw,
                          bs.flipY ? -sh : sh},
                     bs.dest);
+                break;
+            }
+            case DrawKind::Decoration: {
+                const DecorationSprite& ds  = decorations_[d.index];
+                const auto&             def = nccu::gfx::kDecorations[ds.defIndex];
+                const Texture&          tex = ds.texture;
+                // Ping-pong (triangle-wave) frame from the render clock, then
+                // the source sub-rect for that frame; centred dest = the
+                // breathing 放大縮小. All maths is the pure SpriteStrip
+                // helpers (headless-tested); the blit is the same DrawSprite
+                // path buildings use — no raylib in any Model/Item code.
+                const int frame = nccu::gfx::FrameAt(
+                    decorationClock_, def.frameCount, def.fps);
+                const Rect src = nccu::gfx::StripSourceRect(
+                    frame, def.frameCount, tex.Width(), tex.Height());
+                const Rect dest = nccu::gfx::DecorationDestRect(
+                    def, tex.Width(), tex.Height());
+                renderer_.DrawSprite(tex, src, dest);
+                break;
+            }
             }
         }
 
