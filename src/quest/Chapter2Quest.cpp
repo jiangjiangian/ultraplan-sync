@@ -17,28 +17,52 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
     if (state != SemesterState::Chapter2_Midterms) return;
     if (npcId != "bookworm") return;
     if (player.HasFlag(kFlagBookwormRecovered)) return;   // already done
-    if (!Chapter2NotesComplete(player)) return;            // notes first
 
-    if (player.ConsumeOne("EnergyDrink")) {
-        // chapter2.md 學霸 (d) `// karma +5` + Ch2 結算旗標
-        // Flag_BookwormRecovered. Path-b: the (d) blockquote carries no
-        // `Flag_… = true` note, so the opener's once-apply never fires
-        // it — it is set here, at the quest-completion code site (the
-        // QuestFlagPickup / 換回傘 precedent: code sets the milestone
-        // flag, the (d) dialog is just the thank-you recap).
-        player.AddKarma(5).SetFlag(kFlagBookwormRecovered);
-        EventBus::Instance().Publish(Event{
-            EventType::ShowMessage,
-            std::string("傘換回來了。這次，更換是你。")});
-    } else {
-        // chapter2.md 學霸 (c-fail) / §五.3 anti-softlock: a player who
-        // did not buy an EnergyDrink in the market can still finish Ch2
-        // via the 圖書館地下室自動販賣機 (ChapterVendors(Chapter2)).
-        EventBus::Instance().Publish(Event{
-            EventType::ShowMessage,
-            std::string("學霸沒有反應……需要提神飲料喚醒他。"
-                        "（圖書館地下室自動販賣機 35 元）")});
+    if (!player.HasFlag(kFlagBookwormWoken)) {
+        // PHASE 1 — 學霸 still slumped at the 羅馬廣場 statue. The
+        // EnergyDrink is consumed HERE, at the wake step (chapter2.md 學霸
+        // (c)「玩家有提神飲料時」). Waking sets Flag_Bookworm and the 學霸
+        // asks the player to recover his scattered notes — World's
+        // deferred spawn then drops the 3 notes, gated on this flag, so NO
+        // note exists anywhere before this moment.
+        if (player.ConsumeOne("EnergyDrink")) {
+            player.SetFlag(kFlagBookwormWoken);
+            EventBus::Instance().Publish(Event{
+                EventType::ShowMessage,
+                std::string("學霸回神了：「筆記……被風吹散了，"
+                            "幫我撿回來？」")});
+        } else {
+            // chapter2.md 學霸 (c-fail) / §五.3 anti-softlock: a player who
+            // did not buy an EnergyDrink in the market can still wake him
+            // via the 圖書館地下室自動販賣機 (ChapterVendors(Chapter2)).
+            EventBus::Instance().Publish(Event{
+                EventType::ShowMessage,
+                std::string("學霸沒有反應……需要提神飲料喚醒他。"
+                            "（圖書館地下室自動販賣機 35 元）")});
+        }
+        return;
     }
+
+    // PHASE 2 — 學霸 is awake. Gate the exchange on the 3 notes.
+    if (!Chapter2NotesComplete(player)) {
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage,
+            std::string("「我的筆記還沒撿齊吧？三頁，散在校園各處。」")});
+        return;
+    }
+
+    // chapter2.md 學霸 (d) `// karma +5` + Ch2 結算旗標
+    // Flag_BookwormRecovered. The exchange: notes <-> the player's
+    // umbrella. Path-b: the (d) blockquote carries no `Flag_… = true`
+    // note, so the opener's once-apply never fires it — it is set here, at
+    // the quest-completion code site (the QuestFlagPickup / 換回傘
+    // precedent: code sets the milestone flag, the (d) dialog is just the
+    // thank-you recap). No EnergyDrink is consumed here — it was spent at
+    // the wake step above.
+    player.AddKarma(5).SetFlag(kFlagBookwormRecovered);
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        std::string("傘換回來了。這次，更換是你。")});
 }
 
 void LiftChapter2Clear(Player& player, SemesterState state,

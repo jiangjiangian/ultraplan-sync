@@ -109,22 +109,28 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             return 0;                                               // (a)
         }
         if (npcId == "librarian") {
-            // (a) 詢問線索 -> (b) 確認三頁筆記、指向羅馬廣場。純資訊
-            // 節點（chapter2.md：不給 karma、無 flag），故
-            // OpenNpcDialog 的 once-apply 區對 (b) 是 no-op，純
-            // line-only recap（ta/victim recap 先例）。
-            if (Chapter2NotesComplete(player)) return 1;
+            // (a) 詢問線索：指向羅馬廣場雕像下的學霸（不再交辦撿筆記）
+            // -> (b) 喚醒學霸後的確認 recap。純資訊節點（chapter2.md：
+            // 不給 karma、無 flag），故 OpenNpcDialog 的 once-apply 區對
+            // (b) 是 no-op，純 line-only recap（ta/victim recap 先例）。
+            if (player.HasFlag(kFlagBookwormWoken)) return 1;
             return 0;
         }
         if (npcId == "bookworm") {
-            // Recovered 後 -> (d) 致謝 recap（line-only；+5 已在 rescue
-            // 套，(d) blockquote 無 flag 註解，once-apply 不重套）。
-            // B5: 喚醒前若玩家身上有詛咒傘 -> (b) 詛咒冷反應變體
-            // (chapter2.md (b)「取代 (a)」；學霸直覺感應到那把寫著別人
-            // 名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應)。否則
-            // (a) 常態遊魂初遇。(c)/(c-fail) 仍不路由：解析器把 (c) 兩個
-            // 粗體子塊併進同一 subState，無法分離（已知省略，見 §F.5）。
+            // 兩階段任務機（TryRescueBookworm，鑰匙 Flag_Bookworm）的
+            // 對話映射：
+            //   Recovered          -> (d) 致謝 recap [3]（line-only；+5 已
+            //     在 rescue 套，(d) blockquote 無 flag 註解，once-apply
+            //     不重套）。
+            //   喚醒後未換回傘      -> (c) 已喚醒、等撿筆記 recap [2]
+            //     （喚醒互動本身的提示由 TryRescueBookworm 的 ShowMessage
+            //     呈現；(c) 子段現已重寫為純對白、可路由）。
+            //   喚醒前持詛咒傘      -> (b) 詛咒冷反應變體 [1]
+            //     (chapter2.md (b)「取代 (a)」；學霸直覺感應到那把寫著別人
+            //     名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應)。
+            //   否則                -> (a) 常態遊魂初遇 [0]。
             if (player.HasFlag(kFlagBookwormRecovered)) return 3;
+            if (player.HasFlag(kFlagBookwormWoken))     return 2;  // (c)
             if (player.HasFlag("Flag_TookCursedUmbrella")) return 1;  // (b)
             return 0;                                                // (a)
         }

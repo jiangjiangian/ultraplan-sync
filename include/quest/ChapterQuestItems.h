@@ -24,6 +24,11 @@ struct QuestItemPlacement {
     std::string              message;          // ShowMessage on pickup
     std::vector<std::string> completionFlags;  // all set => grant karma
     int                      completionKarma;
+    // Optional COUNT-BASED lines: when non-empty, the on-pickup message is
+    // chosen by HOW MANY completionFlags the player now holds (1st/2nd/3rd
+    // collected), NOT by which item. Lets the 3 notes read "1st / 2nd /
+    // last" in ANY pickup order. Empty -> the single `message` is used.
+    std::vector<std::string> countMessages = {};
 };
 
 inline const std::vector<QuestItemPlacement>&
@@ -32,22 +37,39 @@ ChapterQuestItems(SemesterState state) {
     // collected LAST sees every flag set and grants 學霸 (b) +3 exactly
     // once (QuestFlagPickup::OnPickup — the earlier siblings see a
     // missing flag and skip, and a collected sibling has deactivated).
-    // Coordinates now trace the gate→廣場→圖書館 climb the player walks
-    // anyway: note1 mid-campus (900,1500), note2 just south of 羅馬廣場
-    // (1088,1230 — passing the slumped 學霸 at the statue), note3 at the
-    // 中正圖書館 front (920,620) so the last page lands the player AT the
-    // 管理員 desk, whose (b) line then points back to the plaza. Replaces
-    // the old all-south y≈1430/1850 cluster that toured nothing. All
-    // mask-verified walkable via .claude/tools/map_registry.py.
+    //
+    // They are DEFERRED-spawned (World::MaybeSpawnChapter2Notes), so they
+    // only appear AFTER the player wakes the 學霸 and he asks for them —
+    // never at chapter entry. Coordinates are now scattered across THREE
+    // different campus areas so collecting them is roam-worthy (not a
+    // clustered library tour): note1 NW near 法學院 (450,850), note2 SE
+    // near 集英樓/新聞館 (1400,1250), note3 S-central near 校友服務中心/正門
+    // (1040,1640). All mask-verified STRICTLY walkable AND flood-REACHABLE
+    // from the plaza/學霸 (the full bookworm→note→note→note→bookworm loop
+    // checked via .claude/tools/map_registry.py --route; an earlier east
+    // pick at (1480,1120) was walkable but walled-off / unreachable, so it
+    // was moved here).
+    //
+    // Messages are COUNT-BASED (kNoteMsgs), chosen by how many notes the
+    // player now holds — 1st/2nd/last — NOT by which note. So picking
+    // note3 first correctly prints the "1st found" line, fixing the old
+    // identity-keyed bug where grabbing note3 first wrongly announced the
+    // "last page". `message` is kept as a sane fallback but is unused
+    // while kNoteMsgs is supplied.
     static const std::vector<std::string> kNoteSet = {
         kFlagFoundNote1, kFlagFoundNote2, kFlagFoundNote3};
+    static const std::vector<std::string> kNoteMsgs = {
+        "撿到一頁學霸的筆記。還有兩頁散在別處。",
+        "第二頁筆記到手——空白處寫著「從現在開始」。",
+        "最後一頁找齊了。三頁都在手上了，回去找學霸。",
+    };
     static const std::vector<QuestItemPlacement> kChapter2 = {
-        {{ 900.0f, 1500.0f}, kFlagFoundNote1,
-         "撿到一頁學霸的筆記。字跡工整，但順序不對。", kNoteSet, 3},
-        {{1088.0f, 1230.0f}, kFlagFoundNote2,
-         "又一頁筆記——空白處寫著「期末準備就從現在開始」。", kNoteSet, 3},
-        {{ 920.0f,  620.0f}, kFlagFoundNote3,
-         "最後一頁找齊了。管理員說他在外面——大雨裡。", kNoteSet, 3},
+        {{ 450.0f,  850.0f}, kFlagFoundNote1,
+         "撿到一頁學霸的筆記。", kNoteSet, 3, kNoteMsgs},
+        {{1400.0f, 1250.0f}, kFlagFoundNote2,
+         "撿到一頁學霸的筆記。", kNoteSet, 3, kNoteMsgs},
+        {{1040.0f, 1640.0f}, kFlagFoundNote3,
+         "撿到一頁學霸的筆記。", kNoteSet, 3, kNoteMsgs},
     };
     static const std::vector<QuestItemPlacement> kNone;
 

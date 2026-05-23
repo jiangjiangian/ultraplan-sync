@@ -1,6 +1,7 @@
 #ifndef QUEST_OBJECTIVE_H_
 #define QUEST_OBJECTIVE_H_
 #include "entities/Player.h"
+#include "quest/Chapter2Quest.h"
 #include "state/SemesterState.h"
 #include <string>
 
@@ -29,8 +30,13 @@ inline std::string CurrentObjective(SemesterState state,
             return "目標：在羅馬廣場市集向攤販按 E 採買，"
                    "逛完往南（校門口方向）離開";
         case SemesterState::Chapter2_Midterms:
-            return "目標：先到中正圖書館找管理員問線索，"
-                   "再去羅馬廣場雕像下喚醒學霸";
+            if (!player.HasFlag("Flag_Bookworm"))
+                return "目標：先到中正圖書館找管理員問線索，"
+                       "再去羅馬廣場雕像下喚醒學霸";
+            if (!nccu::Chapter2NotesComplete(player))
+                return "目標：撿回學霸散落的三頁筆記"
+                       "（分散在校園不同角落）";
+            return "目標：帶著三頁筆記回羅馬廣場找學霸換回你的傘";
         case SemesterState::Chapter3_SportsDay:
             return "目標：先繞操場跑一圈參加校慶，再到羅馬廣場找 ABC "
                    "三系換情報、取回真傘";

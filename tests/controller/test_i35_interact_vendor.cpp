@@ -264,12 +264,13 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     EventBus::Instance().Clear();
 }
 
-// I5 — the Ch2 spine. The clear needs an inventory EnergyDrink to wake
-// 學霸; only a Vendor buy can supply it. Buy at the Ch2 自動販賣機, then
-// (with the 3 notes pre-set) talk to 學霸: TryRescueBookworm consumes the
-// drink, sets Flag_BookwormRecovered, and LiftChapter2Clear sets
-// Flag_Ch2Cleared once the thanks dialog closes. Before the I5 fix the
-// EnergyDrink is unobtainable in-engine so Flag_Ch2Cleared is unreachable.
+// I5 — the Ch2 spine, two-phase flow. The clear needs an inventory
+// EnergyDrink to WAKE 學霸 (only a Vendor buy can supply it). Buy at the
+// Ch2 自動販賣機; talk to 學霸 once -> phase 1 consumes the drink and wakes
+// him (Flag_Bookworm, which starts the note quest); with the 3 notes in,
+// a second talk -> phase 2 exchanges (Flag_BookwormRecovered); closing the
+// (d) thanks dialog lets LiftChapter2Clear set Flag_Ch2Cleared. Before the
+// I5 fix the EnergyDrink was unobtainable in-engine so the spine stalled.
 TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
@@ -310,15 +311,32 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     Frame(controller, in);
     CHECK(p->ConsumableCount("EnergyDrink") == 1);     // <-- I5 supply fixed
 
-    // --- Talk to 學霸: consumes the drink -> Flag_BookwormRecovered. ---
+    // --- Talk to 學霸, PHASE 1: consumes the drink -> wakes him
+    // (Flag_Bookworm). The new two-phase flow no longer recovers in one
+    // step: waking is what starts the note quest. ---
     const GameObject* bw = FindNpc(world, "bookworm");
     REQUIRE(bw != nullptr);
     p->SetPosition(nccu::gfx::Vec2{bw->GetPosition().x - 8.0f,
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
+    CHECK(p->HasFlag("Flag_Bookworm"));                // woken
+    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // drink spent at wake
+    CHECK_FALSE(p->HasFlag("Flag_BookwormRecovered")); // not yet — needs notes
+
+    // Close the wake (c) dialog so the next E is a fresh interaction.
+    for (int f = 0; f < 16 && world.Dialog().Active(); ++f) {
+        in.Tap(Key::E);
+        Frame(controller, in);
+    }
+
+    // --- Talk to 學霸, PHASE 2: notes are in (pre-set above) -> exchange:
+    // Flag_BookwormRecovered. No further drink consumed. ---
+    p->SetPosition(nccu::gfx::Vec2{bw->GetPosition().x - 8.0f,
+                                   bw->GetPosition().y});
+    in.Tap(Key::E);
+    Frame(controller, in);
     CHECK(p->HasFlag("Flag_BookwormRecovered"));
-    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // drink consumed
 
     // Close the 學霸 (d) thanks dialog; LiftChapter2Clear then sets
     // Flag_Ch2Cleared on the next non-dialog frame, the spine's Ch2 clear.
