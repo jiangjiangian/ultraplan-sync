@@ -4,6 +4,7 @@
 #include "quest/ChapterQuestItems.h"
 #include "quest/ChapterSpawns.h"
 #include "quest/ChapterVendors.h"
+#include "quest/Chapter3Quest.h"
 #include "controller/GameObjectFactory.h"
 #include "entities/NPC.h"
 #include "quest/NpcSpawns.h"
@@ -250,8 +251,8 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             "resources/assets/sprites/school_uniform_3/female_11.png",
             "resources/assets/sprites/school_uniform_3/female_12.png",
         };
-        const nccu::gfx::Vec2 trackC{1680.0f, 710.0f};
-        const float trackR = 140.0f;
+        const nccu::gfx::Vec2 trackC{kSportsTrackCx, kSportsTrackCy};
+        const float trackR = kSportsTrackR;
         for (int i = 0; i < 5; ++i) {                 // runners
             const float a0 = static_cast<float>(i) * 1.25664f;   // 72° apart
             auto run = std::make_unique<NPC>(
@@ -282,6 +283,44 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             seed = seed * 1664525u + 1013904223u;
         }
     }
+}
+
+void World::UpdateSportsLap() noexcept {
+    if (semester_.Current() != SemesterState::Chapter3_SportsDay) return;
+    if (!player_ || player_->HasFlag(kFlagLapDone)) return;
+    const float dx = player_->GetPosition().x - kSportsTrackCx;
+    const float dy = player_->GetPosition().y - kSportsTrackCy;
+    const float dist = std::hypot(dx, dy);
+    // Only sweep while on/near the track band — loitering the centre or
+    // wandering far off the field does not count toward the lap.
+    if (dist < 60.0f || dist > 230.0f) return;
+    const float ang = std::atan2(dy, dx);
+    if (!lapStarted_) {                       // first on-band frame: anchor
+        lapStarted_   = true;
+        lapPrevAngle_ = ang;
+        lapSwept_     = 0.0f;
+        return;
+    }
+    constexpr float kPi = 3.14159265358979323846f;
+    float d = ang - lapPrevAngle_;            // shortest signed step
+    while (d >  kPi) d -= 2.0f * kPi;
+    while (d < -kPi) d += 2.0f * kPi;
+    lapSwept_    += d;
+    lapPrevAngle_ = ang;
+    if (std::fabs(lapSwept_) >= 2.0f * kPi * 0.92f)   // ~one lap (8% slack)
+        player_->SetFlag(kFlagLapDone);
+}
+
+float World::SportsLapProgress() const noexcept {
+    if (player_ && player_->HasFlag(kFlagLapDone)) return 1.0f;
+    constexpr float kTwoPi = 6.28318530717958647692f;
+    const float f = std::fabs(lapSwept_) / kTwoPi;
+    return f < 0.0f ? 0.0f : (f > 1.0f ? 1.0f : f);
+}
+
+bool World::SportsLapActive() const noexcept {
+    return semester_.Current() == SemesterState::Chapter3_SportsDay
+        && player_ != nullptr && !player_->HasFlag(kFlagLapDone);
 }
 
 void World::RespawnChapterRoster(nccu::SemesterState state) {

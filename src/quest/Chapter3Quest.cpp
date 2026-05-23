@@ -14,9 +14,15 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
     const bool known   = player.HasFlag(kFlagKnowsUmbrellaLoc);
 
     if (npcId == "vendor_sausage_a") {
-        // chapter3.md A 系 (b)「交易完成」`// karma +3`（物物交換鏈
-        // 順利啟動）. Fires once: any later chain flag gates it out.
-        if (sausage || loud || known) return;
+        // chapter3.md A 系 (b)「交易完成」`// karma +3`（物物交換鏈啟動）.
+        if (sausage || loud || known) return;          // chain already past A
+        if (!player.HasFlag(kFlagLapDone)) {            // 校慶: run the lap first
+            EventBus::Instance().Publish(Event{
+                EventType::ShowMessage,
+                std::string("A 系攤主：先去操場跑一圈參加校慶，"
+                            "回來我請你吃香腸！")});
+            return;
+        }
         player.AddKarma(3).SetFlag(kFlagHasSausage);
         EventBus::Instance().Publish(Event{
             EventType::ShowMessage,
@@ -73,7 +79,8 @@ bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
     const bool sausage = player.HasFlag(kFlagHasSausage);
     const bool loud    = player.HasFlag(kFlagHasLoudspeaker);
     const bool known   = player.HasFlag(kFlagKnowsUmbrellaLoc);
-    if (npcId == "vendor_sausage_a") return !sausage;           // A: until traded
+    if (npcId == "vendor_sausage_a")
+        return player.HasFlag(kFlagLapDone) && !sausage;        // A: after the lap
     if (npcId == "loudspeaker_b")    return sausage && !loud;   // B: after A
     if (npcId == "senior_c")         return loud && !known;     // C: after B
     return true;   // any other quest-giver: unchanged (always shown)

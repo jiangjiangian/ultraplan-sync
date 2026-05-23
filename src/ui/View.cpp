@@ -23,6 +23,7 @@
 #include "gfx/TextBuilder.h"
 #include "gfx/Color.h"
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <string>
 
@@ -158,6 +159,48 @@ void View::Draw(const World& world) {
                 nccu::gfx::Time::DeltaSeconds(),
                 world.ReducedMotion());
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
+        }
+
+        // 操場 校慶 lap track — a dotted ring on the field the player runs a
+        // lap around; dots already passed disappear, so the ring visibly
+        // shrinks as the lap completes (走完動態消除). In the CameraScope so
+        // it sits on the field in world space.
+        if (world.SportsLapActive()) {
+            const float prog = world.SportsLapProgress();
+            constexpr int kDots = 32;
+            constexpr float kTwoPi = 6.2831853f;
+            const float start = kTwoPi * 0.25f;   // south point (player entry)
+            for (int i = 0; i < kDots; ++i) {
+                const float frac = static_cast<float>(i) /
+                                   static_cast<float>(kDots);
+                if (frac < prog) continue;          // already walked → erased
+                const float a = start + frac * kTwoPi;
+                const float x = nccu::kSportsTrackCx +
+                                nccu::kSportsTrackR * std::cos(a);
+                const float y = nccu::kSportsTrackCy +
+                                nccu::kSportsTrackR * std::sin(a);
+                renderer_.DrawRect(Rect{x - 4.0f, y - 4.0f, 8.0f, 8.0f},
+                                   Color{255, 230, 90, 220});
+            }
+        }
+    }
+
+    // 操場 校慶 lap progress ring (HUD, screen space) — fills clockwise as
+    // the lap completes; the screen companion to the ground track.
+    if (world.SportsLapActive()) {
+        const float prog = world.SportsLapProgress();
+        constexpr int kDots = 16;
+        constexpr float kTwoPi = 6.2831853f;
+        const float cx = viewportSize_.x - 60.0f, cy = 120.0f, r = 24.0f;
+        for (int i = 0; i < kDots; ++i) {
+            const float frac = static_cast<float>(i) /
+                               static_cast<float>(kDots);
+            const float a = -kTwoPi * 0.25f + frac * kTwoPi;  // top, clockwise
+            const float x = cx + r * std::cos(a);
+            const float y = cy + r * std::sin(a);
+            renderer_.DrawRect(Rect{x - 3.0f, y - 3.0f, 6.0f, 6.0f},
+                               frac < prog ? Color{255, 230, 90, 255}
+                                           : Color{255, 255, 255, 70});
         }
     }
 
