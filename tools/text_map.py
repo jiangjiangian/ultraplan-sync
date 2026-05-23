@@ -187,17 +187,25 @@ def main() -> int:
         L.append(f"| `{fl}` | {s} | {r} | {c} |")
     L += [""]
 
-    L += ["## 4. Drift warnings", ""]
+    L += ["## 4. Drift warnings", "",
+          "> CAVEAT: this tool tracks `Flag_*` set/read only — it does NOT model",
+          "> event-based transitions (e.g. `UmbrellaClaimed` → `Transition`) or",
+          "> test-only stubs. A flag flagged below may still be reachable via an",
+          "> event handler, or be a deliberate test affordance. VERIFY in code",
+          "> before treating it as a bug. (Known case: `Flag_Ch3Cleared` is read",
+          "> by ChapterGate as a test-spine stub; Ch3 actually clears via the",
+          "> `UmbrellaClaimed` event in EventWiring — NOT a real orphan.)", ""]
     if not dead and not orphan:
         L += ["None — every set flag is read, every read flag is set. "
               "(Pair with `dialog_lint.py` for the gate.)"]
     else:
         if dead:
-            L += ["**Set but never read (dead flag / dead branch — B3 class):**"]
+            L += ["**Set but never read via HasFlag (candidate dead branch — B3 class):**"]
             L += [f"- `{f}` — set in {', '.join(of(f, 'set'))}, read nowhere" for f in dead]
             L += [""]
         if orphan:
-            L += ["**Read but never set (orphan gate — branch can't fire):**"]
+            L += ["**Read but never set via a flag (candidate orphan — "
+                  "may fire via an event / test path, verify in code):**"]
             L += [f"- `{f}` — read in {', '.join(of(f, 'read'))}, set nowhere" for f in orphan]
     L += [""]
 
