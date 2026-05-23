@@ -26,8 +26,15 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
 
     if (npcId == "loudspeaker_b") {
         // chapter3.md B 系 (b)「交易完成」`// karma +3`（第二環完成）.
+        if (loud || known) return;             // already past link 2
+        if (!sausage) {                        // out-of-order → point back to A
+            EventBus::Instance().Publish(Event{
+                EventType::ShowMessage,
+                std::string("B 系同學：你手上沒吃的啊？"
+                            "先去 A 系烤香腸攤換一根熱香腸來。")});
+            return;
+        }
         // 香腸換大聲公 — consume the sausage, hand over the 大聲公.
-        if (!sausage || loud || known) return;
         player.ClearFlag(kFlagHasSausage);
         player.AddKarma(3).SetFlag(kFlagHasLoudspeaker);
         EventBus::Instance().Publish(Event{
@@ -38,8 +45,15 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
 
     if (npcId == "senior_c") {
         // chapter3.md C 系 (b)「情報揭露」`// karma +5`（全環完成，
-        // 情報取得）. 大聲公換情報——傘在體育館後台道具箱第三個。
-        if (!loud || known) return;
+        // 情報取得）. 大聲公換情報——傘在體育館後台道具箱。
+        if (known) return;                     // info already revealed
+        if (!loud) {                           // out-of-order → point back to B
+            EventBus::Instance().Publish(Event{
+                EventType::ShowMessage,
+                std::string("C 系學姊：空手來談情報？"
+                            "先去 B 系把香腸換成大聲公再來找我。")});
+            return;
+        }
         player.ClearFlag(kFlagHasLoudspeaker);
         player.AddKarma(5).SetFlag(kFlagKnowsUmbrellaLoc);
         EventBus::Instance().Publish(Event{
@@ -48,6 +62,21 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
                         "你的傘在體育館後台道具箱，第三個。")});
         return;
     }
+}
+
+// Sequential `!` gating for the Ch3 物物交換鏈: only the NEXT link in the
+// A→B→C chain shows its indicator, so the three light up in turn instead of
+// all at once (player request). View calls this when state==Chapter3.
+// NOTE: A's gate will also require the 操場-lap flag once the lap mechanic
+// lands; for now A is visible from chapter entry.
+bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
+    const bool sausage = player.HasFlag(kFlagHasSausage);
+    const bool loud    = player.HasFlag(kFlagHasLoudspeaker);
+    const bool known   = player.HasFlag(kFlagKnowsUmbrellaLoc);
+    if (npcId == "vendor_sausage_a") return !sausage;           // A: until traded
+    if (npcId == "loudspeaker_b")    return sausage && !loud;   // B: after A
+    if (npcId == "senior_c")         return loud && !known;     // C: after B
+    return true;   // any other quest-giver: unchanged (always shown)
 }
 
 void TryApplyCh3Ripple(Player& player, SemesterState state) {

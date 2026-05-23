@@ -48,33 +48,16 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {gfx::Vec2{ 820,  545}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "librarian", true},
     };
-    // Ch3 校慶運動會 (S5d-1). chapter3.md has 8 ## NPC：sections — the
-    // 5 archetypes (ripple / optional, isQuestGiver=false, same stance
-    // as Ch2) + 3 物物交換鏈 nodes (A系香腸 / B系大聲公 / C系學姊,
-    // isQuestGiver=true — they drive the main quest). Sprites reuse
-    // existing art; positions reuse Ch1/Ch2-proven walkable coords so
-    // the single-z-plane campus stays reachable (reachability is a
-    // manual-verify item, same as every map-position table here).
-    // cycle9c reposition: the 3 trade-chain quest-givers used to sit
-    // at y=1850 — well south of the Ch3 entry's camera viewport on the
-    // road's south edge, so the H4 quest-giver "!" indicator never
-    // entered view (cycle9_diag_a frame 4200 confirmed 0 indicators
-    // visible). Pulling them up to y=1820 — the top of the south
-    // corridor, just below the E-W wall at y~1761-1819 — puts the
-    // indicator centred in the entry viewport: world Y=1820 sprite
-    // top at 1812 + indicator panel at 1776 lands ~80 px below the
-    // player's eye-line at the y~1890 Ch3 entry, while the south
-    // corridor (y in [1820, 1940]) stays the script's natural
-    // navigation lane (the spine's `interact vendor_sausage_a` path
-    // is the same axis-only X-then-Y descent it always was). Original
-    // x values (760 / 1080 / 1320) preserved verbatim so the
-    // "spread across the south campus" narrative beat — chapter3.md's
-    // 田徑場旁 / 隔壁B系 / 四維道 — reads identically; only y dropped
-    // by 30 px. cycle9_diag_a frame 4200 0 indicators → cycle9c_smoke
-    // 3 indicators after this change (verified by gold-pixel scan).
-    // New coords mask-verified walkable and pass
-    // test_spawn_reachability's flood-fill from the player spawn just
-    // like every other production coord.
+    // Ch3 校慶運動會. The 5 archetypes (ripple / optional,
+    // isQuestGiver=false) keep their Ch1/Ch2 anchors; the 3 物物交換鏈
+    // quest-givers (A系香腸 / B系大聲公 / C系學姊, isQuestGiver=true) are
+    // scattered across 羅馬廣場 — off the central gate→圖書館 lane so they
+    // don't block it (player request) — where the player heads after the
+    // 操場 lap. Their `!` indicators reveal SEQUENTIALLY (Ch3IndicatorVisible:
+    // A until traded, then B, then C) instead of all at once, and the chain
+    // must run A→B→C (TryAdvanceCh3Trade redirects an out-of-order talk).
+    // All coords mask-verified walkable + flood-reachable (map_registry.py;
+    // test_spawn_reachability).
     static const std::vector<NpcSpawn> kChapter3 = {
         {gfx::Vec2{ 380, 1860}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
@@ -86,11 +69,11 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
          "ta", false},
         {gfx::Vec2{ 460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
-        {gfx::Vec2{ 760, 1820}, "resources/assets/sprites/npc/shop_auntie.png",
+        {gfx::Vec2{ 980, 1000}, "resources/assets/sprites/npc/shop_auntie.png",
          "vendor_sausage_a", true},
-        {gfx::Vec2{1320, 1820}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {gfx::Vec2{1150, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "loudspeaker_b", true},
-        {gfx::Vec2{1080, 1825}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {gfx::Vec2{1060, 1120}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
     // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —

@@ -40,6 +40,13 @@ inline constexpr const char* kFlagCh3RippledProfTrap =
 void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
                         SemesterState state);
 
+// Sequential quest-giver `!` gate for the A→B→C chain — true only for the
+// NEXT link to talk to (A until traded, then B, then C), so the three
+// indicators reveal in turn instead of all at once. Returns true for any
+// non-chain NPC. View calls this when state == Chapter3_SportsDay.
+[[nodiscard]] bool Ch3IndicatorVisible(std::string_view npcId,
+                                       const Player& player);
+
 // E-interact hook, sibling of TryApplyCh2Ripple: lands the Ch3
 // ProfessorTrap ripple (chapter3.md 章節結尾分支二, `// karma -10`,
 // Flag_HasProfessorTrap callback「Ch1 漣漪延伸至 Ch3」). chapter3.md

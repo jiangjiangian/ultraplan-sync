@@ -63,6 +63,33 @@ TEST_CASE("TryAdvanceCh3Trade: 物物交換鏈 advances one link per talk, in or
     EventBus::Instance().Clear();
 }
 
+TEST_CASE("Ch3IndicatorVisible: the A->B->C `!` reveals one link at a time") {
+    Player p = MakePlayer();
+    // Chapter entry: only A is lit; the chain links B/C stay dark.
+    CHECK(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("loudspeaker_b", p));
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("senior_c", p));
+    // A non-chain NPC is unaffected (always lit if it is a quest-giver).
+    CHECK(nccu::Ch3IndicatorVisible("ta", p));
+
+    // After trading at A: only B is lit.
+    p.SetFlag(nccu::kFlagHasSausage);
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));
+    CHECK(nccu::Ch3IndicatorVisible("loudspeaker_b", p));
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("senior_c", p));
+
+    // After trading at B: only C is lit.
+    p.ClearFlag(nccu::kFlagHasSausage);
+    p.SetFlag(nccu::kFlagHasLoudspeaker);
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("loudspeaker_b", p));
+    CHECK(nccu::Ch3IndicatorVisible("senior_c", p));
+
+    // After C reveals the umbrella: the whole chain is dark (quest done).
+    p.ClearFlag(nccu::kFlagHasLoudspeaker);
+    p.SetFlag(nccu::kFlagKnowsUmbrellaLoc);
+    CHECK_FALSE(nccu::Ch3IndicatorVisible("senior_c", p));
+}
+
 TEST_CASE("ResolveOpenerSubState: Ch3 chain NPCs route (a)->(b) on their flag") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("vendor_sausage_a", kCh3, p) == 0);
