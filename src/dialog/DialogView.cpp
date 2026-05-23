@@ -19,7 +19,16 @@ void DrawDialog(nccu::gfx::IRenderer& r, const DialogState& d) {
 
     if (d.AtChoice()) {
         // Choice labels also wrap to the box so a long option can never
-        // overflow; each option's rows stack, then the next option.
+        // overflow; each option's rows stack, then a small inter-choice
+        // gap, then the next option — so the menu reads as ONE option per
+        // logical entry (not a wall of equal-pitch rows), which matters
+        // now the box is wide (kBoxCells) and the Ch4 finale offers three
+        // options (體諒/質問/我再想想…). The selected option is prefixed
+        // with the "> " caret marker so keyboard selection is unambiguous.
+        // kInterChoiceGap is intentionally smaller than a full line so the
+        // three single-row finale options + their gaps still clear the
+        // 110px panel (kBoxH): 3 rows*22 + 2 gaps*8 = 82px < 110.
+        constexpr float kInterChoiceGap = 8.0f;
         float y = kBoxTextY;
         const auto& choices = d.Choices();
         for (int i = 0; i < static_cast<int>(choices.size()); ++i) {
@@ -32,6 +41,7 @@ void DrawDialog(nccu::gfx::IRenderer& r, const DialogState& d) {
                            Colors::Black);
                 y += kBoxLineH;
             }
+            if (i + 1 < static_cast<int>(choices.size())) y += kInterChoiceGap;
         }
     } else {
         // The current line, wrapped to the box and shown one page (up to

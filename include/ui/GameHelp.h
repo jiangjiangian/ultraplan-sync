@@ -12,7 +12,7 @@ namespace nccu {
 // is baked into gfx::Font.h UiLiteralChars() (the #10 atlas lesson) so
 // the panel never tofus to `?`. Lines are kept short (the help panel is
 // narrower than the dialog box; ~22 full-width cells max).
-inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
+inline constexpr std::array<std::string_view, 17> kGameHelpLines = {
     "【操作】",
     "WASD / 方向鍵：移動",
     "E：對話 / 撿取 / 購買",
@@ -34,16 +34,24 @@ inline constexpr std::array<std::string_view, 15> kGameHelpLines = {
     // SetExitKey.) Pure content; no engine change, within the help budget.
     "M 暫停會凍結雨壓力計。",
     "",
+    // Item 1e: the endings section is ACTIONABLE (spoiler-light) — it
+    // names the LEVERS that decide each path (業力 / 找回真傘 / 助教結算
+    // 的態度 / 買醜綠傘) instead of pure flavour, so a player knows HOW to
+    // steer. No exact thresholds (kept spoiler-light). Every glyph here is
+    // baked into gfx::Font.h UiLiteralChars() (the #10 atlas lesson) and
+    // each line stays within the help panel's ~22 full-width-cell budget.
     "【三種結局】",
-    "真相大白：善待他人並找回真傘。",
-    "屠龍者終成惡龍：偷傘或心術不正。",
+    "真相大白：累積業力善待人，",
+    "找回真傘，最後體諒助教。",
+    "屠龍者終成惡龍：偷傘、業力",
+    "過低，或最後對助教強硬。",
 };
 
-// The ending list is 3 items but the array above stops at 2 to keep the
-// panel short; the third ("破財消災：花錢買下那把超醜的綠傘。") is the
-// closing line so the reader leaves on the comedic note.
+// The ending list's third path is the closing line so the reader leaves
+// on the comedic-but-actionable note (the lever: buy the ugly green
+// umbrella at 集英樓). Same ~22-cell budget; glyphs baked per #10.
 inline constexpr std::string_view kGameHelpClosing =
-    "破財消災：花錢買下那把超醜的綠傘。";
+    "破財消災：到集英樓買下醜綠傘。";
 
 } // namespace nccu
 

@@ -41,10 +41,22 @@ LayoutPages(const std::string& s, int maxCells, int rowsPerPage);
 
 // Dialog box geometry, in one place so View, DialogState pagination and
 // the regression tests agree. Values chosen for the existing panel
-// Rect{20,320,760,110} drawn at font size 16: 28 cells matches the
-// authoring contract (CLAUDE.md §6 / dialog_lint MAX_CELLS) and three
-// text rows + the "▼ more" affordance fit inside the 110px-tall panel.
-inline constexpr int   kBoxCells       = 28;
+// Rect{20,320,760,110} drawn at font size 16.
+//
+// kBoxCells = 80: a wrapped row should FILL the box to near its right
+// edge before wrapping, not stop a third of the way across (the V-wrap
+// bug — the old 28 wrapped at ~224px in a ~720px-wide text area). The
+// text runs from kBoxTextX (36px); the "▼ more" cue draws at
+// kBoxX+kBoxW-24 == 756px. Sizing from the rendered advance — a
+// full-width glyph at font size 16 advances ~size + size/10 spacing
+// ≈ 17.6px, i.e. ~8.8px per cell (the conservative end of the project's
+// ~8px/cell model used by EndingView::CenteredX) — a full 80-cell CJK
+// row ends at 36 + 80*8.8 ≈ 740px, ~16px clear of the ▼ at 756 and
+// inside the 768px inner-right edge. (Pixel-unverifiable here: the font
+// atlas is absent on a fresh clone, so the value is sized from the cell
+// model with a safety margin rather than measured on screen.) Keep in
+// sync with .claude/tools/dialog_lint.py MAX_CELLS and CLAUDE.md §6.
+inline constexpr int   kBoxCells       = 80;
 inline constexpr int   kBoxRowsPerPage = 3;
 inline constexpr float kBoxX           = 20.0f;
 inline constexpr float kBoxY           = 320.0f;

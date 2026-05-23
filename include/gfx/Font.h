@@ -130,7 +130,22 @@ inline const char* UiLiteralChars() {
         // content-unreadable fallback path too (every glyph in those two
         // rows must reach the atlas — same V1/REQ#10 rationale as the
         // building-name / help blocks).
-        "減少畫擴目關";
+        "減少畫擴目關"
+        // Item 1 / 1e: the enriched ending SCREEN (EndingView.cpp) and the
+        // actionable 遊戲說明 endings section (GameHelp.h) draw a handful of
+        // glyphs that occur in NO docs/content/*.md file, so they reach the
+        // atlas ONLY here (same V1/REQ#10 mechanism). The 5c glyph-scan test
+        // (tests/ui/test_font_ui_glyph_scan.cpp) enumerates EndingCardStrings
+        // + kGameHelpLines + the View literals and FAILS if any glyph is
+        // absent, so this block is verified, not guessed. The three that
+        // were missing (everything else was already covered by the broad
+        // content/UI sets):
+        //   U+2500 ─  the "── 為什麼你走到這裡 ──" reason-section rule.
+        //   U+2713 ✓  the 結算 checklist "condition met" mark.
+        //   U+58AE 墮 only in Ending B's path label 「墮落結局」.
+        "\xE2\x94\x80"      // U+2500 ─
+        "\xE2\x9C\x93"      // U+2713 ✓
+        "\xE5\xA2\xAE";     // U+58AE 墮
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

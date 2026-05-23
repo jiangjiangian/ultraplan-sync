@@ -5,7 +5,10 @@
 #include "gfx/Vec2.h"
 #include "gfx/Color.h"
 #include <algorithm>
+#include <cstdio>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace nccu {
 
@@ -40,6 +43,88 @@ std::string_view caption(SemesterState s) {
     }
 }
 
+// Item 1 — the in-fiction "why you're here" STORY lines, transcribed
+// concise from the `> 字卡：「…」` blocks at the top of docs/content/
+// ending_{a,b,c}.md (the .md stays the narrative bible; THIS table is
+// what actually renders, because View.cpp early-returns before the .md
+// is ever drawn). Each line is short enough for the screen width; every
+// glyph here is baked into gfx::Font.h UiLiteralChars() (5c) so the card
+// never tofus. 3 lines/ending keeps the card inside the 450px viewport.
+const std::vector<std::string>& reasonLines(SemesterState s) {
+    static const std::vector<std::string> kA = {
+        "你把不屬於你的傘，一把一把都還了回去。",
+        "面對抱錯傘的人，你沒有把氣討回來，",
+        "只說了一句「辛苦了」。雨，就這樣停了。",
+    };
+    static const std::vector<std::string> kB = {
+        "該放手的時候你沒放，",
+        "該體諒的時候你選了把氣討回來。",
+        "到頭來，你也成了會在傘架前伸手的人。",
+    };
+    static const std::vector<std::string> kC = {
+        "你沒有去追那把丟掉的傘，",
+        "也沒有計較是誰拿走的——",
+        "你掏光口袋的錢，買過了這整場雨。",
+    };
+    static const std::vector<std::string> kNone;
+    switch (s) {
+        case SemesterState::Ending_A: return kA;
+        case SemesterState::Ending_B: return kB;
+        case SemesterState::Ending_C: return kC;
+        default:                      return kNone;
+    }
+}
+
+// Path label per ending (the 結算 card footer) — the GDD's own naming.
+std::string_view pathLabel(SemesterState s) {
+    switch (s) {
+        case SemesterState::Ending_A: return "完美結局（True）";
+        case SemesterState::Ending_B: return "墮落結局";
+        case SemesterState::Ending_C: return "務實結局（Normal）";
+        default:                      return "";
+    }
+}
+
+// Build the SHORT checklist of conditions that ACTUALLY fired for this
+// run — mirrors EndingGate.cpp's per-ending logic so the card explains
+// the verdict, not a generic rubric. Each entry is prefixed with the ✓
+// "met" mark (U+2713, baked into the atlas per 5c). Only fired
+// conditions appear (B/C have multiple possible triggers; show those
+// that hold). A always shows its full 3-clause AND.
+std::vector<std::string> conditionsFired(const EndingSummary& g) {
+    std::vector<std::string> out;
+    const std::string mark = "\xE2\x9C\x93 ";   // U+2713 ✓ + space
+    switch (g.state) {
+        case SemesterState::Ending_A:
+            // EndingGate A: karma>80 && Flag_HasTrueUmbrella &&
+            // Flag_ConsoledTA — all three are the AND, always shown.
+            out.push_back(mark + "業力 > 80");
+            out.push_back(mark + "還回真傘");
+            out.push_back(mark + "體諒助教");
+            break;
+        case SemesterState::Ending_B: {
+            // EndingGate B: Flag_TookCursedUmbrella || karma<0 ||
+            // coldFinale(finaleChoiceMade && !consoledTA). Show the
+            // disjuncts that actually hold.
+            if (g.tookCursed) out.push_back(mark + "拿了詛咒傘");
+            if (g.karma < 0)  out.push_back(mark + "業力低於零");
+            if (g.finaleChoiceMade && !g.consoledTA)
+                out.push_back(mark + "最後質問助教");
+            break;
+        }
+        case SemesterState::Ending_C:
+            // EndingGate C: Flag_BoughtUglyUmbrella ||
+            // Flag_TaFinaleChoiceMade (the平穩收尾 default). Show which.
+            if (g.boughtUgly) out.push_back(mark + "買了醜傘");
+            if (g.finaleChoiceMade && !g.boughtUgly)
+                out.push_back(mark + "平穩收尾（未體諒、未買綠傘）");
+            break;
+        default:
+            break;
+    }
+    return out;
+}
+
 // Horizontal centring without a renderer-side MeasureText (IRenderer
 // exposes none — see MessageView.cpp). nccu::dialog::CellWidth is the
 // project's font-independent text-measure helper (East-Asian-Width: CJK
@@ -54,6 +139,13 @@ float CenteredX(const std::string& s, int sz, float screenW) {
     return x < 0.0f ? 0.0f : x;
 }
 
+// Pixel width estimate of `s` at font size `sz` (the cell model above) —
+// used to size the 結算 panel so it hugs its widest row.
+float TextWidthPx(const std::string& s, int sz) {
+    return static_cast<float>(nccu::dialog::CellWidth(s)) *
+           (static_cast<float>(sz) * 0.5f);
+}
+
 // Ending B is the 灰暗 (grey-toned) timeline per the GDD ("畫面色調永久
 // 轉為灰暗"): desaturate the otherwise-white title/caption toward grey so
 // the bad ending reads visibly colder than A/C. Pure presentation.
@@ -64,32 +156,136 @@ Color endingTextColor(SemesterState s, unsigned char a) {
 
 }  // namespace
 
-void DrawEndingCard(IRenderer& r, SemesterState state,
+std::vector<std::string> EndingCardStrings() {
+    std::vector<std::string> out;
+    // Static, state-independent strings drawn on every card.
+    out.emplace_back("── 為什麼你走到這裡 ──");
+    out.emplace_back("結算");
+    out.emplace_back("業力 karma：0");   // the karma label glyphs (digits ASCII)
+    out.emplace_back("結局類型：");
+    const SemesterState states[] = {SemesterState::Ending_A,
+                                    SemesterState::Ending_B,
+                                    SemesterState::Ending_C};
+    for (SemesterState s : states) {
+        out.emplace_back(caption(s));
+        out.emplace_back(pathLabel(s));
+        for (const std::string& ln : reasonLines(s)) out.push_back(ln);
+        // Force EVERY condition branch to fire so every label is captured
+        // (the live card shows only the fired subset; the test needs all).
+        EndingSummary g;
+        g.state            = s;
+        g.karma            = -1;     // makes B's "業力低於零" fire
+        g.hasTrueUmbrella  = true;
+        g.consoledTA       = false;  // makes B/C's finale branches fire
+        g.tookCursed       = true;
+        g.boughtUgly       = true;
+        g.finaleChoiceMade = true;
+        for (const std::string& c : conditionsFired(g)) out.push_back(c);
+        // C's "平穩收尾" only fires when !boughtUgly — capture it too.
+        EndingSummary g2 = g;
+        g2.boughtUgly = false;
+        for (const std::string& c : conditionsFired(g2)) out.push_back(c);
+    }
+    return out;
+}
+
+void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
                     std::string_view title, float alpha,
                     float screenW, float screenH) {
     alpha = std::min(1.0f, std::max(0.0f, alpha));
     const unsigned char a = static_cast<unsigned char>(alpha * 255.0f);
+    const SemesterState state = summary.state;
 
     // Self-contained fade: the backdrop carries the same alpha so the
     // spy test sees a real card even though View also early-returns.
     r.DrawRect(Rect{0.0f, 0.0f, screenW, screenH}, Color{0, 0, 0, a});
 
-    // Title + 字卡 are horizontally centred by measuring each string's
-    // width in font cells (CellWidth) instead of the old hardcoded
-    // screenW*0.5 - 60 / - 220 offsets, which left long/short CJK
-    // captions visibly off-centre. Ending B is greyed per the GDD.
-    constexpr int kTitleSize   = 32;
+    // ---- Title + opening 字卡 (centred via the cell model) ------------
+    // Ending B is greyed per the GDD; A/C stay white. Sizes/positions
+    // chosen for the 800x450 window so the title, caption, reason block
+    // and 結算 card all fit one screen (single-screen — preserves the
+    // simple endingAlpha_ fade; no paging needed at this density).
+    constexpr int kTitleSize   = 28;
     constexpr int kCaptionSize = 18;
+    constexpr int kReasonSize  = 16;
+    constexpr int kStatSize    = 15;
+    const Color tint = endingTextColor(state, a);
     const std::string ttl{title};
     const std::string cap{caption(state)};
-    const Color tint = endingTextColor(state, a);
-    r.DrawText(ttl,
-               Vec2{CenteredX(ttl, kTitleSize, screenW), screenH * 0.40f},
+    r.DrawText(ttl, Vec2{CenteredX(ttl, kTitleSize, screenW), 44.0f},
                kTitleSize, tint);
-    r.DrawText(cap,
-               Vec2{CenteredX(cap, kCaptionSize, screenW),
-                    screenH * 0.40f + 48.0f},
+    r.DrawText(cap, Vec2{CenteredX(cap, kCaptionSize, screenW), 88.0f},
                kCaptionSize, tint);
+
+    // ---- "why you're here" reason block (the STORY lines) -------------
+    // A faint section label, then the 2-3 in-fiction lines, centred.
+    float y = 136.0f;
+    {
+        const std::string hdr = "── 為什麼你走到這裡 ──";
+        r.DrawText(hdr, Vec2{CenteredX(hdr, kReasonSize, screenW), y},
+                   kReasonSize, Color{200, 200, 205, a});
+        y += 26.0f;
+        for (const std::string& ln : reasonLines(state)) {
+            r.DrawText(ln, Vec2{CenteredX(ln, kReasonSize, screenW), y},
+                       kReasonSize, tint);
+            y += 22.0f;
+        }
+    }
+
+    // ---- 結算 stats card: a panel hugging the karma + checklist -------
+    // Centred panel below the reason block. Width is the widest row by
+    // the cell model (cannot MeasureText here — same constraint as the
+    // HUD); height fits the header + karma + each fired condition + the
+    // path label. Built render-only from the DTO.
+    const std::string statHdr = "結算";
+    char kbuf[32] = {0};
+    std::snprintf(kbuf, sizeof(kbuf), "業力 karma：%d", summary.karma);
+    const std::string karmaLine = kbuf;
+    const std::vector<std::string> conds = conditionsFired(summary);
+    const std::string path = std::string("結局類型：") +
+                             std::string(pathLabel(state));
+
+    // Widest row drives the panel width.
+    float contentW = std::max(TextWidthPx(karmaLine, kStatSize),
+                              TextWidthPx(path, kStatSize));
+    contentW = std::max(contentW, TextWidthPx(statHdr, kStatSize + 3));
+    for (const std::string& c : conds)
+        contentW = std::max(contentW, TextWidthPx(c, kStatSize));
+
+    constexpr float kPad = 14.0f;
+    // Rows: header, karma, each condition, path.
+    const int rows = 3 + static_cast<int>(conds.size());
+    const float rowH   = 22.0f;
+    const float panelW = contentW + kPad * 2.0f;
+    const float panelH = static_cast<float>(rows) * rowH + kPad * 2.0f;
+    float panelX = screenW * 0.5f - panelW * 0.5f;
+    if (panelX < 8.0f) panelX = 8.0f;
+    // Sit the card just under the reason block; clamp so it never spills
+    // past the bottom edge of the 450px window.
+    float panelY = y + 12.0f;
+    const float maxPanelY = screenH - panelH - 8.0f;
+    if (panelY > maxPanelY) panelY = maxPanelY < 0.0f ? 0.0f : maxPanelY;
+
+    // Panel backing — a touch lighter than the pure-black backdrop so the
+    // card reads as a distinct element; alpha-scaled with the fade.
+    const unsigned char panelA = static_cast<unsigned char>(alpha * 220.0f);
+    r.DrawRect(Rect{panelX, panelY, panelW, panelH},
+               Color{28, 30, 40, panelA});
+
+    float sy = panelY + kPad;
+    // Header (gold so the 結算 card is visually anchored).
+    r.DrawText(statHdr, Vec2{panelX + kPad, sy}, kStatSize + 3,
+               Color{255, 200, 70, a});
+    sy += rowH;
+    r.DrawText(karmaLine, Vec2{panelX + kPad, sy}, kStatSize, tint);
+    sy += rowH;
+    for (const std::string& c : conds) {
+        r.DrawText(c, Vec2{panelX + kPad, sy}, kStatSize,
+                   Color{120, 230, 140, a});   // green = condition met
+        sy += rowH;
+    }
+    r.DrawText(path, Vec2{panelX + kPad, sy}, kStatSize,
+               Color{200, 200, 205, a});
 }
 
 } // namespace nccu
