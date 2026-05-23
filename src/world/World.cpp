@@ -184,19 +184,19 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         objects_.push_back(std::move(coin));
     }
 
-    // Quest items: chapter-scoped QuestFlagPickups (Ch2 = the 3 散落
-    // 筆記, S5c-2). Roster-tracked like the coins, so an uncollected
-    // note is swept on the next state change instead of leaking into
-    // the Interlude / next chapter. Ch1's 申請書 is NOT here — it stays
-    // ctor-spawned (a permanent Ch1 object); ChapterQuestItems(Ch1) is
-    // empty so this loop is a no-op for every state but Ch2.
-    for (const auto& qi : ChapterQuestItems(state)) {
-        auto item = std::make_unique<QuestFlagPickup>(
-            qi.pos, qi.flag, qi.message, qi.completionFlags,
-            qi.completionKarma);
-        chapterRoster_.push_back(item.get());
-        objects_.push_back(std::move(item));
-    }
+    // Quest items: chapter-scoped QuestFlagPickups. Roster-tracked like
+    // the coins, so an uncollected item is swept on the next state change
+    // instead of leaking into the Interlude / next chapter. Ch1's 申請書
+    // is NOT here — it stays ctor-spawned (a permanent Ch1 object);
+    // ChapterQuestItems(Ch1) is empty.
+    //
+    // Ch2 = the 3 散落筆記, but those are DEFERRED: they must not appear
+    // until the player wakes the 學霸 and he asks for them
+    // (MaybeSpawnChapter2Notes, gated on Flag_Bookworm). So skip Ch2 here
+    // — at chapter entry no note exists. Every other state's items (none
+    // today) still spawn at entry through this shared helper.
+    if (state != SemesterState::Chapter2_Midterms)
+        SpawnChapterQuestItems(state);
 
     // Ch3 校慶運動會 (S5d-2): the TrueUmbrella the 啦啦隊 took, sitting
     // in the 體育館後台道具箱. Claiming it is the chapter clear, exactly
@@ -285,6 +285,29 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     }
 }
 
+void World::SpawnChapterQuestItems(nccu::SemesterState state) {
+    for (const auto& qi : ChapterQuestItems(state)) {
+        auto item = std::make_unique<QuestFlagPickup>(
+            qi.pos, qi.flag, qi.message, qi.completionFlags,
+            qi.completionKarma, qi.countMessages);
+        chapterRoster_.push_back(item.get());
+        objects_.push_back(std::move(item));
+    }
+}
+
+bool World::MaybeSpawnChapter2Notes() {
+    // Self-gating, sibling of UpdateSportsLap. The 3 散落筆記 appear ONLY
+    // after the 學霸 is woken (Flag_Bookworm, set by TryRescueBookworm's
+    // wake step). One-shot per Ch2 visit (ch2NotesSpawned_), so a re-talk
+    // / re-frame never double-spawns.
+    if (ch2NotesSpawned_) return false;
+    if (semester_.Current() != SemesterState::Chapter2_Midterms) return false;
+    if (!player_ || !player_->HasFlag(kFlagBookwormWoken)) return false;
+    SpawnChapterQuestItems(SemesterState::Chapter2_Midterms);
+    ch2NotesSpawned_ = true;
+    return true;
+}
+
 void World::UpdateSportsLap() noexcept {
     if (semester_.Current() != SemesterState::Chapter3_SportsDay) return;
     if (!player_ || player_->HasFlag(kFlagLapDone)) return;
@@ -342,6 +365,12 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
                 }),
             objects_.end());
     }
+
+    // Re-arm the Ch2 deferred-note one-shot: the old notes (if any) were
+    // just swept with the roster, so a fresh visit to any chapter starts
+    // with the deferred spawn re-armed. MaybeSpawnChapter2Notes then only
+    // fires once the player re-wakes the 學霸 in a new Ch2 visit.
+    ch2NotesSpawned_ = false;
 
     SpawnChapterNpcs(state);
 

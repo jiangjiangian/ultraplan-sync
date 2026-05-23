@@ -58,6 +58,17 @@ public:
     // True while the lap ring should be drawn (Ch3 and not yet completed).
     [[nodiscard]] bool  SportsLapActive() const noexcept;
 
+    // Ch2 散落筆記 deferred spawn (sibling of UpdateSportsLap): tick once
+    // per frame from the controller. The 3 notes are NOT spawned at
+    // chapter entry — they appear ONLY after the player wakes the 學霸
+    // (Flag_Bookworm), which is the moment he asks for them. Self-gates on
+    // Chapter2 / wake-flag / not-yet-spawned, so it is a cheap no-op
+    // otherwise and fires its spawn pass exactly once per Ch2 visit
+    // (ch2NotesSpawned_ guard). The notes are roster-tracked exactly like
+    // an entry spawn, so an uncollected note is still swept on the next
+    // state change. Returns true on the frame it spawns (for the test).
+    bool MaybeSpawnChapter2Notes();
+
     [[nodiscard]] DialogState&       Dialog()       noexcept { return dialog_; }
     [[nodiscard]] const DialogState& Dialog() const noexcept { return dialog_; }
 
@@ -250,6 +261,13 @@ private:
     // chapterRoster_.
     void SpawnChapterNpcs(nccu::SemesterState state);
 
+    // Spawns the ChapterQuestItems(state) QuestFlagPickups (roster-
+    // tracked). Shared by the entry path (SpawnChapterNpcs, for any future
+    // chapter whose items spawn at entry) and the Ch2 deferred path
+    // (MaybeSpawnChapter2Notes). Ch2's notes are deliberately NOT spawned
+    // at entry — see MaybeSpawnChapter2Notes.
+    void SpawnChapterQuestItems(nccu::SemesterState state);
+
     ObjectList                  objects_;
     Player*                     player_{nullptr};
     std::vector<GameObject*>    chapterRoster_;
@@ -271,6 +289,11 @@ private:
     bool                        lapStarted_{false};
     float                       lapPrevAngle_{0.0f};
     float                       lapSwept_{0.0f};
+    // Ch2 散落筆記 one-shot guard: true once MaybeSpawnChapter2Notes has
+    // dropped the 3 notes this Ch2 visit, so it never double-spawns. Reset
+    // by RespawnChapterRoster (a fresh chapter visit re-arms it), exactly
+    // like the lap fields above are conceptually per-Ch3-visit.
+    bool                        ch2NotesSpawned_{false};
     bool                        inventoryOpen_{false};
     bool                        menuOpen_{false};
     int                         menuCursor_{0};

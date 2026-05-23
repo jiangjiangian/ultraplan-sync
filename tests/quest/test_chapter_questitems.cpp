@@ -26,6 +26,7 @@ TEST_CASE("ChapterQuestItems: Ch2 is the 3 notes; every other state empty") {
         CHECK(q.completionKarma == 3);              // 學霸 (b) +3
         CHECK(q.completionFlags.size() == 3);       // closes on all 3
         CHECK_FALSE(q.message.empty());
+        CHECK(q.countMessages.size() == 3);         // count-based 1st/2nd/3rd
     }
     CHECK(flags == std::set<std::string>{nccu::kFlagFoundNote1,
                                          nccu::kFlagFoundNote2,
@@ -35,6 +36,64 @@ TEST_CASE("ChapterQuestItems: Ch2 is the 3 notes; every other state empty") {
     CHECK(nccu::ChapterQuestItems(SemesterState::Interlude_Market).empty());
     CHECK(nccu::ChapterQuestItems(SemesterState::Chapter3_SportsDay).empty());
     CHECK(nccu::ChapterQuestItems(SemesterState::Ending_A).empty());
+}
+
+TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
+          "regardless of pickup order") {
+    EventBus::Instance().Clear();
+    std::string lastMsg;
+    auto sub = EventBus::Instance().ScopedSubscribe(
+        EventType::ShowMessage,
+        [&lastMsg](const Event& e) { lastMsg = e.text; });
+
+    const std::vector<std::string> set = {nccu::kFlagFoundNote1,
+                                          nccu::kFlagFoundNote2,
+                                          nccu::kFlagFoundNote3};
+    const std::vector<std::string> msgs = {"first", "second", "third"};
+    auto makeNote = [&](const char* flag) {
+        return QuestFlagPickup(nccu::gfx::Vec2{0, 0}, flag, "fallback",
+                               set, 3, msgs);
+    };
+
+    // Pick in REVERSE identity order (note3, note2, note1). The message
+    // must follow the COUNT held (1st->first, 2nd->second, 3rd->third),
+    // NOT the note identity — this is the exact bug: grabbing note3 first
+    // used to print the "last page" line.
+    Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
+    auto n3 = makeNote(nccu::kFlagFoundNote3);
+    auto n2 = makeNote(nccu::kFlagFoundNote2);
+    auto n1 = makeNote(nccu::kFlagFoundNote1);
+    n3.OnPickup(&p);
+    CHECK(lastMsg == "first");     // 1st collected -> first line
+    n2.OnPickup(&p);
+    CHECK(lastMsg == "second");    // 2nd collected -> second line
+    n1.OnPickup(&p);
+    CHECK(lastMsg == "third");     // 3rd collected -> third line
+
+    // A different order (note2 first) lands the same count-keyed lines.
+    Player q{nccu::gfx::Vec2{0.0f, 0.0f}};
+    auto m2 = makeNote(nccu::kFlagFoundNote2);
+    auto m1 = makeNote(nccu::kFlagFoundNote1);
+    m2.OnPickup(&q);
+    CHECK(lastMsg == "first");
+    m1.OnPickup(&q);
+    CHECK(lastMsg == "second");
+
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("QuestFlagPickup: empty countMessages keeps the single message") {
+    EventBus::Instance().Clear();
+    std::string lastMsg;
+    auto sub = EventBus::Instance().ScopedSubscribe(
+        EventType::ShowMessage,
+        [&lastMsg](const Event& e) { lastMsg = e.text; });
+
+    Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
+    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, "Flag_FoundForm", "撿到申請書");
+    form.OnPickup(&p);
+    CHECK(lastMsg == "撿到申請書");   // single-message path unchanged
+    EventBus::Instance().Clear();
 }
 
 TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
@@ -66,7 +125,7 @@ TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
     CHECK(q.GetKarma() == qk);
 }
 
-TEST_CASE("World spawns the 3 Ch2 notes; swept on the next state change") {
+TEST_CASE("World defers the 3 Ch2 notes until the 學霸 is woken; then sweeps") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
 
@@ -81,10 +140,28 @@ TEST_CASE("World spawns the 3 Ch2 notes; swept on the next state change") {
     // is empty so the new spawn loop adds nothing here.
     CHECK(countNotes() == 1);
 
+    // Entering Ch2 must NOT spawn the notes (the bug to fix: a note must
+    // not appear anywhere before the 學霸 asks for it). Drive the FSM the
+    // way production does (Transition + RespawnChapterRoster) so the
+    // deferred-spawn self-gate (semester==Ch2) sees the right state.
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
     w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
-    CHECK(countNotes() == 1 + 3);              // 申請書 + 3 notes
+    CHECK(countNotes() == 1);                  // 申請書 only; NO notes yet
 
+    // Without the wake flag the deferred spawn is a no-op every frame.
+    CHECK_FALSE(w.MaybeSpawnChapter2Notes());
+    CHECK(countNotes() == 1);
+
+    // Wake the 學霸 -> the deferred spawn fires ONCE, dropping the 3 notes.
+    REQUIRE(w.GetPlayer() != nullptr);
+    w.GetPlayer()->SetFlag(nccu::kFlagBookwormWoken);
+    CHECK(w.MaybeSpawnChapter2Notes());        // spawns this frame
+    CHECK(countNotes() == 1 + 3);              // 申請書 + 3 notes
+    CHECK_FALSE(w.MaybeSpawnChapter2Notes());  // one-shot: never re-spawns
+    CHECK(countNotes() == 1 + 3);
+
+    // Leaving Ch2 sweeps the (deferred) notes with the roster; 申請書 stays.
     w.RespawnChapterRoster(SemesterState::Ending_A);
-    CHECK(countNotes() == 1);                  // 3 notes swept; 申請書 stays
+    CHECK(countNotes() == 1);
     EventBus::Instance().Clear();
 }

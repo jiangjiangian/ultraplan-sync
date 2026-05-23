@@ -15,6 +15,14 @@ class DialogState;                  // queried (Active) by the lift
 inline constexpr const char* kFlagFoundNote1        = "Flag_FoundNote1";
 inline constexpr const char* kFlagFoundNote2        = "Flag_FoundNote2";
 inline constexpr const char* kFlagFoundNote3        = "Flag_FoundNote3";
+// 學霸 has been woken with an EnergyDrink and asked the player to pick up
+// his scattered notes — i.e. the note quest has STARTED. Gates the note
+// spawn (World::MaybeSpawnChapter2Notes), the bookworm dialog routing and
+// the rescue's second phase. Reuses the already-whitelisted Flag_Bookworm
+// (dialog_lint --list-flags) so the harness state.jsonl can observe it; it
+// carried no engine reader before this. Set ONLY by TryRescueBookworm's
+// wake step, never by content.
+inline constexpr const char* kFlagBookwormWoken     = "Flag_Bookworm";
 inline constexpr const char* kFlagBookwormRecovered = "Flag_BookwormRecovered";
 inline constexpr const char* kFlagCh2Cleared        = "Flag_Ch2Cleared";
 
@@ -25,19 +33,29 @@ inline constexpr const char* kFlagCh2RippledSuitSenior =
     "Flag_Ch2Rippled_SuitSenior";
 inline constexpr const char* kFlagCh2RippledTA = "Flag_Ch2Rippled_TA";
 
-// All three 學霸 notes collected — gates 圖書館管理員 (b) and the rescue.
+// All three 學霸 notes collected — gates 圖書館管理員 (b) and the exchange.
 [[nodiscard]] bool Chapter2NotesComplete(const Player& player);
 
-// E-interact hook: talking to 學霸 (bookworm) at the rescue moment.
-// No-op unless state==Chapter2_Midterms, npcId=="bookworm", the 3 notes
-// are in, and 學霸 is not yet recovered. With an EnergyDrink in the
-// count-inventory it is consumed -> Flag_BookwormRecovered + karma +5
-// (chapter2.md 學霸 (d) `// karma +5`; path-b — applied here because the
-// (d) blockquote carries no flag annotation, so the opener's once-apply
-// would never fire it). Without one, a hint to the 圖書館地下室自販機
-// fallback is shown and nothing is consumed. Deliberately does NOT set
-// Flag_Ch2Cleared — that is lifted later so the (d) thanks dialog is
-// readable first (see LiftChapter2Clear).
+// E-interact hook: talking to 學霸 (bookworm). A two-phase quest machine
+// keyed on Flag_Bookworm (kFlagBookwormWoken). No-op unless
+// state==Chapter2_Midterms, npcId=="bookworm", and 學霸 is not yet
+// recovered.
+//
+//   PHASE 1 — ASLEEP (no wake flag): the 學霸 is slumped at the 羅馬廣場
+//     statue. With an EnergyDrink in the count-inventory it is CONSUMED
+//     here -> Flag_Bookworm set + the 學霸 wakes and asks for his notes
+//     (this is the moment the note quest starts; World then spawns the 3
+//     notes). Without a drink, a hint to the 圖書館地下室自販機 fallback
+//     (35 元) is shown and nothing is consumed.
+//   PHASE 2 — WOKEN (wake flag set): if the 3 notes are NOT all in, a
+//     reminder line is shown. Once all 3 are in, the exchange fires
+//     (notes <-> the player's umbrella): Flag_BookwormRecovered + karma
+//     +5 (chapter2.md 學霸 (d) `// karma +5`; path-b — the (d) blockquote
+//     carries no flag annotation, so the opener's once-apply never fires
+//     it). The EnergyDrink is spent at the WAKE step, NOT here.
+//
+// Deliberately does NOT set Flag_Ch2Cleared — that is lifted later so the
+// (d) thanks dialog is readable first (see LiftChapter2Clear).
 void TryRescueBookworm(Player& player, std::string_view npcId,
                        SemesterState state);
 

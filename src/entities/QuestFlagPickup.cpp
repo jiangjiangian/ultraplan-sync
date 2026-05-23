@@ -4,6 +4,7 @@
 #include "gfx/Color.h"
 #include "gfx/IRenderer.h"
 #include "gfx/Rect.h"
+#include <cstddef>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,21 +21,42 @@ QuestFlagPickup::QuestFlagPickup(nccu::gfx::Vec2 position,
                                  std::string flagName,
                                  std::string message,
                                  std::vector<std::string> completionFlags,
-                                 int completionKarma)
+                                 int completionKarma,
+                                 std::vector<std::string> countMessages)
     : Item(position,
            nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f},
            "QuestItem"),
       flagName_(std::move(flagName)),
       message_(std::move(message)),
       completionFlags_(std::move(completionFlags)),
-      completionKarma_(completionKarma) {}
+      completionKarma_(completionKarma),
+      countMessages_(std::move(countMessages)) {}
 
 void QuestFlagPickup::OnPickup(Player* player) {
     if (!player) return;
     player->SetFlag(flagName_);
     isActive_ = false;
+
+    // Count-based message (this pickup's flag was just set above, so the
+    // tally already includes it): how many of the completion set the
+    // player now holds picks the line. 1st collected -> countMessages_[0],
+    // etc. This is keyed on the COUNT, not on which note — so any pickup
+    // order prints the right "1st / 2nd / last" sentence. Clamp to the
+    // last entry defensively (never out-of-range even if the set grows).
+    // Empty countMessages_ -> the single message_ (申請書 / non-set items).
+    std::string toShow = message_;
+    if (!countMessages_.empty() && !completionFlags_.empty()) {
+        std::size_t held = 0;
+        for (const auto& f : completionFlags_)
+            if (player->HasFlag(f)) ++held;
+        if (held == 0) held = 1;                       // defensive floor
+        const std::size_t idx =
+            held - 1 < countMessages_.size() ? held - 1
+                                             : countMessages_.size() - 1;
+        toShow = countMessages_[idx];
+    }
     EventBus::Instance().Publish(
-        Event{ EventType::ShowMessage, message_ });
+        Event{ EventType::ShowMessage, toShow });
 
     // Set-completion reward (S5c-2): grant the bonus iff every sibling
     // flag is now satisfied. flagName_ was just set, so the pickup that

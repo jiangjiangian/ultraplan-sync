@@ -22,22 +22,27 @@ void GiveNotes(Player& p) {
 
 }  // namespace
 
-TEST_CASE("ResolveOpenerSubState: Ch2 librarian (b) gated on the 3 notes") {
+TEST_CASE("ResolveOpenerSubState: Ch2 librarian (b) gated on the wake flag") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState(
               "librarian", SemesterState::Chapter2_Midterms, p) == 0);
-    GiveNotes(p);
+    // The librarian now points to the 學霸; (b) confirms once he is woken,
+    // NOT once the notes are in (notes only exist after waking).
+    p.SetFlag(nccu::kFlagBookwormWoken);
     CHECK(nccu::ResolveOpenerSubState(
               "librarian", SemesterState::Chapter2_Midterms, p) == 1);
 }
 
-TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a) until recovered, then (d)") {
+TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a)->(c) woken->(d) recovered") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState(
-              "bookworm", SemesterState::Chapter2_Midterms, p) == 0);
+              "bookworm", SemesterState::Chapter2_Midterms, p) == 0);  // (a)
+    p.SetFlag(nccu::kFlagBookwormWoken);
+    CHECK(nccu::ResolveOpenerSubState(
+              "bookworm", SemesterState::Chapter2_Midterms, p) == 2);  // (c)
     p.SetFlag(nccu::kFlagBookwormRecovered);
     CHECK(nccu::ResolveOpenerSubState(
-              "bookworm", SemesterState::Chapter2_Midterms, p) == 3);
+              "bookworm", SemesterState::Chapter2_Midterms, p) == 3);  // (d)
 
     // Ch1 routing is untouched (the new branch is Ch2-guarded).
     Player q = MakePlayer();
@@ -45,38 +50,60 @@ TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a) until recovered, then (d)") {
               "bookworm", SemesterState::Chapter1_AddDrop, q) == 0);
 }
 
-TEST_CASE("TryRescueBookworm: needs 3 notes + EnergyDrink; rewards once") {
+TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
 
     // Wrong state / wrong npc -> no-op.
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
     nccu::TryRescueBookworm(p, "ta", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
 
-    // Notes missing -> no-op even holding a drink (not consumed).
-    p.AddConsumable("EnergyDrink");
-    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
-    CHECK(p.ConsumableCount("EnergyDrink") == 1);
-
-    // Notes in but the drink already spent -> hint only, nothing changes.
-    GiveNotes(p);
-    p.ConsumeOne("EnergyDrink");
+    // PHASE 1, asleep with NO drink -> hint only, nothing set/consumed.
     const int k0 = p.GetKarma();
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
     CHECK(p.GetKarma() == k0);
 
-    // Notes + drink -> consume, +5, recovered. Idempotent on a re-talk.
+    // PHASE 1, asleep WITH a drink -> consume + wake. NOT yet recovered,
+    // and notes are irrelevant here (waking is what starts the note quest).
     p.AddConsumable("EnergyDrink");
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.ConsumableCount("EnergyDrink") == 0);   // spent at the wake step
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
+    CHECK(p.GetKarma() == k0);                       // +5 is at the exchange
+
+    // PHASE 2, woken but notes incomplete -> reminder only, no recovery,
+    // and crucially NO further drink is needed/consumed.
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
+
+    // PHASE 2, woken + all 3 notes -> exchange: +5, recovered, no drink
+    // consumed (none held). Idempotent on a re-talk.
+    GiveNotes(p);
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
     CHECK(p.HasFlag(nccu::kFlagBookwormRecovered));
     CHECK(p.GetKarma() == k0 + 5);
     CHECK(p.ConsumableCount("EnergyDrink") == 0);
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
     CHECK(p.GetKarma() == k0 + 5);   // no double reward
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("TryRescueBookworm: notes BEFORE waking never trigger the exchange") {
+    // Gating regression: even holding all 3 notes, an ASLEEP 學霸 (no wake
+    // flag) cannot be exchanged. Without a drink the first talk only hints;
+    // recovery is impossible until the wake flag is set. (In production the
+    // notes cannot even exist pre-wake — World gates their spawn — but the
+    // quest logic itself must also refuse the exchange.)
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+    GiveNotes(p);                              // notes somehow in hand
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));  // asleep -> no go
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));      // no drink -> asleep
     EventBus::Instance().Clear();
 }
 
@@ -111,9 +138,13 @@ TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
     nccu::DialogState d;
     m.Transition(SemesterState::Chapter2_Midterms);
 
-    GiveNotes(p);
+    // New flow: wake first (drink), THEN collect notes, THEN exchange.
     p.AddConsumable("EnergyDrink");
-    nccu::TryRescueBookworm(p, "bookworm", m.Current());
+    nccu::TryRescueBookworm(p, "bookworm", m.Current());   // wake (phase 1)
+    REQUIRE(p.HasFlag(nccu::kFlagBookwormWoken));
+    GiveNotes(p);
+    nccu::TryRescueBookworm(p, "bookworm", m.Current());   // exchange (phase 2)
+    REQUIRE(p.HasFlag(nccu::kFlagBookwormRecovered));
     nccu::LiftChapter2Clear(p, m.Current(), d);       // dialog closed
     REQUIRE(p.HasFlag(nccu::kFlagCh2Cleared));
 

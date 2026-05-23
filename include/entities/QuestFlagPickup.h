@@ -18,12 +18,22 @@
 // `// karma +3` once all three notes are in. Only the pickup collected
 // LAST sees every flag set (earlier ones skip; collected ones are gone),
 // so the bonus fires exactly once with no guard flag.
+//
+// Optional COUNT-BASED messages: when countMessages_ is non-empty, the
+// pickup's on-screen line is chosen by HOW MANY of completionFlags_ the
+// player now holds (1st collected -> [0], 2nd -> [1], 3rd -> [2]), NOT by
+// which specific item this is — so picking the notes in ANY order prints
+// "1st found / 2nd found / last found" correctly (the bug was an identity
+// message that said "last page" whenever note3 was grabbed first). When
+// countMessages_ is empty the single message_ is used (the 申請書 / any
+// non-set pickup keeps its exact prior behaviour).
 class QuestFlagPickup final : public Item {
 public:
     QuestFlagPickup(nccu::gfx::Vec2 position, std::string flagName,
                     std::string message = "撿到了被風吹走的申請書",
                     std::vector<std::string> completionFlags = {},
-                    int completionKarma = 0);
+                    int completionKarma = 0,
+                    std::vector<std::string> countMessages = {});
 
     void Update(float /*deltaTime*/) override {}
     void Render(nccu::gfx::IRenderer& renderer) const override;
@@ -35,5 +45,6 @@ private:
     std::string              message_;
     std::vector<std::string> completionFlags_;
     int                      completionKarma_;
+    std::vector<std::string> countMessages_;
 };
 #endif // QUEST_FLAG_PICKUP_H_

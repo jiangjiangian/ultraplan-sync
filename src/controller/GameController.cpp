@@ -479,6 +479,13 @@ void GameController::Update() {
     // ticked after the player's position is finalised this frame.
     world_.UpdateSportsLap();
 
+    // Ch2 散落筆記 deferred spawn (Ch2 + woken-學霸 only; a cheap no-op
+    // every other state) — once the 學霸 is woken and asks for his notes,
+    // the 3 notes appear. Self-gates + one-shot inside, sibling of the lap
+    // tick above. World stays pure data; the controller owns the per-frame
+    // tick (MVC).
+    world_.MaybeSpawnChapter2Notes();
+
     if (Input::IsPressed(Key::E) && player) {
         // I3 fix: the movement collider for a BlocksMovement() NPC is a
         // player-sized box at the NPC origin, and Rect::Intersects is
