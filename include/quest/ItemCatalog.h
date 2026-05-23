@@ -42,6 +42,12 @@ inline constexpr const char* kItemNotes         = "__quest_notes__";
 // blank — never throws.
 [[nodiscard]] ItemInfo ItemInfoFor(std::string_view itemId);
 
+// 5c/T5 — every catalog displayName + description string, for the
+// glyph-coverage scan (these names/descriptions render in the bag rows and
+// the vendor purchase toast, so every glyph must be baked into gfx::Font.h).
+// Pure data; flattens the internal catalog table. Order is unspecified.
+[[nodiscard]] std::vector<std::string> CatalogStrings();
+
 // True when `itemId` is a consumable the player can USE from the bag
 // (Item 2b). Drives the DTO's `usable` flag and gates the use-from-bag
 // effect: only these ids have an effect to apply; money / umbrellas /

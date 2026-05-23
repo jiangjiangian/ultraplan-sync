@@ -145,7 +145,16 @@ inline const char* UiLiteralChars() {
         //   U+58AE 墮 only in Ending B's path label 「墮落結局」.
         "\xE2\x94\x80"      // U+2500 ─
         "\xE2\x9C\x93"      // U+2713 ✓
-        "\xE5\xA2\xAE";     // U+58AE 墮
+        "\xE5\xA2\xAE"      // U+58AE 墮
+        // T5: the broadened glyph-scan (tests/ui/test_font_ui_glyph_scan.cpp)
+        // now covers EVERY code-built UI string — the HUD 目標 objective text,
+        // the ItemCatalog names+descriptions, the Vendor toast pieces, the new
+        // 【雨傘外觀】 help lines and the ending strings. These few glyphs occur
+        // in those code literals but in NO docs/content/*.md, so they reach the
+        // atlas ONLY here (same V1/REQ#10 mechanism); the scan verifies it.
+        //   北 objective 地圖東北   垂 help 傘面下垂   紫 help 暗紫色
+        //   幸 catalog 小確幸       血 catalog 三頁心血
+        "北垂紫幸血";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

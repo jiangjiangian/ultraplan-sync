@@ -2,6 +2,7 @@
 #include "ui/EndingView.h"
 #include "state/SemesterState.h"
 #include "gfx/IRenderer.h"
+#include "gfx/UmbrellaGlyph.h"
 #include <string>
 #include <vector>
 
@@ -11,14 +12,19 @@ using nccu::EndingSummary;
 namespace {
 
 // Spy IRenderer — same shape as the proven spy in
-// test_dialog_box_render.cpp: counts rects and captures text strings so
+// test_dialog_box_render.cpp: counts rects (and captures their colours, so
+// the T3 ending-umbrella swatch is assertable) and captures text strings, so
 // the ending card's draw calls can be asserted without a GL context.
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
     int sprites = 0;
+    std::vector<nccu::gfx::Color> rectColors;
     std::vector<std::string> texts;
 
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color) override { ++rects; }
+    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
+        ++rects;
+        rectColors.push_back(c);
+    }
     void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
                     nccu::gfx::Rect, nccu::gfx::Color) override { ++sprites; }
     void DrawText(std::string_view t, nccu::gfx::Vec2, int,
@@ -37,6 +43,14 @@ int CountWith(const Spy& s, std::string_view needle) {
     for (const std::string& t : s.texts)
         if (t.find(needle) != std::string::npos) ++n;
     return n;
+}
+
+// True if any captured rect uses RGB == want (ignoring alpha, which the card
+// fade scales). The umbrella glyph's signature colour is its top canopy slab.
+bool HasRectRGB(const Spy& s, nccu::gfx::Color want) {
+    for (const nccu::gfx::Color& c : s.rectColors)
+        if (c.r == want.r && c.g == want.g && c.b == want.b) return true;
+    return false;
 }
 
 } // namespace
@@ -141,4 +155,44 @@ TEST_CASE("Ending card draws exactly one selected '結算' header (anchor)") {
     Spy r;
     nccu::DrawEndingCard(r, g, "結局 A", 1.0f, 800.0f, 450.0f);
     CHECK(CountWith(r, "結算") == 1);
+}
+
+// T3: the card draws the FINAL umbrella keyed off the ending, so it can never
+// mismatch the verdict (the fix for "體諒卻顯示醜傘"). A → 真傘藍, B → 詛咒傘
+// 暗紫, C → 醜傘綠 — the shared glyph's signature colour proves which drew.
+TEST_CASE("T3: Ending A draws the 真傘 (blue) umbrella swatch") {
+    EndingSummary g;
+    g.state = SemesterState::Ending_A;
+    g.karma = 90; g.hasTrueUmbrella = true; g.consoledTA = true;
+    Spy r;
+    nccu::DrawEndingCard(r, g, "結局 A", 1.0f, 800.0f, 450.0f);
+    using nccu::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+}
+
+TEST_CASE("T3: Ending B draws the 詛咒傘 (dark purple) umbrella swatch") {
+    EndingSummary g;
+    g.state = SemesterState::Ending_B;
+    g.karma = -5; g.tookCursed = true;
+    Spy r;
+    nccu::DrawEndingCard(r, g, "結局 B", 1.0f, 800.0f, 450.0f);
+    using nccu::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+}
+
+TEST_CASE("T3: Ending C draws the 醜傘 (green) umbrella swatch — even when 體諒") {
+    // The owner's "體諒卻顯示醜傘" mismatch: derive the swatch from the ENDING,
+    // not raw flags. A C ending where the player ALSO consoled the TA still
+    // shows the green ugly umbrella, because the run resolved to C.
+    EndingSummary g;
+    g.state = SemesterState::Ending_C;
+    g.karma = 60; g.boughtUgly = true; g.consoledTA = true;
+    Spy r;
+    nccu::DrawEndingCard(r, g, "結局 C", 1.0f, 800.0f, 450.0f);
+    using nccu::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
 }

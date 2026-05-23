@@ -548,31 +548,44 @@ void View::Draw(const World& world) {
         renderer_.DrawRect(Rect{pad, pad, W - pad * 2.0f, H - pad * 2.0f},
                            Color{18, 20, 28, 245});
         TextBuilder{"遊戲說明"}
-            .At(Vec2{W * 0.5f - 64.0f, pad + 12.0f})
-            .Size(26).Color(Colors::Gold).Draw();
-        // Blank separator lines get half height so all rows + the closing
-        // line clear the footer in the 450 px window (no scroll needed).
-        // Item 1e grew the endings section by two lines, so the per-row
-        // pitch is tightened (20->18, blanks 11->9) to keep the whole
-        // panel — header + 17 rows + closing — above the footer at
-        // H-pad-26 without scrolling. 15 text rows*18 + 2 blanks*9 = 288;
-        // from hy0=74 the closing lands ~362, well clear of the ~400 footer.
-        float hy = pad + 50.0f;
+            .At(Vec2{W * 0.5f - 52.0f, pad + 6.0f})
+            .Size(24).Color(Colors::Gold).Draw();
+        // T4: the help text grew (the keys split one-per-line + a new
+        // 【雨傘外觀】 section), so the per-row pitch is 15 (blank separators
+        // 5) to keep header + 20 text rows + 3 blanks above the footer chip
+        // in the 450 px window without scrolling: 15*19 + 5*3 = 300 from
+        // hy0=64 lands the closing line ~364, well clear of the chip at
+        // ~392. Section headers (【…】) are tinted gold so the four sections
+        // read apart at a glance.
+        float hy = pad + 40.0f;
+        const auto isHeader = [](std::string_view s) {
+            return !s.empty() && s.front() == static_cast<char>('\xE3');
+        };  // 【 is U+3010 → lead byte 0xE3
         for (const std::string_view ln : nccu::kGameHelpLines) {
             if (!ln.empty())
                 TextBuilder{std::string{ln}}
-                    .At(Vec2{pad + 24.0f, hy})
-                    .Size(16).Color(Colors::White).Draw();
-            hy += ln.empty() ? 9.0f : 18.0f;
+                    .At(Vec2{pad + 22.0f, hy})
+                    .Size(15)
+                    .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
+            hy += ln.empty() ? 5.0f : 15.0f;
         }
         TextBuilder{std::string{nccu::kGameHelpClosing}}
-            .At(Vec2{pad + 24.0f, hy}).Size(16).Color(Colors::White).Draw();
-        // Audit D3 / SC 1.4.3: same fix as the pause-menu hint above —
-        // help overlay sits on Color{18,20,28,245}, even darker than
-        // the menu, so Colors::DarkGray was effectively invisible.
+            .At(Vec2{pad + 22.0f, hy}).Size(15).Color(Colors::White).Draw();
+        // T4c: make the 返回 prompt PROMINENT — it was faint dark-grey on
+        // the dark panel and easy to miss. A gold-bordered chip + bright
+        // bold-size gold label, centred at the bottom, so the way out is
+        // unmistakable.
+        const float chipW = 188.0f, chipH = 26.0f;
+        const float chipX = W * 0.5f - chipW * 0.5f;
+        const float chipY = H - pad - chipH - 8.0f;
+        renderer_.DrawRect(Rect{chipX, chipY, chipW, chipH},
+                           Color{62, 52, 18, 255});
+        renderer_.DrawRect(Rect{chipX, chipY, chipW, 2.0f}, Colors::Gold);
+        renderer_.DrawRect(Rect{chipX, chipY + chipH - 2.0f, chipW, 2.0f},
+                           Colors::Gold);
         TextBuilder{"M / E 返回選單"}
-            .At(Vec2{W * 0.5f - 64.0f, H - pad - 26.0f})
-            .Size(14).Color(Color{180, 180, 180, 255}).Draw();
+            .At(Vec2{W * 0.5f - 58.0f, chipY + 5.0f})
+            .Size(17).Color(Colors::Gold).Draw();
     }
 }
 

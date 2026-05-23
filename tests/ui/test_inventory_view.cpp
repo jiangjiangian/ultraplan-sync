@@ -5,6 +5,7 @@
 #include "quest/Chapter2Quest.h"
 #include "entities/Player.h"
 #include "gfx/IRenderer.h"
+#include "gfx/UmbrellaGlyph.h"
 
 #include <string>
 #include <vector>
@@ -18,8 +19,11 @@ namespace {
 
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
+    std::vector<nccu::gfx::Color> rectColors;
     std::vector<std::string> texts;
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color) override { ++rects; }
+    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
+        ++rects; rectColors.push_back(c);
+    }
     void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
                     nccu::gfx::Rect, nccu::gfx::Color) override {}
     void DrawText(std::string_view t, nccu::gfx::Vec2, int,
@@ -28,6 +32,12 @@ struct Spy final : nccu::gfx::IRenderer {
 
 bool Has(const std::vector<std::string>& v, const std::string& s) {
     for (const auto& x : v) if (x == s) return true;
+    return false;
+}
+
+bool HasRectRGB(const Spy& s, nccu::gfx::Color want) {
+    for (const nccu::gfx::Color& c : s.rectColors)
+        if (c.r == want.r && c.g == want.g && c.b == want.b) return true;
     return false;
 }
 
@@ -200,4 +210,61 @@ TEST_CASE("Item 2c: umbrella row reflects the carried variant by flag priority")
         const auto rows = nccu::BuildInventoryRows(v);
         CHECK(Find(rows, nccu::kItemVictimUmbrella) != nullptr);
     }
+}
+
+// T6: each bag row gets a left-edge CATEGORY swatch so 金幣 / 雨傘 / 任務紙張
+// read as a different KIND than usable consumables. The umbrella row draws
+// the SAME shared glyph (and its signature colour) the world / ending use,
+// keyed off the carried-umbrella sentinel.
+TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
+    using nccu::gfx::UmbrellaLook;
+    // Cursed umbrella row → the dark-purple swatch.
+    {
+        Spy r;
+        std::vector<nccu::InventoryRow> rows{
+            {"詛咒傘", 0, "傘骨上刻著別人的名字", false,
+             nccu::kItemCursedUmbrella}};
+        nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
+        CHECK(HasRectRGB(r,
+            nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+    }
+    // Ugly umbrella row → the fluorescent-green swatch.
+    {
+        Spy r;
+        std::vector<nccu::InventoryRow> rows{
+            {"螢光綠醜傘", 0, "醜得全校最好認", false,
+             nccu::kItemUglyUmbrella}};
+        nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
+        CHECK(HasRectRGB(r,
+            nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    }
+    // True umbrella row → the blue swatch.
+    {
+        Spy r;
+        std::vector<nccu::InventoryRow> rows{
+            {"真傘", 0, "完美結局的關鍵", false, nccu::kItemTrueUmbrella}};
+        nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
+        CHECK(HasRectRGB(r,
+            nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    }
+}
+
+TEST_CASE("T6: a multi-category bag draws more rects than a bare list") {
+    // A bag with money + a consumable + an umbrella + a paper draws a swatch
+    // per row (so the categories are visually distinct), i.e. clearly more
+    // rects than the backdrop + panel + underline alone.
+    Spy r;
+    std::vector<nccu::InventoryRow> rows{
+        {"金幣", 100, "餘額", false, nccu::kItemMoney},
+        {"暖暖包", 2, "立刻烘乾", true, "HotPack"},
+        {"真傘", 0, "關鍵", false, nccu::kItemTrueUmbrella},
+        {"申請書", 0, "交給助教", false, nccu::kItemForm},
+    };
+    nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
+    // backdrop + panel + underline = 3; then a selection bar + >=1 swatch
+    // rect per row. Four categories ⇒ comfortably more than 3 + 4.
+    CHECK(r.rects > 8);
+    // The 4 row names + the description name + description + hint still draw.
+    CHECK(Has(r.texts, "> 金幣 x100"));
+    CHECK(Has(r.texts, "  真傘"));
 }

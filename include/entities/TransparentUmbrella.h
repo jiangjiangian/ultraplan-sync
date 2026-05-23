@@ -2,6 +2,7 @@
 #define TRANSPARENT_UMBRELLA_H_
 #include "entities/Item.h"
 #include "gfx/Color.h"
+#include "gfx/UmbrellaGlyph.h"
 
 // REQUIREMENT #9: the umbrellas a player chooses between in Ch1 must
 // look CLEARLY different, not four near-identical pale-blue glyphs.
@@ -11,10 +12,25 @@
 // View reads it in Render(); World/Item carry no raylib).
 enum class UmbrellaStyle {
     Domed,    // True — wide rounded canopy: the "clean / correct" read
-    Broken,   // Fragile — small canopy with a torn-off rib (cheap/weak)
+    Broken,   // Fragile — only the handle / bare ribs remain (broken)
     Spiked,   // ProfessorTrap — angular stepped canopy (danger / trap)
     Drooping  // Cursed — sagging dark canopy + black handle (wrong)
 };
+
+// Map a subclass's UmbrellaStyle to the shared gfx::UmbrellaLook (the single
+// source of truth for the silhouette + signature colour). One mapping used by
+// BOTH the in-world Render here AND any other surface that wants the same
+// look (kept inline next to the styles so the two never drift).
+[[nodiscard]] constexpr nccu::gfx::UmbrellaLook
+LookForStyle(UmbrellaStyle style) noexcept {
+    switch (style) {
+        case UmbrellaStyle::Domed:    return nccu::gfx::UmbrellaLook::TrueBlue;
+        case UmbrellaStyle::Broken:   return nccu::gfx::UmbrellaLook::FragileBroken;
+        case UmbrellaStyle::Spiked:   return nccu::gfx::UmbrellaLook::ProfessorTrap;
+        case UmbrellaStyle::Drooping: return nccu::gfx::UmbrellaLook::CursedPurple;
+    }
+    return nccu::gfx::UmbrellaLook::TrueBlue;
+}
 
 // ISP roles: IDrawable + IInteractable. The old Update body was an empty
 // no-op (umbrellas don't tick), so that role is dropped; Render (the
