@@ -44,16 +44,27 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
         // reachable; the victim's-umbrella pickup sits nearby at (1450,1450).
         {gfx::Vec2{1620, 1560}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        // 學霸 — on the central umbrella strip (same row as the umbrellas),
-        // west of the planter prop so the spawn box stays walkable.
-        {gfx::Vec2{480, 1280}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        // 學霸 — at the 中正圖書館 (rect 698,254,382x255) front, matching
+        // chapter1.md「場景：中正圖書館 1 樓入口附近，抱著一疊厚厚的講義」.
+        // (820,545) sits just south of the library rect (bottom y=509) on the
+        // entrance apron, mask-verified STRICTLY walkable (100%, all 4
+        // neighbours 100%) and flood-reachable from the (500,1860) spawn.
+        {gfx::Vec2{820, 545}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
-        // 助教 — Zhinan Rd, SE corner near the 學思樓 approach, nudged off
-        // the baked perimeter/prop collision so the player can reach them.
-        {gfx::Vec2{1706, 1766}, "resources/assets/sprites/npc/ta.png",
+        // 助教 — at the 行政大樓 (rect 1057,598,240x156) front, matching
+        // chapter1.md「場景：行政大樓 1 樓走廊，手持一疊加退選資料夾」.
+        // (1220,775) is just south of the rect (bottom y=754) on the open
+        // apron east of the central campus, mask-verified STRICTLY walkable
+        // (100%, all 4 neighbours 100%) and flood-reachable.
+        {gfx::Vec2{1220, 775}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
-        // 福利社阿姨 — outside 樂活小舖, inside its trigger but clear of the wall.
-        {gfx::Vec2{460, 1500}, "resources/assets/sprites/npc/shop_auntie.png",
+        // 福利社阿姨 — at 樂活小舖 (rect 1388,1578,309x205), matching
+        // chapter1.md「場景：樂活小舖內，正在整理飲料架」. (1560,1560) sits just
+        // north of the building's north wall (y=1578), centred on the shop
+        // front, mask-verified STRICTLY walkable (100%, all 4 neighbours
+        // 100%) and flood-reachable; it stays 122 px clear of the Ch1 spine
+        // route's east corridor so the I7 reachability spine is unaffected.
+        {gfx::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
     };
     return kAll;
