@@ -459,7 +459,13 @@ void GameController::Update() {
 
     const Vec2 prevPlayerPos = player ? player->GetPosition() : Vec2{0.0f, 0.0f};
 
-    ForEachActive(world_.Objects(), [dt](GameObject& o) { o.Update(dt); });
+    // ISP role dispatch (template showcase): tick only the objects that
+    // play the IUpdatable role. ForEachRole maps the role to AsUpdatable()
+    // at compile time and skips the rest (an umbrella / pickup that no
+    // longer carries an Update is simply not visited — identical to the
+    // old empty-no-op call, with the empty overrides gone).
+    ForEachRole<IUpdatable>(world_.Objects(),
+                            [dt](IUpdatable& u) { u.Update(dt); });
 
     if (player) {
         // Phase B: clamp player to world AABB right after Update().
@@ -585,8 +591,8 @@ void GameController::Update() {
                                       world_.Semester().Current());
                     OpenNpcDialog(world_.Dialog(), *player, id,
                                   world_.Semester().Current());     // talk
-                } else {
-                    o.Interact(player);                              // pick up / Vendor
+                } else if (auto* it = o.AsInteractable()) {
+                    it->Interact(player);                            // pick up / Vendor
                 }
             });
     }

@@ -102,7 +102,8 @@ classDiagram
 ### **類別設計與技術細節說明：**
 
 * **GameObject (抽象類別與實體根基)**：  
-  這是所有地圖物件的絕對源頭。它不僅封裝了 2D 空間中的座標 (position) 與碰撞框 (hitBox)，更引入了 isActive 標籤以支援「物件池 (Object Pooling)」或「畫面外剔除 (Culling)」的效能優化機制。它擁有純虛擬函式 Interact()，這是一種強制性的合約，確保所有繼承它的子類別都必須有自己的互動邏輯，主程式便能以統一的 GameObject\* 指標陣列來迴圈呼叫繪圖與互動。  
+  這是所有地圖物件的絕對源頭。它不僅封裝了 2D 空間中的座標 (position) 與碰撞框 (hitBox)，更引入了 isActive 標籤以支援「物件池 (Object Pooling)」或「畫面外剔除 (Culling)」的效能優化機制。  
+  > **更新（角色介面拆分）**：原本 GameObject 以三個純虛擬函式 Update/Render/Interact 充當「胖介面」。現已依介面隔離原則 (ISP) 拆成三個獨立角色介面 IUpdatable / IDrawable / IInteractable，並以 CRTP mixin `WithRoles` 在編譯期靜態綁定能力查詢 (AsUpdatable/AsDrawable/AsInteractable)，全程無 dynamic_cast。詳見 `docs/architecture-roles.md`。下文的多型敘述（VTable 動態綁定、beClaimed 家族）仍適用於各角色介面內的覆寫。  
 * **Player (玩家控制中心)**：  
   除了處理基本的 WASD 輸入外，Player 類別更是遊戲狀態的數據中心。它管理著核心的 rainMeter (淋雨度，數值過高會觸發減速懲罰) 與 karma (道德值，決定最終結局的關鍵隱藏數值)。這種設計將「玩家的狀態」與「玩家的顯示」完美結合，外部物件（如雨傘或 NPC）只能透過公開的介面（如 decreaseKarma）來改變玩家狀態，徹底落實了「封裝 (Encapsulation)」的精神。  
 * **多型展現 (TransparentUmbrella 家族)**：  

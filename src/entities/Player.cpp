@@ -32,7 +32,9 @@ int RowForFacing(nccu::gfx::Vec2 facing) {
 
 Player::Player(nccu::gfx::Vec2 position)
     // 180 px/sec ≈ original 3 px/frame at 60 FPS, frame-rate independent.
-    : Character(position, nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
+    // Direct base is WithRoles<Player, Character>; its `using Base::Base`
+    // inherits Character's ctor so this 3-arg form still resolves.
+    : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
       rainMeter_(0.0f), karma_(50), hasUmbrella_(false), money_(100) {}
 
 void Player::LoadSprite(const std::string& path) {
@@ -79,10 +81,6 @@ void Player::Render(nccu::gfx::IRenderer& renderer) const {
         static_cast<float>(kSpriteCell),
         static_cast<float>(kSpriteCell)};
     renderer.DrawSprite(*sprite_, src, dest, tint_);
-}
-
-void Player::Interact(Player* /*initiator*/) {
-    // Player does not respond to other Players in MVP
 }
 
 void Player::HandleInput(float deltaTime) {

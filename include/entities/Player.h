@@ -8,13 +8,19 @@
 #include <string>
 #include <unordered_map>
 
-class Player final : public Character {
+// ISP roles: IUpdatable + IDrawable. The old Interact(Player*) body was an
+// empty no-op ("Player does not respond to other Players in MVP"), so that
+// role is dropped — nothing ever invoked it through the container (the
+// E-interact sweep skips the player via ForEachActiveExcept). Update (input
+// + animation) and Render (the sprite) are real and kept. Player is final,
+// so WithRoles is keyed on Player itself.
+class Player final : public WithRoles<Player, Character>,
+                     public IUpdatable, public IDrawable {
 public:
     explicit Player(nccu::gfx::Vec2 position);
 
     void Update(float deltaTime) override;
     void Render(nccu::gfx::IRenderer& renderer) const override;
-    void Interact(Player* initiator) override;
 
     void HandleInput(float deltaTime);
 

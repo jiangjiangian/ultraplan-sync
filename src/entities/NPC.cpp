@@ -28,7 +28,9 @@ NPC::NPC(nccu::gfx::Vec2 position,
          std::vector<std::string> dialogLines,
          bool isQuestGiver,
          std::string_view npcId)
-    : Character(position,
+    // Direct base is WithRoles<NPC, Character>; its `using Base::Base`
+    // inherits Character's ctor so this 3-arg form still resolves.
+    : WithRoles(position,
                 nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f},
                 0.0f /* archetype NPCs are stationary; EnableWander() opts in */),
       dialogLines_(std::move(dialogLines)),

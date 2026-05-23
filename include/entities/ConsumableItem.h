@@ -6,15 +6,22 @@
 // Mirrors TransparentUmbrella's role as a middle layer between Item and the
 // concrete subclasses; the polymorphic verb here is Consume() instead of
 // beClaimed().
-class ConsumableItem : public Item {
+//
+// ISP roles: IInteractable ONLY. Its old Update/Render bodies were empty
+// no-ops (nothing to tick, the View owns drink rendering), so dropping
+// those roles means the update/render loops simply skip it — identical
+// behaviour, fewer empty overrides. Every leaf (EnergyDrink / HotPack /
+// WaterproofSpray) shares this exact role set, so WithRoles is keyed on
+// this intermediate (Derived = ConsumableItem); static_cast<ConsumableItem*>
+// is valid for each leaf since they all IS-A ConsumableItem.
+class ConsumableItem : public WithRoles<ConsumableItem, Item>, public IInteractable {
 public:
     ConsumableItem(nccu::gfx::Vec2 position, std::string name, int price)
-        : Item(position, nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f}, std::move(name)),
+        : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f}, std::move(name)),
           price_(price) {}
 
-    // Pure data — concrete subclasses emit events via EventBus, never raylib.
-    void Update(float /*deltaTime*/) override {}
-    void Render(nccu::gfx::IRenderer&) const override {} // nothing to draw; rendering owned by the View layer
+    // Both pick-up paths funnel into Consume(). Pure data — concrete
+    // subclasses emit events via EventBus, never raylib.
     void Interact(Player* initiator) override { Consume(initiator); }
     void OnPickup(Player* player) override { Consume(player); }
 

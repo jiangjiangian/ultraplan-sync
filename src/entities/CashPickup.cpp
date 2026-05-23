@@ -23,7 +23,9 @@ void CashPickup::Render(nccu::gfx::IRenderer& renderer) const {
 }
 
 CashPickup::CashPickup(nccu::gfx::Vec2 position, int value)
-    : Item(position,
+    // Direct base is WithRoles<CashPickup, Item>; its `using Base::Base`
+    // inherits Item's ctor so this 3-arg form still resolves.
+    : WithRoles(position,
            // 16x16 hitbox anchored at the world position — same size as
            // ConsumableItem so it picks up via the same collision sweep.
            nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f},

@@ -160,7 +160,11 @@ void View::Draw(const World& world) {
                   [](const DrawRef& a, const DrawRef& b) { return a.y < b.y; });
         for (const DrawRef& d : drawOrder_) {
             if (d.obj) {
-                d.obj->Render(renderer_);
+                // ISP role dispatch: render only objects that play the
+                // IDrawable role. d.obj is const, so use the const
+                // accessor; a non-drawable object (none today, but the
+                // contract allows it) is simply skipped.
+                if (const auto* dr = d.obj->AsDrawable()) dr->Render(renderer_);
             } else {
                 const BuildingSprite& bs  = buildings_[d.building];
                 const Texture&        tex = buildingTextures_[bs.texIndex];

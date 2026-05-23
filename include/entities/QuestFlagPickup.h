@@ -27,7 +27,12 @@
 // message that said "last page" whenever note3 was grabbed first). When
 // countMessages_ is empty the single message_ is used (the 申請書 / any
 // non-set pickup keeps its exact prior behaviour).
-class QuestFlagPickup final : public Item {
+// ISP roles: IDrawable + IInteractable. The old Update body was an empty
+// no-op (the form doesn't tick), so that role is dropped; the Yellow
+// ground-marker Render and the flag-setting OnPickup (via Interact) are
+// real and kept. A leaf, so WithRoles is keyed on QuestFlagPickup itself.
+class QuestFlagPickup final : public WithRoles<QuestFlagPickup, Item>,
+                              public IDrawable, public IInteractable {
 public:
     QuestFlagPickup(nccu::gfx::Vec2 position, std::string flagName,
                     std::string message = "撿到了被風吹走的申請書",
@@ -35,7 +40,6 @@ public:
                     int completionKarma = 0,
                     std::vector<std::string> countMessages = {});
 
-    void Update(float /*deltaTime*/) override {}
     void Render(nccu::gfx::IRenderer& renderer) const override;
     void Interact(Player* initiator) override { OnPickup(initiator); }
     void OnPickup(Player* player) override;
