@@ -4,6 +4,7 @@
 #include "vendor/Vendor.h"
 #include "vendor/VendorConfig.h"
 #include "vendor/VendorMessages.h"
+#include "quest/ItemCatalog.h"
 
 #include <string>
 
@@ -108,4 +109,39 @@ TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
     CHECK(p.ConsumableCount("Ring") == 2);
     CHECK(p.GetMoney() == m0 - 10);
     CHECK(cap.lastMsg == std::string(nccu::vendor::msg::kSoldOut));
+}
+
+// Item 5b: the Ch4 集英樓 ugly-umbrella stall (the exact item the owner
+// "didn't see deduct money") now shows the 中文 catalog name + price spent
+// + remaining balance, via the SAME TryBuy path the market uses.
+TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance") {
+    Player p{nccu::gfx::Vec2{0, 0}};            // starts with 100 元
+    MsgCapture cap;
+    cap.Attach();
+
+    VendorConfig cfg;
+    cfg.name  = "集英樓便利商店";
+    cfg.stock = {VendorItem{"UglyUmbrella", 100, -1, "Flag_BoughtUglyUmbrella"}};
+
+    Vendor v({0, 0}, cfg);
+    REQUIRE(p.GetMoney() == 100);
+    CHECK(v.TryBuy(&p, 0));
+    CHECK(p.GetMoney() == 0);                   // 100 - 100
+    // The 中文 name (not "UglyUmbrella"), the price, and the 0 balance.
+    CHECK(cap.lastMsg == "買了螢光綠醜傘，花了 100 元（剩 0 元）");
+    CHECK(p.HasFlag("Flag_BoughtUglyUmbrella")); // Ending C seed still set
+}
+
+// Every itemId a vendor sells must resolve to a 中文 catalog name so no
+// purchase toast / bag row ever prints a raw English id.
+TEST_CASE("Item 2d/5b: every market itemId has a 中文 catalog name") {
+    const char* ids[] = {"HotPack", "EnergyDrink", "WaterproofSpray",
+                         "EggCake", "FlowerTea", "Takoyaki", "Donation",
+                         "UglyUmbrella", "CursedUmbrella",
+                         "TransparentUmbrella"};
+    for (const char* id : ids) {
+        const std::string name{nccu::ItemInfoFor(id).displayName};
+        CHECK(name != id);                      // not the raw English id
+        CHECK_FALSE(name.empty());
+    }
 }

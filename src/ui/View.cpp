@@ -437,10 +437,14 @@ void View::Draw(const World& world) {
 
     // Tab inventory overlay, on top of the (frozen) world + dialog.
     // Reactive: a pure function of World::InventoryOpen + the Player's
-    // count map, drawn each frame it is open (no retained UI state).
+    // bag, drawn each frame it is open (no retained UI state). The View
+    // owns World/Player here and builds the render-only InventoryRow DTO
+    // (BuildInventoryRows) so InventoryView itself stays render-only —
+    // same MVC split as the EndingSummary it hands DrawEndingCard.
     if (world.InventoryOpen()) {
         if (const Player* ip = world.GetPlayer())
-            DrawInventory(renderer_, ip->Consumables(),
+            DrawInventory(renderer_, BuildInventoryRows(*ip),
+                          world.InventoryCursor(),
                           viewportSize_.x, viewportSize_.y);
     }
 

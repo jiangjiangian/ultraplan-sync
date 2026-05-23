@@ -115,6 +115,61 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     CHECK(p.GetKarma() == k0 + 5);
 }
 
+// Item 5a regression: the Ch1 福利社阿姨 請咖啡 choice is ONCE-ONLY. Once
+// Flag_BoughtCoffeeForAuntie_Ch1 is set (first pick), re-confirming the
+// same choice on a re-talk must NOT re-apply the +5 karma (no farming).
+// The guard lives in ApplyDialogChoice (a self-flagging choice the player
+// already satisfied is inert). The inert (b)/(c) flavour choices (karma
+// +0 / no flag) stay re-pickable — verified they don't move karma either.
+TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    const int k0 = p.GetKarma();
+
+    // First visit: pick coffee -> +5, flag set.
+    {
+        DialogState d;
+        nccu::OpenNpcDialog(d, p, "shop_auntie",
+                            SemesterState::Chapter1_AddDrop);
+        for (int i = 0; i < 4; ++i) d.Advance();    // opener lines
+        REQUIRE(d.AtChoice());
+        d.MoveChoice(2);                            // 請咖啡
+        const nccu::DialogChoice* c = d.Advance();
+        REQUIRE(c != nullptr);
+        nccu::ApplyDialogChoice(p, *c);
+    }
+    CHECK(p.HasFlag("Flag_BoughtCoffeeForAuntie_Ch1"));
+    CHECK(p.GetKarma() == k0 + 5);
+
+    // Second visit: pick coffee AGAIN -> karma must NOT move (already done).
+    {
+        DialogState d;
+        nccu::OpenNpcDialog(d, p, "shop_auntie",
+                            SemesterState::Chapter1_AddDrop);
+        for (int i = 0; i < 4; ++i) d.Advance();
+        REQUIRE(d.AtChoice());
+        d.MoveChoice(2);
+        const nccu::DialogChoice* c = d.Advance();
+        REQUIRE(c != nullptr);
+        nccu::ApplyDialogChoice(p, *c);
+    }
+    CHECK(p.GetKarma() == k0 + 5);                  // STILL +5, not +10
+
+    // The inert (b) 詢問雨傘 choice (karma +0, no flag) is re-pickable and
+    // moves nothing — confirms the guard only catches reward choices.
+    {
+        DialogState d;
+        nccu::OpenNpcDialog(d, p, "shop_auntie",
+                            SemesterState::Chapter1_AddDrop);
+        for (int i = 0; i < 4; ++i) d.Advance();
+        REQUIRE(d.AtChoice());
+        d.MoveChoice(0);                            // 詢問雨傘
+        const nccu::DialogChoice* c = d.Advance();
+        REQUIRE(c != nullptr);
+        nccu::ApplyDialogChoice(p, *c);
+    }
+    CHECK(p.GetKarma() == k0 + 5);                  // unchanged
+}
+
 TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};

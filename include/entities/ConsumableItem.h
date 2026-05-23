@@ -1,8 +1,9 @@
 #ifndef CONSUMABLE_ITEM_H_
 #define CONSUMABLE_ITEM_H_
 #include "entities/Item.h"
+#include "entities/Player.h"
 
-// ConsumableItem: abstract Item that disappears after being used.
+// ConsumableItem: abstract Item that the player collects into the bag.
 // Mirrors TransparentUmbrella's role as a middle layer between Item and the
 // concrete subclasses; the polymorphic verb here is Consume() instead of
 // beClaimed().
@@ -20,17 +21,38 @@ public:
         : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f}, std::move(name)),
           price_(price) {}
 
-    // Both pick-up paths funnel into Consume(). Pure data — concrete
-    // subclasses emit events via EventBus, never raylib.
-    void Interact(Player* initiator) override { Consume(initiator); }
-    void OnPickup(Player* player) override { Consume(player); }
+    // Item 2(a) — hold-and-use bag: picking a consumable up off the world
+    // now ADDS it to the player's count inventory (under its itemId =
+    // GetName()) instead of firing Consume() on the spot. The EFFECT is no
+    // longer applied here; it is applied later when the player USES the
+    // item from the open bag (GameController routes that to
+    // ApplyConsumableEffect, which shares each Consume() body's exact
+    // karma delta + ShowMessage). The isActive_ idempotency guard is kept:
+    // a pickup deactivates the world object exactly once (end-of-frame
+    // sweep removes it), so a re-collision can't double-add. Consume()
+    // itself is UNCHANGED (still the per-leaf effect) — the bookworm
+    // rescue's quest consumption and the entity unit tests call it
+    // directly; only the pickup wiring moved off it.
+    void Interact(Player* initiator) override { Collect(initiator); }
+    void OnPickup(Player* player) override { Collect(player); }
 
+    // The polymorphic effect — applied on USE (from the bag), not on
+    // pickup. Concrete subclasses emit events via EventBus, never raylib.
     virtual void Consume(Player* player) = 0;
 
     [[nodiscard]] int GetPrice() const noexcept { return price_; }
 
 protected:
     int price_;
+
+private:
+    // Pickup-to-bag, shared by both interact paths. Idempotent via
+    // isActive_ (a consumed/collected world object is inert).
+    void Collect(Player* player) {
+        if (!player || !isActive_) return;
+        player->AddConsumable(GetName());
+        isActive_ = false;
+    }
 };
 
 #endif // CONSUMABLE_ITEM_H_

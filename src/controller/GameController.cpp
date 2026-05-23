@@ -10,6 +10,7 @@
 #include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
 #include "quest/Chapter4Quest.h"
+#include "quest/ItemCatalog.h"
 #include "vendor/Vendor.h"
 #include "state/InterludeExit.h"
 #include "controller/GameObjectQueries.h"
@@ -88,6 +89,25 @@ void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
 }  // namespace
 
 void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
+    // Item 5a — once-only self-flagging choices. A choice that grants a
+    // ONE-OFF reward expresses it as "karma +N AND set this flag true";
+    // the Ch1 福利社阿姨 (d) 請咖啡 (karma +5, Flag_BoughtCoffeeForAuntie_
+    // Ch1) is exactly this shape. shop_auntie is a re-enterable choice-
+    // opener (its (b)/(c) 詢問傘/醜傘 are inert flavour with karma +0 / no
+    // flag, so re-talking them is harmless and stays allowed), but WITHOUT
+    // this guard a player could re-pick 請咖啡 every visit and farm +5
+    // each time. So: if the choice would SET a flag the player ALREADY
+    // holds, the reward has already been collected — skip BOTH the karma
+    // and the (idempotent) flag write. This is the karma-application spot
+    // the suit_senior / ta self-locks (Flag_SuitSeniorChoiceMade /
+    // Flag_TaFinaleChoiceMade) protect structurally by never re-presenting
+    // their menus; shop_auntie's menu IS re-presented, so the guard lives
+    // here instead. A clearing choice (flagValue=false) or a flag the
+    // player does not yet hold applies normally (first pick still rewards).
+    if (!choice.setsFlag.empty() && choice.flagValue &&
+        player.HasFlag(choice.setsFlag)) {
+        return;   // reward already collected — no double-dip
+    }
     player.AddKarma(choice.karmaDelta);
     if (!choice.setsFlag.empty()) {
         if (choice.flagValue) player.SetFlag(choice.setsFlag);
@@ -382,13 +402,55 @@ void GameController::Update() {
         }
     }
 
-    // Tab inventory overlay (S5b-5). Edge-triggered toggle, then — while
-    // open — freeze the sim exactly like the dialog box above (no tick /
-    // movement / collision / sweep). Placed AFTER the dialog block so a
-    // conversation has priority and Tab can't pop the panel mid-dialog.
+    // Tab inventory overlay (S5b-5 + Item 2). Edge-triggered toggle, then
+    // — while open — freeze the sim exactly like the dialog box above (no
+    // tick / movement / collision / sweep). Placed AFTER the dialog block
+    // so a conversation has priority and Tab can't pop the panel mid-
+    // dialog.
     if (Input::IsPressed(Key::Tab))
         world_.SetInventoryOpen(!world_.InventoryOpen());
-    if (world_.InventoryOpen()) return;
+    if (world_.InventoryOpen()) {
+        // Item 2(b): the bag is a hold-and-use list. ↑/↓ move the cursor;
+        // E/Enter on a CONSUMABLE row uses it (applies the SAME effect the
+        // pickup used to fire, then decrements the count); on a view-only
+        // row (金幣 / 雨傘 / 任務紙張) E/Enter is inert — the View already
+        // shows that row's description. The rows are rebuilt from the
+        // Player each frame the bag is open (BuildInventoryRows), so a row
+        // that hits 0 after use disappears next frame and the cursor is
+        // re-clamped. Normal movement / interact never run here (the early
+        // return below freezes the sim), so opening the bag can't move the
+        // player or re-trigger NPCs — only Tab (handled above) re-closes
+        // it. Build the rows ONCE; act on the captured snapshot.
+        if (Player* invP = world_.GetPlayer()) {
+            const std::vector<InventoryRow> rows = BuildInventoryRows(*invP);
+            const int n = static_cast<int>(rows.size());
+            int cur = world_.InventoryCursor();
+            if (n > 0) {
+                if (cur < 0)   cur = 0;
+                if (cur >= n)  cur = n - 1;
+                if (Input::IsPressed(Key::Up))   cur = (cur - 1 + n) % n;
+                if (Input::IsPressed(Key::Down)) cur = (cur + 1) % n;
+                world_.SetInventoryCursor(cur);
+                if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
+                    const InventoryRow& sel = rows[static_cast<std::size_t>(cur)];
+                    if (sel.usable && IsUsableConsumable(sel.itemId) &&
+                        invP->ConsumableCount(sel.itemId) > 0) {
+                        // Apply the effect, THEN spend one. Order matters
+                        // for nothing here (the effect doesn't read the
+                        // count), but spending after keeps the "use → it's
+                        // gone" reading obvious. ApplyConsumableEffect
+                        // publishes the same flavour ShowMessage the pickup
+                        // path used to.
+                        ApplyConsumableEffect(*invP, sel.itemId);
+                        (void)invP->ConsumeOne(sel.itemId);
+                    }
+                }
+            } else {
+                world_.SetInventoryCursor(0);
+            }
+        }
+        return;
+    }
 
     const float dt = Time::DeltaSeconds();
     // Cycle 9.E (audit H2 / D5 / SC 2.2.2): skip-toast key. While a

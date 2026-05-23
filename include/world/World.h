@@ -82,8 +82,22 @@ public:
     // Tab inventory overlay (S5b-5): pure UI state on the World so View
     // reacts to it and GameController freezes the sim while it is open
     // (same model as the dialog box). Player owns the actual counts.
+    // Closing the bag resets the cursor to the top so the next open starts
+    // on 金幣 (deterministic; mirrors SetMenuOpen resetting menuCursor_).
     [[nodiscard]] bool InventoryOpen() const noexcept { return inventoryOpen_; }
-    void SetInventoryOpen(bool v) noexcept { inventoryOpen_ = v; }
+    void SetInventoryOpen(bool v) noexcept {
+        inventoryOpen_ = v;
+        if (!v) inventoryCursor_ = 0;
+    }
+    // Item 2(b): the highlighted bag row. GameController moves it with
+    // ↑/↓ while the bag is open and reads it to use the selected
+    // consumable on E/Enter; the View reads it to draw the caret +
+    // description panel. Pure UI state — no raylib, no input here. The
+    // row count is dynamic (it shrinks as items are used), so the cursor
+    // is clamped by the consumer (controller clamps before reading, View
+    // clamps before drawing) rather than stored against a fixed bound.
+    [[nodiscard]] int  InventoryCursor() const noexcept { return inventoryCursor_; }
+    void SetInventoryCursor(int v) noexcept { inventoryCursor_ = v; }
 
     // In-game pause menu (top-right affordance, opened with Esc/M). Pure
     // UI state on the World — exactly the InventoryOpen idiom — so the
@@ -295,6 +309,7 @@ private:
     // like the lap fields above are conceptually per-Ch3-visit.
     bool                        ch2NotesSpawned_{false};
     bool                        inventoryOpen_{false};
+    int                         inventoryCursor_{0};
     bool                        menuOpen_{false};
     int                         menuCursor_{0};
     bool                        helpOpen_{false};

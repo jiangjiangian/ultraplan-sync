@@ -2,6 +2,7 @@
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "vendor/VendorMessages.h"
+#include "quest/ItemCatalog.h"
 #include "gfx/Color.h"
 
 #include <string>
@@ -74,7 +75,22 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     // Success: announce the transaction (UI) and the item gain (inventory).
     // Two events because subscribers are different — one paints a toast,
     // the other appends to the inventory model.
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kPurchasedPrefix) + item.itemId });
+    //
+    // Item 5b: the toast now shows the SPEND — "買了<中文名>，花了 N 元
+    // （剩 M 元）" — using the item-catalog display name (so the 集英樓
+    // 醜傘 and every market stall read consistently) and the
+    // post-deduction balance (DeductMoney already ran above, so
+    // GetMoney() is the remaining purse). An itemId without a catalog row
+    // falls back to its raw id (ItemInfoFor's fallback), so a future stock
+    // line never prints blank.
+    namespace msg = nccu::vendor::msg;
+    const std::string itemName{nccu::ItemInfoFor(item.itemId).displayName};
+    const std::string toast =
+        std::string(msg::kPurchasedPrefix) + itemName +
+        std::string(msg::kSpentMid)        + std::to_string(item.price) +
+        std::string(msg::kSpentUnitOpen)   + std::to_string(player->GetMoney()) +
+        std::string(msg::kSpentUnitClose);
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, toast });
     EventBus::Instance().Publish(Event{ EventType::PickupAcquired, item.itemId });
 
     // S5b-3: the buy actually lands in the count inventory, the stall's
