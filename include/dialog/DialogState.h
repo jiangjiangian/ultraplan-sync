@@ -14,6 +14,19 @@ struct DialogChoice {
     std::vector<std::string> nextLines{}; // consequence lines played on pick
 };
 
+// REQUIREMENT (1c, "能退出的選項"): the trailing no-side-effect label for a
+// state-MUTATING choice menu, mirroring the vendor "先不買，謝謝" decline
+// (GameController kVendorDeclineLabel). Any committing menu (karma/flag
+// mutation on confirm) appends a DialogChoice carrying this label, zero
+// karmaDelta and an empty setsFlag, so picking it closes the conversation
+// with NO state change and the player can re-approach the decision later.
+// Detected by label at the confirm site (GameController) so the menu's
+// per-NPC post-choice bookkeeping (e.g. the Ch4 助教 Flag_TaFinaleChoiceMade
+// self-lock) is skipped for it — the choice's own empty payload already
+// makes ApplyDialogChoice a no-op. Appended LAST so existing choice indices
+// stay stable (same contract as the vendor decline tail).
+inline constexpr const char* kDialogExitLabel = "我再想想…";
+
 // Pure-data conversation. Owned by World; View reads it const, the
 // GameController steps it. No raylib. "Show then advance": Open() shows
 // line 0; Advance() moves to the next line, and only past the last line

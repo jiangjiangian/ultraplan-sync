@@ -334,6 +334,15 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
              "「規定就是規定，我配合。」",
              "「傘是你的，我還你。」",
              "（他不再說話，繼續巡考）"}});
+        // 1c: the no-commit exit. Appended LAST so 體諒/質問 keep indices
+        // 0/1 (test_ch4_finale pins them). Zero karmaDelta + empty setsFlag
+        // and NO nextLines → Advance() Close()s immediately (vendor-decline
+        // shape), and GameController skips Flag_TaFinaleChoiceMade for this
+        // label, so the finale menu is NOT consumed — the player can walk
+        // off and re-approach 助教 to decide later (no soft-lock, no
+        // accidental Ending). The 助教 keeps巡考 in the background.
+        taChoices.push_back(DialogChoice{
+            kDialogExitLabel, 0, std::string{}, false, {}});
         dlg.Open(std::move(openerLines), std::move(taChoices));
         dlg.SetNpcContext(std::string(npcId));
         return;

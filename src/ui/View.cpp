@@ -11,7 +11,8 @@
 #include "ui/InventoryView.h"
 #include "ui/MessageView.h"
 #include "quest/QuestObjective.h"
-#include "quest/Chapter3Quest.h"
+#include "quest/QuestIndicator.h"
+#include "quest/Chapter3Quest.h"   // 操場 track-ring geometry (kSportsTrack*)
 #include "ui/QuestGiverIndicator.h"
 #include "state/InterludeExitMarker.h"
 #include "ui/GameHelp.h"
@@ -162,19 +163,22 @@ void View::Draw(const World& world) {
         // Quest-giver "!" overlay (H4). Drawn AFTER the painter's-order
         // pass but still inside the CameraScope so the icon follows the
         // NPC in world space — and on top of buildings/sprites that might
-        // otherwise occlude a quest-giver tucked behind a footprint. The
-        // virtual IsQuestGiver() (default false on GameObject, overridden
-        // by NPC) closes the dispatch under inheritance, so no dynamic_cast.
-        // QuestGiverIndicator routes every primitive through IRenderer,
-        // keeping the View pure-render and the helper headless-testable.
+        // otherwise occlude a quest-giver tucked behind a footprint.
+        // QuestIndicatorVisible (quest layer) is the SINGLE decision point:
+        // it folds the roster's virtual IsQuestGiver() bit together with
+        // the per-chapter rules (Ch3 sequential A→B→C chain, Item 4a head
+        // light; Ch4 finale 助教-only `!`, Item 1b) so the View stays
+        // pure-render — no gameplay logic, no dynamic_cast. NB the Ch4
+        // finale NPC is isQuestGiver=false in the roster, so the decision
+        // can NO LONGER short-circuit on IsQuestGiver() alone; the predicate
+        // owns it. QuestGiverIndicator routes every primitive through
+        // IRenderer, keeping the helper headless-testable.
         const Player* qgPlayer = world.GetPlayer();
         const nccu::SemesterState qgState = world.Semester().Current();
         ForEachActive(world.Objects(), [&](const GameObject& o) {
-            if (!o.IsQuestGiver()) return;
-            // Ch3 物物交換鏈: reveal the "!" sequentially (only the next
-            // A→B→C link), not all three at once.
-            if (qgState == nccu::SemesterState::Chapter3_SportsDay && qgPlayer
-                && !nccu::Ch3IndicatorVisible(o.NpcId(), *qgPlayer)) return;
+            if (!qgPlayer) return;
+            if (!nccu::QuestIndicatorVisible(o.NpcId(), o.IsQuestGiver(),
+                                             qgState, *qgPlayer)) return;
             // The hit box lives at the NPC's feet; QuestGiverIndicator
             // lifts the "!" above the bottom-anchored sprite top.
             DrawQuestGiverIndicator(

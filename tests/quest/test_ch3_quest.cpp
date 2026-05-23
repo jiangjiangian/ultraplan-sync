@@ -70,12 +70,39 @@ TEST_CASE("TryAdvanceCh3Trade: 物物交換鏈 advances one link per talk, in or
     EventBus::Instance().Clear();
 }
 
+TEST_CASE("Item 4a: talking A pre-lap surfaces the 操場 lap hint in-fiction") {
+    // The `!` on A (Ch3IndicatorVisible, pre-lap) leads the player to A; the
+    // talk must then teach step 1 — run a lap — rather than silently doing
+    // nothing. TryAdvanceCh3Trade publishes the redirect ShowMessage and
+    // grants no sausage until Flag_SportsLapDone. Revert-verify: drop the
+    // pre-lap `!` and the player has no cue to walk up to A in the first
+    // place; drop the redirect branch and the talk is a silent no-op.
+    EventBus::Instance().Clear();
+    std::string lastMsg;
+    int msgs = 0;
+    EventBus::Instance().Subscribe(           // lives until the Clear() below
+        EventType::ShowMessage,
+        [&](const Event& e) { lastMsg = e.text; ++msgs; });
+
+    Player p = MakePlayer();
+    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);   // pre-lap talk
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));           // no sausage yet
+    CHECK(msgs == 1);                                        // a hint fired
+    CHECK(lastMsg.find("操場") != std::string::npos);        // points at the lap
+    EventBus::Instance().Clear();
+}
+
 TEST_CASE("Ch3IndicatorVisible: the A->B->C `!` reveals one link at a time") {
     Player p = MakePlayer();
-    // Before the 操場 lap: even A is dark (the lap unlocks the chain).
-    CHECK_FALSE(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));
+    // Item 4a (the "dead first step" fix): A is now the visible chain head
+    // from chapter ENTRY, BEFORE the 操場 lap — pre-fix it was dark until
+    // Flag_SportsLapDone, so the player saw NO `!` anywhere on entering Ch3
+    // and wandered lost. Walking up to A pre-lap triggers TryAdvanceCh3Trade's
+    // "先去操場跑一圈" redirect (teaching step 1 in-fiction); the same `!`
+    // hands over the sausage after the lap.
+    CHECK(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));   // lit pre-lap
     p.SetFlag(nccu::kFlagLapDone);
-    // After the lap: only A is lit; the chain links B/C stay dark.
+    // After the lap: A still lit (chain head), the chain links B/C stay dark.
     CHECK(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));
     CHECK_FALSE(nccu::Ch3IndicatorVisible("loudspeaker_b", p));
     CHECK_FALSE(nccu::Ch3IndicatorVisible("senior_c", p));
