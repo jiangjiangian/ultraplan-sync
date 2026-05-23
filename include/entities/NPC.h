@@ -31,12 +31,21 @@ public:
     // Stationary archetype NPCs are solid walls the player bumps off;
     // ambient wandering students are decorative and must NOT block the
     // player (a crowd you can't push past is infuriating).
-    [[nodiscard]] bool BlocksMovement() const noexcept override { return !wander_; }
+    [[nodiscard]] bool BlocksMovement() const noexcept override {
+        return !wander_ && !circular_;   // wanderers + crowd runners are decorative
+    }
 
     // Turns this NPC into an ambient pedestrian: random-walk at `speed`
     // px/s, re-picking a heading every 1-3 s. `seed` keys the per-NPC
     // PRNG so a crowd does not march in lock-step. Chainable.
     NPC& EnableWander(float speed, unsigned seed) noexcept;
+
+    // Decorative 校慶 crowd runner: circles `center` at `radius`,
+    // advancing `angularSpeed` rad/s from `startAngle`. Walk-animated and
+    // non-blocking (the player runs the same track). 5 runners at distinct
+    // speeds populate the 操場 lap.
+    NPC& EnableCircularRun(nccu::gfx::Vec2 center, float radius,
+                           float angularSpeed, float startAngle) noexcept;
 
     // Wandering NPCs self-resolve against the world's terrain mask so
     // they don't walk through buildings, the river or painted props. The
@@ -85,6 +94,17 @@ private:
     nccu::gfx::Vec2                             wanderDir_;
     std::uint32_t                              rng_;
     const nccu::CollisionMask*                 wanderMask_;
+
+    // 校慶 crowd runner (EnableCircularRun): a fixed circular track + a
+    // walk-frame animation so the runner reads as running, not sliding.
+    bool                                       circular_ = false;
+    nccu::gfx::Vec2                             circleCenter_{};
+    float                                      circleRadius_ = 0.0f;
+    float                                      circleAngle_  = 0.0f;
+    float                                      circleSpeed_  = 0.0f;  // rad/s
+    float                                      animTimer_    = 0.0f;
+    int                                        animStep_     = 0;
+    nccu::gfx::Vec2                             facing_{0.0f, 1.0f};
 };
 
 #endif // N_P_C_H_
