@@ -22,10 +22,15 @@ inline constexpr const char* kFlagLapDone = "Flag_SportsLapDone";
 
 // 操場 校慶 lap geometry — one source of truth for the crowd runners
 // (World spawn), the lap-progress tracking (World::UpdateSportsLap) and
-// the track-ring render (View). Centre + radius of the run circle.
-inline constexpr float kSportsTrackCx = 1680.0f;
-inline constexpr float kSportsTrackCy = 710.0f;
-inline constexpr float kSportsTrackR  = 140.0f;
+// the track-ring render (View). The track is a STADIUM (running-track)
+// shape: a straight top + bottom of half-length kSportsTrackHalfLen
+// joined by a left + right semicircle of radius kSportsTrackR, centred on
+// the 操場. (Cx,Cy) is the field centre; the lap-progress angle is still
+// measured around it.
+inline constexpr float kSportsTrackCx      = 1694.0f;   // 操場 centre
+inline constexpr float kSportsTrackCy      = 740.0f;
+inline constexpr float kSportsTrackHalfLen = 150.0f;    // straight half-length (a)
+inline constexpr float kSportsTrackR       = 130.0f;    // end-cap radius (r)
 
 // S5d-3 once-key: the Ch3 ProfessorTrap ripple already landed.
 // chapter3.md 章節結尾分支二 L329 「助教旗標若已在 Ch2 扣過，本次 -10

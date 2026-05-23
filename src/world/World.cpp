@@ -252,7 +252,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             "resources/assets/sprites/school_uniform_3/female_12.png",
         };
         const nccu::gfx::Vec2 trackC{kSportsTrackCx, kSportsTrackCy};
-        const float trackR = kSportsTrackR;
+        const float trackR = 150.0f;   // runners circle ~on the stadium track
         for (int i = 0; i < 5; ++i) {                 // runners
             const float a0 = static_cast<float>(i) * 1.25664f;   // 72° apart
             auto run = std::make_unique<NPC>(
@@ -291,9 +291,9 @@ void World::UpdateSportsLap() noexcept {
     const float dx = player_->GetPosition().x - kSportsTrackCx;
     const float dy = player_->GetPosition().y - kSportsTrackCy;
     const float dist = std::hypot(dx, dy);
-    // Only sweep while on/near the track band — loitering the centre or
-    // wandering far off the field does not count toward the lap.
-    if (dist < 60.0f || dist > 230.0f) return;
+    // Only sweep while on/near the stadium track band — loitering the
+    // centre or wandering far off the field does not count toward the lap.
+    if (dist < 90.0f || dist > 320.0f) return;
     const float ang = std::atan2(dy, dx);
     if (!lapStarted_) {                       // first on-band frame: anchor
         lapStarted_   = true;
