@@ -12,9 +12,9 @@ TEST_CASE("OpenNpcDialogSub loads victim Ch1 (a) opener, line-only") {
     nccu::OpenNpcDialogSub(d, "victim", SemesterState::Chapter1_AddDrop, 0);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
-    CHECK(d.CurrentLine() == "……我的傘不見了。");
+    CHECK(d.CurrentLine() == "……我的傘也不見了。");
     for (int i = 0; i < 4; ++i) CHECK(d.Advance() == nullptr);
-    CHECK(d.CurrentLine() == "你也是被偷的嗎？");
+    CHECK(d.CurrentLine() == "你也是被偷的嗎？可以幫我把傘找回來嗎……");
     CHECK(d.Advance() == nullptr);
     CHECK_FALSE(d.Active());
 }
@@ -37,7 +37,7 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     DialogState d;
     nccu::OpenNpcDialog(d, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
-    CHECK(d.CurrentLine() == "……我的傘不見了。");      // (a) opener line 0
+    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) opener line 0
     // Step through the 5 opener lines into choice mode.
     for (int i = 0; i < 5; ++i) d.Advance();
     CHECK(d.AtChoice());
@@ -125,12 +125,16 @@ TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // stays 1
 }
 
-TEST_CASE("ResolveOpenerSubState: victim recap gated by promise flag") {
+TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
-    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // fresh
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) fresh
     p.SetFlag("Flag_PromisedVictim");
-    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // recap
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // (b) promised
+    // 善有善報: once the真傘 is granted (the返還 happened) the victim routes
+    // to the (d) 重逢致謝 recap, outranking the promise recap.
+    p.SetFlag("Flag_HasTrueUmbrella");
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 3);  // (d) reunion
 }
 
 TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
@@ -181,7 +185,7 @@ TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
     DialogState d;
     nccu::OpenNpcDialog(d, p, "victim", Ch1);
     CHECK(d.Active());
-    CHECK(d.CurrentLine() == "……我的傘不見了。");      // (a) opener line 0
+    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) opener line 0
     for (int i = 0; i < 5; ++i) d.Advance();
     CHECK(d.AtChoice());
     CHECK(d.Choices().size() == 2);

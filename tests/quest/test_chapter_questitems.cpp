@@ -32,7 +32,15 @@ TEST_CASE("ChapterQuestItems: Ch2 is the 3 notes; every other state empty") {
                                          nccu::kFlagFoundNote2,
                                          nccu::kFlagFoundNote3});
 
-    CHECK(nccu::ChapterQuestItems(SemesterState::Chapter1_AddDrop).empty());
+    // 善有善報 redesign: Ch1 now carries exactly the 苦主's umbrella pickup
+    // (single flag, no completion set, karma 0 — the +5 is on the承諾 choice
+    // and the grant is its own payoff). Every other non-Ch2 state stays empty.
+    const auto& ch1 = nccu::ChapterQuestItems(SemesterState::Chapter1_AddDrop);
+    REQUIRE(ch1.size() == 1);
+    CHECK(ch1[0].flag == nccu::kFlagHasVictimUmbrella);
+    CHECK(ch1[0].completionFlags.empty());
+    CHECK(ch1[0].completionKarma == 0);
+    CHECK_FALSE(ch1[0].message.empty());
     CHECK(nccu::ChapterQuestItems(SemesterState::Interlude_Market).empty());
     CHECK(nccu::ChapterQuestItems(SemesterState::Chapter3_SportsDay).empty());
     CHECK(nccu::ChapterQuestItems(SemesterState::Ending_A).empty());
@@ -136,14 +144,16 @@ TEST_CASE("World defers the 3 Ch2 notes until the 學霸 is woken; then sweeps")
         return n;
     };
 
-    // Ch1 ctor spawns exactly the 申請書 (1); ChapterQuestItems(Ch1)
-    // is empty so the new spawn loop adds nothing here.
-    CHECK(countNotes() == 1);
+    // Ch1 spawns the ctor 申請書 (1, NOT roster-tracked) PLUS the 善有善報
+    // 苦主's-umbrella pickup (1, roster-tracked, via ChapterQuestItems(Ch1)).
+    CHECK(countNotes() == 2);
 
     // Entering Ch2 must NOT spawn the notes (the bug to fix: a note must
     // not appear anywhere before the 學霸 asks for it). Drive the FSM the
     // way production does (Transition + RespawnChapterRoster) so the
-    // deferred-spawn self-gate (semester==Ch2) sees the right state.
+    // deferred-spawn self-gate (semester==Ch2) sees the right state. The
+    // Ch1 苦主-umbrella pickup is roster-swept on the transition; the ctor
+    // 申請書 is not roster-tracked, so it persists.
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
     CHECK(countNotes() == 1);                  // 申請書 only; NO notes yet

@@ -58,9 +58,21 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
         return;
     }
 
+    // Highest substate that is a genuine BRANCH of this opener's decision
+    // (vs a post-decision recap reached only by ResolveOpenerSubState's
+    // routed line-only path). The Ch1 victim now has a (d) 重逢致謝 recap
+    // (善有善報: shown AFTER the umbrella is returned, routed via
+    // ResolveOpenerSubState==3); it must NOT appear as a premature menu
+    // choice at the (a) plea, where the only real branches are (b) 承諾 /
+    // (c) 無視. Capping at (c)=2 keeps the victim's plea menu to those two,
+    // exactly as it was before the recap substate was added; every other
+    // choice-opener NPC keeps every ≥1 substate (cap stays inclusive).
+    const int maxChoiceSub =
+        (state == SemesterState::Chapter1_AddDrop && npcId == "victim")
+            ? 2 : 99;
     std::vector<DialogChoice> choices;
     for (const auto& sub : subs) {
-        if (sub.subState >= 1) {
+        if (sub.subState >= 1 && sub.subState <= maxChoiceSub) {
             choices.push_back(DialogChoice{
                 sub.choiceLabel, sub.karmaDelta,
                 sub.setsFlag, sub.flagValue, sub.lines});
@@ -79,8 +91,17 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             return 0;
         }
         if (npcId == "victim") {
-            if (player.HasFlag("Flag_PromisedVictim")) return 1;
-            return 0;
+            // 善有善報 routing:
+            //   授予真傘後 (Flag_HasTrueUmbrella) -> (d) 重逢致謝 recap [3]
+            //     （授予 + 清關已由 TryReturnVictimUmbrella 完成；(d) 純
+            //      對白，loader 無旗標，once-apply 不重套——victim recap 先例）。
+            //   已承諾 (Flag_PromisedVictim)        -> (b) 承諾後續 [1]
+            //     （含「先幫他找傘」的提示由 TryReturnVictimUmbrella 的
+            //      ShowMessage 呈現；(b) 是 line-only recap）。
+            //   否則                                -> (a) 在雨中初遇 [0]。
+            if (player.HasFlag("Flag_HasTrueUmbrella")) return 3;   // (d)
+            if (player.HasFlag("Flag_PromisedVictim"))  return 1;   // (b)
+            return 0;                                               // (a)
         }
     }
     if (state == SemesterState::Chapter2_Midterms) {

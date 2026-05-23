@@ -1,5 +1,6 @@
 #ifndef CHAPTER_QUEST_ITEMS_H_
 #define CHAPTER_QUEST_ITEMS_H_
+#include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "state/SemesterState.h"
 #include "gfx/Vec2.h"
@@ -14,10 +15,17 @@ namespace nccu {
 // them in the chapter roster, so an uncollected note is swept on the
 // next state change (notes never leak past their chapter). Ch1's 申請書
 // is NOT here — it stays ctor-spawned (a permanent Ch1 object, its own
-// precedent); this table is only for chapter-scoped, roster-swept quest
-// items. Ch2 = the 3 散落筆記; whoever collects all three earns 學霸
-// (b)'s `// karma +3` (chapter2.md) via QuestFlagPickup's completion
-// hook, and 圖書館管理員 (b) then points to 羅馬廣場.
+// precedent); this table is for chapter-scoped, roster-swept quest items.
+// Ch1 = the 苦主's transparent umbrella (the 善有善報 redesign): the
+// findable item the 西裝學長 dropped near 集英樓, picked up to set
+// Flag_HasVictimUmbrella, then carried BACK to the victim (the actual
+// chapter clear is TryReturnVictimUmbrella's grant, NOT this pickup —
+// grabbing it off the ground does not clear Ch1). It is spawned at chapter
+// entry through the shared SpawnChapterQuestItems helper (unlike the Ch2
+// notes, which are deferred until the 學霸 is woken). Ch2 = the 3 散落筆記;
+// whoever collects all three earns 學霸 (b)'s `// karma +3` (chapter2.md)
+// via QuestFlagPickup's completion hook, and 圖書館管理員 (b) then points
+// to 羅馬廣場.
 struct QuestItemPlacement {
     nccu::gfx::Vec2          pos;
     std::string              flag;
@@ -71,11 +79,26 @@ ChapterQuestItems(SemesterState state) {
         {{1040.0f, 1640.0f}, kFlagFoundNote3,
          "撿到一頁學霸的筆記。", kNoteSet, 3, kNoteMsgs},
     };
+    // Ch1 = the 苦主's transparent umbrella. Single flag, no completion set
+    // (karma 0 — the +5 善行 lives on the (b) 承諾 choice and the grant is
+    // its own payoff, not this pickup). Placed at (1700,1610), just SOUTH of
+    // 集英樓 (rect 1524,1353,224x192) and ~94 px from the 西裝學長
+    // (1620,1560): the senior "拿著透明傘往集英樓方向跑" (chapter1.md 苦主
+    // (a)), so it reads as the umbrella he dropped there. Chosen for a wide
+    // walkable clearance (r≈96 open square) so the harness axis-driver
+    // routes to it robustly via the clear east corridor (x≈1744-1752),
+    // avoiding the thin diagonal slots west of 集英樓 that soft-lock a pure
+    // Manhattan goto (BUGLEDGER I7's routing model). Mask-verified STRICTLY
+    // walkable AND flood-reachable from the 苦主 @綜合院館.
+    static const std::vector<QuestItemPlacement> kChapter1 = {
+        {{1700.0f, 1610.0f}, kFlagHasVictimUmbrella,
+         "撿到一把眼熟的透明傘，傘柄上有 A 君的名字貼紙。", {}, 0, {}},
+    };
     static const std::vector<QuestItemPlacement> kNone;
 
     switch (state) {
+        case SemesterState::Chapter1_AddDrop:   return kChapter1;
         case SemesterState::Chapter2_Midterms:  return kChapter2;
-        case SemesterState::Chapter1_AddDrop:
         case SemesterState::Interlude_Market:
         case SemesterState::Chapter3_SportsDay:
         case SemesterState::Chapter4_Finals:

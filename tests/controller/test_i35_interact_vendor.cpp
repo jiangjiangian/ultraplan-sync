@@ -27,6 +27,7 @@
 #include "gfx/Key.h"
 #include "gfx/Time.h"
 
+#include <cmath>
 #include <set>
 #include <string>
 #include <vector>
@@ -131,20 +132,32 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
 
     const GameObject* v = FindNpc(world, "victim");
     REQUIRE(v != nullptr);
-    const float vx = v->GetPosition().x;             // {380,1860}
+    const float vx = v->GetPosition().x;             // {1660,1010}
+    const float vy = v->GetPosition().y;
+
+    // 善有善報: the victim moved to 綜合院館 (1660,1010), off the spawn row
+    // and behind the south-campus wall. The I3 GUARANTEE (a flush-blocked
+    // walked-up player can still talk via GameController's inflated E-probe)
+    // is position-independent, so place the player just SOUTH of the victim
+    // on the clear x=1660 column and walk UP into him — the same flush-block
+    // + E-probe geometry, exercised on the Y axis instead of the X axis.
+    world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
 
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
-    const bool opened = WalkUpAndTalk(controller, in, world, Key::A, vx);
+    const bool opened = WalkUpAndTalk(controller, in, world, Key::W, vx);
 
     // Flush against the victim: pre-fix this is where the spine dies. The
     // player can be touched-but-not-overlapped, so a 24x24 E-probe at the
     // player origin never collides. The interaction reach fix makes the
-    // inflated probe overlap the NPC hitbox.
+    // inflated probe overlap the NPC hitbox. Approaching from the south, the
+    // player ends BELOW the victim (py >= vy), aligned on X.
     const float px = world.GetPlayer()->GetPosition().x;
-    CHECK(px >= vx);                                   // never walked through
-    CHECK(px <= vx + 40.0f);                            // truly adjacent
+    const float py = world.GetPlayer()->GetPosition().y;
+    CHECK(py >= vy);                                   // never walked through
+    CHECK(py <= vy + 40.0f);                            // truly adjacent
+    CHECK(std::fabs(px - vx) < 1.0f);                   // Y-axis approach column
     CHECK(opened);                                      // <-- the I3 lock
     CHECK(world.Dialog().Active());
     CHECK(world.Dialog().NpcId() == "victim");
@@ -170,20 +183,25 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     const float vx = v->GetPosition().x;
     const float vy = v->GetPosition().y;
 
+    // 善有善報: place the player just SOUTH of the victim (1660,1010) on the
+    // clear column and shove UP into him — same no-pass-through guarantee on
+    // the Y axis (the victim is no longer on the spawn row).
+    world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
+
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
-    in.Hold(Key::A);                                   // shove left, hard
+    in.Hold(Key::W);                                   // shove up, hard
     for (int f = 0; f < 1200; ++f) {
         Frame(controller, in);
         const auto pos = world.GetPlayer()->GetPosition();
         // The player's 24x24 box must never strictly overlap the victim's
-        // 24x24 box on the shared row: its left edge stays >= vx (flush),
+        // 24x24 box on the shared column: its top edge stays >= vy (flush),
         // never crossing to the far side of the NPC.
-        const bool sameRow = !(pos.y >= vy + 24.0f || pos.y + 24.0f <= vy);
-        if (sameRow) CHECK(pos.x >= vx);               // no pass-through
+        const bool sameCol = !(pos.x >= vx + 24.0f || pos.x + 24.0f <= vx);
+        if (sameCol) CHECK(pos.y >= vy);               // no pass-through
     }
-    const float endX = world.GetPlayer()->GetPosition().x;
-    CHECK(endX >= vx);                                  // ended flush, not past
+    const float endY = world.GetPlayer()->GetPosition().y;
+    CHECK(endY >= vy);                                  // ended flush, not past
 
     nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);

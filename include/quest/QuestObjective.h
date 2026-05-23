@@ -1,6 +1,7 @@
 #ifndef QUEST_OBJECTIVE_H_
 #define QUEST_OBJECTIVE_H_
 #include "entities/Player.h"
+#include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "state/SemesterState.h"
 #include <string>
@@ -9,10 +10,12 @@
 // the player is never lost (the playtest's "沒有指引" / "任務指引在最上
 // 方"). Deliberately a FINITE map of (state, the one gating flag that
 // matters in that state) → text — not a reactive read of every flag
-// combination. Chapter 1 has three beats because the umbrella pickup is
-// now quest-gated (see TransparentUmbrella): tell the player to meet the
-// 苦主 first, then to search, then to deliver. Endings show nothing (the
-// View replaces the world with the ending card anyway).
+// combination. Chapter 1 has three 善有善報 beats: meet the 苦主 (who
+// also lost his umbrella) and promise to help, then find HIS umbrella out
+// in the world, then carry it BACK to him — he then returns YOUR真傘 and
+// the chapter clears (TryReturnVictimUmbrella). The chapter does NOT clear
+// on grabbing an umbrella off the ground. Endings show nothing (the View
+// replaces the world with the ending card anyway).
 namespace nccu {
 
 inline std::string CurrentObjective(SemesterState state,
@@ -20,12 +23,12 @@ inline std::string CurrentObjective(SemesterState state,
     switch (state) {
         case SemesterState::Chapter1_AddDrop:
             if (!player.HasFlag("Flag_PromisedVictim"))
-                return "目標：在校門口指南路（你出生點旁）找苦主同學，"
-                       "靠近按 E 跟他對話、答應幫他找傘";
-            if (!player.HasUmbrella())
-                return "目標：傘被吹到校園中央（羅馬廣場南側、四維道一帶）"
-                       "——走過去靠近傘按 E 撿起";
-            return "目標：拿著傘回校門口指南路，交還給苦主";
+                return "目標：到綜合院館（地圖東北）找蹲在傘架旁的苦主同學，"
+                       "靠近按 E 對話、答應幫他找傘";
+            if (!player.HasFlag(nccu::kFlagHasVictimUmbrella))
+                return "目標：苦主的傘被西裝學長帶往集英樓一帶"
+                       "——過去找到那把透明傘按 E 撿起";
+            return "目標：帶著苦主的傘回綜合院館交給他（他會把你的真傘還你）";
         case SemesterState::Interlude_Market:
             return "目標：在羅馬廣場市集向攤販按 E 採買，"
                    "逛完往南（校門口方向）離開";
