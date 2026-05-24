@@ -1,5 +1,7 @@
 #include "ui/MessageView.h"
 #include "ui/ReducedMotion.h"
+#include "dialog/DialogLayout.h"   // WrapToCells / CellWidth — the project's
+                                   // EAW-aware wrap + measure (CJK = 2 cells)
 #include "gfx/IRenderer.h"
 #include "gfx/Rect.h"
 #include "gfx/Vec2.h"
@@ -22,61 +24,27 @@ constexpr float kPadY     = 12.0f;
 constexpr float kLineH    = 24.0f;   // > kFontSize: a little leading
 constexpr float kMarginB  = 28.0f;   // gap from the screen bottom
 
-// Length in bytes of the UTF-8 sequence that starts with lead byte b.
-// 1 for ASCII, 3 for the CJK BMP block this game's strings live in.
-std::size_t Utf8Len(unsigned char b) noexcept {
-    if (b < 0x80) return 1;
-    if ((b >> 5) == 0x6) return 2;
-    if ((b >> 4) == 0xE) return 3;
-    if ((b >> 3) == 0x1E) return 4;
-    return 1;  // invalid lead → treat as one byte, never loop forever
+// Pixels per EAW cell at kFontSize. The project's font-independent text
+// model (EndingView::CenteredX, ChapterCard, DialogLayout.h) advances a
+// full-width glyph ~`sz` px = 2 cells, so ~`sz/2` px per cell. Sharing
+// this with dialog::CellWidth keeps the toast measure identical to the
+// dialog box / ending card — one source of truth, not a private estimate.
+constexpr float kPxPerCell = static_cast<float>(kFontSize) * 0.5f;
+
+// Pixel width of `s` at kFontSize via the cell model.
+float TextWidthPx(const std::string& s) {
+    return static_cast<float>(nccu::dialog::CellWidth(s)) * kPxPerCell;
 }
 
-// Estimated pen advance for one glyph at kFontSize. raylib has no
-// built-in word-wrap (issue #44 / #1992); the community idiom is
-// "measure then break manually". IRenderer exposes no measure
-// entrypoint and the sibling reactive views (DrawDialog /
-// DrawEndingCard) never measure either — they place text at fixed
-// coords. Rather than widen IRenderer for one bug, we estimate: a CJK
-// glyph is roughly square (~font size), Latin/ASCII roughly half. Good
-// enough to keep a banner readable; exact metrics are a GUI concern the
-// user manual-verifies.
-float GlyphAdvance(std::size_t bytes) noexcept {
-    return (bytes >= 3) ? static_cast<float>(kFontSize)
-                        : static_cast<float>(kFontSize) * 0.5f;
-}
-
-// Greedy width-budget wrap. CJK has no spaces, so we break between
-// codepoints (never inside a multibyte sequence) once the running pen
-// would overflow maxWidth. Honours any literal '\n' in the source.
-// Pure: std::string → lines, no raylib, directly unit-testable.
-std::vector<std::string> WrapCjk(const std::string& s, float maxWidth) {
-    std::vector<std::string> lines;
-    std::string line;
-    float pen = 0.0f;
-    for (std::size_t i = 0; i < s.size();) {
-        if (s[i] == '\n') {
-            lines.push_back(line);
-            line.clear();
-            pen = 0.0f;
-            ++i;
-            continue;
-        }
-        const std::size_t n =
-            std::min(Utf8Len(static_cast<unsigned char>(s[i])),
-                     s.size() - i);
-        const float adv = GlyphAdvance(n);
-        if (pen + adv > maxWidth && !line.empty()) {
-            lines.push_back(line);
-            line.clear();
-            pen = 0.0f;
-        }
-        line.append(s, i, n);
-        pen += adv;
-        i += n;
-    }
-    lines.push_back(line);
-    return lines;
+// UI-B-3: wrap the toast to a CELL budget (not a private pixel estimate)
+// using the project's EAW-aware nccu::dialog::WrapToCells, so a long
+// ShowMessage never spills the panel and a literal '\n' still forces a
+// break (WrapToCells honours '\n' exactly like the old WrapCjk did, and
+// like DialogView). maxWidth px → cells via the shared px/cell model.
+std::vector<std::string> WrapToBox(const std::string& s, float maxWidth) {
+    const int maxCells =
+        std::max(1, static_cast<int>(maxWidth / kPxPerCell));
+    return nccu::dialog::WrapToCells(s, maxCells);
 }
 
 }  // namespace
@@ -98,7 +66,7 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     const auto  a = static_cast<unsigned char>(t * 255.0f);
 
     const float maxTextW = screenW * 0.72f;
-    const std::vector<std::string> lines = WrapCjk(message, maxTextW);
+    const std::vector<std::string> lines = WrapToBox(message, maxTextW);
 
     // Banner box sized to the widest wrapped line, centred horizontally.
     // Cycle 9.G — vertical anchor depends on slot:
@@ -112,17 +80,8 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     // measurement pass. ~25-30 px between bands keeps both lines
     // legible without overlap; the GUI manual-verify confirms it.
     float widest = 0.0f;
-    for (const std::string& ln : lines) {
-        float w = 0.0f;
-        for (std::size_t i = 0; i < ln.size();) {
-            const std::size_t n =
-                std::min(Utf8Len(static_cast<unsigned char>(ln[i])),
-                         ln.size() - i);
-            w += GlyphAdvance(n);
-            i += n;
-        }
-        widest = std::max(widest, w);
-    }
+    for (const std::string& ln : lines)
+        widest = std::max(widest, TextWidthPx(ln));
 
     const float boxW = widest + kPadX * 2.0f;
     const float boxH = static_cast<float>(lines.size()) * kLineH +
@@ -144,10 +103,17 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     r.DrawRect(Rect{boxX, boxY, boxW, 2.0f},
                Color{245, 245, 245, a});
 
+    // UI-B-3: CENTRE each wrapped row inside the box (was left-aligned at
+    // boxX+kPadX). The box hugs the widest row, so a multi-line toast like
+    // the DLC teaser (「DLC開發中」 over 「敬請期待」) reads as two balanced
+    // centred lines instead of a ragged left edge. Centre offset is per-row
+    // via the shared cell model, so it tracks each line's true width.
     float y = boxY + kPadY;
+    const float innerW = boxW - kPadX * 2.0f;
     for (const std::string& ln : lines) {
-        r.DrawText(ln, Vec2{boxX + kPadX, y}, kFontSize,
-                   Color{245, 245, 245, a});
+        const float lineW = TextWidthPx(ln);
+        const float cx = boxX + kPadX + std::max(0.0f, (innerW - lineW) * 0.5f);
+        r.DrawText(ln, Vec2{cx, y}, kFontSize, Color{245, 245, 245, a});
         y += kLineH;
     }
 }

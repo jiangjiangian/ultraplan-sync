@@ -77,7 +77,12 @@ if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}_lib doctest::doctest)
     target_compile_definitions(${PROJECT_NAME}_tests PRIVATE
         TEST_FIXTURES_DIR="${CMAKE_SOURCE_DIR}/tests/fixtures"
-        TEST_CONTENT_DIR="${CMAKE_SOURCE_DIR}/docs/content")
+        TEST_CONTENT_DIR="${CMAKE_SOURCE_DIR}/docs/content"
+        # UI-B-1: the all-literal glyph-coverage gate scans every "…" string
+        # literal under src/ + include/ at TEST time (the files are not shipped
+        # at runtime), so it needs the project source root, the same way the
+        # dialog tests get the content dir. CTest runs with cwd = build dir.
+        TEST_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     add_test(NAME unit_tests COMMAND ${PROJECT_NAME}_tests)
 endif()
 

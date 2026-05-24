@@ -6,7 +6,8 @@
 
 // B2: a re-readable world "easter-egg" sign — a big bold "?" standing at
 // the 風雩走廊. On E-interact it publishes a ShowMessage teaser
-// (「【DLC開發中…】\n敬請期待」) and is NEVER consumed, so the player can
+// (「DLC開發中\n敬請期待」, rendered as two centred toast lines) and is NEVER
+// consumed, so the player can
 // read it as many times as they like (unlike a QuestFlagPickup / CashPickup,
 // which deactivate on pickup). It has no gameplay effect: no flag, no karma,
 // no money, no quest hook — purely decorative flavour spawned for the

@@ -42,6 +42,30 @@ float CenteredX(std::string_view s, int sz, float screenW) {
     return x < 0.0f ? 0.0f : x;
 }
 
+// UI-B-3: cells that fit in `widthPx` at font size `sz` (shared ~sz/2
+// px-per-cell model), so card text wraps inside the panel instead of
+// spilling the box. At least 1 so a narrow panel still emits rows.
+int CellsForWidth(float widthPx, int sz) {
+    const float perCell = static_cast<float>(sz) * 0.5f;
+    int n = static_cast<int>(widthPx / perCell);
+    return n < 1 ? 1 : n;
+}
+
+// Wrap `s` to the on-screen text width (a side margin in from both edges)
+// via the project's EAW-aware nccu::dialog::WrapToCells, then draw each row
+// centred at `y`, advancing by `lineH`. Returns the y AFTER the last row.
+float DrawCenteredWrapped(IRenderer& r, const std::string& s, int sz,
+                          float screenW, float marginPx, float y,
+                          float lineH, Color col) {
+    const float textW = std::max(40.0f, screenW - marginPx * 2.0f);
+    for (const std::string& row :
+         nccu::dialog::WrapToCells(s, CellsForWidth(textW, sz))) {
+        r.DrawText(row, Vec2{CenteredX(row, sz, screenW), y}, sz, col);
+        y += lineH;
+    }
+    return y;
+}
+
 } // namespace
 
 ChapterCardKind ChapterCardForTransition(SemesterState from,
@@ -195,13 +219,16 @@ void DrawChapterCard(IRenderer& r, const ChapterCardState& card,
                                 ? Color{255, 210, 90, a}
                                 : Color{235, 235, 240, a};
     const float headY = screenH * 0.5f - static_cast<float>(kHeadSize) * 0.5f - 12.0f;
-    r.DrawText(std::string{head},
-               Vec2{CenteredX(head, kHeadSize, screenW), headY},
-               kHeadSize, headColor);
-    if (!sub.empty()) {
-        r.DrawText(sub, Vec2{CenteredX(sub, kSubSize, screenW), headY + 50.0f},
-                   kSubSize, Color{200, 200, 210, a});
-    }
+    // UI-B-3: wrap headline + subtitle within a side margin so a long
+    // future card string auto-wraps inside the band instead of spilling the
+    // box. Headlines are short by construction (8 cells) so this normally
+    // emits one centred row; the wrap is the safety net UI-A asked for.
+    constexpr float kSideMargin = 56.0f;
+    DrawCenteredWrapped(r, std::string{head}, kHeadSize, screenW, kSideMargin,
+                        headY, static_cast<float>(kHeadSize) + 4.0f, headColor);
+    if (!sub.empty())
+        DrawCenteredWrapped(r, sub, kSubSize, screenW, kSideMargin,
+                            headY + 50.0f, 22.0f, Color{200, 200, 210, a});
 }
 
 } // namespace nccu

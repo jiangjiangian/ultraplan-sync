@@ -63,6 +63,7 @@ const std::vector<std::string>& ViewLiterals() {
     static const std::vector<std::string> kV = {
         "金幣: %d 元",
         "M 選單",
+        "Tab: 物品欄   M: 選單",   // UI-B-2 top-left control hint
         "遊戲選單",
         "繼續", "說明", "減少動畫", "擴大目標", "重新開始", "離開",
         "  [開]", "  [關]",

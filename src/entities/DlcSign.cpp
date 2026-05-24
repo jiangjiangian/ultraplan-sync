@@ -14,9 +14,15 @@ DlcSign::DlcSign(nccu::gfx::Vec2 position)
     // GameController) from a flush-blocked approach.
     : WithRoles(position,
            nccu::gfx::Rect{position.x, position.y, 28.0f, 28.0f}),
-      // B2: literal '\n' is honoured by MessageView::WrapCjk (it breaks the
-      // toast at the newline), so the teaser shows as two lines in the HUD.
-      message_("【DLC開發中…】\n敬請期待") {}
+      // B2 / UI-B-3: literal '\n' is honoured by MessageView::WrapCjk (it
+      // breaks the toast at the newline) AND each wrapped row is now centred
+      // in the toast box, so the teaser reads as two tidy centred lines:
+      //   DLC開發中
+      //   敬請期待
+      // (the 【…】 brackets / … ellipsis were dropped per UI-B-3 so the two
+      // lines balance cleanly when centred). 敬 is baked into the font atlas
+      // (gfx::Font.h UiLiteralChars), enforced by test_font_ui_literal_scan.
+      message_("DLC開發中\n敬請期待") {}
 
 void DlcSign::Render(nccu::gfx::IRenderer& renderer) const {
     using nccu::gfx::Rect;
