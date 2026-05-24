@@ -11,6 +11,7 @@
 #include "quest/Chapter3Quest.h"
 #include "quest/Chapter4Quest.h"
 #include "quest/ItemCatalog.h"
+#include "quest/NpcSpawns.h"     // G-2: IsChapter1FlavorNpc routing
 #include "ui/EndingView.h"        // A-T3: IsEndingState + the ending-menu map
 #include "ui/GameHelp.h"          // kGameHelpPageCount (paged 說明 nav)
 #include "ui/InventoryView.h"     // kInventoryRowsPerPage (paged bag nav)
@@ -692,6 +693,12 @@ void GameController::Update() {
     // per-frame tick (MVC).
     world_.MaybeSpawnChapter3Umbrella();
 
+    // G-3: Interlude 管理員的傘 return-point deferred spawn (Ch2→Ch3 market +
+    // still-holding-the-loaner only; a cheap no-op every other state) — the
+    // sibling of the spawns above. World stays pure data; the controller owns
+    // the per-frame tick (MVC).
+    world_.MaybeSpawnInterludeLibrarianReturn();
+
     if (Input::IsPressed(Key::E) && player) {
         // I3 fix: the movement collider for a BlocksMovement() NPC is a
         // player-sized box at the NPC origin, and Rect::Intersects is
@@ -741,6 +748,20 @@ void GameController::Update() {
                     return;
                 }
                 if (const std::string_view id = o.NpcId(); !id.empty()) {
+                    // G-2: a Ch1 stationary FLAVOR NPC (搶課同學 / 撐傘路人 /
+                    // 揹書包學生) cycles its own chapter1.md line pool one line
+                    // per talk via NPC::Interact() — a deterministic,
+                    // reproducible pick (no RNG on the state path). Route it
+                    // HERE, BEFORE any spine hook, and return: a flavor NPC
+                    // must never reach TryReturnVictimUmbrella / OpenNpcDialog
+                    // etc., so it provably sets NO quest flag and cannot
+                    // perturb the hard-gated 苦主→學長→苦主 spine. (The dialog
+                    // it shows is a one-line ShowMessage toast, same channel
+                    // as an ambient-pedestrian Interact, not the dialog box.)
+                    if (nccu::IsChapter1FlavorNpc(id)) {
+                        if (auto* it = o.AsInteractable()) it->Interact(player);
+                        return;
+                    }
                     // Ch1 善有善報: returning the 苦主 his umbrella (carried
                     // back after finding it) sets Flag_HasTrueUmbrella +
                     // publishes UmbrellaClaimed("TrueUmbrella") BEFORE the
@@ -774,6 +795,16 @@ void GameController::Update() {
                     // the 學霸 is woken (early-returns inside).
                     TryLendLibrarianUmbrella(*player, id,
                                              world_.Semester().Current());
+                    // G-3: in the Ch2→Ch3 Interlude only, returning 管理員的傘
+                    // at the library-front return-point grants karma +10 and
+                    // clears the held loaner + Flag_LibrarianUmbrella (once).
+                    // Gated inside on (Interlude && InterludeReturnTo==Ch3 &&
+                    // npcId==kNpcLibrarianReturn && still holding the loaner).
+                    // No-op for every other NPC / state / market. Grants NO
+                    // ending-affecting umbrella flag.
+                    TryReturnLibrarianUmbrella(
+                        *player, id, world_.Semester().Current(),
+                        world_.Semester().InterludeReturnTo());
                     // S5c-3: land the Ch1->Ch2 ripple karma the opener
                     // cannot (once per Ch2, per NPC). No-op elsewhere.
                     TryApplyCh2Ripple(*player, id,

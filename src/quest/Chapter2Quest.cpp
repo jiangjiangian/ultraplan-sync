@@ -133,6 +133,48 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
     player.SetFlag(kFlagLibrarianUmbrellaLent);
 }
 
+void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
+                                SemesterState state, SemesterState returnTo) {
+    // G-3: scope HARD to the Ch2→Ch3 Interlude return-point. The market that
+    // returns to Ch3 is the only one where the player can still be holding the
+    // 管理員 loaner (it was lent in Ch2 and is cleared on the NEXT chapter
+    // entry — SceneRouter), so InterludeReturnTo()==Chapter3_SportsDay is the
+    // exact gate. Any other state / market / npcId is a no-op.
+    if (state != SemesterState::Interlude_Market) return;
+    if (returnTo != SemesterState::Chapter3_SportsDay) return;
+    if (npcId != kNpcLibrarianReturn) return;
+
+    if (player.HasFlag(kFlagLibrarianUmbrellaReturned)) {
+        // Re-talk after returning: a short closure line, NO second karma.
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage,
+            std::string("這把傘已經還給圖書館了。")});
+        return;
+    }
+
+    // Defensive: the marker only spawns while the player holds the loaner, but
+    // re-check both the flag AND the held kind so a stray talk can't grant the
+    // +10 without actually surrendering 管理員的傘.
+    if (!player.HasFlag(kFlagLibrarianUmbrellaLent) ||
+        player.HeldUmbrellaKind() != HeldUmbrella::Loaner) {
+        return;
+    }
+
+    // The 責任感 payoff: hand the loaner back. karma +10, the held umbrella is
+    // emptied (SetHasUmbrella(false) also clears heldUmbrella_), the lent latch
+    // is cleared, and the once-key is set so this fires exactly once. NO ending
+    // flag is touched — the loaner was never Flag_HasTrueUmbrella, so Ending A
+    // stays unaffected.
+    player.AddKarma(10)
+          .SetHasUmbrella(false)
+          .ClearFlag(kFlagLibrarianUmbrellaLent)
+          .SetFlag(kFlagLibrarianUmbrellaReturned);
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        std::string("你把管理員的傘還回了圖書館服務台。"
+                    "「傘有借有還，謝謝你特地拿回來。」")});
+}
+
 bool Ch2IndicatorVisible(std::string_view npcId, bool isQuestGiver,
                          const Player& player) {
     const bool woken     = player.HasFlag(kFlagBookwormWoken);

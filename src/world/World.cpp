@@ -5,6 +5,7 @@
 #include "quest/ChapterQuestItems.h"
 #include "quest/ChapterSpawns.h"
 #include "quest/ChapterVendors.h"
+#include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
 #include "controller/GameObjectFactory.h"
 #include "entities/NPC.h"
@@ -307,6 +308,51 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             seed = seed * 1664525u + 1013904223u;
         }
     }
+
+    // G-1 + G-2: the Ch1 加退選搶課 crowd + stationary flavor NPCs (player
+    // request — make the course-grab rush feel populated). Mirrors the Ch3
+    // 操場 crowd block above: roster-tracked (swept on chapter exit), sprites
+    // gated by loadSprites_ (headless tests skip the GPU upload), and this Ch1
+    // path runs only on a state-change/ctor respawn so the wanderers get a
+    // valid terrain mask. ALL are decorative-or-flavor — never quest-givers,
+    // never spine-touching:
+    //   • Crowd (Chapter1CrowdSpawns): wander=true → non-blocking ambient
+    //     pedestrians (random-walk + animate), empty npcId → no dialog, no
+    //     `!`. Distinct per-NPC PRNG seed so they don't march in lock-step.
+    //   • Flavor (Chapter1FlavorSpawns): wander=false → solid standing
+    //     students with a flavor npcId. Their chapter1.md (a) line pool is
+    //     loaded into dialogLines_ here via NPC::LoadDialog; GameController
+    //     routes a flavor npcId to NPC::Interact() (deterministic per-talk
+    //     cycle), NEVER to a spine hook — so they set no quest flag and the
+    //     hard-gated 苦主→學長→苦主 spine is untouched. isQuestGiver=false →
+    //     no `!` (Ch1IndicatorVisible's fall-through returns the false bit).
+    if (state == SemesterState::Chapter1_AddDrop) {
+        unsigned seed = 0xC0FFEE11u;
+        for (const auto& s : Chapter1CrowdSpawns()) {
+            auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
+                                             s.isQuestGiver, s.npcId);
+            npc->EnableWander(45.0f, seed);
+            npc->SetWanderMask(terrainMask_);
+            if (loadSprites_)
+                npc->LoadSprite(PickNpcSprite(s.npcId, s.pos, s.spritePath));
+            chapterRoster_.push_back(npc.get());
+            objects_.push_back(std::move(npc));
+            seed = seed * 1664525u + 1013904223u;
+        }
+        for (const auto& s : Chapter1FlavorSpawns()) {
+            auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
+                                             s.isQuestGiver, s.npcId);
+            // Load the flavor line pool from chapter1.md (the NPC's (a)
+            // section). NPC::Interact() then cycles these one per talk. A
+            // headless context with no readable content yields an empty pool
+            // (LoadDialog is no-throw) — Interact() simply no-ops, no crash.
+            npc->LoadDialog(s.npcId, SemesterState::Chapter1_AddDrop, 0);
+            if (loadSprites_)
+                npc->LoadSprite(PickNpcSprite(s.npcId, s.pos, s.spritePath));
+            chapterRoster_.push_back(npc.get());
+            objects_.push_back(std::move(npc));
+        }
+    }
 }
 
 void World::SpawnChapterQuestItems(nccu::SemesterState state) {
@@ -372,6 +418,45 @@ bool World::MaybeSpawnChapter3Umbrella() {
     chapterRoster_.push_back(umb.get());
     objects_.push_back(std::move(umb));
     ch3UmbrellaSpawned_ = true;
+    return true;
+}
+
+bool World::MaybeSpawnInterludeLibrarianReturn() {
+    // G-3: the Ch2→Ch3 Interlude 管理員的傘 return-point, the sibling of
+    // MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella. A small marker NPC
+    // (kNpcLibrarianReturn) appears at the 中正圖書館 front (just south of the
+    // library rect {698,254,382,255}) ONLY when ALL hold:
+    //   • the FSM is in the Interlude, and
+    //   • this market returns to Ch3 (InterludeReturnTo == Chapter3_SportsDay)
+    //     — the only market where the Ch2 loaner can still be in hand, and
+    //   • the player STILL holds the loaner (Flag_LibrarianUmbrella +
+    //     HeldUmbrella::Loaner), and
+    //   • the loaner has not already been returned (Flag_…Returned).
+    // One-shot per Interlude visit (interludeReturnSpawned_). Roster-tracked,
+    // so it is swept on the next state change. If the player never returns it,
+    // the loaner still auto-clears on Ch3 entry (SceneRouter) with no karma —
+    // returning it is the purely-positive optional 責任感 +10 path.
+    if (interludeReturnSpawned_) return false;
+    if (semester_.Current() != SemesterState::Interlude_Market) return false;
+    if (semester_.InterludeReturnTo() != SemesterState::Chapter3_SportsDay)
+        return false;
+    if (!player_) return false;
+    if (!player_->HasFlag(kFlagLibrarianUmbrellaLent)) return false;
+    if (player_->HeldUmbrellaKind() != HeldUmbrella::Loaner) return false;
+    if (player_->HasFlag(kFlagLibrarianUmbrellaReturned)) return false;
+
+    // (820,560): mask-verified STRICTLY walkable (100%, all 4 neighbours
+    // 100%) and flood-reachable from the Interlude entry (500,1500), just
+    // south of the 中正圖書館 rect bottom (y=509). It is the librarian's own
+    // Ch1/Ch2 desk apron, so it reads as "return it to her counter".
+    auto npc = std::make_unique<NPC>(
+        nccu::gfx::Vec2{820.0f, 560.0f}, std::vector<std::string>{},
+        /*isQuestGiver=*/false, std::string_view{kNpcLibrarianReturn});
+    if (loadSprites_)
+        npc->LoadSprite("resources/assets/sprites/school_uniform_3/female_01.png");
+    chapterRoster_.push_back(npc.get());
+    objects_.push_back(std::move(npc));
+    interludeReturnSpawned_ = true;
     return true;
 }
 
@@ -443,6 +528,9 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
     // A1: same re-arm for the Ch1 reveal-after-choice victim's-umbrella
     // one-shot, so a fresh Ch1 visit re-gates it on Flag_SuitSeniorChoiceMade.
     ch1VictimUmbrellaSpawned_ = false;
+    // G-3: same re-arm for the Interlude 管理員的傘 return-point one-shot, so a
+    // fresh Interlude visit re-gates it on (ReturnTo==Ch3 && holds loaner).
+    interludeReturnSpawned_ = false;
 
     SpawnChapterNpcs(state);
 

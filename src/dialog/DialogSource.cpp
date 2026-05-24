@@ -28,6 +28,14 @@ const std::map<std::string_view, std::string>& NpcNameTable() {
         {"vendor_sausage_a", "A 系烤香腸攤主"},
         {"loudspeaker_b",    "B 系大聲公持有者"},
         {"senior_c",         "C 系學姊"},
+        // G-2 Ch1 搶課氣氛 NPC（純風味、無任務、無旗標）：section 名對應
+        // chapter1.md「## NPC：搶課同學 / 撐傘路人 / 揹書包學生」。各自
+        // (a) 段的多行 = 該 NPC 的台詞池，由 World::SpawnChapterNpcs 在生成
+        // 時透過 NPC::LoadDialog 灌入 dialogLines_，再由 GameController 的
+        // E 互動路由到 NPC::Interact() 逐句循環（決定性、可重現、不碰主線）。
+        {"ch1_flavor_grab",  "搶課同學"},
+        {"ch1_flavor_rain",  "撐傘路人"},
+        {"ch1_flavor_bag",   "揹書包學生"},
     };
     return kTable;
 }

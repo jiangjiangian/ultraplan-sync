@@ -42,6 +42,20 @@ inline constexpr const char* kFlagMetLibrarian      = "Flag_MetLibrarian";
 // --list-flags). NOT an ending flag — purely the loaner-given latch.
 inline constexpr const char* kFlagLibrarianUmbrellaLent = "Flag_LibrarianUmbrella";
 
+// G-3 once-key: the player has RETURNED 管理員的傘 at the 中正圖書館 front in
+// the Ch2→Ch3 Interlude (the optional 責任感 beat). Set by
+// TryReturnLibrarianUmbrella so the +10 karma grant + loaner clear fire
+// EXACTLY ONCE; a re-talk to the return-point then only replays a closure
+// line. NOT an ending flag — it grants no umbrella that affects an ending
+// (the loaner is explicitly not the true umbrella). The return-point marker
+// is the npcId below.
+inline constexpr const char* kFlagLibrarianUmbrellaReturned =
+    "Flag_LibrarianUmbrellaReturned";
+// G-3: the Interlude return-point marker's npcId (a small NPC at the library
+// front the player presses E on to return the loaner). Single source so the
+// spawn, the hook and the dialog routing never drift.
+inline constexpr const char* kNpcLibrarianReturn = "librarian_return";
+
 // S5c-3 per-NPC "the Ch2 ripple karma already landed" once-keys. The
 // ripple dialog itself may re-show on re-talks (a consistent reaction);
 // only the karma adjustment is gated to fire exactly once per Ch2.
@@ -114,6 +128,33 @@ void TryMeetLibrarian(Player& player, std::string_view npcId,
 // it can never by itself satisfy Ending A's 持-TrueUmbrella condition.
 void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
                               SemesterState state);
+
+// G-3 — return 管理員的傘 in the Ch2→Ch3 Interlude (the optional 責任感
+// beat). E-interact hook, sibling of TryLendLibrarianUmbrella; called from
+// GameController next to the other hooks, BEFORE the opener runs. The
+// return-point marker (kNpcLibrarianReturn) is deferred-spawned by
+// World::MaybeSpawnInterludeLibrarianReturn at the 中正圖書館 front ONLY while
+// the player still holds the loaner in the market that returns to Ch3, so by
+// the time this hook can fire those preconditions already hold; the hook
+// re-checks them anyway (defensive + the one place state mutates).
+//
+// `returnTo` is World::Semester().InterludeReturnTo() — the gate that scopes
+// this to the Ch2→Ch3 market (== Chapter3_SportsDay) and NOTHING else.
+//
+//   WRONG CONTEXT — not the Interlude, not the Ch2→Ch3 market, or not the
+//                   return-point npcId: no-op.
+//   ALREADY DONE  — kFlagLibrarianUmbrellaReturned set: replay a short
+//                   closure ShowMessage (re-talk friendly), NO second karma.
+//   RETURN        — still holds the loaner (Flag_LibrarianUmbrella +
+//                   HeldUmbrella::Loaner): karma +10, clear the held umbrella
+//                   (SetHasUmbrella(false)) + Flag_LibrarianUmbrella, set the
+//                   returned once-key, ShowMessage a thank-you. Grants NO
+//                   ending-affecting umbrella flag (the loaner was never the
+//                   true umbrella). If the player skips this, the loaner still
+//                   auto-clears on Ch3 entry (no karma) — so this is purely a
+//                   positive optional choice, never a soft-lock.
+void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
+                                SemesterState state, SemesterState returnTo);
 
 // E-interact hook, sibling of TryRescueBookworm — lands the Ch1->Ch2
 // ripple karma the dialog opener cannot. chapter2.md routes 西裝學長 /
