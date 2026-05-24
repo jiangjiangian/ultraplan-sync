@@ -114,6 +114,21 @@ void View::Draw(const World& world) {
     }
 
     if (IsEndingState(st)) {
+        // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
+        // to OPAQUE black FIRST, every frame, before drawing the card. This
+        // branch early-returns (no Renderer::Clear runs below), and
+        // DrawEndingCard's own backdrop is Color{0,0,0,a} with `a` ramping
+        // from 0 during the fade-in (endingAlpha_). raylib's BeginDrawing
+        // does NOT clear and EndDrawing swaps TWO buffers, so at low alpha
+        // the semi-transparent backdrop let the stale swap-chain content
+        // (the last world frame, or the OTHER buffer) bleed through and
+        // flicker — exactly the "像關閉畫布" the owner saw. An opaque clear
+        // here makes the fade a clean card-over-solid-black with no
+        // bleed-through and no per-buffer alternation. (Verified on harness
+        // shots: pre-fix the first ending frames showed the world map behind
+        // faint text; post-fix every ending frame is steady.)
+        Renderer{}.Clear(Colors::Black);
+
         // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
         // second luminance ramp and see the card opaque on first paint.
         endingAlpha_ = EndingFadeAlphaStep(
@@ -136,9 +151,16 @@ void View::Draw(const World& world) {
             es.boughtUgly       = ep->HasFlag("Flag_BoughtUglyUmbrella");
             es.finaleChoiceMade = ep->HasFlag("Flag_TaFinaleChoiceMade");
         }
+        // A-T3: the ending screen is now an INTERACTIVE, STEADY screen with a
+        // bottom 3-option menu (回首頁 / 重新開始 / 結束). The View only
+        // RENDERS the highlighted row (World::EndingMenuCursor, a pure UI
+        // cursor moved by ←/→ in GameController); the menu INTENT
+        // (Restart / Quit) flows through World::PendingAppAction set in the
+        // controller — no gameplay logic in the View (MVC red line).
         DrawEndingCard(renderer_, es, world.Semester().CurrentName(),
-                       endingAlpha_, viewportSize_.x, viewportSize_.y);
-        return;   // ending replaces the world; player has no agency here
+                       endingAlpha_, viewportSize_.x, viewportSize_.y,
+                       world.EndingMenuCursor());
+        return;   // ending replaces the world; agency is the menu below
     }
 
     if (const Player* p = world.GetPlayer()) {

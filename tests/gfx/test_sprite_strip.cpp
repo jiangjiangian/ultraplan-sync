@@ -125,20 +125,38 @@ TEST_CASE("DecorationDestRect: wider-than-tall frame scales its width to drawSca
     CHECK(r.height == doctest::Approx(40.0f));
 }
 
-TEST_CASE("kDecorations: chiikawa→Ch2 at plaza centre, cat→Ch3 at 操場 centre") {
+TEST_CASE("A-T2 kDecorations: chiikawa near the 學霸, cat WEST of the 綜院") {
     // The table is the single source of truth the View reads; pin the
     // placement + chapter so an accidental edit is caught here.
+    //
+    // A-T2 placement (owner nudges):
+    //   chiikawa — moved DOWN from the plaza geometric centre (1088,960)
+    //     to (1088,1040), 60 px above the 學霸's 1088,1100 post, so it
+    //     reads as the statue he is slumped under (近學霸).
+    //   cat — moved LEFT from the track centre (1694,740, which sat inside
+    //     the 綜合院館 footprint x1681.. and was occluded) to x1530 on the
+    //     open western 操場, WEST of the 綜院's 1681 left edge, so it is
+    //     visible (放左邊一點才看的到). Same track row y740, still 小小的一隻.
     bool sawChiikawa = false, sawCat = false;
     for (const auto& d : kDecorations) {
         if (d.chapter == SemesterState::Chapter2_Midterms) {
             sawChiikawa = true;
             CHECK(d.center.x == doctest::Approx(1088.0f));
-            CHECK(d.center.y == doctest::Approx(960.0f));
+            CHECK(d.center.y == doctest::Approx(1040.0f));   // A-T2: 960 -> 1040
+            // Sits just ABOVE the bookworm's south-rim post (1088,1100) so
+            // they group as one tableau — never below/past him.
+            CHECK(d.center.y < 1100.0f);
+            CHECK(d.center.y > 960.0f);                      // genuinely moved down
             CHECK(d.frameCount >= 1);
         } else if (d.chapter == SemesterState::Chapter3_SportsDay) {
             sawCat = true;
-            CHECK(d.center.x == doctest::Approx(kSportsTrackCx));  // 1694
-            CHECK(d.center.y == doctest::Approx(kSportsTrackCy));  // 740
+            CHECK(d.center.x == doctest::Approx(1530.0f));   // A-T2: 1694 -> 1530
+            // The whole point: WEST of the 綜合院館 left edge (1681) so the
+            // building no longer paints over it; still on the 操場 field
+            // (rect x1384..2005) at the track row.
+            CHECK(d.center.x < 1681.0f);                     // not under 綜院
+            CHECK(d.center.x > 1384.0f);                     // still on the field
+            CHECK(d.center.y == doctest::Approx(kSportsTrackCy));  // 740, track row
             CHECK(d.drawScale <= 32.0f);   // owner: 小小的一隻
             CHECK(d.frameCount >= 1);
         }

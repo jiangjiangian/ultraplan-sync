@@ -205,6 +205,24 @@ public:
     void RequestAppAction(AppAction a) noexcept { pendingAppAction_ = a; }
     void ClearAppAction() noexcept { pendingAppAction_ = AppAction::None; }
 
+    // A-T3: the ending-screen bottom menu cursor (回首頁 / 重新開始 / 結束).
+    // Pure UI state on the World — exactly the MenuCursor idiom — so the
+    // EndingView reads it to draw the highlighted option and GameController
+    // moves it with ←/→ while an ending is on screen, then maps the chosen
+    // index to a World::AppAction (Restart / Quit) via the pure
+    // EndingMenuActionAt() helper. The menu is implicitly "open" whenever the
+    // semester is an ending state (IsEndingState); there is no separate open
+    // flag (the ending screen has no other mode). 0=回首頁 1=重新開始
+    // 2=結束. NOT serialized (the harness emits no cursor — see Harness.cpp),
+    // so the ending menu leaves state.jsonl byte-identical. No raylib here.
+    static constexpr int kEndingMenuItemCount = 3;
+    [[nodiscard]] int EndingMenuCursor() const noexcept { return endingMenuCursor_; }
+    void SetEndingMenuCursor(int v) noexcept { endingMenuCursor_ = v; }
+    void MoveEndingMenuCursor(int delta) noexcept {
+        endingMenuCursor_ = (endingMenuCursor_ + delta + kEndingMenuItemCount) %
+                            kEndingMenuItemCount;
+    }
+
     // Transient on-screen notice driven by EventType::ShowMessage.
     //
     // Cycle 9.G — TWO independent channels:
@@ -369,6 +387,12 @@ private:
     bool                        reducedMotion_{false};
     bool                        largeTargets_{false};
     AppAction                   pendingAppAction_{AppAction::None};
+    // A-T3 ending-screen menu cursor (0=回首頁 1=重新開始 2=結束). Pure UI
+    // state; not serialized. Starts on 回首頁 so an accidental confirm the
+    // frame the ending lands routes to the (non-destructive) title return,
+    // not 結束 — same "destructive item farthest from start" principle as
+    // the pause menu (audit M2/M3).
+    int                         endingMenuCursor_{0};
 };
 
 } // namespace nccu
