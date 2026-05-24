@@ -74,6 +74,25 @@ void LiftChapter2Clear(Player& player, SemesterState state,
     player.SetFlag(kFlagCh2Cleared);
 }
 
+void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
+                              SemesterState state) {
+    if (state != SemesterState::Chapter2_Midterms) return;
+    if (npcId != "librarian") return;
+    if (!player.HasFlag(kFlagBookwormWoken)) return;   // her (b) state only
+    if (player.HasFlag(kFlagLibrarianUmbrellaLent)) return;  // once — no stack
+
+    // chapter2.md 管理員 (b)「（遞過一把折疊傘）這個先拿著，別在外面淋著。」:
+    // the player now HOLDS 管理員的傘. SetHeldUmbrella records the held kind
+    // AND sets HasUmbrella(true) so the outdoors-with-umbrella rain path
+    // (ApplyRainSheltered) keeps the soak slow while the player hunts the 3
+    // notes. Deliberately NOT Flag_HasTrueUmbrella — the loaner must never by
+    // itself unlock Ending A. The spoken hand-over lives in the (b) lines
+    // (DialogOpener routes 管理員 → (b) on Flag_Bookworm), so no inline
+    // ShowMessage is needed here (it would echo the (b) scene).
+    player.SetHeldUmbrella(HeldUmbrella::Loaner);
+    player.SetFlag(kFlagLibrarianUmbrellaLent);
+}
+
 bool Ch2IndicatorVisible(std::string_view npcId, bool isQuestGiver,
                          const Player& player) {
     const bool woken     = player.HasFlag(kFlagBookwormWoken);

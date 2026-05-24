@@ -97,7 +97,19 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     // karma hook fires (e.g. 募款箱 +1; default 0 = no-op, so the pinned
     // test_vendor stall is unaffected), and a finite stock ticks down
     // (-1 = unlimited, so the pinned stall never decrements).
-    player->AddConsumable(item.itemId);
+    //
+    // B2.1: an umbrella buy (the 集英樓 醜傘) is a HELD umbrella, not a
+    // count-consumable — set the held kind (which also sets HasUmbrella so
+    // it auto-shelters and shows as the single bag umbrella row) and do NOT
+    // add it to the count map (that would draw a phantom second umbrella
+    // row and mis-classify it as a usable). Ending C's Flag_BoughtUglyUmbrella
+    // is still set via item.setsFlag below, untouched.
+    if (const HeldUmbrella k = nccu::HeldUmbrellaForItemId(item.itemId);
+        k != HeldUmbrella::None) {
+        player->SetHeldUmbrella(k);
+    } else {
+        player->AddConsumable(item.itemId);
+    }
     if (config_.karmaOnInteract != 0)
         player->AddKarma(config_.karmaOnInteract);
     if (item.stockLeft > 0) --item.stockLeft;

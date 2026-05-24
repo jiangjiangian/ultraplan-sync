@@ -14,7 +14,7 @@ TEST_CASE("SemesterStateMachine: Transition follows enum") {
     SemesterStateMachine m;
     m.Transition(SemesterState::Interlude_Market);
     CHECK(m.Current() == SemesterState::Interlude_Market);
-    CHECK(m.CurrentName() == "幕間 福利社");
+    CHECK(m.CurrentName() == "幕間 市集");   // item 8: the interlude IS the market
 
     m.Transition(SemesterState::Chapter4_Finals);
     CHECK(m.Current() == SemesterState::Chapter4_Finals);

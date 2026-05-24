@@ -144,8 +144,13 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
     }
 
     // Hold consumables, the true umbrella, the 申請書, and 2/3 notes.
+    // B2.1: the bag umbrella row is now driven by the HELD umbrella kind
+    // (SetHeldUmbrella), not the persistent ending flag — set both as the
+    // grant sites do (the flag is the Ending A marker; the held kind is the
+    // bag row's source of truth).
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.AddConsumable("EnergyDrink");
+    p.SetHeldUmbrella(HeldUmbrella::True);
     p.SetFlag("Flag_HasTrueUmbrella");
     p.SetFlag("Flag_FoundForm");
     p.SetFlag(nccu::kFlagFoundNote1);
@@ -169,7 +174,7 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
     CHECK(energy->count == 1);
     CHECK(energy->usable);
 
-    // The carried umbrella, derived from the flag (true umbrella wins).
+    // The held umbrella, derived from HeldUmbrellaKind() (B2.1).
     const nccu::InventoryRow* umb = Find(rows, nccu::kItemTrueUmbrella);
     REQUIRE(umb != nullptr);
     CHECK(umb->name == "真傘");
@@ -186,30 +191,90 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
     CHECK_FALSE(notes->usable);
 }
 
-TEST_CASE("Item 2c: umbrella row reflects the carried variant by flag priority") {
+// B2.1: the bag umbrella row reflects the umbrella the player is HOLDING
+// RIGHT NOW (HeldUmbrellaKind), not a persistent ending flag. The ugly /
+// cursed ending flags are NEVER cleared, so keying the bag off them left a
+// stale row after the umbrella was lost; the held-kind is the source of truth.
+TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags") {
+    // Ugly held → ugly row (even though Flag_BoughtUglyUmbrella is the
+    // Ending C marker; here it is the held kind that drives the row).
     Player p{nccu::gfx::Vec2{0, 0}};
-    p.SetFlag("Flag_BoughtUglyUmbrella");
+    p.SetHeldUmbrella(HeldUmbrella::Ugly);
     {
         const auto rows = nccu::BuildInventoryRows(p);
         CHECK(Find(rows, nccu::kItemUglyUmbrella) != nullptr);
         CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
     }
-    // The cursed path.
+    // The cursed held umbrella → 詛咒傘 row.
     Player q{nccu::gfx::Vec2{0, 0}};
-    q.SetFlag("Flag_TookCursedUmbrella");
+    q.SetHeldUmbrella(HeldUmbrella::Cursed);
     {
         const auto rows = nccu::BuildInventoryRows(q);
         const nccu::InventoryRow* c = Find(rows, nccu::kItemCursedUmbrella);
         REQUIRE(c != nullptr);
         CHECK(c->name == "詛咒傘");
     }
-    // The carried 苦主's umbrella (mid-quest, before the return grant).
+    // The carried 苦主's umbrella (mid-quest, before the return grant) is a
+    // CARRIED quest item (flag-driven, NO shelter) — still shown, but it is
+    // not a held-over-head umbrella, so HasUmbrella stays false.
     Player v{nccu::gfx::Vec2{0, 0}};
     v.SetFlag(nccu::kFlagHasVictimUmbrella);
     {
         const auto rows = nccu::BuildInventoryRows(v);
         CHECK(Find(rows, nccu::kItemVictimUmbrella) != nullptr);
+        CHECK_FALSE(v.HasUmbrella());
     }
+}
+
+// B2.1 core regression: a LOST umbrella must vanish from the bag. The ending
+// flag persists (it decides A/B/C), but SetHasUmbrella(false) — the Ch4-entry
+// 傘再度失蹤 / a per-chapter「傘又掉了」reset — clears the held kind, so the
+// umbrella row disappears and no stale row lingers.
+TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the ending flag persists") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    // Hold the cursed umbrella + the persistent Ending B marker (as
+    // CursedUmbrella::beClaimed sets them together).
+    p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag("Flag_TookCursedUmbrella");
+    REQUIRE(Find(nccu::BuildInventoryRows(p), nccu::kItemCursedUmbrella) != nullptr);
+
+    // The umbrella is lost (Ch4 entry / per-chapter reset).
+    p.SetHasUmbrella(false);
+    const auto rows = nccu::BuildInventoryRows(p);
+    // No umbrella row of ANY kind, even though the ending flag is still set.
+    CHECK(Find(rows, nccu::kItemCursedUmbrella) == nullptr);
+    CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
+    CHECK(Find(rows, nccu::kItemUglyUmbrella) == nullptr);
+    CHECK(p.HasFlag("Flag_TookCursedUmbrella"));   // ending flag untouched
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
+}
+
+// B2.1: every held-over-head kind maps to exactly one catalog row (the 破傘
+// / 陷阱傘 / 管理員的傘 additions included); None / Victim yield no held-kind
+// row (Victim is carried, shown via its quest flag).
+TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
+    struct Case { HeldUmbrella kind; const char* item; };
+    const Case cases[] = {
+        {HeldUmbrella::True,          nccu::kItemTrueUmbrella},
+        {HeldUmbrella::Cursed,        nccu::kItemCursedUmbrella},
+        {HeldUmbrella::Ugly,          nccu::kItemUglyUmbrella},
+        {HeldUmbrella::Fragile,       nccu::kItemFragileUmbrella},
+        {HeldUmbrella::ProfessorTrap, nccu::kItemProfTrapUmbrella},
+        {HeldUmbrella::Loaner,        nccu::kItemLoanerUmbrella},
+    };
+    for (const auto& c : cases) {
+        Player p{nccu::gfx::Vec2{0, 0}};
+        p.SetHeldUmbrella(c.kind);
+        const auto rows = nccu::BuildInventoryRows(p);
+        const nccu::InventoryRow* r = Find(rows, c.item);
+        REQUIRE(r != nullptr);
+        CHECK_FALSE(r->name.empty());
+        CHECK_FALSE(r->description.empty());
+        CHECK_FALSE(r->usable);            // umbrellas are view-only
+    }
+    // None / Victim → no held-kind umbrella row.
+    Player none{nccu::gfx::Vec2{0, 0}};
+    CHECK(nccu::HeldUmbrellaCatalogId(none.HeldUmbrellaKind()) == nullptr);
+    CHECK(nccu::HeldUmbrellaCatalogId(HeldUmbrella::Victim) == nullptr);
 }
 
 // T6: each bag row gets a left-edge CATEGORY swatch so 金幣 / 雨傘 / 任務紙張

@@ -50,7 +50,10 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
     // chapter1.md 苦主 (d); no inline ShowMessage is needed (it would be a
     // redundant one-line echo of the (d) scene).
     player.ClearFlag(kFlagHasVictimUmbrella);   // 苦主 takes his傘 back
-    player.SetHasUmbrella(true);
+    // B2.1: the player now HOLDS the true umbrella the 苦主 hands over — the
+    // bag swaps the 苦主's-umbrella row for the 真傘 row (SetHeldUmbrella
+    // also sets HasUmbrella). Flag_HasTrueUmbrella stays the Ending A marker.
+    player.SetHeldUmbrella(HeldUmbrella::True);
     player.SetFlag("Flag_HasTrueUmbrella");
 }
 

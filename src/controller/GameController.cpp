@@ -667,6 +667,15 @@ void GameController::Update() {
                     // other NPC / state (early-returns inside).
                     TryRescueBookworm(*player, id,
                                       world_.Semester().Current());
+                    // B2.3: the 圖書館管理員 lends 管理員的傘 once the 學霸
+                    // is woken (her (b) state) — the player then HOLDS the
+                    // loaner (auto-shelter, a bag umbrella row), but it is
+                    // NOT the true umbrella (no Flag_HasTrueUmbrella). Runs
+                    // BEFORE the opener so her (b) hand-over line plays the
+                    // same talk. No-op for every other NPC / state / before
+                    // the 學霸 is woken (early-returns inside).
+                    TryLendLibrarianUmbrella(*player, id,
+                                             world_.Semester().Current());
                     // S5c-3: land the Ch1->Ch2 ripple karma the opener
                     // cannot (once per Ch2, per NPC). No-op elsewhere.
                     TryApplyCh2Ripple(*player, id,

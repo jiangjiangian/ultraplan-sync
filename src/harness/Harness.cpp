@@ -46,6 +46,9 @@ const std::vector<std::string>& KnownFlags() {
         "Flag_FoundNote3", "Flag_BookwormRecovered", "Flag_Ch2Cleared",
         "Flag_Ch2Rippled_SuitSenior", "Flag_Ch2Rippled_TA",
         "Flag_HasSausage", "Flag_HasLoudspeaker", "Flag_KnowsUmbrellaLoc",
+        // B2.3: the 圖書館管理員 loaner-umbrella latch, so the Ch2 loaner
+        // grant is observable in state.jsonl like the other quest flags.
+        "Flag_LibrarianUmbrella",
         "Flag_Ch3Rippled_ProfTrap", "Flag_Ch3Cleared", "Flag_ConsoledTA",
         "Flag_TaFinaleChoiceMade", "Flag_Ch4Rippled_Senior",
         "Flag_Ch4Rippled_Bookworm", "Flag_Ch4Rippled_TAHelped",

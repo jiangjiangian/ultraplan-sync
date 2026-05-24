@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/ChapterGate.h"
+#include "quest/ItemCatalog.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogState.h"
 #include "controller/EventBus.h"
@@ -89,6 +90,69 @@ TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
     CHECK(p.ConsumableCount("EnergyDrink") == 0);
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
     CHECK(p.GetKarma() == k0 + 5);   // no double reward
+    EventBus::Instance().Clear();
+}
+
+// B2.2: the 提神飲料 is HANDED OVER to the 學霸 — the bag count drops by
+// EXACTLY ONE (not flag-checked, not a wipe-all). Holding two proves a single
+// decrement.
+TEST_CASE("B2.2: waking the 學霸 spends exactly one 提神飲料 from the bag") {
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+    p.AddConsumable("EnergyDrink").AddConsumable("EnergyDrink");   // hold 2
+    CHECK(p.ConsumableCount("EnergyDrink") == 2);
+
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.ConsumableCount("EnergyDrink") == 1);   // 2 -> 1, exactly one given
+
+    // A second talk (now woken, notes incomplete) must NOT spend the other.
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK(p.ConsumableCount("EnergyDrink") == 1);   // no extra decrement
+    EventBus::Instance().Clear();
+}
+
+// B2.3: the 圖書館管理員 lends 管理員的傘 once the 學霸 is woken (her (b)
+// state). The player then HOLDS the loaner (a bag umbrella row + auto-shelter)
+// — but it is NOT the true umbrella, so Ending A's Flag_HasTrueUmbrella stays
+// unset. Idempotent: a re-talk never stacks umbrellas.
+TEST_CASE("B2.3: 圖書館管理員 lends 管理員的傘 (held + shelter, NOT the true umbrella)") {
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+
+    // Wrong state / wrong npc -> no grant.
+    nccu::TryLendLibrarianUmbrella(p, "librarian",
+                                   SemesterState::Chapter1_AddDrop);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
+    nccu::TryLendLibrarianUmbrella(p, "ta", SemesterState::Chapter2_Midterms);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
+
+    // Before the 學霸 is woken (her (a) clue state) -> no loaner yet.
+    nccu::TryLendLibrarianUmbrella(p, "librarian",
+                                   SemesterState::Chapter2_Midterms);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
+    CHECK_FALSE(p.HasUmbrella());
+
+    // Woken -> her (b) hand-over: the player now holds 管理員的傘.
+    p.SetFlag(nccu::kFlagBookwormWoken);
+    nccu::TryLendLibrarianUmbrella(p, "librarian",
+                                   SemesterState::Chapter2_Midterms);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);
+    CHECK(p.HasUmbrella());                              // auto-shelter armed
+    CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrellaLent));
+    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));      // NOT the true umbrella
+
+    // The bag shows ONE 管理員的傘 row, no true-umbrella row.
+    const auto rows = nccu::BuildInventoryRows(p);
+    int loanerRows = 0;
+    for (const auto& r : rows)
+        if (r.itemId == nccu::kItemLoanerUmbrella) ++loanerRows;
+    CHECK(loanerRows == 1);
+
+    // Idempotent: a re-talk does not stack / re-grant.
+    nccu::TryLendLibrarianUmbrella(p, "librarian",
+                                   SemesterState::Chapter2_Midterms);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);
     EventBus::Instance().Clear();
 }
 

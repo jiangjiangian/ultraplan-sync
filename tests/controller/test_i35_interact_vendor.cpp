@@ -20,6 +20,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "quest/ChapterVendors.h"
+#include "quest/ItemCatalog.h"
 #include "controller/EventBus.h"
 #include "entities/GameObject.h"
 #include "state/SemesterState.h"
@@ -273,7 +274,20 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
 
     CHECK(p->GetMoney() == money0 - 100);              // soft-cap economy intact
     CHECK(p->HasFlag("Flag_BoughtUglyUmbrella"));      // Ending C key set
-    CHECK(p->ConsumableCount("UglyUmbrella") == 1);    // inventory updated
+    // B2.1: the 醜傘 buy is now a HELD umbrella, not a count-consumable —
+    // the player holds it (auto-shelter) and the bag shows a single ugly
+    // umbrella row, with NO phantom "UglyUmbrella" consumable entry.
+    CHECK(p->ConsumableCount("UglyUmbrella") == 0);    // not a consumable
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::Ugly);
+    CHECK(p->HasUmbrella());                           // now sheltered
+    CHECK_FALSE(p->HasFlag("Flag_HasTrueUmbrella"));   // NOT the true umbrella
+    {
+        const auto rows = nccu::BuildInventoryRows(*p);
+        int umbRows = 0;
+        for (const auto& r : rows)
+            if (r.itemId == nccu::kItemUglyUmbrella) ++umbRows;
+        CHECK(umbRows == 1);                           // exactly one, no double row
+    }
     CHECK(pickupHits == 1);                            // EventBus purchase event
     CHECK(lastPickup == "UglyUmbrella");
 

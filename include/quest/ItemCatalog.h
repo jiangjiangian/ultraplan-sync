@@ -1,10 +1,9 @@
 #ifndef ITEM_CATALOG_H_
 #define ITEM_CATALOG_H_
+#include "entities/Player.h"   // class Player + HeldUmbrella (bag row source)
 #include <string>
 #include <string_view>
 #include <vector>
-
-class Player;
 
 namespace nccu {
 
@@ -33,8 +32,35 @@ inline constexpr const char* kItemTrueUmbrella  = "__umbrella_true__";
 inline constexpr const char* kItemCursedUmbrella = "__umbrella_cursed__";
 inline constexpr const char* kItemUglyUmbrella  = "__umbrella_ugly__";
 inline constexpr const char* kItemVictimUmbrella = "__umbrella_victim__";
+// B2.1: held-umbrella sentinels for the remaining HeldUmbrella kinds so the
+// bag can show EVERY umbrella the player can actually hold over their head
+// (the 破傘 / 陷阱傘 ground pickups and the Ch2 管理員的傘 loaner), keyed off
+// HeldUmbrellaKind() rather than the persistent ending flags.
+inline constexpr const char* kItemFragileUmbrella  = "__umbrella_fragile__";
+inline constexpr const char* kItemProfTrapUmbrella = "__umbrella_proftrap__";
+inline constexpr const char* kItemLoanerUmbrella   = "__umbrella_loaner__";
 inline constexpr const char* kItemForm          = "__quest_form__";
 inline constexpr const char* kItemNotes         = "__quest_notes__";
+// B2.4: the Ch3 物物交換鏈 carried items (香腸 / 大聲公). Like the 申請書 /
+// 筆記 they are flag-modelled single-use quest items; surfacing them in the
+// bag makes the trade chain visible (and they vanish the instant a trade
+// consumes the prior flag — Chapter3Quest clears it). 情報 (KnowsUmbrellaLoc)
+// is knowledge, not a carried object, so it has no bag row.
+inline constexpr const char* kItemSausage       = "__quest_sausage__";
+inline constexpr const char* kItemLoudspeaker   = "__quest_loudspeaker__";
+
+// B2.1: the catalog sentinel itemId for a held umbrella kind (the id the bag
+// row + InventoryView glyph key off). Returns nullptr for None / Victim (the
+// 苦主's carried umbrella is shown via its quest flag, not the held-kind, as
+// it grants no shelter). Pure mapping — no Player access.
+[[nodiscard]] const char* HeldUmbrellaCatalogId(HeldUmbrella kind);
+
+// B2.1/B2.4: map a VENDOR-stock umbrella itemId (e.g. "UglyUmbrella") to the
+// HeldUmbrella kind the buyer then holds, so a bought umbrella becomes a held
+// umbrella (a bag umbrella row + auto-shelter) instead of a phantom count
+// entry. Returns HeldUmbrella::None for any non-umbrella id (the common
+// case — food / drinks / gear stay count-consumables). Pure mapping.
+[[nodiscard]] HeldUmbrella HeldUmbrellaForItemId(std::string_view itemId);
 
 // Returns the catalog entry for `itemId`. An unknown id yields a sane
 // fallback ({itemId-as-name, "" }) so a future stock item without a
