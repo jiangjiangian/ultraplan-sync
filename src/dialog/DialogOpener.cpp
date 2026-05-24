@@ -14,10 +14,14 @@ namespace {
 
 // Scaffold: which NPCs present the branch menu in this state. The Ch1
 // choice-opener set is now {suit_senior, victim, shop_auntie}.
-// 西裝學長 / 苦主 carry the genuine ripple A/B; 福利社阿姨's (c)
-// branch sets Flag_BoughtUglyUmbrella -> Ending C (the buy-umbrella
-// path — its subState 1/2 already live in the chapter content). Everyone else
-// stays line-only.
+// 西裝學長 / 苦主 carry the genuine ripple A/B. 福利社阿姨's menu offers
+// 詢問雨傘 / 購買醜綠傘 / 請阿姨喝一杯熱咖啡: the (c) 購買醜綠傘 choice does
+// NOT set any flag on the DialogChoice (verified: chapter1.md (c) carries
+// `// karma +0` and no `Flag_X = true`, so the parsed entry's setsFlag is "");
+// B3 makes it a REAL buy whose money + held ugly umbrella are applied in
+// GameController on confirm (TryBuyAuntieUglyUmbrella), NOT here, and it
+// deliberately does NOT set Flag_BoughtUglyUmbrella — that Ending-C lock is
+// the Ch4 集英樓 Vendor's (src/EndingGate.cpp). Everyone else stays line-only.
 bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
     if (s != SemesterState::Chapter1_AddDrop) return false;
     return npcId == "suit_senior" || npcId == "victim" ||

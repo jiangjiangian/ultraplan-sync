@@ -212,8 +212,17 @@ TEST_CASE("I7: minimal Ch1 spine reaches Chapter 2 on the shipped mask") {
 
     // The umbrella-claim gate fired (talked to 苦主).
     CHECK(r.promisedVictim);
-    // The drive+E reached TrueUmbrella::beClaimed (Flag set only there).
-    CHECK(r.hasTrueUmbrella);
+    // B4: the held umbrella + Flag_HasTrueUmbrella are now CLEARED on
+    // Chapter2 entry (the「傘又掉了」card is mechanically true — each chapter
+    // starts umbrella-less). So this spine, sampled at its END (in Ch2),
+    // must NOT still carry the flag. That the Ch1 GRANT actually fired
+    // (TryReturnVictimUmbrella → Flag_HasTrueUmbrella + UmbrellaClaimed) is
+    // proven HERE by the spine having reached Ch2 at all — Ch1 clears ONLY
+    // via that grant on this route (it never touches a morality umbrella) —
+    // and is directly pinned WITHIN Ch1 by test_scriptinput_plan's drive+E
+    // case. (Pre-B4 this asserted r.hasTrueUmbrella, which conflated "the
+    // grant fired" with "the flag survives into Ch2"; B4 separates them.)
+    CHECK_FALSE(r.hasTrueUmbrella);
     // 苦主 (b) 承諾 +5 over the karma-50 start, PLUS the 西裝學長 (d) 善意提醒
     // +5 (A1: the spine now routes through the 學長 choice) = karma 60.
     CHECK(r.karma == 60);

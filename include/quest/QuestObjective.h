@@ -51,7 +51,7 @@ inline constexpr std::string_view kCh3SportsDay =
     "目標：先繞操場跑一圈參加校慶，再到羅馬廣場找 ABC "
     "三系換情報、取回真傘";
 inline constexpr std::string_view kCh4Finals =
-    "目標：期末考終焉——回集英樓面對你的最終選擇";
+    "目標：期末考終焉——自由探索校園，尋找屬於你的結局";
 }  // namespace objective
 
 inline std::string CurrentObjective(SemesterState state,

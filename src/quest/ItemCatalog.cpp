@@ -88,7 +88,8 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
 
         // ---- quest papers (view-only; derived from flags) --------------
         {kItemForm,
-         {"申請書", "被風吹走的加退選申請書，撿回來交給助教。"}},
+         {"申請書",
+          "撿到的加退選申請書，還不知道該交給哪位助教，先收著吧。"}},
         {kItemNotes,
          {"學霸的筆記", "替學霸撿回的筆記，散落校園的三頁心血。"}},
 

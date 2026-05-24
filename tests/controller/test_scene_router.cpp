@@ -5,11 +5,14 @@
 #include "state/InterludeExit.h"
 #include "entities/Player.h"
 #include "controller/SceneRouter.h"
+#include "quest/ItemCatalog.h"
 #include "world/World.h"
 #include "gfx/Vec2.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
+#include <vector>
 
 using nccu::SceneRouter;
 using nccu::SemesterState;
@@ -166,6 +169,53 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     EventBus::Instance().Clear();
 }
 
+// B4: the per-chapter「傘又掉了」card is now MECHANICALLY TRUE. The held
+// umbrella (the bug: 真傘 still in the Ch2 bag — it persisted because the
+// reset was Ch4-ONLY) is now cleared on Ch2 AND Ch3 entry too, mirroring
+// the Ch4 block. So entering ANY of Ch2/Ch3/Ch4 leaves the player
+// umbrella-less and the bag's umbrella row gone (SetHasUmbrella(false) also
+// empties the held-kind slot).
+TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
+    EventBus::Instance().Clear();
+    World w("", /*loadSprites=*/false);
+    SceneRouter r{w.Semester().Current()};
+    Player* p = w.GetPlayer();
+    REQUIRE(p != nullptr);
+
+    // Pretend the player carried a held umbrella out of Ch1 (e.g. the真傘
+    // the 苦主 handed back, or the Ch1 阿姨 ugly umbrella) into the bag.
+    p->SetHeldUmbrella(HeldUmbrella::True);
+    p->SetFlag("Flag_HasTrueUmbrella");
+    REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::True);
+
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
+    r.SettleSideEffects(w);
+
+    CHECK_FALSE(p->HasUmbrella());
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // bag umbrella gone
+    CHECK_FALSE(p->HasFlag("Flag_HasTrueUmbrella"));
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
+    EventBus::Instance().Clear();
+    World w("", /*loadSprites=*/false);
+    SceneRouter r{w.Semester().Current()};
+    Player* p = w.GetPlayer();
+    REQUIRE(p != nullptr);
+
+    // Ch3 starts after Ch2; pretend a Ch2 loaner umbrella lingered.
+    p->SetHeldUmbrella(HeldUmbrella::Loaner);
+    REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::Loaner);
+
+    w.Semester().Transition(SemesterState::Chapter3_SportsDay);
+    r.SettleSideEffects(w);
+
+    CHECK_FALSE(p->HasUmbrella());
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // loaner gone
+    EventBus::Instance().Clear();
+}
+
 TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
     // Pin the full Cycle 10.P0b flow: a transition fires mid-frame
     // (after dialog branch / E-probe / CheckChapterGates / etc.); the
@@ -235,6 +285,60 @@ TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was
     CHECK(HasNpcId(w, "librarian"));       // Ch2 NPC
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
     CHECK(r.LastRosterState() == SemesterState::Chapter2_Midterms);
+
+    EventBus::Instance().Clear();
+}
+
+// B4: cross-Interlude bag survivors. After Ch1 → Interlude → Ch2, the ONLY
+// rows that may remain are 金幣 (cross-chapter money) and 申請書
+// (Flag_FoundForm — the cross-chapter carried item the TA arc relies on).
+// Consumables are wiped on market entry (ClearConsumables) and the held
+// umbrella is cleared on Ch2 entry (the B4 fix), so neither survives. This
+// pins "no other stale carry-over" through the real SceneRouter resets +
+// BuildInventoryRows.
+TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
+    EventBus::Instance().Clear();
+    World w("", /*loadSprites=*/false);
+    SceneRouter r{w.Semester().Current()};
+    Player* p = w.GetPlayer();
+    REQUIRE(p != nullptr);
+
+    // End-of-Ch1 bag: money (persists), the form (the carried item), a held
+    // umbrella (the 苦主's真傘), and a Ch1 consumable bought in the market.
+    p->SetFlag("Flag_FoundForm");
+    p->SetHeldUmbrella(HeldUmbrella::True);
+    p->SetFlag("Flag_HasTrueUmbrella");
+    p->AddConsumable("EnergyDrink");
+    {
+        const auto rows = nccu::BuildInventoryRows(*p);
+        // sanity: pre-transition the bag DOES hold the umbrella + consumable
+        bool hasUmb = false, hasDrink = false;
+        for (const auto& row : rows) {
+            if (row.itemId == nccu::kItemTrueUmbrella) hasUmb = true;
+            if (row.itemId == "EnergyDrink")           hasDrink = true;
+        }
+        REQUIRE(hasUmb);
+        REQUIRE(hasDrink);
+    }
+
+    // Interlude entry wipes consumables (+ repositions, hint, latch).
+    w.Semester().Transition(SemesterState::Interlude_Market);
+    r.SettleSideEffects(w);
+    // Ch2 entry clears the held umbrella (the B4 reset).
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
+    r.SettleSideEffects(w);
+
+    const auto rows = nccu::BuildInventoryRows(*p);
+    // EXACTLY two survivor categories, in the deterministic catalog order:
+    // money first, then the form. Nothing else.
+    std::vector<std::string> ids;
+    for (const auto& row : rows) ids.push_back(row.itemId);
+    CHECK(ids == std::vector<std::string>{nccu::kItemMoney, nccu::kItemForm});
+    // Explicit negatives: no umbrella row, no consumable row.
+    CHECK(std::none_of(rows.begin(), rows.end(), [](const nccu::InventoryRow& row) {
+        return row.itemId.find("umbrella") != std::string::npos;
+    }));
+    CHECK(p->ConsumableCount("EnergyDrink") == 0);
 
     EventBus::Instance().Clear();
 }

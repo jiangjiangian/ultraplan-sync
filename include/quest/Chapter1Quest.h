@@ -106,6 +106,37 @@ void LiftChapter1Clear(Player& player, SemesterState state,
                                        bool isQuestGiver,
                                        const Player& player);
 
+// B3: the Ch1 樂活小舖 醜綠傘 is a REAL purchase, not a narrative seed. The
+// price the 阿姨 quotes in chapter1.md 苦主 (b) (八十塊) — single source so
+// the toast and the deduction can't drift.
+inline constexpr int kCh1UglyUmbrellaPrice = 80;
+
+// B3: E-interact / dialog-confirm hook — buying the 阿姨's 醜綠傘 in Ch1.
+// chapter1.md 福利社阿姨 (c) 購買醜綠傘 used to be a pure "narrative seed"
+// (annotated `// karma +0`, no money, no umbrella). It is now a genuine
+// transaction: deduct kCh1UglyUmbrellaPrice and grant the HELD ugly umbrella
+// (SetHeldUmbrella(HeldUmbrella::Ugly) → a bag row + auto rain shelter), with
+// a visible 花費/餘額 toast (the Vendor::TryBuy idiom, reusing the same
+// vendor::msg copy). Called by GameController when the 阿姨's 購買醜綠傘
+// choice is confirmed. No-op unless state==Chapter1_AddDrop && npcId==
+// "shop_auntie" && the chosen label is the buy label.
+//
+//   ALREADY OWN  — already holds HeldUmbrella::Ugly: no-op (idempotent;
+//                  the 阿姨's menu is re-presented, so without this a
+//                  re-pick would re-deduct 80 for an umbrella in hand).
+//   TOO POOR     — DeductMoney(price) fails: ShowMessage "你錢不夠", purse
+//                  and held umbrella both untouched (the purchase failed).
+//   BUY          — funds enough: deduct, SetHeldUmbrella(Ugly), 花費/餘額
+//                  toast. CRUCIALLY does NOT set Flag_BoughtUglyUmbrella —
+//                  that is the Ch4 集英樓 Vendor's Ending-C commitment, NOT
+//                  this in-chapter umbrella (EndingGate.cpp). No karma.
+//
+// Returns true iff a purchase actually completed (for the test / caller),
+// false on every no-op / decline / poor path.
+bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
+                              std::string_view choiceLabel,
+                              SemesterState state);
+
 } // namespace nccu
 
 #endif // CHAPTER1_QUEST_H_
