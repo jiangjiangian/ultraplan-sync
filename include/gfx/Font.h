@@ -188,7 +188,29 @@ inline const char* UiLiteralChars() {
         // block is verified, not guessed.
         "跨節保留其餘道具只該效市清當耗多數可緩得用必使頭冒就接來去業默決定"
         "\xEF\xBC\x81"      // U+FF01 ！
-        "\xEF\xBC\x9B";     // U+FF1B ；
+        "\xEF\xBC\x9B"      // U+FF1B ；
+        // UI-B-1: the PERMANENT no-tofu gate. test_font_ui_literal_scan.cpp
+        // scans EVERY CJK codepoint in EVERY "…" string literal across src/ +
+        // include/ AND every docs/content/*.md, and FAILS the build unless each
+        // is in the effective atlas — and unless every source-literal-only
+        // glyph (one in NO .md, so the content-load path can't cover it on a
+        // fresh clone) is in THIS set specifically. That scan surfaced these
+        // glyphs as the ONLY source-literal-only ones not already baked above:
+        //   敬 — the DLC teaser ShowMessage 「DLC開發中 / 敬請期待」 (DlcSign.cpp);
+        //        the reported 缺字→`?` the owner kept hitting (whack-a-mole).
+        //   刺 — vendor greeting 「螢光綠到刺眼」 (ChapterVendors.cpp).
+        //   君 — item pickup 「A 君的名字貼紙」 (ChapterQuestItems.h).
+        //   含/扶/毫 — DialogOpener.cpp narration branches.
+        //   央 — a centred-toast helper string (ChapterToast.h).
+        //   櫃 — 置物櫃 dialogue (Chapter2Quest.cpp / DialogOpener.cpp).
+        //   牽/羊 — CursedUmbrella.cpp pickup line 「順手牽羊」.
+        // The two CJK curly quotes 「“」「”」 (U+201C/D) are parser tokens in
+        // DialogLoader/VendorLoader (stripped before display, so they don't
+        // actually render) — baked anyway so the all-literal scan is complete
+        // and a future direct render of them can't tofu either.
+        "敬刺君含扶毫央櫃牽羊"
+        "\xE2\x80\x9C"      // U+201C "
+        "\xE2\x80\x9D";     // U+201D "
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

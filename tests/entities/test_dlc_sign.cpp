@@ -50,9 +50,13 @@ TEST_CASE("DlcSign Interact: publishes the teaser and is NOT consumed") {
 
     sign.Interact(&p);
     CHECK(cap.hits == 1);
-    // The exact teaser, with the literal '\n' (MessageView::WrapCjk breaks
-    // the toast there so it shows as two lines).
-    CHECK(cap.lastText == "【DLC開發中…】\n敬請期待");
+    // UI-B-3: the exact teaser, with the literal '\n'. MessageView wraps at
+    // the '\n' and CENTRES each row, so it shows as two tidy centred lines
+    //   DLC開發中
+    //   敬請期待
+    // (the 【…】 brackets / … ellipsis were dropped so the two lines balance
+    // when centred). 敬 is baked into the atlas (test_font_ui_literal_scan).
+    CHECK(cap.lastText == "DLC開發中\n敬請期待");
     CHECK(cap.lastText.find('\n') != std::string::npos);   // the line break
 
     // RE-READABLE: still active after the interact (a pickup would have
@@ -101,7 +105,7 @@ TEST_CASE("DlcSign dispatches its Interact through a GameObject& (sweep path)") 
     if (auto* it = asObj.AsInteractable()) it->Interact(&p);
 
     CHECK(cap.hits == 1);
-    CHECK(cap.lastText == "【DLC開發中…】\n敬請期待");
+    CHECK(cap.lastText == "DLC開發中\n敬請期待");   // UI-B-3 two centred lines
     CHECK(asObj.IsActive());             // still there after the sweep touch
     EventBus::Instance().Clear();
 }

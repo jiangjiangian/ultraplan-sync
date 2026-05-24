@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "ui/ChapterCard.h"
 #include "state/SemesterState.h"
+#include "dialog/DialogLayout.h"
 #include "gfx/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 #include <string>
@@ -17,17 +18,25 @@ namespace {
 
 // Spy IRenderer — same shape as the ending-card spy: captures text + rect
 // colours so the big card's draw calls are assertable without a GL context.
+// UI-B-3 also records each text's draw X + font size, so the within-panel
+// wrap (no card row spills the box) is assertable.
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
     std::vector<nccu::gfx::Color> rectColors;
     std::vector<std::string> texts;
+    std::vector<float>       textX;
+    std::vector<int>         textSize;
     void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
         ++rects; rectColors.push_back(c);
     }
     void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
                     nccu::gfx::Rect, nccu::gfx::Color) override {}
-    void DrawText(std::string_view t, nccu::gfx::Vec2, int,
-                  nccu::gfx::Color) override { texts.emplace_back(t); }
+    void DrawText(std::string_view t, nccu::gfx::Vec2 p, int sz,
+                  nccu::gfx::Color) override {
+        texts.emplace_back(t);
+        textX.push_back(p.x);
+        textSize.push_back(sz);
+    }
 };
 bool Has(const Spy& s, std::string_view needle) {
     for (const std::string& t : s.texts)
@@ -183,4 +192,28 @@ TEST_CASE("DrawChapterCard: a Found card draws 找到傘了 + the 真傘 (blue) 
     // The Found card cues the recovered 真傘 (blue), NOT the broken ribs.
     CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
     CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
+}
+
+// UI-B-3 — no chapter-card headline/subtitle row spills the panel. The card
+// now wraps headline + subtitle (nccu::dialog::WrapToCells) within a side
+// margin, so every drawn row's right edge stays on-screen, even at a narrow
+// width. Asserted via the shared cell model (~size/2 px per EAW cell).
+TEST_CASE("UI-B-3: every chapter-card row stays within the screen width") {
+    ChapterCardState c;
+    c.Trigger(ChapterCardKind::Lost, "傘又掉了", "第一章 加退選");
+    c.Step(0.5f);
+    for (const float screenW : {800.0f, 480.0f, 360.0f}) {
+        Spy r;
+        nccu::DrawChapterCard(r, c, screenW, 450.0f);
+        REQUIRE(r.texts.size() == r.textX.size());
+        REQUIRE(r.texts.size() == r.textSize.size());
+        for (std::size_t i = 0; i < r.texts.size(); ++i) {
+            const float perCell = static_cast<float>(r.textSize[i]) * 0.5f;
+            const float rowPx =
+                static_cast<float>(nccu::dialog::CellWidth(r.texts[i])) * perCell;
+            INFO("screenW=" << screenW << " row='" << r.texts[i] << "'");
+            CHECK(r.textX[i] >= -0.5f);
+            CHECK(r.textX[i] + rowPx <= screenW + 2.0f);
+        }
+    }
 }

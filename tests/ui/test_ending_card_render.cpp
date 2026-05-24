@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "ui/EndingView.h"
 #include "state/SemesterState.h"
+#include "dialog/DialogLayout.h"
 #include "gfx/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 #include <string>
@@ -15,11 +16,15 @@ namespace {
 // test_dialog_box_render.cpp: counts rects (and captures their colours, so
 // the T3 ending-umbrella swatch is assertable) and captures text strings, so
 // the ending card's draw calls can be asserted without a GL context.
+// UI-B-3 also records each text's draw X + font size, so the within-screen
+// wrap (no card row spills the box) can be asserted.
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
     int sprites = 0;
     std::vector<nccu::gfx::Color> rectColors;
     std::vector<std::string> texts;
+    std::vector<float>       textX;
+    std::vector<int>         textSize;
 
     void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
         ++rects;
@@ -27,8 +32,12 @@ struct Spy final : nccu::gfx::IRenderer {
     }
     void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
                     nccu::gfx::Rect, nccu::gfx::Color) override { ++sprites; }
-    void DrawText(std::string_view t, nccu::gfx::Vec2, int,
-                  nccu::gfx::Color) override { texts.emplace_back(t); }
+    void DrawText(std::string_view t, nccu::gfx::Vec2 p, int sz,
+                  nccu::gfx::Color) override {
+        texts.emplace_back(t);
+        textX.push_back(p.x);
+        textSize.push_back(sz);
+    }
 };
 
 // True if any captured text contains `needle` as a substring.
@@ -249,4 +258,37 @@ TEST_CASE("U1-T1: Ending D renders its caption + reason + path like A/B/C") {
     CHECK_FALSE(Has(r, "完美結局"));
     CHECK_FALSE(Has(r, "墮落結局"));
     CHECK_FALSE(Has(r, "務實結局"));
+}
+
+// UI-B-3 — no ending-card text row spills the black box. UI-A flagged the
+// card text was hand-fitted to 800×450 with no wrap; this pins the fix: the
+// caption + reason lines now wrap (nccu::dialog::WrapToCells) within a side
+// margin, so EVERY drawn row's pixel width stays inside the screen text
+// area at small AND tight widths. Asserted via the shared cell model
+// (~size/2 px per EAW cell), the same measure the renderer wraps with.
+TEST_CASE("UI-B-3: every ending-card row stays within the screen text area") {
+    EndingSummary g;
+    g.state = SemesterState::Ending_A;
+    g.karma = 90;
+    g.hasTrueUmbrella = true;
+    g.consoledTA = true;
+    for (const float screenW : {800.0f, 520.0f, 420.0f}) {
+        Spy r;
+        nccu::DrawEndingCard(r, g, "結局 A 真相大白", 1.0f, screenW, 450.0f);
+        REQUIRE(r.texts.size() == r.textX.size());
+        REQUIRE(r.texts.size() == r.textSize.size());
+        for (std::size_t i = 0; i < r.texts.size(); ++i) {
+            const int sz = r.textSize[i];
+            const float perCell = static_cast<float>(sz) * 0.5f;
+            const float rowPx =
+                static_cast<float>(nccu::dialog::CellWidth(r.texts[i])) * perCell;
+            const float rightEdge = r.textX[i] + rowPx;
+            INFO("screenW=" << screenW << " row='" << r.texts[i]
+                 << "' x=" << r.textX[i] << " right=" << rightEdge);
+            // Every row's left edge is on-screen and its right edge does not
+            // run off the screen's right side (a small slack for the px model).
+            CHECK(r.textX[i] >= -0.5f);
+            CHECK(rightEdge <= screenW + 2.0f);
+        }
+    }
 }

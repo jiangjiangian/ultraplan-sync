@@ -166,6 +166,32 @@ float TextWidthPx(const std::string& s, int sz) {
            (static_cast<float>(sz) * 0.5f);
 }
 
+// UI-B-3: how many EAW cells fit in `widthPx` at font size `sz`, given the
+// shared ~sz/2 px-per-cell model. Used to wrap long card text so it can
+// never spill the black box (the cards were hand-fitted to 800×450 with no
+// wrap). Floors to at least 1 so an absurdly narrow box still emits rows.
+int CellsForWidth(float widthPx, int sz) {
+    const float perCell = static_cast<float>(sz) * 0.5f;
+    return std::max(1, static_cast<int>(widthPx / perCell));
+}
+
+// Wrap `s` to the on-screen text width (a margin in from both edges) using
+// the project's EAW-aware nccu::dialog::WrapToCells, then draw each row
+// centred at `y`, advancing by `lineH`. Returns the y AFTER the last row.
+// Keeps every card row inside the panel without a renderer-side MeasureText
+// (IRenderer has none — same constraint the rest of this file works under).
+float DrawCenteredWrapped(IRenderer& r, const std::string& s, int sz,
+                          float screenW, float marginPx, float y,
+                          float lineH, Color col) {
+    const float textW = std::max(40.0f, screenW - marginPx * 2.0f);
+    for (const std::string& row :
+         nccu::dialog::WrapToCells(s, CellsForWidth(textW, sz))) {
+        r.DrawText(row, Vec2{CenteredX(row, sz, screenW), y}, sz, col);
+        y += lineH;
+    }
+    return y;
+}
+
 // Ending B is the 灰暗 (grey-toned) timeline per the GDD ("畫面色調永久
 // 轉為灰暗"): desaturate the otherwise-white title/caption toward grey so
 // the bad ending reads visibly colder than A/C. Pure presentation.
@@ -294,24 +320,28 @@ void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
     const Color tint = endingTextColor(state, a);
     const std::string ttl{title};
     const std::string cap{caption(state)};
+    // UI-B-3: a side margin every card row wraps inside, so even a long
+    // caption / reason line auto-wraps within the black box instead of
+    // running off the 800px edge. The title stays one line (it is short by
+    // construction and centred).
+    constexpr float kSideMargin = 28.0f;
     r.DrawText(ttl, Vec2{CenteredX(ttl, kTitleSize, screenW), 64.0f},
                kTitleSize, tint);
-    r.DrawText(cap, Vec2{CenteredX(cap, kCaptionSize, screenW), 100.0f},
-               kCaptionSize, tint);
+    DrawCenteredWrapped(r, cap, kCaptionSize, screenW, kSideMargin, 100.0f,
+                        22.0f, tint);
 
     // ---- "why you're here" reason block (the STORY lines) -------------
-    // A faint section label, then the 2-3 in-fiction lines, centred.
+    // A faint section label, then the 2-3 in-fiction lines, centred and
+    // wrapped so a long line never spills the box.
     float y = 136.0f;
     {
         const std::string hdr = "── 為什麼你走到這裡 ──";
         r.DrawText(hdr, Vec2{CenteredX(hdr, kReasonSize, screenW), y},
                    kReasonSize, Color{200, 200, 205, a});
         y += 26.0f;
-        for (const std::string& ln : reasonLines(state)) {
-            r.DrawText(ln, Vec2{CenteredX(ln, kReasonSize, screenW), y},
-                       kReasonSize, tint);
-            y += 22.0f;
-        }
+        for (const std::string& ln : reasonLines(state))
+            y = DrawCenteredWrapped(r, ln, kReasonSize, screenW, kSideMargin,
+                                    y, 22.0f, tint);
     }
 
     // ---- 結算 stats card: a panel hugging the karma + checklist -------
