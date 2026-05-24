@@ -6,22 +6,16 @@
 #include "gfx/IRenderer.h"
 #include "gfx/Color.h"
 #include "gfx/Rect.h"
+#include "gfx/WalkCycle.h"
 #include <algorithm>
-#include <array>
 #include <cmath>
 
 namespace {
-// Pipoya 32x32 walk cycle (idle col 1, left 0, idle 1, right 2) + the
-// direction→row map — mirrors Player.cpp so a crowd runner animates the
-// same way the player does.
-constexpr int kCell = 32;
-constexpr std::array<int, 4> kWalkCols = {1, 0, 1, 2};
-constexpr float kFrameDur = 0.15f;
-int RowFor(nccu::gfx::Vec2 f) {
-    const float ax = std::fabs(f.x), ay = std::fabs(f.y);
-    if (ax > ay) return f.x < 0.0f ? 1 : 2;
-    return f.y < 0.0f ? 3 : 0;
-}
+// Pipoya walk-sheet cell maths now live in the shared, unit-tested
+// gfx/WalkCycle.h (the same source the Player follows), so a 校慶 crowd
+// runner AND an ambient wanderer animate exactly the way the Player does.
+constexpr int   kCell     = nccu::gfx::kPipoyaCell;
+constexpr float kFrameDur = nccu::gfx::kWalkFrameDuration;
 }  // namespace
 
 NPC::NPC(nccu::gfx::Vec2 position,
@@ -112,6 +106,28 @@ void NPC::Update(float deltaTime) {
         }
         SetPosition(resolved);
     }
+
+    // U1-T3: animate the wanderer like the Player. The NET displacement
+    // this frame (post-clamp, post-mask-resolve) decides BOTH the facing
+    // row and whether to advance the walk cycle, so a paused (wanderDir_
+    // == {0,0}) or fully wall-blocked wanderer holds its idle pose instead
+    // of moon-walking. Heading is taken from the actual move, not the
+    // intended wanderDir_, so a slide along a wall faces along the wall.
+    // Render reads moving_/facing_/animStep_ — none of which is serialised
+    // (state.jsonl stays byte-identical; verified twice vs baseline).
+    const nccu::gfx::Vec2 step{position_.x - prev.x, position_.y - prev.y};
+    moving_ = (step.x != 0.0f || step.y != 0.0f);
+    if (moving_) {
+        facing_ = step;
+        animTimer_ += deltaTime;
+        if (animTimer_ >= kFrameDur) {
+            animTimer_ -= kFrameDur;
+            animStep_ = (animStep_ + 1) % 4;
+        }
+    } else {
+        animTimer_ = 0.0f;
+        animStep_  = 0;   // WalkColumn(0) == idle column
+    }
 }
 
 void NPC::Render(nccu::gfx::IRenderer& renderer) const {
@@ -133,16 +149,19 @@ void NPC::Render(nccu::gfx::IRenderer& renderer) const {
         renderer.DrawSprite(*sprite_, Rect{0.0f, 0.0f, tw, th}, dest);
         return;
     }
-    // A 校慶 crowd runner (circular_) walk-animates and faces its motion;
-    // every other NPC (stationary archetype / wanderer) shows the idle
-    // column facing the camera. Bottom-centre the 32x32 sprite on the
+    // A 校慶 crowd runner (circular_) AND an ambient wanderer (wander_)
+    // walk-animate and face their motion (U1-T3, owner's request); a
+    // stationary dialogue / quest archetype NPC shows the idle column at
+    // row 0 (facing the camera) — unchanged. A wanderer that's momentarily
+    // still (paused or wall-blocked: moving_ == false) snapped animStep_
+    // back to 0 in Update, so WalkColumn(0) keeps it on the idle pose.
+    // CurrentRenderCell() is the SINGLE place the cell is chosen (the
+    // headless test pins it there). Bottom-centre the 32x32 sprite on the
     // 24x24 hitbox so feet sit at the base — same convention as Player.
-    const int col = circular_ ? kWalkCols[static_cast<std::size_t>(animStep_)]
-                              : 1;
-    const int row = circular_ ? RowFor(facing_) : 0;
+    const RenderCell cell = CurrentRenderCell();
     const Rect src{
-        static_cast<float>(col * kCell),
-        static_cast<float>(row * kCell),
+        static_cast<float>(cell.col * kCell),
+        static_cast<float>(cell.row * kCell),
         static_cast<float>(kCell),
         static_cast<float>(kCell)};
     const Rect dest{
@@ -151,6 +170,18 @@ void NPC::Render(nccu::gfx::IRenderer& renderer) const {
         static_cast<float>(kCell),
         static_cast<float>(kCell)};
     renderer.DrawSprite(*sprite_, src, dest);
+}
+
+NPC::RenderCell NPC::CurrentRenderCell() const noexcept {
+    // A wanderer or 校慶 runner plays the walk cycle keyed to its heading;
+    // a stationary archetype NPC holds idle column 1 / row 0. moving_==false
+    // already pinned animStep_ to 0 in Update, so WalkColumn handles the
+    // at-rest case without a special branch.
+    if (circular_ || wander_) {
+        return RenderCell{nccu::gfx::WalkColumn(animStep_),
+                          nccu::gfx::WalkRowForFacing(facing_)};
+    }
+    return RenderCell{1, 0};
 }
 
 void NPC::LoadSprite(const std::string& path) {

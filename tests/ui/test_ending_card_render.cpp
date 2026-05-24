@@ -225,3 +225,28 @@ TEST_CASE("G1: Ending D card draws the 破傘 (FragileBroken) swatch + D copy") 
     CHECK(Has(r, "業力 ≤ 80"));          // D condition 2 (the 差一點點 clause)
     CHECK(Has(r, "傘破了"));              // a D 字卡 / reason fragment
 }
+
+// U1-T1: confirm the LIVE DrawEndingCard renders the full D card the same
+// way A/B/C render (the supplied D data flows through every shared switch),
+// and that no A/B/C-only assumption leaks the wrong copy into D. The card
+// must show D's caption, the 風雨同行 path, a D reason line, AND exactly one
+// 結算 header (the same single-header anchor A pins) — proving D isn't
+// short-circuiting a default branch.
+TEST_CASE("U1-T1: Ending D renders its caption + reason + path like A/B/C") {
+    EndingSummary g;
+    g.state = SemesterState::Ending_D;
+    g.karma = 70;
+    g.consoledTA = true;
+    g.finaleChoiceMade = true;
+    Spy r;
+    nccu::DrawEndingCard(r, g, "結局 D", 1.0f, 800.0f, 450.0f);
+    CHECK(r.rects >= 2);                 // backdrop + 結算 panel (same as A/B/C)
+    CHECK(CountWith(r, "結算") == 1);    // exactly one selected header, not 0/2
+    CHECK(Has(r, "傘破了"));              // D caption fragment renders
+    CHECK(Has(r, "把傘磨破了"));          // a D reason line (live, not just table)
+    CHECK(Has(r, "風雨同行結局"));        // D path label, not A/B/C's
+    // D must NOT borrow another ending's path label / caption.
+    CHECK_FALSE(Has(r, "完美結局"));
+    CHECK_FALSE(Has(r, "墮落結局"));
+    CHECK_FALSE(Has(r, "務實結局"));
+}

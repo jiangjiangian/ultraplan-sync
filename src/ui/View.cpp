@@ -8,6 +8,7 @@
 #include "world/WorldConfig.h"
 #include "dialog/DialogView.h"
 #include "ui/EndingView.h"
+#include "ui/ChapterCard.h"
 #include "ui/InventoryView.h"
 #include "ui/MessageView.h"
 #include "quest/QuestObjective.h"
@@ -82,6 +83,36 @@ void View::Draw(const World& world) {
     using nccu::queries::ForEachActive;
 
     const SemesterState st = world.Semester().Current();
+
+    // U1-T2: detect a chapter-boundary FSM transition and arm the big
+    // bookend card. Done BEFORE the ending early-return so lastSemester_
+    // stays current across every state (a Ch4 -> Ending hop arms NOTHING —
+    // ChapterCardForTransition returns None for an ending dest — so the
+    // EndingView owns that beat). Pure render-side: the trigger reads the
+    // World snapshot the View already has; no event, no publish, no model
+    // write, so state.jsonl is byte-identical. The card rides the deferred-
+    // transition gap for the 找到傘了 beat: a chapter only flips to the
+    // market once its closing narration dialog has closed (LiftChapterXClear
+    // / the gate), so the card naturally appears after the reclaim scene.
+    if (!lastSemester_.has_value()) {
+        // First paint of this run: treat the World's opening state as a
+        // fresh entry so the inciting 傘，不見了 card fires for Chapter 1
+        // (or a UMBRELLA_START_STATE warp's chapter). from == the same
+        // state would be a no-op, so seed `from` as a non-chapter sentinel.
+        const ChapterCardKind k =
+            ChapterCardForTransition(SemesterState::Ending_C, st);
+        if (k != ChapterCardKind::None)
+            chapterCard_.Trigger(k, ChapterCardHeadline(k, st),
+                                  ChapterCardSubtitle(k, st));
+        lastSemester_ = st;
+    } else if (*lastSemester_ != st) {
+        const ChapterCardKind k = ChapterCardForTransition(*lastSemester_, st);
+        if (k != ChapterCardKind::None)
+            chapterCard_.Trigger(k, ChapterCardHeadline(k, st),
+                                  ChapterCardSubtitle(k, st));
+        lastSemester_ = st;
+    }
+
     if (IsEndingState(st)) {
         // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
         // second luminance ramp and see the card opaque on first paint.
@@ -649,6 +680,18 @@ void View::Draw(const World& world) {
             .At(Vec2{W * 0.5f - 58.0f, chipY + 5.0f})
             .Size(17).Color(Colors::Gold).Draw();
     }
+
+    // U1-T2: the chapter bookend big card, drawn LAST so its brief
+    // full-attention beat sits above the world / HUD / dialog / menus.
+    // Advance its deterministic timer (Time::DeltaSeconds() is the fixed
+    // 1/60 step under the harness, so the card shows for the same frames
+    // every replay), then render. A no-op while inactive. Pure View state —
+    // never reaches state.jsonl. reducedMotion (audit D8 / SC 2.3.3) makes
+    // it appear opaque immediately and hard-cut at the end (no luminance
+    // ramp). The card auto-clears after ChapterCardState::kTotal seconds.
+    chapterCard_.Step(nccu::gfx::Time::DeltaSeconds());
+    DrawChapterCard(renderer_, chapterCard_, viewportSize_.x, viewportSize_.y,
+                    world.ReducedMotion());
 }
 
 } // namespace nccu
