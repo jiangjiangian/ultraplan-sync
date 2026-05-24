@@ -5,7 +5,10 @@
 #include "gfx/Texture.h"
 #include "gfx/Vec2.h"
 #include "gfx/Rect.h"
+#include "ui/ChapterCard.h"
+#include "state/SemesterState.h"
 #include <cstddef>
+#include <optional>
 #include <vector>
 
 class GameObject; // global-namespace model object, drawn through IRenderer
@@ -78,6 +81,16 @@ private:
     // the Interlude, so the dashed line sweeps west-to-east. Not part of
     // the simulation — pure View visual flourish.
     float                            interludeMarkerPhase_ = 0.0f;
+    // U1-T2 chapter bookend big card. The View detects a SemesterState
+    // change (vs lastSemester_) each frame and arms chapterCard_ for the
+    // 傘又掉了 (chapter start) / 找到傘了 (chapter clear) beat — driven
+    // entirely off the FSM the View already reads, so NO new event/publish
+    // and state.jsonl stays byte-identical. The card's timer is ticked by
+    // Time::DeltaSeconds() (fixed step under the harness) => deterministic.
+    // lastSemester_ is std::nullopt until the first Draw so the opening
+    // Chapter1 entry fires its inciting card on frame 0.
+    std::optional<nccu::SemesterState> lastSemester_;
+    ChapterCardState                   chapterCard_;
 };
 
 } // namespace nccu

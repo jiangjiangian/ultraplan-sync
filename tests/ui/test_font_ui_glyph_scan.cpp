@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "gfx/Font.h"
 #include "ui/EndingView.h"
+#include "ui/ChapterCard.h"
 #include "ui/GameHelp.h"
 #include "quest/ItemCatalog.h"
 #include "quest/QuestObjective.h"
@@ -83,6 +84,14 @@ TEST_CASE("5c: every ending-screen glyph is baked into the font atlas") {
     CHECK(strs.size() > 10);          // sanity: the tables really enumerated
     for (const std::string& s : strs)
         RequireAllCovered(atlas, s, "ending-screen");
+}
+
+TEST_CASE("U1-T2: every chapter bookend big-card glyph is baked into the atlas") {
+    const std::vector<int> atlas = CollectCodepoints();
+    const std::vector<std::string> strs = nccu::ChapterCardStrings();
+    CHECK(strs.size() >= 8);          // 4 chapter Lost pairs + the Found pair
+    for (const std::string& s : strs)
+        RequireAllCovered(atlas, s, "chapter-card");
 }
 
 TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {

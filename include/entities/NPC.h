@@ -61,8 +61,10 @@ public:
         wanderMask_ = &mask;
     }
 
-    // Loads a Pipoya 96x128 sheet. NPCs are stationary, so only the idle
-    // column at row 0 (facing down) is ever drawn.
+    // Loads a Pipoya 96x128 sheet (3 walk columns x 4 facing rows, the same
+    // sheet the Player uses). A stationary archetype NPC only ever draws the
+    // idle column at row 0 (facing down); a wandering / 校慶-runner NPC plays
+    // the full 4-direction walk cycle from its heading (see Render).
     void LoadSprite(const std::string& path);
 
     // Render the WHOLE texture (not a 32×32 Pipoya cell) — for a vendor
@@ -87,6 +89,16 @@ public:
     [[nodiscard]] const std::vector<std::string>*
         DialogLines() const noexcept override { return &dialogLines_; }
 
+    // Test inspection (U1-T3): the {column, row} of the 96x128 Pipoya sheet
+    // Render() would blit THIS frame — the exact integration of the
+    // animated-vs-idle decision with the shared gfx::WalkCycle maths.
+    // Exposed because Render()'s textured blit is GL-gated (a headless test
+    // has no valid Texture, so Render() early-returns the fallback rect and
+    // never reaches the cell selection). Pure read of already-simulated
+    // state; mirrors SceneRouter's LastRosterState() inspection accessor.
+    struct RenderCell { int col; int row; };
+    [[nodiscard]] RenderCell CurrentRenderCell() const noexcept;
+
 private:
     std::vector<std::string> dialogLines_;
     size_t                   currentLineIndex_;
@@ -109,8 +121,17 @@ private:
     float                                      circleRadius_ = 0.0f;
     float                                      circleAngle_  = 0.0f;
     float                                      circleSpeed_  = 0.0f;  // rad/s
+    // Walk-cycle animation state, shared by the 校慶 runner AND the ambient
+    // wanderer (U1-T3) so both read as walking, not sliding — exactly the
+    // Player's idiom (Player.cpp): animStep_ cycles the 3 walk columns while
+    // moving, holds the idle column at rest; facing_ keys the Pipoya row.
+    // moving_ records whether the NPC actually displaced this frame (false
+    // while paused or wall-blocked) so Render shows the idle pose at rest.
+    // NONE of these reach state.jsonl (the harness dumps pos/flags/npcs-by-
+    // id, never the anim frame) — pure render selection, MVC clean.
     float                                      animTimer_    = 0.0f;
     int                                        animStep_     = 0;
+    bool                                       moving_       = false;
     nccu::gfx::Vec2                             facing_{0.0f, 1.0f};
 };
 
