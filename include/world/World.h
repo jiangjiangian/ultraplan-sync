@@ -93,6 +93,20 @@ public:
     // frame it spawns (for the test).
     bool MaybeSpawnChapter3Umbrella();
 
+    // G-3: Interlude 管理員的傘 return-point deferred spawn (sibling of
+    // MaybeSpawnChapter2Notes): tick once per frame from the controller. A
+    // small return-point NPC (kNpcLibrarianReturn) appears at the 中正圖書館
+    // front ONLY in the Ch2→Ch3 market (InterludeReturnTo()==Chapter3_
+    // SportsDay) while the player STILL holds the 管理員 loaner
+    // (Flag_LibrarianUmbrella + HeldUmbrella::Loaner) and has not already
+    // returned it (Flag_LibrarianUmbrellaReturned). Self-gates on all of
+    // those, a cheap no-op otherwise, and fires exactly once per Interlude
+    // visit (interludeReturnSpawned_). Roster-tracked, so it is swept on the
+    // next state change (and the loaner auto-clears on Ch3 entry regardless —
+    // returning it is purely the optional 責任感 +10 path). Returns true on
+    // the frame it spawns (for the test).
+    bool MaybeSpawnInterludeLibrarianReturn();
+
     [[nodiscard]] DialogState&       Dialog()       noexcept { return dialog_; }
     [[nodiscard]] const DialogState& Dialog() const noexcept { return dialog_; }
 
@@ -378,6 +392,11 @@ private:
     // by RespawnChapterRoster (a fresh Ch1 visit re-arms it), exactly like
     // ch2NotesSpawned_ / ch3UmbrellaSpawned_ above.
     bool                        ch1VictimUmbrellaSpawned_{false};
+    // G-3: Interlude 管理員的傘 return-point one-shot guard — true once
+    // MaybeSpawnInterludeLibrarianReturn has dropped the marker this Interlude
+    // visit. Reset by RespawnChapterRoster (a fresh state entry re-arms it),
+    // exactly like the ch2/ch3 deferred-spawn guards above.
+    bool                        interludeReturnSpawned_{false};
     bool                        inventoryOpen_{false};
     int                         inventoryCursor_{0};
     bool                        menuOpen_{false};
