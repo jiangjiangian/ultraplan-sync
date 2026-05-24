@@ -44,6 +44,20 @@ endif()
 add_executable(${PROJECT_NAME} "${SRC_DIR}/main.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
 
+# Ship the game binary as `umbrella` (per the assignment README naming) while
+# keeping the CMake target name (${PROJECT_NAME}) and the _tests/_lib targets
+# unchanged — so `./build/OOP_Raylib_Lab_tests` (the test gate) is unaffected
+# and only the runnable game becomes `./build/umbrella`.
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME umbrella)
+# Keep ./build/OOP_Raylib_Lab resolving (the harness playtest.sh + docs launch
+# the game by that path) as a symlink to the umbrella binary, so the rename
+# ADDS the assignment name without breaking the existing tooling.
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/OOP_Raylib_Lab"
+    VERBATIM)
+
 # Add a static lib for the gameplay code IF any non-main .cpp files exist.
 # Early in development the lib may be empty; we add it lazily so configure succeeds.
 # When the lib exists, raylib is linked to it (PUBLIC) and the executable
