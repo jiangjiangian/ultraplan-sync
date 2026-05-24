@@ -411,6 +411,21 @@ void GameController::Update() {
                         TryGrantTaFinaleUmbrella(
                             *p, npc, world_.Semester().Current());
                     }
+                    // B3: the Ch1 福利社阿姨 (c) 購買醜綠傘 is a REAL buy.
+                    // The DialogChoice itself carries no money/umbrella (it
+                    // stays a pure choice-opener entry — setsFlag "", karma
+                    // 0, so the existing test_dialog_opener assertions hold);
+                    // the economy lands HERE, attributed by npc + the chosen
+                    // label, mirroring how the 助教 finale grants the true
+                    // umbrella on confirm. Deducts 80 元 + grants the held
+                    // ugly umbrella with a 花費/餘額 toast; does NOT set
+                    // Flag_BoughtUglyUmbrella (that is the Ch4 Vendor's
+                    // Ending-C lock). No-op for the 阿姨's other choices and
+                    // for the 1c exit (label mismatch). Idempotent (already
+                    // holding Ugly → no re-deduct) and fund-guarded inside.
+                    if (!exitChoice)
+                        (void)TryBuyAuntieUglyUmbrella(
+                            *p, npc, c->label, world_.Semester().Current());
                     // Ending gates first, then chapter gates (existing
                     // precedent: EndingGate predates this). Order is safe
                     // either way — once an ending fires, Current() is

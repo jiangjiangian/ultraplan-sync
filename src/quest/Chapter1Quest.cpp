@@ -2,6 +2,8 @@
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "dialog/DialogState.h"
+#include "quest/ItemCatalog.h"        // ItemInfoFor — the 中文 toast name
+#include "vendor/VendorMessages.h"    // shared 花費/餘額 + 你錢不夠 copy
 #include <string>
 
 namespace nccu {
@@ -78,6 +80,55 @@ void LiftChapter1Clear(Player& player, SemesterState state,
         std::string("傘找回來了。雨還沒停，但你的心安定了一點。")});
     EventBus::Instance().Publish(Event{
         EventType::UmbrellaClaimed, std::string("TrueUmbrella")});
+}
+
+bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
+                              std::string_view choiceLabel,
+                              SemesterState state) {
+    if (state != SemesterState::Chapter1_AddDrop) return false;
+    if (npcId != "shop_auntie") return false;
+    // The (c) heading in chapter1.md is "### (c) 購買醜綠傘", so the
+    // choice-opener label is exactly "購買醜綠傘". Match it so the other
+    // 阿姨 choices (詢問雨傘 / 請阿姨喝一杯熱咖啡 / the 我再想想… exit) are
+    // untouched.
+    if (choiceLabel != "購買醜綠傘") return false;
+
+    // Idempotent: the 阿姨's menu is re-presented on a re-talk (shop_auntie
+    // is not self-locked), so without this guard a second pick would deduct
+    // another 80 元 for an umbrella the player already holds.
+    if (player.HeldUmbrellaKind() == HeldUmbrella::Ugly) return false;
+
+    namespace msg = nccu::vendor::msg;
+
+    // DeductMoney is the gatekeeper — it returns false (no side effect) when
+    // the purse can't cover the price, so the held umbrella is granted ONLY
+    // on a real deduction (mirrors Vendor::TryBuy's order).
+    if (!player.DeductMoney(kCh1UglyUmbrellaPrice)) {
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage, std::string(msg::kInsufficientFunds)});
+        return false;
+    }
+
+    // Grant the HELD ugly umbrella: a bag row + automatic rain shelter
+    // (ApplyRainSheltered). This is a REAL umbrella the player carries, NOT
+    // the Ending-C lock — Flag_BoughtUglyUmbrella is deliberately NOT set
+    // here (it is the Ch4 集英樓 Vendor's commitment; EndingGate.cpp). No
+    // karma either (the (c) annotation was `// karma +0`, a pragmatic but
+    // morally neutral buy).
+    player.SetHeldUmbrella(HeldUmbrella::Ugly);
+
+    // 花費/餘額 toast — the exact Vendor::TryBuy spend line, reusing the same
+    // vendor::msg copy + the catalog 中文 name so the Ch1 阿姨 buy reads
+    // consistently with the market / 集英樓 Vendor ("買了螢光綠醜傘，花了 80
+    // 元（剩 N 元）"). GetMoney() is the post-deduction balance.
+    const std::string itemName{nccu::ItemInfoFor("UglyUmbrella").displayName};
+    EventBus::Instance().Publish(Event{
+        EventType::ShowMessage,
+        std::string(msg::kPurchasedPrefix) + itemName +
+            std::string(msg::kSpentMid) + std::to_string(kCh1UglyUmbrellaPrice) +
+            std::string(msg::kSpentUnitOpen) + std::to_string(player.GetMoney()) +
+            std::string(msg::kSpentUnitClose)});
+    return true;
 }
 
 bool Ch1IndicatorVisible(std::string_view npcId, bool isQuestGiver,

@@ -81,13 +81,30 @@ void SceneRouter::SettleSideEffects(World& world) {
         interludeExitZoneLatched_ = false;
     }
 
-    // Ch4 entry (chapter4.md L6「傘再度失蹤」): the player walks out of
-    // 集英樓 with no umbrella. Reset both the generic HasUmbrella bool
-    // AND the TrueUmbrella-specific marker, so Ending A's
-    // 持-TrueUmbrella condition only holds if the player RE-claims the
-    // Ch4 TrueUmbrella (not a leftover from Ch1/Ch3 nor a stray ctor
-    // umbrella).
-    if (cur == SemesterState::Chapter4_Finals) {
+    // B4 — the per-chapter「傘又掉了」card is now MECHANICALLY TRUE. The
+    // held umbrella was previously cleared ONLY on Ch4 entry, so a傘 claimed
+    // in Ch1 (or borrowed in Ch2) persisted into Ch2/Ch3 — the View showed
+    // the「傘又掉了」card while the bag still listed the umbrella (the bug:
+    // 真傘 still in the Ch2 bag). Each new chapter starts fresh: the player
+    // walks in umbrella-less and that chapter re-provides one (Ch2 the 管理員
+    // loaner, Ch3 the reclaimed真傘, Ch4 the finale/reclaim), so arriving
+    // empty-handed is by design (re-confirmed: every chapter has its own
+    // umbrella path — winnable).
+    //
+    // SetHasUmbrella(false) ALSO empties the held-umbrella slot (Player.h),
+    // so the bag's umbrella row disappears — the card and the bag finally
+    // agree. Clearing Flag_HasTrueUmbrella keeps Ending A's 持-TrueUmbrella
+    // condition meaning exactly "re-claimed THIS run's Ch4 TrueUmbrella"
+    // (EndingGate.cpp): Ch3's beClaimed re-sets it, Ch4 entry clears it
+    // again, the Ch4 reclaim/finale re-sets it — and it is consequential
+    // ONLY in Chapter4_Finals (CheckEndingGates early-returns elsewhere), so
+    // clearing it on Ch2/Ch3 entry is safe. Entry-only (the cur !=
+    // lastRosterState_ guard at the top of SettleSideEffects fires this once
+    // per chapter entry). Money + Flag_FoundForm + this chapter's freshly-
+    // acquired items are the only survivors across the Interlude.
+    if (cur == SemesterState::Chapter2_Midterms ||
+        cur == SemesterState::Chapter3_SportsDay ||
+        cur == SemesterState::Chapter4_Finals) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetHasUmbrella(false);
             ip->ClearFlag("Flag_HasTrueUmbrella");

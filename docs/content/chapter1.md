@@ -211,12 +211,16 @@
 
 ### (c) 購買醜綠傘
 
-> 注：Ch1 樂活小舖只是 Ending C 的「敘事種子」——玩家在此認識醜綠傘的存在；
-> Ending-C 的真正觸發點是 Ch4 集英樓便利商店 Vendor 的「再次購買」
-> （src/EndingGate.cpp 讀取 `Flag_BoughtUglyUmbrella`，由 Ch4 Vendor 設定）。
-> Cycle-8 audit Finding 1 比照 B3 SawVictim 先例移除了本 (c) 過去掛的
-> inert 種子旗標註解——該旗標 src/ include/ 從未讀，是 dead annotation。
-> `// karma +0`（實用主義選擇，中性）
+> B3：這是一筆「真的交易」，不是敘事種子。選此分支會扣 80 元（與 (b) 阿姨
+> 報的價一致；錢不夠則顯示「你錢不夠」、不扣款也不給傘）並讓玩家「撐起」這把
+> 醜綠傘——`SetHeldUmbrella(HeldUmbrella::Ugly)`：進背包、自動擋雨（緩升），
+> 並跳出花費/餘額 toast（沿用 Vendor 文案）。錢與傘的處理在
+> `src/quest/Chapter1Quest.cpp TryBuyAuntieUglyUmbrella`（由 GameController
+> 在確認此選項時呼叫），不在本 blockquote。
+> 注意：本段「不」設 `Flag_BoughtUglyUmbrella`——那是 Ending C 的鎖，由 Ch4
+> 集英樓便利商店 Vendor 設定（`src/EndingGate.cpp` 讀取）。Ch1 買到的是一把
+> 「真能用的傘」，不是結局承諾。
+> `// karma +0`（實用主義選擇，中性；金錢成本不入 karma）
 
 - "聰明！醜有醜的好處啦。"
 - "從今以後你的傘就是全校最好辨認的。"

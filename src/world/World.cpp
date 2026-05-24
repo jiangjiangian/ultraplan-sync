@@ -1,5 +1,6 @@
 #include "world/World.h"
 #include "entities/CashPickup.h"
+#include "entities/DlcSign.h"
 #include "quest/ChapterPickups.h"
 #include "quest/ChapterQuestItems.h"
 #include "quest/ChapterSpawns.h"
@@ -227,6 +228,16 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             ObjectType::TrueUmbrella, nccu::gfx::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
+
+        // B2: the DLC easter-egg "?" sign at the 風雩走廊 (corridor rect
+        // {1242,8,154,108}, centre ≈(1319,62)). Placed at its south edge so
+        // a player exploring up from the 操場/plaza can walk to it and read
+        // the teaser. Re-readable, no gameplay effect (no flag/karma/money).
+        // Roster-tracked, so it is swept the moment Ch4 ends like every other
+        // chapter object. Present only for the open-explore Chapter4_Finals.
+        auto dlc = std::make_unique<DlcSign>(nccu::gfx::Vec2{1305.0f, 88.0f});
+        chapterRoster_.push_back(dlc.get());
+        objects_.push_back(std::move(dlc));
     }
     // Ch3 校慶運動會: the TrueUmbrella the 啦啦隊 took. T5 — it is now
     // DEFERRED (MaybeSpawnChapter3Umbrella), spawned only AFTER the C-系

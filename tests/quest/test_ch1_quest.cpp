@@ -311,3 +311,63 @@ TEST_CASE("A1: MaybeSpawnChapter1VictimUmbrella is a no-op outside Ch1") {
     CHECK(CountQuestPickups(w) == 1);                   // 申請書 only
     EventBus::Instance().Clear();
 }
+
+// B3 REGRESSION — the Ch1 福利社阿姨 (c) 購買醜綠傘 is a REAL purchase
+// (the bug: 沒扣錢 — it was a "narrative seed" with no money/umbrella).
+// TryBuyAuntieUglyUmbrella must deduct exactly 80 元, grant the HELD ugly
+// umbrella, emit a 花費/餘額 toast, and CRUCIALLY NOT set
+// Flag_BoughtUglyUmbrella (the Ch4 Vendor owns that Ending-C lock). The
+// poor / idempotent / wrong-context paths must be clean no-ops.
+TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C flag") {
+    EventBus::Instance().Clear();
+    Capture cap = MakeCapture();
+    Player p = MakePlayer();
+    const int money0 = p.GetMoney();                    // ctor default 100
+    REQUIRE(money0 >= nccu::kCh1UglyUmbrellaPrice);      // affordable from start
+    const int karma0 = p.GetKarma();
+
+    // Wrong state / wrong npc / wrong label -> all no-ops (no charge, no傘).
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+        p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter4_Finals));
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+        p, "victim", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+        p, "shop_auntie", "詢問雨傘", SemesterState::Chapter1_AddDrop));
+    CHECK(p.GetMoney() == money0);
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
+
+    // The real buy: 80 元 deducted, ugly umbrella in hand, toast shown.
+    CHECK(nccu::TryBuyAuntieUglyUmbrella(
+        p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
+    CHECK(p.GetMoney() == money0 - nccu::kCh1UglyUmbrellaPrice);   // 100 -> 20
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Ugly);
+    CHECK(p.HasUmbrella());                              // auto-shelter armed
+    CHECK(p.GetKarma() == karma0);                       // // karma +0
+    CHECK_FALSE(p.HasFlag("Flag_BoughtUglyUmbrella"));   // NOT the C lock
+    CHECK_FALSE(cap.lastMessage.empty());                // 花費/餘額 toast
+    CHECK(cap.lastMessage.find("80") != std::string::npos);   // the spend
+    CHECK(cap.lastMessage.find("20") != std::string::npos);   // the balance
+
+    // Idempotent: a re-talk picks the menu again, but already holding Ugly
+    // must NOT re-deduct another 80.
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+        p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
+    CHECK(p.GetMoney() == money0 - nccu::kCh1UglyUmbrellaPrice);   // still 20
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("B3: Ch1 阿姨 醜傘 buy is fund-guarded (poor → no charge, no umbrella)") {
+    EventBus::Instance().Clear();
+    Capture cap = MakeCapture();
+    Player p = MakePlayer();
+    // Drain the purse below the price (DeductMoney returns false → no buy).
+    REQUIRE(p.DeductMoney(p.GetMoney() - 10));           // leave 10 < 80
+    REQUIRE(p.GetMoney() < nccu::kCh1UglyUmbrellaPrice);
+
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+        p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
+    CHECK(p.GetMoney() == 10);                           // purse untouched
+    CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);   // no umbrella granted
+    CHECK(cap.lastMessage == "你錢不夠");                 // the poor toast
+    EventBus::Instance().Clear();
+}
