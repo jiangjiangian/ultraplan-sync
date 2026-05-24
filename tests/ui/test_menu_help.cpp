@@ -29,6 +29,9 @@
 #include "gfx/Vec2.h"
 
 #include <set>
+#include <string>
+#include <string_view>
+#include <vector>
 
 using nccu::World;
 using nccu::GameController;
@@ -158,6 +161,111 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
         if (hasPause && hasRain) sawPauseRainHint = true;
     }
     CHECK(sawPauseRainHint);
+
+    nccu::gfx::Input::SetSource(nullptr);
+    nccu::gfx::Time::SetFixedStep(0.0f);
+    EventBus::Instance().Clear();
+}
+
+// U2-T4: the 說明 overlay is PAGED (the help grew a 【道具須知】 section).
+// Pin: (a) two pages, (b) the paged view + the closing line equal the flat
+// kGameHelpLines (so the glyph-scan, which iterates the flat list, can't go
+// stale), (c) the new economy/usage tips are present, (d) each page ends on
+// a blank-or-content line within the panel's cell budget.
+TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
+    CHECK(nccu::kGameHelpPageCount == 2);
+    REQUIRE(nccu::kGameHelpPages.size() == 2);
+
+    // Flatten the pages, dropping the trailing closing line (which is the
+    // last entry of page 2 AND kept as kGameHelpClosing). It must equal the
+    // flat kGameHelpLines element-for-element.
+    std::vector<std::string_view> paged;
+    for (const auto page : nccu::kGameHelpPages)
+        for (std::string_view ln : page) paged.push_back(ln);
+    REQUIRE_FALSE(paged.empty());
+    CHECK(paged.back() == nccu::kGameHelpClosing);
+    paged.pop_back();
+    REQUIRE(paged.size() == nccu::kGameHelpLines.size());
+    for (std::size_t i = 0; i < paged.size(); ++i)
+        CHECK(paged[i] == nccu::kGameHelpLines[i]);
+
+    // Every page line within ~24 full-width cells (the panel budget).
+    auto cells = [](std::string_view s) {
+        int n = 0;
+        for (unsigned char c : s) if ((c & 0xC0) != 0x80) ++n;
+        return n;
+    };
+    for (const auto page : nccu::kGameHelpPages)
+        for (std::string_view ln : page) CHECK(cells(ln) <= 24);
+
+    // The owner item-6 tips are present somewhere in the help.
+    auto helpHas = [](std::string_view needle) {
+        for (std::string_view ln : nccu::kGameHelpLines)
+            if (ln.find(needle) != std::string_view::npos) return true;
+        return false;
+    };
+    CHECK(helpHas("跨章節"));        // 金幣 persists across chapters
+    CHECK(helpHas("清空"));          // other items wiped on market exit
+    CHECK(helpHas("減緩雨量"));      // most items relieve rain
+    CHECK(helpHas("自動減緩"));      // umbrella relieves rain automatically
+}
+
+// U2-T4: ←/→ flip the help page while the overlay is up; the index wraps and
+// resets to page 0 on (re)open. Driven through GameController's real input
+// loop so the wiring is pinned. The page is PURE UI state (World::HelpPage),
+// NOT serialized (the harness emits no cursor/page), so a paged help leaves
+// state.jsonl byte-identical — the sim is also frozen the whole time.
+TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim frozen") {
+    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    EventBus::Instance().Clear();
+
+    World world("", /*loadSprites=*/false);
+    GameController controller{world};
+    TestInput in;
+    nccu::gfx::Input::SetSource(&in);
+
+    Frame(controller, in);                       // settle
+    Player* p = world.GetPlayer();
+    REQUIRE(p != nullptr);
+    const nccu::gfx::Vec2 pos0 = p->GetPosition();
+    const float rain0 = p->GetRainMeter();
+
+    // Open menu → 說明 (index 1) → Enter opens help on page 0.
+    in.Tap(Key::M);          Frame(controller, in);
+    in.Tap(Key::Down);       Frame(controller, in);
+    in.Tap(Key::Enter);      Frame(controller, in);
+    REQUIRE(world.HelpOpen());
+    CHECK(world.HelpPage() == 0);                // opens on the first page
+
+    // → advances to page 1; → again WRAPS back to 0 (2 pages).
+    in.Tap(Key::Right);      Frame(controller, in);
+    CHECK(world.HelpPage() == 1);
+    in.Tap(Key::Right);      Frame(controller, in);
+    CHECK(world.HelpPage() == 0);
+    // ← wraps the other way: 0 → last page (1).
+    in.Tap(Key::Left);       Frame(controller, in);
+    CHECK(world.HelpPage() == 1);
+
+    // The sim stayed frozen across all that paging (no move / no rain tick).
+    CHECK(p->GetPosition().x == doctest::Approx(pos0.x));
+    CHECK(p->GetPosition().y == doctest::Approx(pos0.y));
+    CHECK(p->GetRainMeter() == doctest::Approx(rain0));
+
+    // Close help (E) then reopen → back on page 0 (SetHelpOpen resets it).
+    in.Tap(Key::E);          Frame(controller, in);
+    CHECK_FALSE(world.HelpOpen());
+    in.Tap(Key::Enter);      Frame(controller, in);   // cursor still on 說明
+    REQUIRE(world.HelpOpen());
+    CHECK(world.HelpPage() == 0);
+
+    // Flip to page 1, then resume the game (M from the menu after dismissing
+    // help) — SetMenuOpen(false) must also clear the help page latch.
+    in.Tap(Key::Right);      Frame(controller, in);
+    CHECK(world.HelpPage() == 1);
+    in.Tap(Key::E);          Frame(controller, in);   // help → menu
+    in.Tap(Key::M);          Frame(controller, in);   // menu → game
+    CHECK_FALSE(world.MenuOpen());
+    CHECK(world.HelpPage() == 0);                      // reset on resume
 
     nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);

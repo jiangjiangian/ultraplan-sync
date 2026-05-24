@@ -166,7 +166,20 @@ inline const char* UiLiteralChars() {
         //   握 自白「你握著…」「你的手指扣上」  彈/擋 catalog「彈開」「擋雨」
         //   鳴 自白「發出細微的嗡鳴」
         "\xE2\x88\x92"      // U+2212 −
-        "磨壯握彈擋鳴";
+        "磨壯握彈擋鳴"
+        // U2-T4 (owner item 6): the new 【道具須知】 help-tips section
+        // (GameHelp.h kGameHelpPage2) adds these glyphs. Most ALSO appear in
+        // docs/content, but — per the building-name / #10 lesson above — the
+        // FULL new-tips glyph set is baked here so the help text renders even
+        // on the content-unreadable fallback path AND a future copy-edit
+        // can't silently reintroduce a tofu glyph. The two fullwidth puncts
+        // need explicit UTF-8 (！ U+FF01 / ； U+FF1B); the rest are ideographs.
+        // The U2-T4 glyph-scan (test_font_ui_glyph_scan.cpp) enumerates
+        // kGameHelpPages and FAILS the build on any uncovered glyph, so this
+        // block is verified, not guessed.
+        "跨節保留其餘道具只該效市清當耗多數可緩得用必使頭冒就接來去業默決定"
+        "\xEF\xBC\x81"      // U+FF01 ！
+        "\xEF\xBC\x9B";     // U+FF1B ；
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

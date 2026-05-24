@@ -11,6 +11,8 @@
 #include "quest/Chapter3Quest.h"
 #include "quest/Chapter4Quest.h"
 #include "quest/ItemCatalog.h"
+#include "ui/GameHelp.h"          // kGameHelpPageCount (paged 說明 nav)
+#include "ui/InventoryView.h"     // kInventoryRowsPerPage (paged bag nav)
 #include "vendor/Vendor.h"
 #include "state/InterludeExit.h"
 #include "controller/GameObjectQueries.h"
@@ -185,6 +187,17 @@ void GameController::Update() {
             // FIRST so a key meant for "close help" never also moves the
             // menu cursor or triggers an AppAction.
             if (world_.HelpOpen()) {
+                // U2-T4: the 說明 overlay is paged — ←/→ flip between the
+                // 操作+目標 page and the 雨傘外觀+道具須知+結局 page (the
+                // page index wraps; the View draws a 「第 N／M 頁」 indicator).
+                // Pure UI state (World::HelpPage, NOT serialized — see
+                // Harness.cpp), so a paged help leaves state.jsonl byte-
+                // identical. M / E / Enter still dismisses back to the menu.
+                constexpr int n = nccu::kGameHelpPageCount;
+                if (Input::IsPressed(Key::Right))
+                    world_.SetHelpPage((world_.HelpPage() + 1) % n);
+                if (Input::IsPressed(Key::Left))
+                    world_.SetHelpPage((world_.HelpPage() - 1 + n) % n);
                 if (Input::IsPressed(Key::M) ||
                     Input::IsPressed(Key::Enter) ||
                     Input::IsPressed(Key::E))
@@ -456,6 +469,18 @@ void GameController::Update() {
                 if (cur >= n)  cur = n - 1;
                 if (Input::IsPressed(Key::Up))   cur = (cur - 1 + n) % n;
                 if (Input::IsPressed(Key::Down)) cur = (cur + 1) % n;
+                // U2-T1: ←/→ jump a whole PAGE (the View pages the bag once
+                // rows exceed kInventoryRowsPerPage). The page index is
+                // DERIVED from the cursor render-side, so moving the cursor
+                // by ±a page is all that is needed — the shown page follows.
+                // Up/Down already flip the page when the selection crosses a
+                // boundary; ←/→ are the explicit fast path. Clamped (no
+                // wrap) so a page-jump can't skip past the ends. No new
+                // serialized state — InventoryCursor is not in state.jsonl.
+                if (Input::IsPressed(Key::Right))
+                    cur = std::min(n - 1, cur + nccu::kInventoryRowsPerPage);
+                if (Input::IsPressed(Key::Left))
+                    cur = std::max(0, cur - nccu::kInventoryRowsPerPage);
                 world_.SetInventoryCursor(cur);
                 if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
                     const InventoryRow& sel = rows[static_cast<std::size_t>(cur)];
