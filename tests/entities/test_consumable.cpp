@@ -26,11 +26,12 @@ struct MessageCapture {
 
 } // namespace
 
-TEST_CASE("HotPack Consume: karma +5, rainMeter reset, isActive false, ShowMessage text") {
+TEST_CASE("HotPack Consume: karma +5, rain -25 (G4), isActive false, ShowMessage") {
     Player p({0, 0});
-    // Player starts with rainMeter=0; resetRainMeter() must leave it at 0.
-    // Until a public setter exists this test only confirms the call is safe
-    // and post-condition still holds.
+    // G4: 暖暖包 is no longer a full reset — it sheds a FIXED -25 units. Dirty
+    // the meter above 25 first so the -25 is observable (not floor-clamped).
+    p.ApplyRain(12.0f, /*lethal=*/false);        // +60 (5 u/s * 12 s)
+    REQUIRE(p.GetRainMeter() == doctest::Approx(60.0f));
     const int beforeKarma = p.GetKarma();
 
     MessageCapture cap;
@@ -43,14 +44,16 @@ TEST_CASE("HotPack Consume: karma +5, rainMeter reset, isActive false, ShowMessa
     pack.Consume(&p);
 
     CHECK(p.GetKarma() == beforeKarma + HotPack::kKarmaBonus);
-    CHECK(p.GetRainMeter() == doctest::Approx(0.0f));
+    CHECK(p.GetRainMeter() == doctest::Approx(60.0f - HotPack::kRainRelief));  // 35
     CHECK(pack.IsActive() == false);
     CHECK(cap.hits == 1);
-    CHECK(cap.lastText == "用了暖暖包，雨水蒸發了，心情也好了一些。");
+    CHECK(cap.lastText == "用了暖暖包，烘乾了大半的雨水，心情也好了一些。");
 }
 
-TEST_CASE("WaterproofSpray Consume: no karma change, isActive false, ShowMessage text") {
+TEST_CASE("WaterproofSpray Consume: rain -35 (G4), no karma, isActive false") {
     Player p({0, 0});
+    p.ApplyRain(16.0f, /*lethal=*/false);        // +80 (clamped <100)
+    REQUIRE(p.GetRainMeter() == doctest::Approx(80.0f));
     const int beforeKarma = p.GetKarma();
 
     MessageCapture cap;
@@ -62,14 +65,18 @@ TEST_CASE("WaterproofSpray Consume: no karma change, isActive false, ShowMessage
 
     spray.Consume(&p);
 
-    CHECK(p.GetKarma() == beforeKarma);          // mood-only — no karma delta
+    CHECK(p.GetKarma() == beforeKarma);          // gear — no karma delta
+    CHECK(p.GetRainMeter() ==
+          doctest::Approx(80.0f - WaterproofSpray::kRainRelief));  // 45
     CHECK(spray.IsActive() == false);
     CHECK(cap.hits == 1);
-    CHECK(cap.lastText == "噴了防水噴霧，接下來這場雨就無感了。");
+    CHECK(cap.lastText == "噴了防水噴霧，雨水大半都被彈開了。");
 }
 
-TEST_CASE("EnergyDrink Consume: karma +3, isActive false, ShowMessage text") {
+TEST_CASE("EnergyDrink Consume: karma +3, rain -15 (G4), isActive false") {
     Player p({0, 0});
+    p.ApplyRain(8.0f, /*lethal=*/false);         // +40
+    REQUIRE(p.GetRainMeter() == doctest::Approx(40.0f));
     const int beforeKarma = p.GetKarma();
 
     MessageCapture cap;
@@ -82,9 +89,11 @@ TEST_CASE("EnergyDrink Consume: karma +3, isActive false, ShowMessage text") {
     drink.Consume(&p);
 
     CHECK(p.GetKarma() == beforeKarma + EnergyDrink::kKarmaBonus);
+    CHECK(p.GetRainMeter() ==
+          doctest::Approx(40.0f - EnergyDrink::kRainRelief));   // 25
     CHECK(drink.IsActive() == false);
     CHECK(cap.hits == 1);
-    CHECK(cap.lastText == "喝完飲料，精神好多了。下次小考應該能撐住。");
+    CHECK(cap.lastText == "喝完飲料，精神好多了，淋到的雨也擦乾了一些。");
 }
 
 TEST_CASE("Consume on null player is a no-op (no crash, item stays active)") {
@@ -156,31 +165,79 @@ TEST_CASE("Item 2a: ConsumableItem pickup adds to the bag, applies NO effect") {
 TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
     Player p{nccu::gfx::Vec2{0, 0}};
     p.AddConsumable("HotPack").AddConsumable("HotPack");
-    p.ApplyRain(2.0f, /*lethal=*/false);       // dirty the rain meter
-    REQUIRE(p.GetRainMeter() > 0.0f);
+    p.ApplyRain(12.0f, /*lethal=*/false);      // +60, above the -25 dry
+    REQUIRE(p.GetRainMeter() == doctest::Approx(60.0f));
     const int k0 = p.GetKarma();
 
     MessageCapture cap;
     cap.Attach();
 
+    // G4: ApplyConsumableEffect mirrors HotPack::Consume EXACTLY — +5 karma
+    // and -25 rain (no longer a full reset).
     nccu::ApplyConsumableEffect(p, "HotPack");
     CHECK(p.GetKarma() == k0 + HotPack::kKarmaBonus);   // +5, same as Consume
-    CHECK(p.GetRainMeter() == doctest::Approx(0.0f));   // rain reset, same
+    CHECK(p.GetRainMeter() ==
+          doctest::Approx(60.0f - HotPack::kRainRelief));  // 35, same as Consume
     CHECK(cap.hits == 1);
-    CHECK(cap.lastText == "用了暖暖包，雨水蒸發了，心情也好了一些。");
+    CHECK(cap.lastText == "用了暖暖包，烘乾了大半的雨水，心情也好了一些。");
 
     // The controller spends one after applying — model it here.
     CHECK(p.ConsumeOne("HotPack"));
     CHECK(p.ConsumableCount("HotPack") == 1);
 
-    // EnergyDrink effect mirrors its Consume body too.
+    // EnergyDrink effect mirrors its Consume body too (+3 karma, -15 rain).
     Player q{nccu::gfx::Vec2{0, 0}};
+    q.ApplyRain(8.0f, /*lethal=*/false);       // +40
     const int qk = q.GetKarma();
     MessageCapture cap2;
     cap2.Attach();
     nccu::ApplyConsumableEffect(q, "EnergyDrink");
     CHECK(q.GetKarma() == qk + EnergyDrink::kKarmaBonus);  // +3
-    CHECK(cap2.lastText == "喝完飲料，精神好多了。下次小考應該能撐住。");
+    CHECK(q.GetRainMeter() ==
+          doctest::Approx(40.0f - EnergyDrink::kRainRelief));  // 25
+    CHECK(cap2.lastText == "喝完飲料，精神好多了，淋到的雨也擦乾了一些。");
+}
+
+// G4 — the dedicated rain-effect table for every usable consumable. Pins the
+// EXACT -units per item (the owner-set table) + the generic 小吃 path that
+// has no entity class, and the parity between the entity Consume body and
+// ApplyConsumableEffect. Revert-verify: drop the DrainRainBy calls and the
+// rain CHECKs fail; revert IsUsableConsumable's food set and the food CHECK
+// fails (the effect no-ops on a non-usable id).
+TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
+    struct Row { const char* id; float relief; bool usable; };
+    const Row rows[] = {
+        {"WaterproofSpray", 35.0f, true},
+        {"HotPack",         25.0f, true},
+        {"EnergyDrink",     15.0f, true},
+        {"EggCake",         15.0f, true},
+        {"FlowerTea",       15.0f, true},
+        {"Takoyaki",        15.0f, true},
+        {"Donation",         0.0f, false},   // charity gift — not usable, no rain
+    };
+    for (const Row& r : rows) {
+        CHECK(nccu::IsUsableConsumable(r.id) == r.usable);
+        Player p{nccu::gfx::Vec2{0, 0}};
+        p.ApplyRain(18.0f, /*lethal=*/false);          // +90 (clamped <100)
+        REQUIRE(p.GetRainMeter() == doctest::Approx(90.0f));
+        MessageCapture cap; cap.Attach();
+        nccu::ApplyConsumableEffect(p, r.id);
+        CHECK(p.GetRainMeter() == doctest::Approx(90.0f - r.relief));
+    }
+
+    // Floor clamp: a small meter cannot go below 0 (no negative rain).
+    Player low{nccu::gfx::Vec2{0, 0}};
+    low.ApplyRain(2.0f, /*lethal=*/false);             // +10
+    nccu::ApplyConsumableEffect(low, "WaterproofSpray");  // -35 -> clamp 0
+    CHECK(low.GetRainMeter() == doctest::Approx(0.0f));
+
+    // DrainRainBy unit: fixed subtraction, clamped, no teleport.
+    Player u{nccu::gfx::Vec2{0, 0}};
+    u.ApplyRain(10.0f, /*lethal=*/false);              // +50
+    u.DrainRainBy(20.0f);
+    CHECK(u.GetRainMeter() == doctest::Approx(30.0f));
+    u.DrainRainBy(100.0f);                             // over-drain -> clamp 0
+    CHECK(u.GetRainMeter() == doctest::Approx(0.0f));
 }
 
 TEST_CASE("Item 2: IsUsableConsumable classifies the bag rows") {

@@ -4,7 +4,9 @@
 
 void EnergyDrink::Consume(Player* player) {
     if (!player) return;
-    player->AddKarma(kKarmaBonus);
+    // G4: karma bump AND a small rain dry (-15). Kept in lockstep with
+    // ApplyConsumableEffect("EnergyDrink") (a doctest pins both paths).
+    player->AddKarma(kKarmaBonus).DrainRainBy(kRainRelief);
     isActive_ = false;
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "喝完飲料，精神好多了。下次小考應該能撐住。" });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "喝完飲料，精神好多了，淋到的雨也擦乾了一些。" });
 }

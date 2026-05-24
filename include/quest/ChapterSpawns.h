@@ -156,6 +156,7 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         case SemesterState::Chapter4_Finals:    return kChapter4;
         case SemesterState::Ending_A:           return kEndingA;
         case SemesterState::Ending_B:           return kEndingB;
+        case SemesterState::Ending_D:           return kEndingA;  // no roster (G1)
         case SemesterState::Ending_C:           return kEndingC;
     }
     return kInterlude;  // unreachable; keeps non-void paths total

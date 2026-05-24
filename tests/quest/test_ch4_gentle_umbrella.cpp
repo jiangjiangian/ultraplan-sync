@@ -76,11 +76,11 @@ TEST_CASE("T4: 體諒 + karma>80 reaches Ending A WITHOUT the hidden umbrella") 
     CHECK(m.Current() == SemesterState::Ending_A);
 }
 
-TEST_CASE("T4: a 體諒 player with karma<=80 still gets the umbrella (-> C, not stuck)") {
+TEST_CASE("T4/G1: a 體諒 player with karma<=80 still gets the umbrella (-> D, not stuck)") {
     // The grant is unconditional on the gentle branch (not karma-gated);
-    // only Ending A's karma>80 gate decides A-vs-C. A 體諒 player who never
-    // reached karma>80 holds the umbrella but lands the GDD Normal Ending C
-    // (Flag_TaFinaleChoiceMade total-gate) — never stuck in Ch4.
+    // only Ending A's karma>80 gate decides A-vs-the-rest. G1: a 體諒 player
+    // who never reached karma>80 now lands the bittersweet Ending D
+    // (風雨同行) — reslotted from the old C — and is never stuck in Ch4.
     nccu::SemesterStateMachine m; m.Transition(kCh4);
     Player p = MakePlayer();                      // karma ~50
     nccu::DialogState d;
@@ -89,7 +89,7 @@ TEST_CASE("T4: a 體諒 player with karma<=80 still gets the umbrella (-> C, not
     nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);
     CHECK(p.HasFlag("Flag_HasTrueUmbrella"));     // got the umbrella
     nccu::CheckEndingGates(p, m, d);
-    CHECK(m.Current() == SemesterState::Ending_C);   // karma<=80 -> Normal C
+    CHECK(m.Current() == SemesterState::Ending_D);   // karma<=80 -> D (was C)
 }
 
 TEST_CASE("T4: harsh 質問 (coldFinale) still routes to Ending B, not A") {

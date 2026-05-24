@@ -34,6 +34,7 @@ namespace nccu {
             return "✓ 進入第四章 期末考";
         case SemesterState::Ending_A:
         case SemesterState::Ending_B:
+        case SemesterState::Ending_D:
         case SemesterState::Ending_C:
             return "✓ 抵達結局";
     }

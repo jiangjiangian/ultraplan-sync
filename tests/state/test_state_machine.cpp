@@ -30,6 +30,11 @@ TEST_CASE("SemesterStateMachine: endings drop state_ and report ending name") {
     m.Transition(SemesterState::Ending_B);
     CHECK(m.CurrentName() == "結局 B");
 
+    // G1: the new fourth ending is a valid terminal transition + name.
+    m.Transition(SemesterState::Ending_D);
+    CHECK(m.Current() == SemesterState::Ending_D);
+    CHECK(m.CurrentName() == "結局 D");
+
     m.Transition(SemesterState::Ending_C);
     CHECK(m.CurrentName() == "結局 C");
 }

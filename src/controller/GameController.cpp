@@ -330,7 +330,18 @@ void GameController::Update() {
                         }
                         (void)pendingVendor_->TryBuy(p, stockIdx);
                         pendingVendor_ = nullptr;
-                        CheckEndingGates(*p, world_.Semester(), dlg);
+                        // G2: do NOT resolve the ending here. A confirmed
+                        // stock pick has no nextLines, so the vendor box is
+                        // already CLOSED at this point — calling
+                        // CheckEndingGates now would snap Ending C the same
+                        // frame the 醜傘 is bought, with no closing beat
+                        // (the owner's abrupt-ending complaint). Instead the
+                        // non-dialog poll (end of Update) runs
+                        // TryOpenEndingConfession first → opens the 務實 自白
+                        // → CheckEndingGates defers behind it → C fires once
+                        // the player closes the monologue. CheckChapterGates
+                        // stays (a buy is never a chapter-clear trigger, so
+                        // it is the same cheap no-op insurance as before).
                         CheckChapterGates(*p, world_.Semester(), dlg);
                         // Cycle 10.P0b (L8 fix): the gate calls above
                         // can Transition() — settle the roster NOW so
@@ -741,6 +752,21 @@ void GameController::Update() {
         LiftChapter2Clear(*player, world_.Semester().Current(),
                           world_.Dialog());
         CheckChapterGates(*player, world_.Semester(), world_.Dialog());
+        // G2: defer-then-resolve the ending. FIRST open any pending Ch4
+        // ending 自白 (inner monologue) — it makes world_.Dialog() active,
+        // so the CheckEndingGates poll right after sees the open box and
+        // returns (the ending waits until the player reads + closes the
+        // narration). On a later non-dialog poll the confession is already
+        // played (once-key), the box is closed, and CheckEndingGates fires
+        // the transition. This is the same deferred shape as LiftChapter1/
+        // 2Clear above, generalised to all four endings: the gate is no
+        // longer polled ONLY at the dialog-choice confirm sites, so a
+        // closing beat (the 助教 finale nextLines OR these 自白) is always
+        // read before the ending snaps (the owner's 「不要突然按下選項後跳
+        // 結局」). No-op outside Ch4 / while a box is up / once resolved.
+        TryOpenEndingConfession(*player, world_.Dialog(),
+                                world_.Semester().Current());
+        CheckEndingGates(*player, world_.Semester(), world_.Dialog());
     }
 
     // End-of-frame sweep: deferred deletion avoids iterator invalidation

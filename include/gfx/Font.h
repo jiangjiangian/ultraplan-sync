@@ -154,7 +154,19 @@ inline const char* UiLiteralChars() {
         // atlas ONLY here (same V1/REQ#10 mechanism); the scan verifies it.
         //   北 objective 地圖東北   垂 help 傘面下垂   紫 help 暗紫色
         //   幸 catalog 小確幸       血 catalog 三頁心血
-        "北垂紫幸血";
+        "北垂紫幸血"
+        // G1/G4: glyphs newly used by the Ending D card (EndingView), the
+        // G4 ItemCatalog effect descriptions (CatalogStrings) and the Ch4
+        // ending 自白 dialogs — and present in NO docs/content/*.md, so they
+        // reach the atlas ONLY here. The 5c/T5 glyph-scan test verifies the
+        // EndingCard + Catalog surfaces; the 自白 glyphs are baked alongside
+        // so the in-game DialogView renders them too (no tofu either path).
+        //   U+2212 −  the typographic minus in "雨量 −15/−25/−35" descriptions
+        //   磨 Ending D「把傘磨破了」   壯 自白「骨架紮實」(紮 already covered)
+        //   握 自白「你握著…」「你的手指扣上」  彈/擋 catalog「彈開」「擋雨」
+        //   鳴 自白「發出細微的嗡鳴」
+        "\xE2\x88\x92"      // U+2212 −
+        "磨壯握彈擋鳴";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint

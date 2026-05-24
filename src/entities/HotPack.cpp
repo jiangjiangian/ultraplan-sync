@@ -4,7 +4,10 @@
 
 void HotPack::Consume(Player* player) {
     if (!player) return;
-    player->AddKarma(kKarmaBonus).resetRainMeter();
+    // G4 rebalance: was resetRainMeter() (full dry); now a fixed -25 so the
+    // rain pillar stays meaningful. Kept in lockstep with
+    // ApplyConsumableEffect("HotPack") (a doctest pins both paths).
+    player->AddKarma(kKarmaBonus).DrainRainBy(kRainRelief);
     isActive_ = false;
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "用了暖暖包，雨水蒸發了，心情也好了一些。" });
+    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "用了暖暖包，烘乾了大半的雨水，心情也好了一些。" });
 }

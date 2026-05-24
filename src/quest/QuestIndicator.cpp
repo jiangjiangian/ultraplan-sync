@@ -10,11 +10,16 @@ bool QuestIndicatorVisible(std::string_view npcId, bool isQuestGiver,
                            SemesterState state, const Player& player) {
     switch (state) {
         case SemesterState::Chapter1_AddDrop:
-            // T3: the Ch1 main spine is single-NPC (苦主). The `!` rides him
-            // until the grant (Flag_HasTrueUmbrella), then goes dark. The
-            // 苦主 IS a quest-giver, so AND with isQuestGiver (the side 助教
-            // 申請書 errand is isQuestGiver=false → never a main `!`).
-            return isQuestGiver && Ch1IndicatorVisible(npcId, player);
+            // G3: the Ch1 main spine is now a 3-step sequence
+            // 苦主 → 西裝學長 → 苦主. The 西裝學長 ships isQuestGiver=false
+            // in DefaultNpcSpawns (NpcSpawns.h:46), so — exactly like the
+            // Ch2 學霸 and the Ch4 助教 — this gate must NOT AND
+            // isQuestGiver for the spine NPCs; it passes the bit in and
+            // Ch1IndicatorVisible applies it only to non-spine NPCs (so a
+            // future Ch1 quest-giver still honours its roster bit, and the
+            // isQuestGiver=false 助教/阿姨/學霸 never masquerade as the
+            // main `!`).
+            return Ch1IndicatorVisible(npcId, isQuestGiver, player);
         case SemesterState::Chapter2_Midterms:
             // T3: the Ch2 main spine 圖書館管理員 → 學霸 sequences here. NOT
             // AND-ed with isQuestGiver — 學霸 ships isQuestGiver=false in the

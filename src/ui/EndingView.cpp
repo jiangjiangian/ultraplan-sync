@@ -18,6 +18,7 @@ using namespace nccu::gfx;
 bool IsEndingState(SemesterState s) noexcept {
     return s == SemesterState::Ending_A ||
            s == SemesterState::Ending_B ||
+           s == SemesterState::Ending_D ||
            s == SemesterState::Ending_C;
 }
 
@@ -37,6 +38,8 @@ std::string_view caption(SemesterState s) {
             return "「雨過天晴，傘還在你手上。」";
         case SemesterState::Ending_B:
             return "「你成為了你曾經最討厭的那種人」";
+        case SemesterState::Ending_D:
+            return "「傘破了，但你沒丟下任何人。」";
         case SemesterState::Ending_C:
             return "「這樣以後再也不會有人拿錯你的傘了。」";
         default:
@@ -67,10 +70,18 @@ const std::vector<std::string>& reasonLines(SemesterState s) {
         "也沒有計較是誰拿走的——",
         "你掏光口袋的錢，買過了這整場雨。",
     };
+    // Ending_D (G1) — 風雨同行: chose 體諒 but did not earn A. A kind
+    // heart, but the umbrella was worn through by a whole semester of rain.
+    static const std::vector<std::string> kD = {
+        "你選擇了體諒，沒把這口氣討回來。",
+        "只是這學期的風吹雨打，把傘磨破了——",
+        "傘骨還在，雨會滲進來，但你撐著它走完了。",
+    };
     static const std::vector<std::string> kNone;
     switch (s) {
         case SemesterState::Ending_A: return kA;
         case SemesterState::Ending_B: return kB;
+        case SemesterState::Ending_D: return kD;
         case SemesterState::Ending_C: return kC;
         default:                      return kNone;
     }
@@ -81,6 +92,7 @@ std::string_view pathLabel(SemesterState s) {
     switch (s) {
         case SemesterState::Ending_A: return "完美結局（True）";
         case SemesterState::Ending_B: return "墮落結局";
+        case SemesterState::Ending_D: return "風雨同行結局";
         case SemesterState::Ending_C: return "務實結局（Normal）";
         default:                      return "";
     }
@@ -113,6 +125,13 @@ std::vector<std::string> conditionsFired(const EndingSummary& g) {
                 out.push_back(mark + "最後質問助教");
             break;
         }
+        case SemesterState::Ending_D:
+            // EndingGate D (G1): Flag_ConsoledTA reached here ⇒ 體諒 but
+            // not A (karma ≤ 80) and not B. Show the two clauses that
+            // landed the player on the 風雨同行 path.
+            out.push_back(mark + "體諒助教");
+            out.push_back(mark + "業力 ≤ 80（差一點點圓滿）");
+            break;
         case SemesterState::Ending_C:
             // EndingGate C: Flag_BoughtUglyUmbrella ||
             // Flag_TaFinaleChoiceMade (the平穩收尾 default). Show which.
@@ -165,6 +184,9 @@ Color endingTextColor(SemesterState s, unsigned char a) {
     switch (s) {
         case SemesterState::Ending_A: return nccu::gfx::UmbrellaLook::TrueBlue;
         case SemesterState::Ending_B: return nccu::gfx::UmbrellaLook::CursedPurple;
+        // Ending_D (G1): the 破傘 — kind heart, but the canopy is gone and
+        // only the bent ribs/handle remain (the owner's "風吹雨打把傘磨破了").
+        case SemesterState::Ending_D: return nccu::gfx::UmbrellaLook::FragileBroken;
         case SemesterState::Ending_C: return nccu::gfx::UmbrellaLook::UglyGreen;
         default:                      return nccu::gfx::UmbrellaLook::TrueBlue;
     }
@@ -181,6 +203,7 @@ std::vector<std::string> EndingCardStrings() {
     out.emplace_back("結局類型：");
     const SemesterState states[] = {SemesterState::Ending_A,
                                     SemesterState::Ending_B,
+                                    SemesterState::Ending_D,
                                     SemesterState::Ending_C};
     for (SemesterState s : states) {
         out.emplace_back(caption(s));

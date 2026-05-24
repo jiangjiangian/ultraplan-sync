@@ -1,5 +1,6 @@
 #include "quest/Chapter4Quest.h"
 #include "entities/Player.h"
+#include "dialog/DialogState.h"
 
 namespace nccu {
 
@@ -72,6 +73,56 @@ void TryApplyCh4Ripple(Player& player, std::string_view npcId,
             player.AddKarma(-15).SetFlag(kFlagCh4RippledProfTrap);
         return;
     }
+}
+
+bool TryOpenEndingConfession(Player& player, DialogState& dialog,
+                             SemesterState state) {
+    if (state != SemesterState::Chapter4_Finals) return false;
+    if (dialog.Active()) return false;   // never interrupt an open box
+
+    // Precedence mirrors CheckEndingGates (cursed → B outranks D/C), so the
+    // confession the player reads is the one that will actually fire. Each
+    // is one-shot via its own once-key; an already-confessed trigger is
+    // skipped so a later poll resolves the (deferred) gate instead.
+
+    // Cursed-caught-up 自白 — the Flag_TookCursedUmbrella carried from Ch1
+    // resolves to Ending B in Ch4. Give it a beat before the doom.
+    if (player.HasFlag("Flag_TookCursedUmbrella") &&
+        !player.HasFlag(kFlagCh4ConfessedCursed)) {
+        player.SetFlag(kFlagCh4ConfessedCursed);
+        dialog.Open({
+            "（你握著那把刻著別人名字的傘，傘骨還在發出細微的嗡鳴）",
+            "（從加退選那天起，雨就沒真正停過，它一直跟著你）",
+            "（你心裡很清楚——你早就成了你最不想變成的那種人）"});
+        return true;
+    }
+
+    // 務實 自白 — bought the 螢光綠醜傘; resolves to Ending C.
+    if (player.HasFlag("Flag_BoughtUglyUmbrella") &&
+        !player.HasFlag(kFlagCh4ConfessedUgly)) {
+        player.SetFlag(kFlagCh4ConfessedUgly);
+        dialog.Open({
+            "（你撐開那把醜得理直氣壯的螢光綠傘）",
+            "（沒人會想跟你拿錯，這場雨你是花錢買過的）",
+            "（算了，傘能擋雨就好。其他的，就這樣吧。）"});
+        return true;
+    }
+
+    // Reclaimed-true 自白 — found the hidden 體育館 真傘 from the ground,
+    // BEFORE the 助教 finale (the gentle finale plays its own nextLines, so
+    // gate on !Flag_TaFinaleChoiceMade to avoid a double beat there).
+    if (player.HasFlag("Flag_HasTrueUmbrella") &&
+        !player.HasFlag("Flag_TaFinaleChoiceMade") &&
+        !player.HasFlag(kFlagCh4ConfessedTrue)) {
+        player.SetFlag(kFlagCh4ConfessedTrue);
+        dialog.Open({
+            "（你的手指扣上那道熟悉的弧度——傘骨紮實，沒有一根是歪的）",
+            "（找了一整個學期，繞了那麼遠，它終究回到你手上）",
+            "（雨好像小了一點。剩下的路，你想好好走完。）"});
+        return true;
+    }
+
+    return false;
 }
 
 } // namespace nccu

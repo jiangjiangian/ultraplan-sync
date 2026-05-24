@@ -25,6 +25,7 @@ std::string_view SemesterStateMachine::CurrentName() const {
         switch (ending_) {
             case SemesterState::Ending_A: return "結局 A";
             case SemesterState::Ending_B: return "結局 B";
+            case SemesterState::Ending_D: return "結局 D";
             case SemesterState::Ending_C: return "結局 C";
             default:                      return "";
         }
@@ -59,6 +60,7 @@ void SemesterStateMachine::Transition(SemesterState next) {
             break;
         case SemesterState::Ending_A:
         case SemesterState::Ending_B:
+        case SemesterState::Ending_D:
         case SemesterState::Ending_C:
             state_.reset();
             ending_   = next;

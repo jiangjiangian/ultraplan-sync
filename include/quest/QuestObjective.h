@@ -78,6 +78,7 @@ inline std::string CurrentObjective(SemesterState state,
             return std::string{kCh4Finals};
         case SemesterState::Ending_A:
         case SemesterState::Ending_B:
+        case SemesterState::Ending_D:
         case SemesterState::Ending_C:
             return std::string{};
     }

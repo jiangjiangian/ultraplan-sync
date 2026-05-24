@@ -77,18 +77,35 @@ void LiftChapter1Clear(Player& player, SemesterState state,
         EventType::UmbrellaClaimed, std::string("TrueUmbrella")});
 }
 
-bool Ch1IndicatorVisible(std::string_view npcId, const Player& player) {
-    // The Ch1 main spine is single-NPC (苦主). Light his `!` from chapter
-    // entry — through the 承諾 → 找傘 → 歸還 arc — and turn it OFF once the
-    // grant has happened (Flag_HasTrueUmbrella), since the (d) reunion is
-    // then a recap, not an outstanding objective. Mirrors Ch3IndicatorVisible's
-    // shape (the chain head lights from entry; a completed step goes dark).
-    if (npcId == "victim")
-        return !player.HasFlag("Flag_HasTrueUmbrella");
-    // Any other quest-giver keeps its roster bit (governed by the &&
-    // isQuestGiver in QuestIndicatorVisible). The Ch1 side errand (助教
-    // 申請書) is isQuestGiver=false, so it never lights as a main objective.
-    return true;
+bool Ch1IndicatorVisible(std::string_view npcId, bool isQuestGiver,
+                         const Player& player) {
+    // G3: 苦主 → 西裝學長 → 苦主 sequence. Each spine NPC lights ONLY on its
+    // own step so exactly one main `!` is visible at a time (out-of-order
+    // contact is redirected by the E-interact hooks, not here).
+    const bool grantDone   = player.HasFlag("Flag_HasTrueUmbrella");
+    const bool promised    = player.HasFlag("Flag_PromisedVictim");
+    const bool seniorChoice = player.HasFlag("Flag_SuitSeniorChoiceMade");
+
+    if (npcId == "victim") {
+        // Lit at step 1 (before the promise — give the lead) and again at
+        // step 3 (after the 學長 choice — bring his umbrella back). Dark in
+        // between (the player is off confronting the 學長) and after the
+        // grant (the (d) reunion is then a recap, not an objective).
+        if (grantDone) return false;                 // done → dark
+        if (!promised) return true;                  // step 1: get the lead
+        return seniorChoice;                         // step 3 once 學長 done
+    }
+    if (npcId == "suit_senior") {
+        // Lit at step 2 ONLY: the player has the lead (promised) but has
+        // not yet made the 學長 choice. Goes dark the instant the choice is
+        // committed (Flag_SuitSeniorChoiceMade), handing the `!` back to
+        // 苦主 for step 3. Keyed on npcId (not the roster bit) because the
+        // 學長 ships isQuestGiver=false.
+        return promised && !seniorChoice && !grantDone;
+    }
+    // Every other Ch1 npc keeps its roster bit (the 助教 申請書 errand /
+    // 學霸 / 阿姨 are isQuestGiver=false → never a main `!`).
+    return isQuestGiver;
 }
 
 } // namespace nccu
