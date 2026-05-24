@@ -131,6 +131,15 @@ inline const char* UiLiteralChars() {
         // rows must reach the atlas — same V1/REQ#10 rationale as the
         // building-name / help blocks).
         "減少畫擴目關"
+        // A-T3 ending-screen 3-option menu (EndingView): 回首頁 / 重新開始 /
+        // 結束 + the "← → 選擇   E 確認" nav hint. Most glyphs (首/頁/重/新/
+        // 開/始/結/選/擇/確/認 + the arrows) are already baked above; only
+        // 回 (回首頁) and 束 (結束) are new and appear in NO docs/content/*.md,
+        // so they reach the atlas ONLY here. The glyph-scan test
+        // (test_font_ui_glyph_scan.cpp scans EndingCardStrings(), which now
+        // includes these menu labels) FAILS the build on any uncovered glyph,
+        // so this is verified, not guessed — same V1/REQ#10 mechanism.
+        "回束"
         // Item 1 / 1e: the enriched ending SCREEN (EndingView.cpp) and the
         // actionable 遊戲說明 endings section (GameHelp.h) draw a handful of
         // glyphs that occur in NO docs/content/*.md file, so they reach the

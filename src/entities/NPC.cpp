@@ -107,18 +107,37 @@ void NPC::Update(float deltaTime) {
         SetPosition(resolved);
     }
 
-    // U1-T3: animate the wanderer like the Player. The NET displacement
-    // this frame (post-clamp, post-mask-resolve) decides BOTH the facing
-    // row and whether to advance the walk cycle, so a paused (wanderDir_
-    // == {0,0}) or fully wall-blocked wanderer holds its idle pose instead
-    // of moon-walking. Heading is taken from the actual move, not the
-    // intended wanderDir_, so a slide along a wall faces along the wall.
+    // U1-T3: animate the wanderer like the Player. TWO independent
+    // signals, deliberately kept on different sources (A-T1 詭異抖動 fix):
+    //
+    //   moving_  = did the NPC actually DISPLACE this frame (post-clamp,
+    //              post-mask-resolve)? It gates the walk cycle, so a paused
+    //              (wanderDir_ == {0,0}) or fully wall-blocked wanderer
+    //              holds its idle pose instead of moon-walking.
+    //
+    //   facing_  = the STABLE intended heading (wanderDir_), NOT the noisy
+    //              per-frame net displacement. WalkRowForFacing picks the
+    //              Pipoya row by dominant axis; on a near-diagonal walk the
+    //              per-frame `step` jitters left↔down/up as sub-pixel
+    //              rounding flips which axis is momentarily larger, flipping
+    //              the facing row EVERY frame — the reported jitter. The
+    //              retarget heading is constant for a whole 1–3 s leg, so
+    //              keying facing_ to it yields ONE row per leg (a perfect
+    //              diagonal resolves to up/down via the WalkRowForFacing
+    //              tie-break, also stable). A wall-blocked NPC keeps facing
+    //              its intended heading (it's still trying to go that way),
+    //              which reads correctly and never flickers.
+    //
     // Render reads moving_/facing_/animStep_ — none of which is serialised
-    // (state.jsonl stays byte-identical; verified twice vs baseline).
+    // (state.jsonl stays byte-identical; verified vs baseline md5).
     const nccu::gfx::Vec2 step{position_.x - prev.x, position_.y - prev.y};
     moving_ = (step.x != 0.0f || step.y != 0.0f);
     if (moving_) {
-        facing_ = step;
+        // Stable facing from the constant retarget heading. Guard the
+        // {0,0} case (can't happen while moving_ is true, but keeps the
+        // last good facing if a future caller drives a zero wanderDir_).
+        if (wanderDir_.x != 0.0f || wanderDir_.y != 0.0f)
+            facing_ = wanderDir_;
         animTimer_ += deltaTime;
         if (animTimer_ >= kFrameDur) {
             animTimer_ -= kFrameDur;

@@ -22,13 +22,31 @@
 
 namespace nccu::gfx {
 
-// 羅馬廣場 plaza CENTRE. The Ch2 roster comment in
-// include/quest/ChapterSpawns.h pins it: "學霸 (bookworm) sits under the
-// 羅馬廣場 statue (plaza centre ~1088,960; placed at the south rim
-// 1088,1100)". The bookworm NPC is parked at the south RIM (1088,1100) so
-// the player can walk up and talk; the STATUE he sits under is the plaza
-// CENTRE — (1088,960) — which is where this chiikawa "statue" is drawn.
-inline constexpr Vec2 kRomaPlazaCenter{1088.0f, 960.0f};
+// 羅馬廣場 plaza. The Ch2 roster comment in include/quest/ChapterSpawns.h
+// pins it: "學霸 (bookworm) sits under the 羅馬廣場 statue (plaza centre
+// ~1088,960; placed at the south rim 1088,1100)". The bookworm NPC is
+// parked at the south RIM (1088,1100) so the player can walk up and talk.
+//
+// A-T2: the chiikawa "statue" was at the plaza geometric CENTRE (1088,960),
+// a full 140 px ABOVE the 學霸 — so on screen it read as a separate object
+// floating north of him, not the statue he is slumped under. Bring it DOWN
+// toward the bookworm (1088,1040: 60 px above his 1088,1100 post) so the
+// 24 px player + the seated 學霸 + the ~80 px statue read as one grouped
+// "he's resting under the chiikawa monument" tableau (owner: 把吉伊卡哇移
+// 近學霸). Still purely cosmetic — never a GameObject, never collides, never
+// in state.jsonl (the harness serialises World::Objects(), not this).
+inline constexpr Vec2 kRomaPlazaStatue{1088.0f, 1040.0f};
+
+// A-T2: the Ch3 cat's drawn CENTRE. The 操場 field is rect (1384,541,
+// 621x399) but the 綜合院館 building (rect 1681,677,371x326) OVERLAPS the
+// field's EAST half — so the cat at the geometric track centre
+// (kSportsTrackCx=1694, kSportsTrackCy=740) sat INSIDE the 綜院 footprint
+// and the building sprite painted OVER it ("放左邊一點才看的到" — the owner
+// couldn't see it). Move it WEST of the 綜院's left edge (1681) onto the
+// clearly-open western field (x1530, mask-verified strictly walkable +
+// well inside the 1384–2005 field), keeping the same track row (y740) so
+// it still reads as a cat on the 操場. No longer occluded by 綜院.
+inline constexpr Vec2 kSportsCatPos{1530.0f, kSportsTrackCy};
 
 // The decoration table. Indexed only by the View; order is irrelevant.
 //   chiikawa — Ch2 期中考 (Chapter2_Midterms): a pulsing "statue" at the
@@ -40,11 +58,10 @@ inline constexpr Vec2 kRomaPlazaCenter{1088.0f, 960.0f};
 //       the same field centre the lap-progress ring is measured around),
 //       breathing via the same ping-pong.
 inline constexpr std::array<DecorationDef, 2> kDecorations{{
-    DecorationDef{SemesterState::Chapter2_Midterms, kRomaPlazaCenter,
+    DecorationDef{SemesterState::Chapter2_Midterms, kRomaPlazaStatue,
                   "resources/assets/decorations/chiikawa_strip.png",
                   /*frameCount=*/17, /*drawScale=*/80.0f, /*fps=*/6.0},
-    DecorationDef{SemesterState::Chapter3_SportsDay,
-                  Vec2{kSportsTrackCx, kSportsTrackCy},
+    DecorationDef{SemesterState::Chapter3_SportsDay, kSportsCatPos,
                   "resources/assets/decorations/cat_strip.png",
                   /*frameCount=*/24, /*drawScale=*/28.0f, /*fps=*/8.0},
 }};

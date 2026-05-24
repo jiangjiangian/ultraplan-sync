@@ -11,6 +11,7 @@
 #include "quest/Chapter3Quest.h"
 #include "quest/Chapter4Quest.h"
 #include "quest/ItemCatalog.h"
+#include "ui/EndingView.h"        // A-T3: IsEndingState + the ending-menu map
 #include "ui/GameHelp.h"          // kGameHelpPageCount (paged 說明 nav)
 #include "ui/InventoryView.h"     // kInventoryRowsPerPage (paged bag nav)
 #include "vendor/Vendor.h"
@@ -161,6 +162,48 @@ void GameController::Update() {
     // L8 1-frame npcs[] lag without touching the harness state.jsonl
     // observable timeline.
     sceneRouter_.SettleSideEffects(world_);
+
+    // A-T3: the ENDING SCREEN is a stable, interactive screen with a bottom
+    // 3-option menu (回首頁 / 重新開始 / 結束). Handled FIRST and the world is
+    // fully FROZEN here (early-return before the object tick / movement /
+    // rain / sweep, exactly like the dialog/inventory/pause freezes) — once
+    // an ending fires the player's ONLY agency is this menu. ←/→ move the
+    // cursor; E/Enter confirm the highlighted choice and route it through
+    // World::PendingAppAction (the SINGLE place a full World teardown+rebuild
+    // can safely happen — BUGLEDGER B2/H1; the controller never tears itself
+    // down). 回首頁 and 重新開始 both request Restart (main.cpp tears the run
+    // down to the title — a full state reset; for 重新開始 the player then
+    // re-enters from the title, the accepted "Restart→title→select" flow);
+    // 結束 requests Quit (the ONLY path that closes the window). ESC is NOT
+    // read here — it stays the program's quit key owned by main.cpp. This
+    // block is reached only in an Ending_* state, so normal play AND every
+    // pre-A-T3 scripted harness run that never reaches an ending are
+    // byte-identical (the smoke gate stays in Ch1).
+    if (IsEndingState(world_.Semester().Current())) {
+        using nccu::gfx::Input;
+        using nccu::gfx::Key;
+        if (Input::IsPressed(Key::Left))  world_.MoveEndingMenuCursor(-1);
+        if (Input::IsPressed(Key::Right)) world_.MoveEndingMenuCursor(1);
+        if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
+            switch (EndingMenuChoiceAt(world_.EndingMenuCursor())) {
+                case EndingMenuChoice::BackToTitle:
+                    // Back to the title screen (full teardown → title).
+                    world_.RequestAppAction(World::AppAction::Restart);
+                    break;
+                case EndingMenuChoice::RestartGame:
+                    // A fresh new game: same Restart teardown → title, from
+                    // which the player starts Ch1 anew (state fully reset by
+                    // the World rebuild; CLAUDE.md "must fully reset state").
+                    world_.RequestAppAction(World::AppAction::Restart);
+                    break;
+                case EndingMenuChoice::Quit:
+                    // True quit — the only path that closes the canvas.
+                    world_.RequestAppAction(World::AppAction::Quit);
+                    break;
+            }
+        }
+        return;   // frozen on the ending screen until an option is chosen
+    }
 
     // In-game pause menu (top-right). Opens with M; while open the
     // world is fully frozen (we early-return before the object tick /

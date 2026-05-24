@@ -192,7 +192,32 @@ Color endingTextColor(SemesterState s, unsigned char a) {
     }
 }
 
+// A-T3: the bottom-menu label table — the single source of truth for the
+// three option strings. Kept here (not inline literals) so EndingCardStrings
+// can feed them to the glyph-scan test and the renderer reads the same text.
+std::string_view endingMenuLabel(EndingMenuChoice c) {
+    switch (c) {
+        case EndingMenuChoice::BackToTitle: return "回首頁";
+        case EndingMenuChoice::RestartGame: return "重新開始";
+        case EndingMenuChoice::Quit:        return "結束";
+    }
+    return "";
+}
+
 }  // namespace
+
+EndingMenuChoice EndingMenuChoiceAt(int index) noexcept {
+    // Clamp into the valid set so a stray cursor never selects "nothing".
+    switch (((index % 3) + 3) % 3) {
+        case 0:  return EndingMenuChoice::BackToTitle;
+        case 1:  return EndingMenuChoice::RestartGame;
+        default: return EndingMenuChoice::Quit;
+    }
+}
+
+std::string_view EndingMenuLabel(EndingMenuChoice c) noexcept {
+    return endingMenuLabel(c);
+}
 
 std::vector<std::string> EndingCardStrings() {
     std::vector<std::string> out;
@@ -201,6 +226,13 @@ std::vector<std::string> EndingCardStrings() {
     out.emplace_back("結算");
     out.emplace_back("業力 karma：0");   // the karma label glyphs (digits ASCII)
     out.emplace_back("結局類型：");
+    // A-T3: the bottom-menu option labels + the nav hint, so the glyph-scan
+    // test (test_font_ui_glyph_scan.cpp scans EndingCardStrings) verifies
+    // every menu glyph is baked into the atlas — no silent tofu.
+    out.emplace_back(std::string(endingMenuLabel(EndingMenuChoice::BackToTitle)));
+    out.emplace_back(std::string(endingMenuLabel(EndingMenuChoice::RestartGame)));
+    out.emplace_back(std::string(endingMenuLabel(EndingMenuChoice::Quit)));
+    out.emplace_back("← → 選擇   E 確認");
     const SemesterState states[] = {SemesterState::Ending_A,
                                     SemesterState::Ending_B,
                                     SemesterState::Ending_D,
@@ -230,7 +262,7 @@ std::vector<std::string> EndingCardStrings() {
 
 void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
                     std::string_view title, float alpha,
-                    float screenW, float screenH) {
+                    float screenW, float screenH, int menuCursor) {
     alpha = std::min(1.0f, std::max(0.0f, alpha));
     const unsigned char a = static_cast<unsigned char>(alpha * 255.0f);
     const SemesterState state = summary.state;
@@ -336,6 +368,55 @@ void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
     }
     r.DrawText(path, Vec2{panelX + kPad, sy}, kStatSize,
                Color{200, 200, 205, a});
+
+    // ---- A-T3: the bottom 3-option menu (回首頁 / 重新開始 / 結束) -------
+    // The ending screen is now a STABLE interactive screen; this row is the
+    // player's only agency here. ←/→ move the cursor (handled in
+    // GameController), E/Enter confirm → World::PendingAppAction. The View
+    // ONLY renders: the highlighted option gets a caret + gold; the others
+    // are dim. Laid out horizontally centred near the bottom edge so it
+    // never collides with the 結算 panel (which is clamped above
+    // screenH - panelH - 8). Drawn at full card alpha so it fades IN with
+    // the rest of the screen and is steady once shown.
+    constexpr int   kMenuSize = 18;
+    constexpr float kHintSize = 13.0f;
+    constexpr int   kMenuItems = 3;   // |EndingMenuChoice|
+    const int cursor = ((menuCursor % kMenuItems) + kMenuItems) % kMenuItems;
+    // Build the three labels with a leading caret on the selected one so
+    // the selection is unambiguous even in greyscale (audit-style a11y).
+    // The caret is the ASCII "> " the pause menu uses (always in the atlas).
+    std::string opts[kMenuItems];
+    float optW[kMenuItems];
+    float totalW = 0.0f;
+    constexpr float kGap = 26.0f;
+    for (int i = 0; i < kMenuItems; ++i) {
+        const std::string lbl{endingMenuLabel(EndingMenuChoiceAt(i))};
+        opts[i] = (i == cursor ? std::string("> ") : std::string("  ")) + lbl;
+        optW[i] = TextWidthPx(opts[i], kMenuSize);
+        totalW += optW[i];
+    }
+    totalW += kGap * 2.0f;
+    // Place the row near the bottom; a thin panel behind it so it reads as
+    // a control bar distinct from the story text above.
+    const float menuH = static_cast<float>(kMenuSize) + 14.0f;
+    const float menuY = screenH - menuH - 22.0f;
+    const float barX  = screenW * 0.5f - totalW * 0.5f - 12.0f;
+    const float barW  = totalW + 24.0f;
+    r.DrawRect(Rect{barX, menuY - 5.0f, barW, menuH},
+               Color{18, 20, 28, static_cast<unsigned char>(alpha * 220.0f)});
+    float ox = screenW * 0.5f - totalW * 0.5f;
+    for (int i = 0; i < kMenuItems; ++i) {
+        const Color c = (i == cursor) ? Color{255, 200, 70, a}    // gold = selected
+                                      : Color{170, 170, 180, a};  // dim = unselected
+        r.DrawText(opts[i], Vec2{ox, menuY}, kMenuSize, c);
+        ox += optW[i] + kGap;
+    }
+    // Nav hint just below the option row.
+    const std::string hint = "← → 選擇   E 確認";
+    r.DrawText(hint,
+               Vec2{CenteredX(hint, static_cast<int>(kHintSize), screenW),
+                    menuY + static_cast<float>(kMenuSize) + 2.0f},
+               static_cast<int>(kHintSize), Color{150, 150, 160, a});
 }
 
 } // namespace nccu

@@ -44,17 +44,42 @@ struct EndingSummary {
     bool finaleChoiceMade = false;
 };
 
+// A-T3 — the ending screen's bottom 3-option menu. The ending screen is a
+// STABLE, INTERACTIVE screen (no longer a passive card): ←/→ move the
+// cursor, E/Enter confirm. The three choices, in cursor order:
+//   0  回首頁     — back to the title screen.
+//   1  重新開始   — a fresh new game from Ch1.
+//   2  結束       — true quit (the ONLY path that closes the window).
+// This enum is the single source of truth for the menu's meaning; the
+// LABELS live in EndingMenuLabel(). Both routing semantics are realised
+// through World::PendingAppAction in GameController (the View only renders
+// the highlighted row) — see EndingMenuActionAt below.
+enum class EndingMenuChoice { BackToTitle, RestartGame, Quit };
+
+// Pure index → choice mapping (cursor 0..2). Out-of-range clamps into the
+// valid set so a stray cursor can never select "nothing". Testable without
+// any World / renderer.
+[[nodiscard]] EndingMenuChoice EndingMenuChoiceAt(int index) noexcept;
+
+// The on-screen label for a choice (CJK; every glyph baked into the atlas
+// — these strings are included in EndingCardStrings() so the glyph-scan
+// test covers them). Single source of truth shared by the renderer.
+[[nodiscard]] std::string_view EndingMenuLabel(EndingMenuChoice c) noexcept;
+
 // Full-screen ending screen: black backdrop + title + the opening 字卡,
 // THEN (Item 1) an in-fiction "why you're here" reason and a 結算 stats
 // card showing the final karma + the deciding conditions that fired for
-// THIS ending. All at `alpha` (0..1, the fade-in level). Self-contained
+// THIS ending, AND (A-T3) a bottom 3-option menu with `menuCursor` (0..2)
+// highlighted. All at `alpha` (0..1, the fade-in level). Self-contained
 // and spy-testable like DrawDialog — View early-returns into this when
-// the semester reaches an ending, so the reason/stats MUST be rendered
-// here (the ending .md files are never drawn; see View.cpp). The summary
-// supplies every primitive the screen needs; EndingView holds the title,
-// caption, reason copy and condition labels as constexpr tables.
+// the semester reaches an ending, so the reason/stats/menu MUST be
+// rendered here (the ending .md files are never drawn; see View.cpp). The
+// summary supplies every primitive the screen needs; EndingView holds the
+// title, caption, reason copy, condition labels and menu labels as
+// constexpr tables. menuCursor defaults to 0 (回首頁) for callers/tests
+// that don't drive the menu.
 void DrawEndingCard(nccu::gfx::IRenderer& r, const EndingSummary& summary,
                     std::string_view title, float alpha,
-                    float screenW, float screenH);
+                    float screenW, float screenH, int menuCursor = 0);
 } // namespace nccu
 #endif // ENDING_VIEW_H_
