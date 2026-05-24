@@ -42,11 +42,11 @@ inline constexpr Vec2 kRomaPlazaCenter{1088.0f, 960.0f};
 inline constexpr std::array<DecorationDef, 2> kDecorations{{
     DecorationDef{SemesterState::Chapter2_Midterms, kRomaPlazaCenter,
                   "resources/assets/decorations/chiikawa_strip.png",
-                  /*frameCount=*/8, /*drawScale=*/80.0f, /*fps=*/6.0},
+                  /*frameCount=*/17, /*drawScale=*/80.0f, /*fps=*/6.0},
     DecorationDef{SemesterState::Chapter3_SportsDay,
                   Vec2{kSportsTrackCx, kSportsTrackCy},
                   "resources/assets/decorations/cat_strip.png",
-                  /*frameCount=*/8, /*drawScale=*/28.0f, /*fps=*/8.0},
+                  /*frameCount=*/24, /*drawScale=*/28.0f, /*fps=*/8.0},
 }};
 
 } // namespace nccu::gfx
