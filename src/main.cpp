@@ -3,10 +3,12 @@
 #include "controller/GameController.h"
 #include "ui/TitleScreen.h"
 #include "ui/CharacterSelect.h"
+#include "ui/LoadingScreen.h"
 #include "harness/Harness.h"
 #include "gfx/Window.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Font.h"
+#include "gfx/Texture.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -45,6 +47,15 @@ int main() {
     // and skips the interactive title + character-select for a
     // deterministic run.
     auto harness = nccu::MaybeAttach();
+
+    // Human-only 載入畫面: warm the texture cache (gfx/Texture.h) behind a
+    // brief "載入中…" screen so the first World/View construct — and every
+    // Restart — hits the warm cache with no first-frame disk/GPU stutter.
+    // Skipped under the harness (like the title/select below) so the
+    // scripted frame timeline / state.jsonl stay byte-identical; the harness
+    // path lets World/View warm the cache lazily off the recorded loop.
+    if (!harness.Active())
+        nccu::RunLoadingScreen(win);
 
     // Outer screen-flow loop. One iteration == one prepared run. The
     // human path may revisit the title (back from select, or Restart
@@ -142,9 +153,13 @@ int main() {
         if (harness.Active()) break;         // harness runs exactly once
     }
 
-    // Unload the font BEFORE the Window dtor runs ::CloseWindow(): a
-    // static-lifetime font would otherwise destruct after the GL context
-    // is gone. `win` is still alive on this line, so GL is valid.
+    // Unload the font AND the texture cache BEFORE the Window dtor runs
+    // ::CloseWindow(): both hold GPU resources, and a static-lifetime store
+    // would otherwise destruct after the GL context is gone (touching dead
+    // GL → UB). `win` is still alive on this line, so GL is valid. Mirror of
+    // the Font discipline; the cache owns each texture once, so this is the
+    // single ::UnloadTexture point for the shared (cached) textures.
+    nccu::gfx::ShutdownTextureCache();
     nccu::gfx::ShutdownFont();
     return 0;
 }

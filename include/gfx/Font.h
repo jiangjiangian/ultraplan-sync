@@ -210,7 +210,15 @@ inline const char* UiLiteralChars() {
         // and a future direct render of them can't tofu either.
         "敬刺君含扶毫央櫃牽羊"
         "\xE2\x80\x9C"      // U+201C "
-        "\xE2\x80\x9D";     // U+201D "
+        "\xE2\x80\x9D"      // U+201D "
+        // UI-C-2: the human-only 載入畫面 (src/ui/LoadingScreen.cpp) labels
+        // 「載入中…」 / 「正在準備政大山下的雨天…」. Every glyph but 載 (U+8F09)
+        // is already covered by docs/content / the blocks above; 載 occurs in
+        // NO docs/content/*.md, so it reaches the atlas ONLY here (the
+        // all-literal UI-B-1 scan, test_font_ui_literal_scan.cpp, FAILS the
+        // build otherwise — same V1/REQ#10 mechanism). Baked here so the
+        // loading label renders even on the content-unreadable fallback path.
+        "載";
 }
 
 // Collect distinct codepoints: ASCII 32..126 always, then every codepoint
