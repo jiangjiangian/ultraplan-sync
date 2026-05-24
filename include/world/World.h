@@ -123,7 +123,8 @@ public:
     [[nodiscard]] bool MenuOpen() const noexcept { return menuOpen_; }
     void SetMenuOpen(bool v) noexcept {
         menuOpen_ = v;
-        if (!v) { menuCursor_ = 0; helpOpen_ = false; }  // reopen on Resume
+        // reopen on Resume: clear the cursor, the help latch AND its page.
+        if (!v) { menuCursor_ = 0; helpOpen_ = false; helpPage_ = 0; }
     }
     [[nodiscard]] int  MenuCursor() const noexcept { return menuCursor_; }
     // REQUIREMENT #9 + Cycle 9.E.3: 6 items — 0=繼續 1=說明
@@ -144,7 +145,24 @@ public:
     // while it (and the menu) is up. Opened from the pause-menu 說明
     // item; M/E/Enter closes it back to the menu. No raylib here.
     [[nodiscard]] bool HelpOpen() const noexcept { return helpOpen_; }
-    void SetHelpOpen(bool v) noexcept { helpOpen_ = v; }
+    void SetHelpOpen(bool v) noexcept {
+        helpOpen_ = v;
+        if (v) helpPage_ = 0;   // each open starts on the first help page
+    }
+
+    // U2-T4: the in-game 說明 overlay is now PAGED (the help text grew past
+    // one panel — a 【道具須知】 economy/tips section was added). The current
+    // page index is pure UI state on the World — exactly the MenuCursor /
+    // InventoryCursor idiom — so the View reads it to draw the right page +
+    // the 「第 N／M 頁」 indicator, and GameController flips it with ←/→ while
+    // help is up. NOT serialized (the harness emits no cursor/page — see
+    // Harness.cpp), so a paged help leaves state.jsonl byte-identical. The
+    // page COUNT lives in the UI layer (GameHelp.h kGameHelpPageCount); the
+    // controller wraps the index against it (World stays free of UI headers).
+    // No raylib here. Reset to 0 on each SetHelpOpen(true) / SetMenuOpen
+    // (false) so a re-open always starts on page 1.
+    [[nodiscard]] int  HelpPage() const noexcept { return helpPage_; }
+    void SetHelpPage(int v) noexcept { helpPage_ = v; }
 
     // Cycle 9.E (audit D8 / SC 2.3.3): the reduced-motion accessibility
     // preference. Default false; set true by either the ctor (when
@@ -329,6 +347,7 @@ private:
     bool                        menuOpen_{false};
     int                         menuCursor_{0};
     bool                        helpOpen_{false};
+    int                         helpPage_{0};
     bool                        reducedMotion_{false};
     bool                        largeTargets_{false};
     AppAction                   pendingAppAction_{AppAction::None};

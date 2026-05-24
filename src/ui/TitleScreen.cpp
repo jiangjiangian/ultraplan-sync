@@ -53,11 +53,20 @@ bool RunHelpPage(gfx::Window& win) {
     // so it may dismiss immediately. (ESC is the program's quit key — it
     // falls through to WindowShouldClose below, exiting cleanly.)
     PressLatch enter;
+    // U2-T4: the shared help is now PAGED (kGameHelpPages). The title page
+    // keeps its page index LOCAL (no World here); ←/→ flip it, matching the
+    // in-game overlay's nav. Starts on page 1.
+    int page = 0;
     while (!win.ShouldClose()) {
         if (Input::IsPressed(Key::E))
             return true;                       // back to the title menu
         if (enter.Fired(Input::IsDown(Key::Enter), Input::IsPressed(Key::Enter)))
             return true;
+        if (Input::IsPressed(Key::Right))
+            page = (page + 1) % nccu::kGameHelpPageCount;
+        if (Input::IsPressed(Key::Left))
+            page = (page - 1 + nccu::kGameHelpPageCount) %
+                   nccu::kGameHelpPageCount;
         {
             DrawScope frame;
             Renderer r;
@@ -69,24 +78,30 @@ bool RunHelpPage(gfx::Window& win) {
             TextBuilder{"遊戲說明"}
                 .At(Vec2{kWinW / 2.0f - 52.0f, 30.0f})
                 .Size(24).Color(Colors::Gold).Draw();
-            // T4: matches the in-game overlay (View.cpp). The help text grew
-            // (keys split one-per-line + a 【雨傘外觀】 section), so the pitch
-            // is 15 (blanks 5) to keep header + 20 text rows + 3 blanks above
-            // the footer chip in the 450 px window. Section headers (【…】)
-            // are gold so the four sections read apart at a glance.
+            // U2-T4: matches the in-game overlay (View.cpp) — draw only the
+            // current page at pitch 17 (blanks 8), sized so the taller page
+            // (page 2) clears the indicator + 返回 chip. Section headers
+            // (【…】) are gold so the sections read apart.
             float y = 64.0f;
             const auto isHeader = [](std::string_view s) {
                 return !s.empty() && s.front() == static_cast<char>('\xE3');
             };  // 【 is U+3010 → lead byte 0xE3
-            for (const std::string_view ln : nccu::kGameHelpLines) {
+            for (const std::string_view ln :
+                 nccu::kGameHelpPages[static_cast<std::size_t>(page)]) {
                 if (!ln.empty())
                     TextBuilder{std::string{ln}}
                         .At(Vec2{46.0f, y}).Size(15)
                         .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
-                y += ln.empty() ? 5.0f : 15.0f;
+                y += ln.empty() ? 8.0f : 17.0f;
             }
-            TextBuilder{std::string{nccu::kGameHelpClosing}}
-                .At(Vec2{46.0f, y}).Size(15).Color(Colors::White).Draw();
+            // U2-T4: 「第 N／M 頁」 indicator + ←/→ hint above the chip.
+            const std::string ind =
+                "第 " + std::to_string(page + 1) + "／" +
+                std::to_string(nccu::kGameHelpPageCount) + " 頁   ←／→ 翻頁";
+            TextBuilder{ind}
+                .At(Vec2{kWinW / 2.0f - 92.0f,
+                         static_cast<float>(kWinH) - 24.0f - 62.0f})
+                .Size(15).Color(Color{120, 120, 130, 255}).Draw();
             // T4c: a PROMINENT 返回 prompt — a gold-bordered chip + bright
             // gold label so the way out is unmistakable (was faint dark-grey).
             const float chipW = 188.0f, chipH = 26.0f;

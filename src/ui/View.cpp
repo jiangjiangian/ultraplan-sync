@@ -627,12 +627,13 @@ void View::Draw(const World& world) {
             .Size(14).Color(Color{180, 180, 180, 255}).Draw();
     }
 
-    // REQUIREMENT #9: the in-game 說明 (how-to-play) overlay — drawn
-    // ABOVE the menu (which is still up behind it). Pure function of
-    // World::HelpOpen(); the same shared GameHelp text the title screen
-    // uses, so the two never drift. A near-full-screen panel so the
-    // ~22-cell help lines fit; M/E/Enter (handled in GameController)
-    // dismisses it back to the menu (ESC quits the program).
+    // REQUIREMENT #9 + U2-T4: the in-game 說明 (how-to-play) overlay —
+    // drawn ABOVE the menu (which is still up behind it). Pure function of
+    // World::HelpOpen() + World::HelpPage(); the same shared GameHelp text
+    // the title screen uses, so the two never drift. A near-full-screen
+    // panel showing one PAGE of the (now-paged) help; ←/→ flip the page,
+    // M/E/Enter (all handled in GameController) dismiss it back to the menu
+    // (ESC quits the program).
     if (world.MenuOpen() && world.HelpOpen()) {
         const float W = viewportSize_.x;
         const float H = viewportSize_.y;
@@ -643,31 +644,40 @@ void View::Draw(const World& world) {
         TextBuilder{"遊戲說明"}
             .At(Vec2{W * 0.5f - 52.0f, pad + 6.0f})
             .Size(24).Color(Colors::Gold).Draw();
-        // T4: the help text grew (the keys split one-per-line + a new
-        // 【雨傘外觀】 section), so the per-row pitch is 15 (blank separators
-        // 5) to keep header + 20 text rows + 3 blanks above the footer chip
-        // in the 450 px window without scrolling: 15*19 + 5*3 = 300 from
-        // hy0=64 lands the closing line ~364, well clear of the chip at
-        // ~392. Section headers (【…】) are tinted gold so the four sections
-        // read apart at a glance.
-        float hy = pad + 40.0f;
+        // U2-T4: the help text grew past one panel (a 【道具須知】 economy/
+        // tips section was added), so it is PAGED — draw only the current
+        // page (World::HelpPage, ←/→ flips it in GameController). Each page
+        // is now ~half the old content, so a comfortable pitch 17 (blanks 8)
+        // fits the TALLER page (page 2: 雨傘外觀+道具須知+結局, 15 content +
+        // 3 blanks → 15*17 + 3*8 = 279 from hy0=64, ends ~343) above the page
+        // indicator (~y364) and the 返回 chip (~y392) in the 450 px window.
+        // Section headers (【…】) are gold so the sections read apart.
+        const int page = std::max(0, std::min(world.HelpPage(),
+                                               nccu::kGameHelpPageCount - 1));
         const auto isHeader = [](std::string_view s) {
             return !s.empty() && s.front() == static_cast<char>('\xE3');
         };  // 【 is U+3010 → lead byte 0xE3
-        for (const std::string_view ln : nccu::kGameHelpLines) {
+        float hy = pad + 40.0f;
+        for (const std::string_view ln :
+             nccu::kGameHelpPages[static_cast<std::size_t>(page)]) {
             if (!ln.empty())
                 TextBuilder{std::string{ln}}
                     .At(Vec2{pad + 22.0f, hy})
                     .Size(15)
                     .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
-            hy += ln.empty() ? 5.0f : 15.0f;
+            hy += ln.empty() ? 8.0f : 17.0f;
         }
-        TextBuilder{std::string{nccu::kGameHelpClosing}}
-            .At(Vec2{pad + 22.0f, hy}).Size(15).Color(Colors::White).Draw();
+        // U2-T4: 「第 N／M 頁」 page indicator + the ←/→ flip hint, just above
+        // the 返回 chip so the paging is discoverable.
+        const std::string ind =
+            "第 " + std::to_string(page + 1) + "／" +
+            std::to_string(nccu::kGameHelpPageCount) + " 頁   ←／→ 翻頁";
+        TextBuilder{ind}.At(Vec2{W * 0.5f - 92.0f, H - pad - 62.0f})
+            .Size(15).Color(Color{200, 200, 210, 255}).Draw();
         // T4c: make the 返回 prompt PROMINENT — it was faint dark-grey on
         // the dark panel and easy to miss. A gold-bordered chip + bright
         // bold-size gold label, centred at the bottom, so the way out is
-        // unmistakable.
+        // unmistakable. On EVERY page (U2-T4).
         const float chipW = 188.0f, chipH = 26.0f;
         const float chipX = W * 0.5f - chipW * 0.5f;
         const float chipY = H - pad - chipH - 8.0f;

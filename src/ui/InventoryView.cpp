@@ -5,6 +5,7 @@
 #include "gfx/Color.h"
 #include "gfx/UmbrellaGlyph.h"
 #include "quest/ItemCatalog.h"   // kItem* category sentinels
+#include "dialog/DialogLayout.h" // WrapToCells — CJK-aware description wrap
 
 #include <algorithm>
 #include <string>
@@ -15,18 +16,37 @@ namespace nccu {
 
 using namespace nccu::gfx;
 
+// ---- U2-T1: paging window math (pure, header-declared, unit-tested) ------
+int InventoryPageCount(int rowCount) noexcept {
+    if (rowCount <= 0) return 1;                 // empty bag is "1 / 1"
+    return (rowCount + kInventoryRowsPerPage - 1) / kInventoryRowsPerPage;
+}
+
+int InventoryPageOf(int cursor, int rowCount) noexcept {
+    if (rowCount <= 0) return 0;
+    if (cursor < 0) cursor = 0;
+    if (cursor >= rowCount) cursor = rowCount - 1;
+    return cursor / kInventoryRowsPerPage;
+}
+
 namespace {
 
-// T6: a bag row's CATEGORY, derived purely from its itemId (presentation
-// only — no gameplay logic, the DTO already carries the id). Drives a
-// left-edge swatch + the row colour so 金幣 / 雨傘 / 任務紙張 read as a
-// different KIND of thing than the usable consumables.
-enum class RowKind { Consumable, Money, Umbrella, Paper };
+// T6 / U2-T3: a bag row's CATEGORY, derived purely from its itemId
+// (presentation only — no gameplay logic, the DTO already carries the id).
+// Drives a left-edge swatch + the row colour so 金幣 / 雨傘 / 任務紙張 /
+// 食物道具 read as a different KIND than the usable consumables. U2-T3 adds
+// Food for the Ch3 物物交換鏈 carried items (香腸 / 大聲公) so they no longer
+// borrow the teal potion-flask swatch (which implied "usable") — they are
+// view-only (usable=false), so they MUST NOT read as a usable consumable.
+enum class RowKind { Consumable, Money, Umbrella, Paper, Food };
 
 RowKind KindOf(const InventoryRow& row) {
     if (row.itemId == kItemMoney) return RowKind::Money;
     if (row.itemId == kItemForm || row.itemId == kItemNotes)
         return RowKind::Paper;
+    // U2-T3: the Ch3 carried trade items are view-only 道具, not consumables.
+    if (row.itemId == kItemSausage || row.itemId == kItemLoudspeaker)
+        return RowKind::Food;
     // Any umbrella sentinel (or a vendor umbrella id) → Umbrella.
     if (row.itemId.find("umbrella") != std::string::npos ||
         row.itemId.find("Umbrella") != std::string::npos)
@@ -34,25 +54,39 @@ RowKind KindOf(const InventoryRow& row) {
     return RowKind::Consumable;        // a held, usable consumable
 }
 
-// The umbrella look for an umbrella row, so the bag swatch matches the
-// in-world / ending glyph (the same shared gfx::DrawUmbrellaGlyph).
+// U2-T3: the umbrella look for an umbrella row, so the bag swatch matches
+// the in-world / ending glyph (the same shared gfx::DrawUmbrellaGlyph).
+// Previously only cursed/ugly were mapped and EVERYTHING else fell to
+// TrueBlue — so the 破傘 / 陷阱傘 the player can now hold drew the wrong
+// (intact blue) canopy. Map every held-umbrella sentinel to its true look:
+//   fragile  → FragileBroken (破傘, only handle/ribs)
+//   proftrap → ProfessorTrap (陷阱傘, danger red)
+//   cursed   → CursedPurple,  ugly → UglyGreen
+//   true / loaner (管理員的傘, a plain loaner) / victim (苦主的透明傘) → TrueBlue
 UmbrellaLook UmbrellaLookOf(const InventoryRow& row) {
     if (row.itemId == kItemCursedUmbrella || row.itemId == "CursedUmbrella")
         return UmbrellaLook::CursedPurple;
     if (row.itemId == kItemUglyUmbrella || row.itemId == "UglyUmbrella")
         return UmbrellaLook::UglyGreen;
-    // True umbrella + the carried 苦主 transparent umbrella both read blue.
+    if (row.itemId == kItemFragileUmbrella)
+        return UmbrellaLook::FragileBroken;     // 破傘
+    if (row.itemId == kItemProfTrapUmbrella)
+        return UmbrellaLook::ProfessorTrap;     // 陷阱傘
+    // True + the 管理員 loaner + the carried 苦主 transparent umbrella all
+    // read as the clean blue canopy.
     return UmbrellaLook::TrueBlue;
 }
 
 // Row text colour by kind: usable consumables stay gold (you can DO
-// something), the three view-only categories get their own muted tints so
-// the player can tell a 金幣 / 傘 / 紙 row from an actionable one at a glance.
+// something), the view-only categories get their own muted tints so the
+// player can tell a 金幣 / 傘 / 紙 / 道具 row from an actionable one at a
+// glance.
 Color RowColor(RowKind k) {
     switch (k) {
         case RowKind::Money:      return Color{255, 205, 90, 255};   // coin gold
         case RowKind::Umbrella:   return Color{150, 200, 255, 255};  // soft blue
         case RowKind::Paper:      return Color{225, 225, 230, 255};  // paper white
+        case RowKind::Food:       return Color{255, 190, 120, 255};  // warm tan
         case RowKind::Consumable: return Colors::Gold;
     }
     return Colors::White;
@@ -82,6 +116,19 @@ void DrawSwatch(IRenderer& r, const InventoryRow& row, RowKind k, Rect box) {
                             box.width * 0.22f, box.height * 0.22f}, C::DarkGray);
             break;
         }
+        case RowKind::Food: {
+            // U2-T3: a distinct food/道具 token — a warm orange parcel with a
+            // darker tie band — so the Ch3 香腸 / 大聲公 read as carried
+            // 道具, NOT the teal potion-flask of a usable consumable. Rect-
+            // only (the architecture rule), inset to read as a wrapped item.
+            r.DrawRect(Rect{box.x + box.width * 0.18f, box.y + box.height * 0.22f,
+                            box.width * 0.64f, box.height * 0.58f},
+                       Color{225, 140, 55, 255});          // parcel body
+            r.DrawRect(Rect{box.x + box.width * 0.44f, box.y + box.height * 0.10f,
+                            box.width * 0.12f, box.height * 0.80f},
+                       Color{150, 85, 30, 255});           // tie band
+            break;
+        }
         case RowKind::Consumable: {
             // A little potion/flask: a teal body so a usable item reads apart.
             r.DrawRect(Rect{box.x + box.width * 0.32f, box.y + box.height * 0.05f,
@@ -105,8 +152,14 @@ void DrawInventory(IRenderer& r,
     // as the dialog box / ending card.
     r.DrawRect(Rect{0.0f, 0.0f, screenW, screenH}, Color{0, 0, 0, 140});
 
-    const float pw = 400.0f;
-    const float ph = 312.0f;
+    // U2-T2: a BIGGER box. Was 400x312 with a 96px desc band that the
+    // longer post-G4 effect lines overflowed; now 468 wide (more room for
+    // a wrapped row + the description) and 372 tall, sized so a fixed
+    // kInventoryRowsPerPage rows sit at a comfortable 26px pitch AND the
+    // description band below holds up to kDescLines WRAPPED lines fully
+    // inside the border.
+    const float pw = 468.0f;
+    const float ph = 372.0f;
     const float px = screenW * 0.5f - pw * 0.5f;
     const float py = screenH * 0.5f - ph * 0.5f;
     r.DrawRect(Rect{px, py, pw, ph}, Color{30, 30, 40, 235});
@@ -116,70 +169,111 @@ void DrawInventory(IRenderer& r,
 
     r.DrawText("物品欄", Vec2{px + 16.0f, py + 12.0f}, 24, Colors::White);
 
-    float y = py + 58.0f;
+    const float listTop = py + 58.0f;
     if (rows.empty()) {
-        r.DrawText("（空）", Vec2{px + 16.0f, y}, 18,
+        r.DrawText("（空）", Vec2{px + 16.0f, listTop}, 18,
                    Color{200, 200, 200, 255});
         return;
     }
 
+    const int rowCount = static_cast<int>(rows.size());
     // Clamp the highlighted index into range so an out-of-bounds cursor
     // (e.g. after a row was used and the list shrank) still selects a real
     // row for the description panel.
-    const int sel = rows.empty() ? 0
-        : std::min(std::max(cursor, 0),
-                   static_cast<int>(rows.size()) - 1);
+    const int sel = std::min(std::max(cursor, 0), rowCount - 1);
 
-    // The row list sits in the upper band; the description panel below gets
-    // a fixed reserved height, so the rows lay out in the remaining space.
-    const float descH    = 96.0f;
-    const float listTop  = y;
-    const float listBot  = py + ph - descH;
-    const float rowH     = std::min(
-        28.0f, (listBot - listTop) / static_cast<float>(rows.size()));
-    const float swatchSz = std::min(20.0f, rowH - 6.0f);
+    // ---- U2-T1: paging. Show only the cursor's page so the selected row
+    // is ALWAYS visible and a big bag never crushes the rows / overflows
+    // the box. The page index is DERIVED from the cursor (no retained UI
+    // state, nothing serialized — state.jsonl stays byte-identical).
+    const int pageCount = InventoryPageCount(rowCount);
+    const int page      = InventoryPageOf(sel, rowCount);
+    const int first     = page * kInventoryRowsPerPage;
+    const int last      = std::min(rowCount, first + kInventoryRowsPerPage);
 
-    // One row each: a left-edge category swatch, a "> " caret on the selected
-    // row, the 中文 name, and an "xN" suffix when count>0. The selected row
-    // gets a highlight bar behind it so the cursor is unmistakable.
-    for (std::size_t i = 0; i < rows.size(); ++i) {
-        const InventoryRow& row = rows[i];
-        const bool isSel = (static_cast<int>(i) == sel);
+    // Geometry bands: rows in the upper band at a fixed comfortable pitch,
+    // then a page-indicator strip, then the description band at the foot.
+    constexpr float kRowH     = 26.0f;
+    constexpr float kSwatchSz = 20.0f;
+    constexpr int   kDescLines = 3;          // wrapped description rows shown
+    constexpr float kDescLineH = 18.0f;
+
+    // One drawn row per VISIBLE bag row: a left-edge category swatch, a
+    // "> " caret on the selected row, the 中文 name, and an "xN" suffix when
+    // count>0. The selected row gets a highlight bar behind it so the cursor
+    // is unmistakable. Index i is the absolute row; slot is its on-page row.
+    for (int i = first; i < last; ++i) {
+        const InventoryRow& row = rows[static_cast<std::size_t>(i)];
+        const bool isSel = (i == sel);
         const RowKind kind = KindOf(row);
-        const float rowY = listTop + static_cast<float>(i) * rowH;
+        const float rowY = listTop + static_cast<float>(i - first) * kRowH;
 
         if (isSel)
-            r.DrawRect(Rect{px + 8.0f, rowY - 2.0f, pw - 16.0f, rowH - 2.0f},
+            r.DrawRect(Rect{px + 8.0f, rowY - 2.0f, pw - 16.0f, kRowH - 2.0f},
                        Color{70, 60, 25, 235});            // selection bar
 
         // Category swatch (the umbrella row draws its actual look).
         DrawSwatch(r, row, kind,
-                   Rect{px + 14.0f, rowY + (rowH - swatchSz) * 0.5f - 1.0f,
-                        swatchSz, swatchSz});
+                   Rect{px + 14.0f, rowY + (kRowH - kSwatchSz) * 0.5f - 1.0f,
+                        kSwatchSz, kSwatchSz});
 
         std::string line = (isSel ? "> " : "  ") + row.name;
         if (row.count > 0) line += " x" + std::to_string(row.count);
         // Selected row reads bright orange; otherwise the per-category tint
-        // so 金幣 / 雨傘 / 任務紙張 are visually distinct from usable items.
+        // so 金幣 / 雨傘 / 任務紙張 / 道具 are visually distinct from usable
+        // items.
         const Color c = isSel ? Color{255, 170, 40, 255} : RowColor(kind);
-        r.DrawText(line, Vec2{px + 14.0f + swatchSz + 8.0f, rowY + 2.0f},
+        r.DrawText(line, Vec2{px + 14.0f + kSwatchSz + 8.0f, rowY + 2.0f},
                    18, c);
     }
 
-    // Description panel for the selected row — a faint divider then the
-    // catalog line, plus a usage hint when the row is usable. Sits in the
-    // lower band of the panel so it never overlaps the row list above.
+    // U2-T1: 「第 N／M 頁」 page indicator — right-aligned-ish on its own
+    // strip just under the row band, plus a ←/→翻頁 hint when >1 page so
+    // the navigation is discoverable. Drawn for every bag (single page reads
+    // "第 1／1 頁") so the affordance is consistent.
+    const float pageY = listTop + kInventoryRowsPerPage * kRowH + 4.0f;
+    {
+        std::string ind = "第 " + std::to_string(page + 1) + "／" +
+                          std::to_string(pageCount) + " 頁";
+        if (pageCount > 1) ind += "   ←／→ 翻頁";
+        r.DrawText(ind, Vec2{px + 16.0f, pageY}, 14, Color{200, 200, 210, 255});
+    }
+
+    // ---- Description band for the selected row — a faint divider, the row
+    // name, then the catalog line WRAPPED so it never spills past the box
+    // border (U2-T2), plus a usage hint. Sits at the panel foot, below the
+    // row band + page strip, so it never overlaps them.
     const InventoryRow& cur = rows[static_cast<std::size_t>(sel)];
-    const float descY = py + ph - 80.0f;
-    r.DrawRect(Rect{px + 12.0f, descY - 10.0f, pw - 24.0f, 1.0f},
+    const float descTop = pageY + 24.0f;
+    r.DrawRect(Rect{px + 12.0f, descTop - 8.0f, pw - 24.0f, 1.0f},
                Color{120, 120, 140, 200});
-    r.DrawText(cur.name, Vec2{px + 16.0f, descY}, 18, Colors::Gold);
-    if (!cur.description.empty())
-        r.DrawText(cur.description, Vec2{px + 16.0f, descY + 24.0f}, 14,
-                   Color{210, 210, 215, 255});
+    r.DrawText(cur.name, Vec2{px + 16.0f, descTop}, 18, Colors::Gold);
+
+    // U2-T2: wrap the description to the box's inner CELL width (East-Asian-
+    // Width aware, the project's single source of truth nccu::dialog::
+    // WrapToCells — full-width CJK = 2 cells). The text runs from px+16 to
+    // ~px+pw-16 (≈436px inner); at font size 14 a full-width glyph advances
+    // ~14 + 14/10 ≈ 15.4px ≈ 7.7px/cell, so ≈436/7.7 ≈ 56 cells fit a row.
+    // Use 54 for a safety margin against the box's right border. Show up to
+    // kDescLines wrapped rows; the densest catalog line (the 防水噴霧
+    // 「使用：雨量 −35（彈開大半雨水）；專門擋雨，不影響業力。」 ≈ 48 cells)
+    // fits in one row, so kDescLines=3 leaves ample headroom.
+    if (!cur.description.empty()) {
+        constexpr int kDescCells = 54;
+        const std::vector<std::string> wrapped =
+            nccu::dialog::WrapToCells(cur.description, kDescCells);
+        const int shown =
+            std::min(static_cast<int>(wrapped.size()), kDescLines);
+        for (int i = 0; i < shown; ++i)
+            r.DrawText(wrapped[static_cast<std::size_t>(i)],
+                       Vec2{px + 16.0f,
+                            descTop + 24.0f + static_cast<float>(i) * kDescLineH},
+                       14, Color{210, 210, 215, 255});
+    }
     r.DrawText(cur.usable ? "↑↓ 選擇   E 使用" : "↑↓ 選擇",
-               Vec2{px + 16.0f, descY + 50.0f}, 14,
-               Color{185, 185, 190, 255});
+               Vec2{px + 16.0f,
+                    descTop + 24.0f + static_cast<float>(kDescLines) * kDescLineH},
+               14, Color{185, 185, 190, 255});
 }
 
 } // namespace nccu

@@ -102,6 +102,21 @@ TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {
                       "help-closing");
 }
 
+// U2-T4: the help is now PAGED (kGameHelpPages). Scan the paged view too,
+// so a glyph added to a page line that somehow isn't mirrored in the flat
+// kGameHelpLines still can't tofu on screen — the renderers draw the pages.
+TEST_CASE("U2-T4: every paged 遊戲說明 glyph is baked into the atlas") {
+    const std::vector<int> atlas = CollectCodepoints();
+    CHECK(nccu::kGameHelpPageCount == 2);
+    int pageNo = 0;
+    for (const auto page : nccu::kGameHelpPages) {
+        ++pageNo;
+        for (const std::string_view ln : page)
+            RequireAllCovered(atlas, std::string{ln}, "help-page");
+    }
+    CHECK(pageNo == 2);
+}
+
 TEST_CASE("5c: every View.cpp HUD/menu/inventory literal glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string& s : ViewLiterals())
