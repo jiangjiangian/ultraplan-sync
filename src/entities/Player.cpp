@@ -147,6 +147,17 @@ Player& Player::DrainRain(float dt) noexcept {
     return *this;
 }
 
+Player& Player::DrainRainBy(float amount) noexcept {
+    // G4: a FIXED rain reduction (not rate-based) for a consumable used
+    // from the bag — distinct from DrainRain's -10 u/s sheltered recovery.
+    // Clamped to [0,100]; never teleports. A negative `amount` would add
+    // rain, which no caller wants, but the clamp keeps it bounded either
+    // way. Used by ApplyConsumableEffect / the entity Consume bodies so a
+    // 暖暖包 / 噴霧 / 飲料 / 小吃 buys back a chunk of the meter on use.
+    rainMeter_ = std::clamp(rainMeter_ - amount, 0.0f, 100.0f);
+    return *this;
+}
+
 Player& Player::ApplyRainSheltered(float dt, bool lethal) {
     // REQUIREMENT #5: an umbrella in heavy 山下 rain SLOWS the soak, it
     // does not stop it (chapter2.md: still accrues, reduced rate). 1.5

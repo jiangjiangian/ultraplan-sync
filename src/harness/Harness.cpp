@@ -50,6 +50,11 @@ const std::vector<std::string>& KnownFlags() {
         "Flag_TaFinaleChoiceMade", "Flag_Ch4Rippled_Senior",
         "Flag_Ch4Rippled_Bookworm", "Flag_Ch4Rippled_TAHelped",
         "Flag_Ch4Rippled_ProfTrap", "Flag_LeaveInterlude",
+        // G2: the Ch4 ending-自白 once-keys (TryOpenEndingConfession). Listed
+        // so the deferred-then-resolved ending sequence is observable in
+        // state.jsonl when a playtest drives a Ch4 ending.
+        "Flag_Ch4Confessed_Cursed", "Flag_Ch4Confessed_Ugly",
+        "Flag_Ch4Confessed_True",
     };
     return kFlags;
 }

@@ -57,6 +57,7 @@ TEST_CASE("ChapterTransitionToast string table covers every state") {
     CHECK(ChapterTransitionToast(SemesterState::Chapter4_Finals)    == "✓ 進入第四章 期末考");
     CHECK(ChapterTransitionToast(SemesterState::Ending_A) == "✓ 抵達結局");
     CHECK(ChapterTransitionToast(SemesterState::Ending_B) == "✓ 抵達結局");
+    CHECK(ChapterTransitionToast(SemesterState::Ending_D) == "✓ 抵達結局");   // G1
     CHECK(ChapterTransitionToast(SemesterState::Ending_C) == "✓ 抵達結局");
 }
 

@@ -106,6 +106,13 @@ TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
 
     nccu::SemesterStateMachine m;
     m.Transition(kCh4);
+    // G2: the 體諒 choice queued its closing nextLines, so `d` is STILL
+    // active here — and CheckEndingGates now DEFERS behind an active dialog
+    // (the player reads the 拿回你的傘 beat first). Confirm it defers, then
+    // close the box and re-poll: the (persistent) flags resolve to A.
+    nccu::CheckEndingGates(p, m, d);
+    CHECK(m.Current() == kCh4);                  // deferred while nextLines up
+    d.Close();
     nccu::CheckEndingGates(p, m, d);
     CHECK(m.Current() == SemesterState::Ending_A);
     EventBus::Instance().Clear();

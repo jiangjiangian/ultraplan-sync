@@ -80,17 +80,30 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
 void LiftChapter1Clear(Player& player, SemesterState state,
                        const DialogState& dialog);
 
-// T3: sequential quest-giver `!` gate for the Ch1 MAIN spine — the sibling
-// of Ch3IndicatorVisible. The Ch1 main line is single-NPC: 苦主(承諾) →
-// [find the victim's umbrella] → 苦主(歸還). So the `!` rides the 苦主
-// throughout, and turns OFF once the chapter objective is met (the grant set
-// Flag_HasTrueUmbrella → the (d) reunion is a recap, no longer an objective).
-// Side / optional quest-givers (the 助教 申請書 errand) are isQuestGiver=false
-// in DefaultNpcSpawns, so they never light here and never masquerade as the
-// main objective. Returns true for any OTHER quest-giver (none in Ch1) so the
-// && isQuestGiver in QuestIndicatorVisible still governs them. View calls
-// this (via QuestIndicatorVisible) when state == Chapter1_AddDrop.
+// G3: sequential `!` gate for the Ch1 MAIN spine — now a THREE-step
+// sequence 苦主 → 西裝學長 → 苦主 (the owner wants 西裝學長 to light as the
+// MIDDLE step). Mirrors the Ch2/Ch4 idiom (takes the roster isQuestGiver
+// bit rather than the caller AND-ing it), because 西裝學長 ships
+// isQuestGiver=false in DefaultNpcSpawns (NpcSpawns.h:46) yet MUST light at
+// step 2. The sequence, keyed on the existing Ch1 flags:
+//   step 1  — !Flag_PromisedVictim                : 苦主 lit (give the lead).
+//   step 2  — Flag_PromisedVictim &&
+//             !Flag_SuitSeniorChoiceMade           : 西裝學長 lit (confront /
+//                                                    the choice).
+//   step 3  — Flag_SuitSeniorChoiceMade &&
+//             !Flag_HasTrueUmbrella                : 苦主 lit again (return
+//                                                    his umbrella).
+//   done    — Flag_HasTrueUmbrella                 : all dark (grant done;
+//                                                    the (d) reunion is recap).
+// Only the spine NPCs (victim / suit_senior) are sequenced here; every
+// OTHER npc falls through to its roster isQuestGiver bit (the 助教 申請書
+// errand / 學霸 / 阿姨 are isQuestGiver=false, so they never light as a main
+// objective). Out-of-order CONTACT is redirected by the E-interact hooks
+// (TryReturnVictimUmbrella ShowMessage nudge), not here — this only paints
+// the `!`. View calls it (via QuestIndicatorVisible) when state ==
+// Chapter1_AddDrop.
 [[nodiscard]] bool Ch1IndicatorVisible(std::string_view npcId,
+                                       bool isQuestGiver,
                                        const Player& player);
 
 } // namespace nccu

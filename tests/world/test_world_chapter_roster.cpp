@@ -133,6 +133,7 @@ TEST_CASE("Player invariant survives the full spine traversal") {
                             SemesterState::Chapter3_SportsDay,
                             SemesterState::Chapter4_Finals,
                             SemesterState::Ending_B,
+                            SemesterState::Ending_D,   // G1
                             SemesterState::Ending_C,
                             SemesterState::Chapter1_AddDrop}) {
         w.RespawnChapterRoster(s);

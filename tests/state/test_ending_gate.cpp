@@ -3,9 +3,11 @@
 #include "state/SemesterStateMachine.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
+#include "ui/EndingView.h"   // IsEndingState (G1 TOTAL proof)
 #include "gfx/Vec2.h"
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;
+using nccu::IsEndingState;
 
 // S5e-2b: the three endings resolve in CheckEndingGates, ALL guarded
 // to Chapter4_Finals. The old Ch1+Flag_BoughtUglyUmbrella→Ending C is
@@ -47,26 +49,32 @@ TEST_CASE("ending gate A: karma>80 + TrueUmbrella + 體諒 -> Ending A") {
 }
 
 TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
-    SUBCASE("no 體諒") {
+    SUBCASE("no 體諒 (no Flag_ConsoledTA) -> not A, and without it, stays Ch4") {
+        // karma>80 + 持真傘 but never chose 體諒: A needs all three, and with
+        // NO Flag_ConsoledTA the new D gate also doesn't fire, so this state
+        // (no finale made) correctly stays in Ch4 until the player decides.
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag("Flag_HasTrueUmbrella");
         nccu::CheckEndingGates(p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
-    SUBCASE("no TrueUmbrella") {
+    SUBCASE("no TrueUmbrella but 體諒+karma>80 -> Ending D (G1), not A") {
+        // Was "stays Ch4"; post-G1 a 體諒 player who lacks the reclaimed
+        // true umbrella lands the bittersweet D (風雨同行), NOT A.
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag("Flag_ConsoledTA");
         nccu::CheckEndingGates(p, m, d);
-        CHECK(m.Current() == SemesterState::Chapter4_Finals);
+        CHECK(m.Current() == SemesterState::Ending_D);
     }
-    SUBCASE("karma not > 80") {
+    SUBCASE("karma not > 80 but 體諒+持真傘 -> Ending D (G1), not A") {
+        // Was "stays Ch4"; post-G1 體諒 with karma in [0,80] lands D.
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;   // default ~50
         p.SetFlag("Flag_HasTrueUmbrella"); p.SetFlag("Flag_ConsoledTA");
         nccu::CheckEndingGates(p, m, d);
-        CHECK(m.Current() == SemesterState::Chapter4_Finals);
+        CHECK(m.Current() == SemesterState::Ending_D);
     }
 }
 
@@ -159,24 +167,28 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         nccu::CheckEndingGates(p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);   // was: stuck Ch4
     }
-    SUBCASE("體諒 but karma<=80 (not-perfect honest) -> Ending C Normal") {
+    SUBCASE("體諒 but karma<=80 (not-perfect honest) -> Ending D (G1)") {
+        // G1 reslotted this from C to the bittersweet D — 體諒 with karma in
+        // [0,80] is 風雨同行 (the 破傘), not 破財消災. Still TOTAL (resolves).
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;  // karma ~50
         p.SetFlag("Flag_ConsoledTA");             // chose 體諒
         p.SetFlag("Flag_TaFinaleChoiceMade");
-        // karma not > 80 -> not A; not cursed/cold -> not B.
+        // karma not > 80 -> not A; not cursed/cold -> not B; 體諒 -> D.
         nccu::CheckEndingGates(p, m, d);
-        CHECK(m.Current() == SemesterState::Ending_C);   // was: stuck Ch4
+        CHECK(m.Current() == SemesterState::Ending_D);   // was: stuck Ch4 (pre-L1), C (pre-G1)
     }
-    SUBCASE("體諒 + karma>80 but no TrueUmbrella -> Ending C Normal") {
+    SUBCASE("體諒 + karma>80 but no TrueUmbrella -> Ending D (G1)") {
+        // Also reslotted C -> D: 體諒 high-karma without the reclaimed true
+        // umbrella misses A but earns the warmer D, not the buy-out C.
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100);
         p.SetFlag("Flag_ConsoledTA");
         p.SetFlag("Flag_TaFinaleChoiceMade");
-        // missing Flag_HasTrueUmbrella -> not A; consoled -> not cold B.
+        // missing Flag_HasTrueUmbrella -> not A; consoled -> not cold B -> D.
         nccu::CheckEndingGates(p, m, d);
-        CHECK(m.Current() == SemesterState::Ending_C);   // was: stuck Ch4
+        CHECK(m.Current() == SemesterState::Ending_D);   // was: stuck Ch4 (pre-L1), C (pre-G1)
     }
     SUBCASE("precedence: cold finale never overrides an earned A") {
         // 體諒 was chosen AND fully earned -> A still wins (the finale
@@ -216,14 +228,96 @@ TEST_CASE("ending gate: pre-finale Ch4 free-roam is byte-unchanged") {
     }
 }
 
-TEST_CASE("ending gate closes a still-active dialog on transition") {
+// G2 — the ending must NOT be abrupt. CheckEndingGates now DEFERS while a
+// dialog / narration is on screen (the owner's 「不要突然按下選項後跳結局」),
+// then resolves on a later poll once the box has CLOSED. Replaces the old
+// "closes a still-active dialog on transition" contract (which snapped the
+// ending the SAME frame, discarding any closing beat).
+TEST_CASE("G2: ending gate DEFERS behind an active dialog, then resolves on close") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::gfx::Vec2{0, 0}};
     nccu::DialogState d;
-    d.Open({"queued consequence line"});
+    d.Open({"queued closing narration line"});
     REQUIRE(d.Active());
     p.SetFlag("Flag_BoughtUglyUmbrella");
+
+    // While the narration is up the gate must do NOTHING — the player reads
+    // it first. (Pre-G2 this snapped Ending C the same frame.)
+    nccu::CheckEndingGates(p, m, d);
+    CHECK(m.Current() == SemesterState::Chapter4_Finals);   // deferred
+    CHECK(d.Active());                                       // box untouched
+
+    // Player finishes reading and closes the box; the NEXT poll resolves
+    // the (persistent-flag) ending and Close()s any residual dialog.
+    d.Close();
     nccu::CheckEndingGates(p, m, d);
     CHECK(m.Current() == SemesterState::Ending_C);
     CHECK_FALSE(d.Active());                  // terminal screen: no stale dialog
+}
+
+// ====================================================================
+// G1 — the four-ending tree A -> B -> D -> C, and the proof it is TOTAL.
+// ====================================================================
+
+// Helper: resolve a fresh Ch4 player (no active dialog) and return the
+// state the gate lands on. Each row is one finale outcome.
+namespace {
+SemesterState ResolveCh4(int karma, bool trueUmb, bool consoled,
+                         bool finaleMade, bool cursed, bool boughtUgly) {
+    SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
+    Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
+    p.AddKarma(karma - 50);                   // start is 50; reach `karma`
+    if (trueUmb)    p.SetFlag("Flag_HasTrueUmbrella");
+    if (consoled)   p.SetFlag("Flag_ConsoledTA");
+    if (finaleMade) p.SetFlag("Flag_TaFinaleChoiceMade");
+    if (cursed)     p.SetFlag("Flag_TookCursedUmbrella");
+    if (boughtUgly) p.SetFlag("Flag_BoughtUglyUmbrella");
+    nccu::CheckEndingGates(p, m, d);
+    return m.Current();
+}
+}  // namespace
+
+TEST_CASE("G1: the A->B->D->C ending tree") {
+    using S = SemesterState;
+    // A — karma>80 + 持真傘 + 體諒.
+    CHECK(ResolveCh4(100, true,  true,  true,  false, false) == S::Ending_A);
+    // 體諒 + karma<=80 (-> D, not C).
+    CHECK(ResolveCh4(50,  true,  true,  true,  false, false) == S::Ending_D);
+    CHECK(ResolveCh4(80,  true,  true,  true,  false, false) == S::Ending_D); // boundary: 80 is NOT >80
+    // 體諒 + karma>80 but no true umbrella (-> D, not A, not C).
+    CHECK(ResolveCh4(100, false, true,  true,  false, false) == S::Ending_D);
+    // 質問 (finale made, NOT consoled) -> cold finale -> B.
+    CHECK(ResolveCh4(95,  true,  false, true,  false, false) == S::Ending_B);
+    // buy-ugly only (no finale) -> C.
+    CHECK(ResolveCh4(50,  false, false, false, false, true)  == S::Ending_C);
+    // cursed -> B (outranks everything below A).
+    CHECK(ResolveCh4(50,  false, false, false, true,  false) == S::Ending_B);
+    CHECK(ResolveCh4(50,  true,  true,  true,  true,  false) == S::Ending_B); // cursed beats a would-be D
+    // neg karma -> B.
+    CHECK(ResolveCh4(-100, false, false, false, false, false) == S::Ending_B);
+    // D outranks C: a 體諒 player who ALSO bought the ugly umbrella gets the
+    // warmer D (moral choice beats a shopping decision).
+    CHECK(ResolveCh4(50,  true,  true,  true,  false, true)  == S::Ending_D);
+}
+
+TEST_CASE("G1: the gate is TOTAL once the finale choice is made (no soft-lock)") {
+    using S = SemesterState;
+    // Sweep EVERY combination of the finale-relevant flags WITH
+    // Flag_TaFinaleChoiceMade set (the only way to be "stuck"): the gate must
+    // ALWAYS leave Chapter4_Finals. This is the CLAUDE.md §5 winnability
+    // guarantee for the 4-ending tree (extends the L1 TOTAL proof to D).
+    for (int karma : {-100, 0, 50, 80, 81, 100}) {
+        for (bool trueUmb : {false, true}) {
+            for (bool consoled : {false, true}) {
+                for (bool cursed : {false, true}) {
+                    for (bool ugly : {false, true}) {
+                        const S r = ResolveCh4(karma, trueUmb, consoled,
+                                               /*finaleMade=*/true, cursed, ugly);
+                        CHECK(r != S::Chapter4_Finals);   // never stuck
+                        CHECK(IsEndingState(r));          // always an ending
+                    }
+                }
+            }
+        }
+    }
 }

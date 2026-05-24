@@ -196,3 +196,32 @@ TEST_CASE("T3: Ending C draws the 醜傘 (green) umbrella swatch — even when �
     CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
     CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
 }
+
+// G1 — the Ending D card DATA contract the UI phase consumes. IsEndingState
+// recognises D; the card renders the 破傘 (FragileBroken) swatch + the D
+// caption / reason / 風雨同行 path label / the two D deciding conditions
+// (體諒 + karma≤80). Pins exactly what the later UI phase must map D→破傘 to.
+TEST_CASE("G1: IsEndingState recognises Ending_D") {
+    CHECK(nccu::IsEndingState(SemesterState::Ending_D));
+}
+
+TEST_CASE("G1: Ending D card draws the 破傘 (FragileBroken) swatch + D copy") {
+    EndingSummary g;
+    g.state = SemesterState::Ending_D;
+    g.karma = 65;                       // 體諒 with karma in [0,80]
+    g.consoledTA = true;
+    g.finaleChoiceMade = true;
+    Spy r;
+    nccu::DrawEndingCard(r, g, "結局 D", 1.0f, 800.0f, 450.0f);
+    using nccu::gfx::UmbrellaLook;
+    // The破傘 glyph the UI phase maps D to — NOT the true/cursed/ugly looks.
+    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    // D-specific card copy.
+    CHECK(Has(r, "65"));                 // final karma number
+    CHECK(Has(r, "風雨同行"));            // path label
+    CHECK(Has(r, "體諒助教"));            // D condition 1
+    CHECK(Has(r, "業力 ≤ 80"));          // D condition 2 (the 差一點點 clause)
+    CHECK(Has(r, "傘破了"));              // a D 字卡 / reason fragment
+}

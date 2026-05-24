@@ -118,6 +118,14 @@ public:
     // units/sec, clamped [0,100]; never teleports.
     Player& DrainRain(float dt) noexcept;
 
+    // G4: a FIXED rain-meter reduction (units, not a rate), clamped
+    // [0,100], never teleports. Applied when a consumable is USED from the
+    // bag (防水噴霧 -35 / 暖暖包 -25 / 提神飲料 -15 / 小吃 -15) so food &
+    // gear buy back exposure on use, on top of any karma/quest effect. The
+    // umbrella's rain relief stays the AUTOMATIC hold-time path
+    // (ApplyRainSheltered), unchanged — this is the discrete item path.
+    Player& DrainRainBy(float amount) noexcept;
+
     // REQUIREMENT #5: rain pressure must exist in EVERY chapter, not
     // just Ch1. Before this, holding the Ch1 umbrella made the player
     // permanently rain-immune (ApplyRain self-noops with an umbrella AND

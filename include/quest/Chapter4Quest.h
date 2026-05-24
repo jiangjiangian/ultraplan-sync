@@ -7,6 +7,8 @@ class Player;
 
 namespace nccu {
 
+class DialogState;   // mutated by TryOpenEndingConfession (opens the 自白)
+
 // Ch4 期末考終焉 peak-ripple once-keys. chapter4.md karma is `- ` bullet
 // -doc (not `>` blockquote) → NOTHING is parser-applied; every Ch4
 // karma is path-b. These land the reactive ripple karma the (a)/(b)/(c)
@@ -72,6 +74,38 @@ void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
 // outside Ch4 / wrong npc / unmet flag.
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
                        SemesterState state);
+
+// G2 once-keys for the Ch4 ending 自白 (inner monologue). Each ending
+// trigger plays its brief confession EXACTLY once before the gate resolves
+// (the gate is deferred behind any active dialog), so the ending emerges
+// coherently instead of snapping on the raw trigger frame. Code-only flags
+// (no content reference) — set by TryOpenEndingConfession.
+inline constexpr const char* kFlagCh4ConfessedCursed = "Flag_Ch4Confessed_Cursed";
+inline constexpr const char* kFlagCh4ConfessedUgly   = "Flag_Ch4Confessed_Ugly";
+inline constexpr const char* kFlagCh4ConfessedTrue   = "Flag_Ch4Confessed_True";
+
+// G2 — defer each Ch4 ending behind a short inner-monologue (自白) so the
+// resolution is coherent, not abrupt. Polled by GameController every
+// NON-dialog frame, BEFORE CheckEndingGates (which itself early-returns
+// while a dialog is active). When an ending-deciding state is reached in
+// Ch4 and no confession for it has played yet, this opens a brief 自白
+// DialogState and sets that path's once-key; the now-active dialog makes
+// CheckEndingGates defer until the player closes it, then the gate fires.
+// Covers the three Ch4 ending TRIGGERS that lack their own closing beat:
+//   • Flag_TookCursedUmbrella (carried from Ch1) → the curse-caught-up 自白
+//     before Ending B. (Cold finale / 質問 already has its own nextLines.)
+//   • Flag_BoughtUglyUmbrella → the 務實 self-talk before Ending C.
+//   • Flag_HasTrueUmbrella reclaimed from the GROUND (the hidden gym
+//     umbrella) WITHOUT yet doing the 助教 finale → the relief 自白. The
+//     gentle 體諒 finale grants the same flag but plays its OWN beat (the
+//     choice's nextLines), so this is gated on !Flag_TaFinaleChoiceMade to
+//     avoid a double narration there.
+// Returns true if it opened a confession this call (a dialog is now up).
+// Idempotent (once-keys); no-op outside Ch4 / while a dialog is active /
+// after the matching confession has played. Precedence mirrors the gate
+// (cursed → B over the others) so the 自白 matches the ending that fires.
+bool TryOpenEndingConfession(Player& player, DialogState& dialog,
+                             SemesterState state);
 
 } // namespace nccu
 

@@ -2,6 +2,7 @@
 #include "entities/Player.h"
 #include "entities/EnergyDrink.h"
 #include "entities/HotPack.h"
+#include "entities/WaterproofSpray.h"
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "controller/EventBus.h"
@@ -24,26 +25,32 @@ namespace {
 const std::unordered_map<std::string, ItemInfo>& Table() {
     static const std::unordered_map<std::string, ItemInfo> kTable = {
         // ---- currency --------------------------------------------------
+        // G4: state the economy rules the owner asked to KEEP (money is
+        // cross-chapter; consumables are chapter-scoped, wiped on market
+        // entry — see SceneRouter ClearConsumables).
         {kItemMoney,
-         {"金幣", "你的錢包餘額，跨章節保留；可在市集與便利商店消費。"}},
+         {"金幣", "錢包餘額，跨章節保留；可在市集與便利商店消費（消耗品則每章用完）。"}},
 
         // ---- consumables (usable from the bag) -------------------------
+        // G4: each row states its EXACT effect (the use-from-bag path
+        // applies it; descriptions kept in sync with ApplyConsumableEffect).
         {"EnergyDrink",
-         {"能量飲料", "喝下提神，業力小幅上升；也能用來喚醒攤倒的學霸。"}},
+         {"能量飲料", "使用：業力 +3、雨量 −15；也能用來喚醒攤倒的學霸。"}},
         {"HotPack",
-         {"暖暖包", "立刻烘乾全身雨水（雨量歸零），心情也變好（業力上升）。"}},
+         {"暖暖包", "使用：雨量 −25（烘乾大半雨水）、業力 +5。"}},
         {"WaterproofSpray",
-         {"防水噴霧", "噴一下，眼前這場雨就先不淋你了。"}},
+         {"防水噴霧", "使用：雨量 −35（彈開大半雨水）；專門擋雨，不影響業力。"}},
 
-        // ---- market food / flavour buys (held; no special effect) ------
-        // These land in the bag like any purchase (Vendor::TryBuy →
-        // AddConsumable) but carry no use-effect (not in IsUsable
-        // Consumable); the catalog gives them a 中文 name so neither the
+        // ---- market food / flavour buys (held in the bag) --------------
+        // G4: the edible 小吃 are now USABLE (each sheds −15 雨量 on use,
+        // no karma). 愛心捐款 stays a view-only held gift (no rain effect).
+        // They land in the bag like any purchase (Vendor::TryBuy →
+        // AddConsumable); the catalog gives them a 中文 name so neither the
         // purchase toast nor the bag row prints a raw English id.
-        {"EggCake",   {"雞蛋糕", "古早味雞蛋糕，暖手暖胃的小確幸。"}},
-        {"FlowerTea", {"花茶", "茶藝社的熱花茶，雨天裡的一點暖意。"}},
-        {"Takoyaki",  {"章魚燒", "三色章魚燒，校慶味道的小點心。"}},
-        {"Donation",  {"愛心捐款", "捐給學生會的善款，幫弱勢同學繳活動費。"}},
+        {"EggCake",   {"雞蛋糕", "使用：雨量 −15。古早味雞蛋糕，暖手暖胃。"}},
+        {"FlowerTea", {"花茶", "使用：雨量 −15。茶藝社的熱花茶，雨天裡的暖意。"}},
+        {"Takoyaki",  {"章魚燒", "使用：雨量 −15。三色章魚燒，校慶味道的小點心。"}},
+        {"Donation",  {"愛心捐款", "捐給學生會的善款，幫弱勢同學繳活動費（持有用）。"}},
 
         // ---- vendor-sold umbrellas (the toast / bag use these itemIds;
         // the flag-derived bag rows use the kItem* sentinels above) ------
@@ -55,8 +62,11 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
          {"透明傘", "再普通不過的透明傘——但它可能是別人的。"}},
 
         // ---- umbrellas (view-only; derived from flags) -----------------
+        // G4: clarify the umbrella's rain relief is AUTOMATIC while held
+        // (撐著 → 雨量 緩升而非急升, ApplyRainSheltered) — no "use" needed,
+        // unlike the消耗品 above.
         {kItemTrueUmbrella,
-         {"真傘", "你還回去、又回到手上的那把傘。完美結局的關鍵。"}},
+         {"真傘", "撐著它，雨量上升會大幅減緩（自動生效）。完美結局的關鍵。"}},
         {kItemCursedUmbrella,
          {"詛咒傘", "傘骨上刻著別人的名字。拿了它，雨會一直跟著你。"}},
         {kItemUglyUmbrella,
@@ -92,9 +102,25 @@ std::vector<std::string> CatalogStrings() {
     return out;
 }
 
+// G4: generic 小吃 rain relief (-15). The market food buys have no entity
+// class (they are bought as bare itemIds via Vendor::TryBuy), so their
+// effect lives only here. 愛心捐款 (Donation) is deliberately NOT in this
+// set — it is a charity gift, not food, so it has no rain effect and stays
+// a view-only held item.
+namespace {
+constexpr float kFoodRainRelief = 15.0f;
+bool IsGenericFood(std::string_view itemId) {
+    return itemId == "EggCake" || itemId == "FlowerTea" ||
+           itemId == "Takoyaki";
+}
+}  // namespace
+
 bool IsUsableConsumable(std::string_view itemId) {
+    // G4: the three gear/drink consumables PLUS the edible 小吃 are usable
+    // from the bag (each sheds rain on use). Donation / money / umbrellas /
+    // quest papers remain view-only.
     return itemId == "EnergyDrink" || itemId == "HotPack" ||
-           itemId == "WaterproofSpray";
+           itemId == "WaterproofSpray" || IsGenericFood(itemId);
 }
 
 void ApplyConsumableEffect(Player& player, std::string_view itemId) {
@@ -105,20 +131,32 @@ void ApplyConsumableEffect(Player& player, std::string_view itemId) {
     // can never disagree on the number. Strings are kept literally in sync
     // with the entity .cpp (a doctest pins both).
     if (itemId == "EnergyDrink") {
-        player.AddKarma(EnergyDrink::kKarmaBonus);
+        // G4: +3 karma AND -15 rain (mirrors EnergyDrink::Consume).
+        player.AddKarma(EnergyDrink::kKarmaBonus)
+              .DrainRainBy(EnergyDrink::kRainRelief);
         EventBus::Instance().Publish(Event{
             EventType::ShowMessage,
-            "喝完飲料，精神好多了。下次小考應該能撐住。"});
+            "喝完飲料，精神好多了，淋到的雨也擦乾了一些。"});
     } else if (itemId == "HotPack") {
-        player.AddKarma(HotPack::kKarmaBonus).resetRainMeter();
+        // G4: +5 karma AND -25 rain (mirrors HotPack::Consume; was a full
+        // resetRainMeter()).
+        player.AddKarma(HotPack::kKarmaBonus).DrainRainBy(HotPack::kRainRelief);
         EventBus::Instance().Publish(Event{
             EventType::ShowMessage,
-            "用了暖暖包，雨水蒸發了，心情也好了一些。"});
+            "用了暖暖包，烘乾了大半的雨水，心情也好了一些。"});
     } else if (itemId == "WaterproofSpray") {
-        // Mood-only, matching WaterproofSpray::Consume (no karma).
+        // G4: -35 rain, no karma (mirrors WaterproofSpray::Consume).
+        player.DrainRainBy(WaterproofSpray::kRainRelief);
         EventBus::Instance().Publish(Event{
             EventType::ShowMessage,
-            "噴了防水噴霧，接下來這場雨就無感了。"});
+            "噴了防水噴霧，雨水大半都被彈開了。"});
+    } else if (IsGenericFood(itemId)) {
+        // G4: a generic 小吃 dries off -15 rain (no karma, no entity class —
+        // this is the only place these market buys carry an effect).
+        player.DrainRainBy(kFoodRainRelief);
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage,
+            "吃了點熱的，身子暖了，雨水也擦掉了一些。"});
     }
     // Unknown / non-usable id: no-op (the caller already gated on
     // IsUsableConsumable, but staying defensive keeps this safe to call).

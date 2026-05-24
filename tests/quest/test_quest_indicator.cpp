@@ -83,22 +83,55 @@ TEST_CASE("QuestIndicatorVisible Ch3: chain head lit pre-lap, archetypes dark") 
     CHECK_FALSE(nccu::QuestIndicatorVisible("senior_c", true, kCh3, p));
 }
 
-// T3: Ch1 single-NPC spine — the 苦主's `!` rides the chapter and goes dark
-// once the grant fires. The 助教 side errand (isQuestGiver=false) never lights.
-TEST_CASE("T3: QuestIndicatorVisible Ch1 sequences the 苦主 `!`") {
+// G3: Ch1 main spine is a THREE-step `!` sequence 苦主 → 西裝學長 → 苦主.
+// Exactly one main `!` is lit at a time; the 西裝學長 (isQuestGiver=FALSE in
+// DefaultNpcSpawns) MUST light at the middle step. Revert-verify: restore
+// the old single-NPC `if (npcId=="victim") return !Flag_HasTrueUmbrella`
+// body and the step-2 suit_senior CHECK fails (the 學長 never lights).
+TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
     Player p = MakePlayer();
-    // 苦主 lit from entry (the承諾 → 找傘 → 歸還 target).
-    CHECK(nccu::Ch1IndicatorVisible("victim", p));
+
+    // --- step 1: before the promise, ONLY 苦主 is lit (give the lead). ---
+    CHECK(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
     CHECK(nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
-    // The grant (Flag_HasTrueUmbrella) completes the objective -> dark.
-    p.SetFlag("Flag_HasTrueUmbrella");
-    CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", p));
+    // 西裝學長 lights through the View wrapper even though its roster bit is
+    // FALSE (the npcId-keyed path, like the Ch2 學霸 / Ch4 助教).
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
+
+    // --- step 2: promised -> the `!` MOVES to 西裝學長 (the confrontation). ---
+    p.SetFlag("Flag_PromisedVictim");
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
+    CHECK(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
     CHECK_FALSE(
         nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
-    // The 助教 errand is isQuestGiver=false, so it is never a main `!`.
-    Player q = MakePlayer();
+    CHECK(  // the load-bearing G3 assertion: 學長 lit at step 2
+        nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
+
+    // --- step 3: 學長 choice made -> the `!` returns to 苦主 (return傘). ---
+    p.SetFlag("Flag_SuitSeniorChoiceMade");
+    CHECK(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
+    CHECK(nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
     CHECK_FALSE(
-        nccu::QuestIndicatorVisible("ta", /*isQuestGiver=*/false, kCh1, q));
+        nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
+
+    // --- done: the grant (Flag_HasTrueUmbrella) darkens EVERY spine `!`. ---
+    p.SetFlag("Flag_HasTrueUmbrella");
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
+    CHECK_FALSE(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
+    CHECK_FALSE(
+        nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
+
+    // The 助教 / 阿姨 / 學霸 errands are isQuestGiver=false, so they are
+    // never a main `!` at any step.
+    Player q = MakePlayer();
+    CHECK_FALSE(nccu::QuestIndicatorVisible("ta", /*isQuestGiver=*/false, kCh1, q));
+    CHECK_FALSE(nccu::QuestIndicatorVisible("shop_auntie", /*isQuestGiver=*/false, kCh1, q));
+    // A future Ch1 quest-giver (isQuestGiver=true, non-spine) still honours
+    // its roster bit through the fall-through.
+    CHECK(nccu::Ch1IndicatorVisible("some_future_giver", /*isQuestGiver=*/true, q));
 }
 
 // T3: Ch2 spine 圖書館管理員 → 學霸 sequences by main-quest order, and 學霸

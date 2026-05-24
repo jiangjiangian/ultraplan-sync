@@ -72,6 +72,7 @@ TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") 
     CHECK(ChapterNpcSpawns(SemesterState::Interlude_Market).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_A).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_B).empty());
+    CHECK(ChapterNpcSpawns(SemesterState::Ending_D).empty());   // G1
     CHECK(ChapterNpcSpawns(SemesterState::Ending_C).empty());
 }
 
