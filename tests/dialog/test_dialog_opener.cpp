@@ -282,6 +282,13 @@ TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     Player p{nccu::gfx::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
+    // A1 (hard-gate): the 西裝學長 only presents his choice menu AFTER the
+    // player has met the 苦主 and promised to chase the umbrella
+    // (Flag_PromisedVictim). Without it he brushes the stranger off (a
+    // line-only redirect, no menu). Set the promise so this test exercises
+    // the genuine choice menu, as it always meant to.
+    p.SetFlag("Flag_PromisedVictim");
+
     nccu::OpenNpcDialog(d, p, "suit_senior", Ch1);
     CHECK(d.Active());
     CHECK(d.CurrentLine() == "欸，加退選也沒搶到嗎？");

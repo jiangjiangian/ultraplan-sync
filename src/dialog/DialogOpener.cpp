@@ -284,6 +284,51 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
 
 void OpenNpcDialog(DialogState& dlg, Player& player,
                    std::string_view npcId, SemesterState state) {
+    // A1 (hard-gate the Ch1 spine): the 西裝學長 must NOT open his choice
+    // menu before the player has even met the 苦主. The spine is
+    // 苦主 → 學長 → (傘出現) → 苦主; the 學長's branch (要回傘 / 善意提醒 /
+    // 接受取傘) only makes sense once the 苦主 has asked the player to chase
+    // his stolen umbrella (Flag_PromisedVictim). Talked-to out of order, the
+    // 學長 brushes the stranger off and points them back toward 綜合院館 —
+    // a coherent in-fiction redirect, NOT the ripple-critical menu (which
+    // would otherwise let a player commit the 學長 choice and even claim a
+    // morality umbrella before the chapter's first beat). Line-only, sets
+    // nothing, so the player can still go meet the 苦主 and return. The
+    // morality umbrellas stay gated on Flag_PromisedVictim too (Transparent
+    // Umbrella::QuestGateOpen), so this never dead-ends the Ending-B path.
+    if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
+        !player.HasFlag("Flag_PromisedVictim") &&
+        !player.HasFlag("Flag_SuitSeniorChoiceMade")) {
+        dlg.Open({"（西裝學長上下打量你一眼，不太耐煩）",
+                  "「你哪位？我趕時間，剛面試完還有事。」",
+                  "「加退選沒搶到？那是你的事，別來煩我。」",
+                  "（他別過頭——看來他並不想跟一個陌生人多談）"});
+        dlg.SetNpcContext(std::string(npcId));
+        return;
+    }
+
+    // A2 (hard-gate the Ch2 spine): the 學霸 must NOT be approachable before
+    // the player has met the 圖書館管理員. The spine is 管理員 → 學霸(喚醒) →
+    // 撿筆記 → 學霸(換回); the librarian's (a) line is what points the player to
+    // the 羅馬廣場 statue where the 學霸 is slumped. Talked-to out of order
+    // (before Flag_MetLibrarian), the slumped 學霸 does not respond and a cue
+    // redirects the player to the 櫃台. Line-only, sets nothing — the player
+    // can go meet the librarian and return. Once she is met, the normal
+    // (a)/(c)/(d) routing below takes over (TryRescueBookworm also nudges on
+    // the E-interact path; this is the dialog-side mirror). Skipped once woken
+    // (Flag_Bookworm implies the librarian was met — you cannot wake him
+    // otherwise) so a re-talk after waking never wrongly redirects.
+    if (state == SemesterState::Chapter2_Midterms && npcId == "bookworm" &&
+        !player.HasFlag(kFlagMetLibrarian) &&
+        !player.HasFlag(kFlagBookwormWoken)) {
+        dlg.Open({"（他整個人趴在雕像基座上，睡得不省人事）",
+                  "（你叫了幾聲，他毫無反應，只是含糊地翻了個身）",
+                  "（看來得先弄清楚這人是誰——"
+                  "去圖書館櫃台問問那位管理員吧。）"});
+        dlg.SetNpcContext(std::string(npcId));
+        return;
+    }
+
     // C.3(b): 西裝學長 is the ripple-critical choice-opener. Once the
     // player has committed a choice with him (Flag_SuitSeniorChoiceMade
     // is set by GameController when a suit_senior choice is confirmed),

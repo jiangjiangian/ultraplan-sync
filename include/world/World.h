@@ -69,6 +69,19 @@ public:
     // state change. Returns true on the frame it spawns (for the test).
     bool MaybeSpawnChapter2Notes();
 
+    // A1: Ch1 victim's-umbrella reveal-after-choice deferred spawn (sibling
+    // of MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella): tick once per
+    // frame from the controller. The 苦主's transparent umbrella is NOT
+    // spawned at chapter entry — it appears ONLY after the player has
+    // confronted the 西裝學長 and committed a choice (Flag_SuitSeniorChoiceMade),
+    // i.e. once the 學長 reveals where he dropped it. Self-gates on
+    // Chapter1 / choice-flag / not-yet-spawned, a cheap no-op otherwise, and
+    // fires exactly once per Ch1 visit (ch1VictimUmbrellaSpawned_). Roster-
+    // tracked so it is swept on the next state change. Returns true on the
+    // frame it spawns (for the test). Before the flag it does NOT exist in the
+    // world, so the player cannot grab it before the 學長 step.
+    bool MaybeSpawnChapter1VictimUmbrella();
+
     // T5: Ch3 TrueUmbrella reveal-after-clue deferred spawn (sibling of
     // MaybeSpawnChapter2Notes): tick once per frame from the controller. The
     // umbrella is NOT spawned at chapter entry — it appears ONLY after the
@@ -342,6 +355,11 @@ private:
     // RespawnChapterRoster (a fresh Ch3 visit re-arms it), exactly like
     // ch2NotesSpawned_ above.
     bool                        ch3UmbrellaSpawned_{false};
+    // A1: Ch1 victim's-umbrella one-shot guard — true once
+    // MaybeSpawnChapter1VictimUmbrella has dropped it this Ch1 visit. Reset
+    // by RespawnChapterRoster (a fresh Ch1 visit re-arms it), exactly like
+    // ch2NotesSpawned_ / ch3UmbrellaSpawned_ above.
+    bool                        ch1VictimUmbrellaSpawned_{false};
     bool                        inventoryOpen_{false};
     int                         inventoryCursor_{0};
     bool                        menuOpen_{false};

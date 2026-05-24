@@ -3,11 +3,16 @@
 #include "quest/ChapterGate.h"
 #include "quest/ItemCatalog.h"
 #include "dialog/DialogOpener.h"
+#include "dialog/DialogSource.h"
 #include "dialog/DialogState.h"
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
 #include "gfx/Vec2.h"
+
+#ifndef TEST_CONTENT_DIR
+#error "TEST_CONTENT_DIR must be defined by the build system"
+#endif
 
 using nccu::SemesterState;
 
@@ -54,6 +59,10 @@ TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a)->(c) woken->(d) recovered") {
 TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
+    // A2 (hard-gate): the 學霸 cannot be woken before the 圖書館管理員 is met.
+    // This case exercises the wake/exchange flow, so meet her up front (her
+    // own gate is covered by the dedicated case below).
+    p.SetFlag(nccu::kFlagMetLibrarian);
 
     // Wrong state / wrong npc -> no-op.
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter1_AddDrop);
@@ -99,6 +108,7 @@ TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
 TEST_CASE("B2.2: waking the 學霸 spends exactly one 提神飲料 from the bag") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
+    p.SetFlag(nccu::kFlagMetLibrarian);                            // A2: chain head met
     p.AddConsumable("EnergyDrink").AddConsumable("EnergyDrink");   // hold 2
     CHECK(p.ConsumableCount("EnergyDrink") == 2);
 
@@ -195,6 +205,108 @@ TEST_CASE("LiftChapter2Clear: deferred behind recovery + a closed dialog") {
     CHECK_FALSE(q.HasFlag(nccu::kFlagCh2Cleared));
 }
 
+// A2 REGRESSION — the Ch2 spine is hard-gated 管理員 → 學霸 → 撿筆記 → 學霸.
+// The 學霸 cannot be woken before the 圖書館管理員 is met (Flag_MetLibrarian,
+// set by TryMeetLibrarian). With NO MetLibrarian even an EnergyDrink-holding
+// player gets only a "先去問櫃台的管理員" redirect — nothing consumed, no
+// wake. After meeting her, the same talk wakes him. Revert-verify: drop the
+// `!Flag_MetLibrarian` guard in TryRescueBookworm and the first wake succeeds
+// out of order.
+TEST_CASE("A2: 學霸 cannot be woken before the 圖書館管理員 is met") {
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+    p.AddConsumable("EnergyDrink");                       // has the drink...
+
+    // ...but the librarian is unmet -> redirect, NOTHING consumed, NOT woken.
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.ConsumableCount("EnergyDrink") == 1);        // drink untouched
+
+    // TryMeetLibrarian is a no-op for the wrong npc / state.
+    nccu::TryMeetLibrarian(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagMetLibrarian));
+    nccu::TryMeetLibrarian(p, "librarian", SemesterState::Chapter1_AddDrop);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagMetLibrarian));
+
+    // Meet the librarian (the Ch2 chain head) -> the gate opens.
+    nccu::TryMeetLibrarian(p, "librarian", SemesterState::Chapter2_Midterms);
+    CHECK(p.HasFlag(nccu::kFlagMetLibrarian));
+
+    // Now the same wake talk succeeds (drink consumed, woken).
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.ConsumableCount("EnergyDrink") == 0);
+    EventBus::Instance().Clear();
+}
+
+// A2 REGRESSION (dialog side) — DialogOpener routes the 學霸 to a line-only
+// "先去問櫃台的管理員" redirect (NO branch, NO normal (a) recap) until the
+// librarian is met; after Flag_MetLibrarian the normal routing resumes.
+TEST_CASE("A2: 學霸 dialog redirects to the 管理員 until she is met") {
+    nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
+    nccu::dialog::Reload();
+    const auto Ch2 = SemesterState::Chapter2_Midterms;
+
+    // Unmet librarian -> the redirect cue (its first line is the slumped-body
+    // beat, NOT the chapter2.md 學霸 (a) "……嗯？你說什麼。").
+    Player p = MakePlayer();
+    nccu::DialogState d;
+    nccu::OpenNpcDialog(d, p, "bookworm", Ch2);
+    REQUIRE(d.Active());
+    CHECK(d.CurrentLine() != "……嗯？你說什麼。");          // not the (a) opener
+    CHECK_FALSE(d.AtChoice());                             // line-only
+
+    // Met librarian -> the normal (a) first-contact opener shows.
+    Player q = MakePlayer();
+    q.SetFlag(nccu::kFlagMetLibrarian);
+    nccu::DialogState d2;
+    nccu::OpenNpcDialog(d2, q, "bookworm", Ch2);
+    REQUIRE(d2.Active());
+    CHECK(d2.CurrentLine() == "……嗯？你說什麼。");          // (a) opener
+}
+
+// A3 REGRESSION (the bag leak the owner hit) — returning the 學霸's notes
+// (the exchange that sets Flag_BookwormRecovered) must CLEAR
+// Flag_FoundNote1/2/3 so the market-bag 任務紙張 (學霸的筆記 xN) row
+// disappears. BuildInventoryRows derives that row purely from the note flags
+// (ItemCatalog.cpp), so before the fix the row lingered after the notes were
+// handed back. Revert-verify: drop the ClearFlag(kFlagFoundNote*) trio in
+// TryRescueBookworm's exchange and the post-return bag still shows the notes
+// row.
+TEST_CASE("A3: returning the 學霸's notes clears the bag 任務紙張 row") {
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+    p.SetFlag(nccu::kFlagMetLibrarian);                  // A2 chain head
+
+    // Wake him, then collect all 3 notes — the bag shows the notes row.
+    p.AddConsumable("EnergyDrink");
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    REQUIRE(p.HasFlag(nccu::kFlagBookwormWoken));
+    GiveNotes(p);
+    {
+        const auto rows = nccu::BuildInventoryRows(p);
+        int noteRows = 0;
+        for (const auto& r : rows)
+            if (r.itemId == nccu::kItemNotes) ++noteRows;
+        REQUIRE(noteRows == 1);                          // 任務紙張 present
+    }
+
+    // Return them (the exchange) -> recovered AND the note flags are cleared.
+    nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
+    REQUIRE(p.HasFlag(nccu::kFlagBookwormRecovered));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagFoundNote1));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagFoundNote2));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagFoundNote3));
+
+    // The bag's 任務紙張 row is GONE (the leak is fixed).
+    const auto rows = nccu::BuildInventoryRows(p);
+    int noteRows = 0;
+    for (const auto& r : rows)
+        if (r.itemId == nccu::kItemNotes) ++noteRows;
+    CHECK(noteRows == 0);
+    EventBus::Instance().Clear();
+}
+
 TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
     EventBus::Instance().Clear();
     nccu::SemesterStateMachine m;
@@ -202,7 +314,9 @@ TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
     nccu::DialogState d;
     m.Transition(SemesterState::Chapter2_Midterms);
 
-    // New flow: wake first (drink), THEN collect notes, THEN exchange.
+    // New flow: meet the librarian (A2 chain head), wake (drink), THEN
+    // collect notes, THEN exchange.
+    p.SetFlag(nccu::kFlagMetLibrarian);
     p.AddConsumable("EnergyDrink");
     nccu::TryRescueBookworm(p, "bookworm", m.Current());   // wake (phase 1)
     REQUIRE(p.HasFlag(nccu::kFlagBookwormWoken));

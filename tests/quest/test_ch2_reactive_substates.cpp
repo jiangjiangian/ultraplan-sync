@@ -12,6 +12,7 @@
 #include "dialog/DialogSource.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
+#include "quest/Chapter2Quest.h"
 #include "gfx/Vec2.h"
 
 #ifndef TEST_CONTENT_DIR
@@ -83,6 +84,12 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
 
     SUBCASE("學霸 cursed: first line is the routed (b) opener, line-only") {
         Player p = MakePlayer();
+        // A2 (hard-gate): the 學霸 is unreachable before the 圖書館管理員 is
+        // met (Flag_MetLibrarian) — talked-to first he just slumps and a cue
+        // points to the 櫃台. Meet her so this subcase exercises the genuine
+        // cursed (b) reaction (which is gated behind the chain head, not a
+        // first-contact bypass).
+        p.SetFlag(nccu::kFlagMetLibrarian);
         p.SetFlag("Flag_TookCursedUmbrella");
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "bookworm", kCh2);

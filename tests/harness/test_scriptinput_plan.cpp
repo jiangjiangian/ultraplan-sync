@@ -200,6 +200,14 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world};
 
+    // A1 (hard-gate): the 苦主's umbrella pickup is now DEFERRED — it spawns
+    // only after the 西裝學長 choice is committed (Flag_SuitSeniorChoiceMade),
+    // via MaybeSpawnChapter1VictimUmbrella (ticked by the controller). Set the
+    // choice flag so the deferred spawn fires on the first frame and this test
+    // still exercises the genuine drive+E→OnPickup path it is named for.
+    REQUIRE(world.GetPlayer() != nullptr);
+    world.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");
+
     ScriptInput in;
     std::istringstream src(
         "goto 1040 1712\n" "goto 1048 1704\n" "goto 1264 1632\n"

@@ -144,16 +144,17 @@ TEST_CASE("World defers the 3 Ch2 notes until the 學霸 is woken; then sweeps")
         return n;
     };
 
-    // Ch1 spawns the ctor 申請書 (1, NOT roster-tracked) PLUS the 善有善報
-    // 苦主's-umbrella pickup (1, roster-tracked, via ChapterQuestItems(Ch1)).
-    CHECK(countNotes() == 2);
+    // A1: Ch1 entry now spawns ONLY the ctor 申請書 (1, NOT roster-tracked).
+    // The 善有善報 苦主's-umbrella pickup is DEFERRED (it appears only after
+    // Flag_SuitSeniorChoiceMade, via MaybeSpawnChapter1VictimUmbrella) — so at
+    // chapter entry it does NOT exist in the world (hard-gating the spine).
+    CHECK(countNotes() == 1);
 
     // Entering Ch2 must NOT spawn the notes (the bug to fix: a note must
     // not appear anywhere before the 學霸 asks for it). Drive the FSM the
     // way production does (Transition + RespawnChapterRoster) so the
     // deferred-spawn self-gate (semester==Ch2) sees the right state. The
-    // Ch1 苦主-umbrella pickup is roster-swept on the transition; the ctor
-    // 申請書 is not roster-tracked, so it persists.
+    // ctor 申請書 is not roster-tracked, so it persists.
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
     CHECK(countNotes() == 1);                  // 申請書 only; NO notes yet
