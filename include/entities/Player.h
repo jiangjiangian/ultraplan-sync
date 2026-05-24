@@ -8,6 +8,21 @@
 #include <string>
 #include <unordered_map>
 
+// B2.1: the umbrella the player is CURRENTLY holding, as pure data on the
+// Player — deliberately SEPARATE from the ending-determining flags
+// (Flag_HasTrueUmbrella / Flag_TookCursedUmbrella / Flag_BoughtUglyUmbrella).
+// Those flags persist for the whole run (EndingGate.cpp reads them to pick
+// A/B/C, and Flag_TookCursedUmbrella / Flag_BoughtUglyUmbrella are NEVER
+// cleared), so they cannot answer "which umbrella is in the bag right now":
+// after Ch4 entry's SetHasUmbrella(false) the old flag-keyed bag still showed
+// a cursed / ugly row that the player no longer holds. This enum tracks the
+// live held umbrella so the bag reflects the umbrella you ACTUALLY hold (and
+// vanishes the instant you lose it), while the ending flags stay untouched.
+// None == empty-handed. Loaner is the Ch2 圖書館管理員 umbrella (B2.3): a
+// functional shelter that is NOT the true umbrella (no Flag_HasTrueUmbrella).
+enum class HeldUmbrella { None, True, Cursed, Ugly, Victim, Fragile,
+                          ProfessorTrap, Loaner };
+
 // ISP roles: IUpdatable + IDrawable. The old Interact(Player*) body was an
 // empty no-op ("Player does not respond to other Players in MVP"), so that
 // role is dropped — nothing ever invoked it through the container (the
@@ -29,7 +44,34 @@ public:
     Player& AddKarma(int delta);            // clamped to [-100, 100]
     Player& decreaseKarma(int amount);      // thin wrapper, prefer AddKarma
     Player& resetRainMeter() noexcept;
-    Player& SetHasUmbrella(bool v) noexcept { hasUmbrella_ = v; return *this; }
+    // SetHasUmbrella(false) is the canonical "the umbrella is gone" call
+    // (Ch4 entry's 傘再度失蹤; the per-chapter「傘又掉了」reset). B2.1: losing
+    // the umbrella must also empty the held-umbrella slot so the bag's
+    // umbrella row disappears — otherwise a stale row lingers (the held kind
+    // is the bag's source of truth, not the persistent ending flags). Setting
+    // it true here does NOT pick a kind (an explicit SetHeldUmbrella does);
+    // this overload keeps the legacy bool contract for callers that only
+    // toggle shelter (tests, the rain loop).
+    Player& SetHasUmbrella(bool v) noexcept {
+        hasUmbrella_ = v;
+        if (!v) heldUmbrella_ = HeldUmbrella::None;
+        return *this;
+    }
+    // B2.1/B2.3: set the CURRENTLY held umbrella kind. A non-None kind
+    // implies the player is sheltered (hasUmbrella_ = true) so the auto-rain
+    // drain (ApplyRainSheltered) kicks in; None clears the shelter too. This
+    // is the ONE place the bag's umbrella row is derived from — it never
+    // touches the ending flags (callers set those separately when an outcome
+    // is actually decided). Idempotent by construction (re-setting the same
+    // kind is a no-op assignment), so a re-claim / re-talk never stacks.
+    Player& SetHeldUmbrella(HeldUmbrella kind) noexcept {
+        heldUmbrella_ = kind;
+        hasUmbrella_  = (kind != HeldUmbrella::None);
+        return *this;
+    }
+    [[nodiscard]] HeldUmbrella HeldUmbrellaKind() const noexcept {
+        return heldUmbrella_;
+    }
     // Money has a soft cap (S5b-4 loop economy): with 3 earn->spend
     // cycles, an uncapped purse would let a thorough explorer trivialise
     // every market. 300 is the SCRIPT_HANDOFF §五.1 999 retuned for the
@@ -151,6 +193,7 @@ private:
     float rainMeter_;
     int karma_;
     bool hasUmbrella_;
+    HeldUmbrella heldUmbrella_{HeldUmbrella::None};  // B2.1: bag umbrella row source
     int money_;
     std::unordered_map<std::string, bool> flags_;
     std::unordered_map<std::string, int>  consumables_;

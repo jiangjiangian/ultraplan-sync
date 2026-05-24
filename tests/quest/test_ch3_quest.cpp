@@ -1,5 +1,6 @@
 #include "doctest/doctest.h"
 #include "quest/Chapter3Quest.h"
+#include "quest/ItemCatalog.h"
 #include "dialog/DialogOpener.h"
 #include "controller/EventBus.h"
 #include "controller/EventWiring.h"
@@ -67,6 +68,54 @@ TEST_CASE("TryAdvanceCh3Trade: 物物交換鏈 advances one link per talk, in or
     CHECK(p.GetKarma() == k0 + 11);
     nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
     CHECK(p.GetKarma() == k0 + 11);                 // chain fully spent
+    EventBus::Instance().Clear();
+}
+
+// B2.4: the Ch3 物物交換鏈 must be VISIBLE in the bag and each trade must
+// swap the row — the prior carried item disappears the instant it is traded
+// (no stale row), the next appears, and 情報 (knowledge) is never a row.
+TEST_CASE("B2.4: the Ch3 trade chain swaps bag rows cleanly (sausage -> 大聲公 -> none)") {
+    EventBus::Instance().Clear();
+    Player p = MakePlayer();
+    auto has = [](const std::vector<nccu::InventoryRow>& rows, const char* id) {
+        for (const auto& r : rows) if (r.itemId == id) return true;
+        return false;
+    };
+
+    // Pre-chain: neither carried item is in the bag.
+    {
+        const auto rows = nccu::BuildInventoryRows(p);
+        CHECK_FALSE(has(rows, nccu::kItemSausage));
+        CHECK_FALSE(has(rows, nccu::kItemLoudspeaker));
+    }
+
+    // Link 1: get the sausage -> exactly the 香腸 row, no 大聲公 row.
+    p.SetFlag(nccu::kFlagLapDone);
+    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    {
+        const auto rows = nccu::BuildInventoryRows(p);
+        CHECK(has(rows, nccu::kItemSausage));
+        CHECK_FALSE(has(rows, nccu::kItemLoudspeaker));
+    }
+
+    // Link 2: trade sausage for 大聲公 -> the 香腸 row is GONE (consumed),
+    // the 大聲公 row appears. The transfer leaves no stale row.
+    nccu::TryAdvanceCh3Trade(p, "loudspeaker_b", kCh3);
+    {
+        const auto rows = nccu::BuildInventoryRows(p);
+        CHECK_FALSE(has(rows, nccu::kItemSausage));    // no stale carried item
+        CHECK(has(rows, nccu::kItemLoudspeaker));
+    }
+
+    // Link 3: trade 大聲公 for 情報 -> the 大聲公 row is GONE; 情報 is
+    // knowledge, so the bag carries neither item now.
+    nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
+    {
+        const auto rows = nccu::BuildInventoryRows(p);
+        CHECK_FALSE(has(rows, nccu::kItemSausage));
+        CHECK_FALSE(has(rows, nccu::kItemLoudspeaker));
+        CHECK(p.HasFlag(nccu::kFlagKnowsUmbrellaLoc));  // knowledge gained
+    }
     EventBus::Instance().Clear();
 }
 

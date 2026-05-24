@@ -5,6 +5,7 @@
 #include "entities/WaterproofSpray.h"
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
+#include "quest/Chapter3Quest.h"
 #include "controller/EventBus.h"
 
 #include <algorithm>
@@ -73,12 +74,31 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
          {"螢光綠醜傘", "醜得全校最好認，但保證沒人拿錯。務實的選擇。"}},
         {kItemVictimUmbrella,
          {"苦主的傘", "撿到的透明傘，傘主在綜院等它回家。記得還給他。"}},
+        // B2.1: the remaining held-over-head umbrellas the bag can show.
+        // (Descriptions use only glyphs already in docs/content so the
+        // headless font-glyph-scan gate stays green — see test_font_ui_glyph_scan.)
+        {kItemFragileUmbrella,
+         {"破傘", "骨架斷了的傘，雨還是會慢慢滲進來；有總比沒有好。"}},
+        {kItemProfTrapUmbrella,
+         {"陷阱傘", "傘骨上有奇怪的刻字，撐著它總覺得有人在後面跟著。"}},
+        // B2.3: the Ch2 圖書館管理員 loaner. Functional shelter (auto-rains
+        // while held) but explicitly NOT the true umbrella (no Ending A).
+        {kItemLoanerUmbrella,
+         {"管理員的傘", "圖書館管理員借你的傘，撐著它雨量會自動減緩；記得歸還。"}},
 
         // ---- quest papers (view-only; derived from flags) --------------
         {kItemForm,
          {"申請書", "被風吹走的加退選申請書，撿回來交給助教。"}},
         {kItemNotes,
          {"學霸的筆記", "替學霸撿回的筆記，散落校園的三頁心血。"}},
+
+        // ---- Ch3 物物交換鏈 carried items (view-only; derived from flags) --
+        // B2.4: shown in the bag so the trade chain is visible; each is
+        // consumed (its flag cleared) the moment it is traded for the next.
+        {kItemSausage,
+         {"香腸", "A 系攤主給的烤香腸，熱的、燙手；拿去找 B 系同學換東西。"}},
+        {kItemLoudspeaker,
+         {"大聲公", "B 系同學換來的大聲公，拿去找 C 系學姊換情報。"}},
     };
     return kTable;
 }
@@ -174,7 +194,52 @@ void PushRow(std::vector<InventoryRow>& rows, std::string_view itemId,
         std::string(info.description), usable, std::string(itemId)});
 }
 
+// B2.1: any umbrella itemId is a HELD-over-head umbrella, surfaced by the
+// HeldUmbrellaKind() row below — NOT a count-consumable. So it must be
+// EXCLUDED from the consumable-count loop (the Ch4 集英樓 vendor adds
+// "UglyUmbrella" to the count map; without this filter the bag drew TWO
+// umbrella rows — one from the count, one from the held-kind). The 苦主's
+// carried transparent umbrella is a FLAG, not a count entry, so it is
+// unaffected here. Substring match keeps it robust to both the English
+// vendor ids ("UglyUmbrella"/"CursedUmbrella"/"TransparentUmbrella") and any
+// future umbrella stock line.
+bool IsUmbrellaItemId(const std::string& id) {
+    return id.find("Umbrella") != std::string::npos ||
+           id.find("umbrella") != std::string::npos;
+}
+
+// B2.1: the catalog sentinel for a held umbrella kind. None ⇒ no row.
+const char* HeldUmbrellaItem(HeldUmbrella kind) {
+    switch (kind) {
+        case HeldUmbrella::True:          return kItemTrueUmbrella;
+        case HeldUmbrella::Cursed:        return kItemCursedUmbrella;
+        case HeldUmbrella::Ugly:          return kItemUglyUmbrella;
+        case HeldUmbrella::Fragile:       return kItemFragileUmbrella;
+        case HeldUmbrella::ProfessorTrap: return kItemProfTrapUmbrella;
+        case HeldUmbrella::Loaner:        return kItemLoanerUmbrella;
+        // Victim's carried umbrella is shown via its quest flag, not the
+        // held-kind (it grants no shelter), so it has no held-kind row.
+        case HeldUmbrella::Victim:
+        case HeldUmbrella::None:          return nullptr;
+    }
+    return nullptr;
+}
+
 }  // namespace
+
+const char* HeldUmbrellaCatalogId(HeldUmbrella kind) {
+    return HeldUmbrellaItem(kind);
+}
+
+HeldUmbrella HeldUmbrellaForItemId(std::string_view itemId) {
+    // The vendor-stock umbrella ids (ItemCatalog Table) → the held kind.
+    // Only the 集英樓 醜傘 is actually sold today; the others are mapped for
+    // robustness so any future umbrella stock line lands as a held umbrella.
+    if (itemId == "UglyUmbrella")        return HeldUmbrella::Ugly;
+    if (itemId == "CursedUmbrella")      return HeldUmbrella::Cursed;
+    if (itemId == "TransparentUmbrella") return HeldUmbrella::True;
+    return HeldUmbrella::None;
+}
 
 std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
     std::vector<InventoryRow> rows;
@@ -185,29 +250,40 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
 
     // Held consumables — sorted by itemId for a deterministic panel (the
     // count map iteration order is unspecified). Each is usable from the
-    // bag (E/Enter applies its effect).
+    // bag (E/Enter applies its effect). B2.1: umbrella itemIds are skipped
+    // here — a held umbrella is shown by the held-kind row below, never as a
+    // count entry (the Ch4 集英樓 vendor adds "UglyUmbrella" to this map).
     {
         std::vector<std::pair<std::string, int>> held;
         held.reserve(player.Consumables().size());
         for (const auto& kv : player.Consumables())
-            if (kv.second > 0) held.emplace_back(kv.first, kv.second);
+            if (kv.second > 0 && !IsUmbrellaItemId(kv.first))
+                held.emplace_back(kv.first, kv.second);
         std::sort(held.begin(), held.end(),
                   [](const auto& a, const auto& b) { return a.first < b.first; });
         for (const auto& [id, n] : held)
             PushRow(rows, id, n, /*usable=*/IsUsableConsumable(id));
     }
 
-    // The carried umbrella — derived from the Flag_* the player holds, in
-    // priority order. These flags are mutually meaningful end-states; if
-    // more than one is somehow set, the "best" outcome (true umbrella)
-    // wins the single row. Each is a view-only single instance.
-    if (player.HasFlag("Flag_HasTrueUmbrella"))
-        PushRow(rows, kItemTrueUmbrella, 0, /*usable=*/false);
-    else if (player.HasFlag("Flag_TookCursedUmbrella"))
-        PushRow(rows, kItemCursedUmbrella, 0, /*usable=*/false);
-    else if (player.HasFlag("Flag_BoughtUglyUmbrella"))
-        PushRow(rows, kItemUglyUmbrella, 0, /*usable=*/false);
-    else if (player.HasFlag(kFlagHasVictimUmbrella))
+    // B2.1: the umbrella the player is HOLDING OVER THEIR HEAD — keyed off
+    // HeldUmbrellaKind(), the live held-umbrella state, NOT the persistent
+    // ending flags. So a lost umbrella (SetHasUmbrella(false) on Ch4 entry /
+    // a per-chapter「傘又掉了」reset clears the held kind) shows NO umbrella
+    // row, and a cursed / ugly ending flag — which is NEVER cleared — no
+    // longer leaves a stale row after the umbrella is gone. View-only single
+    // instance. (None / Victim ⇒ no held-kind row; the 苦主's carried
+    // umbrella is shown by its quest flag just below, as it grants no
+    // shelter and is a thing-to-return, not a thing-you-hold.)
+    if (const char* held = HeldUmbrellaCatalogId(player.HeldUmbrellaKind()))
+        PushRow(rows, held, 0, /*usable=*/false);
+
+    // The 苦主's transparent umbrella, while CARRIED for return (Ch1, before
+    // the grant). It is a quest item the player ferries back, not held over
+    // their own head (it grants no shelter — hasUmbrella_ stays false), so it
+    // is an INDEPENDENT row alongside any held shelter umbrella, flag-driven
+    // like the quest papers. The return grant clears this flag and sets the
+    // held TRUE umbrella, so the bag swaps rows cleanly.
+    if (player.HasFlag(kFlagHasVictimUmbrella))
         PushRow(rows, kItemVictimUmbrella, 0, /*usable=*/false);
 
     // Current-cycle quest papers the player has found (view-only).
@@ -223,6 +299,16 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
         if (player.HasFlag(kFlagFoundNote3)) ++notes;
         if (notes > 0) PushRow(rows, kItemNotes, notes, /*usable=*/false);
     }
+
+    // B2.4: the Ch3 物物交換鏈 carried items, flag-driven like the papers.
+    // Each disappears the instant the trade consumes it (Chapter3Quest clears
+    // Flag_HasSausage when it hands over the 大聲公, and Flag_HasLoudspeaker
+    // when it hands over the 情報), so the bag is always honest about what is
+    // in hand. 情報 (Flag_KnowsUmbrellaLoc) is knowledge, not a carried thing.
+    if (player.HasFlag(kFlagHasSausage))
+        PushRow(rows, kItemSausage, 0, /*usable=*/false);
+    if (player.HasFlag(kFlagHasLoudspeaker))
+        PushRow(rows, kItemLoudspeaker, 0, /*usable=*/false);
 
     return rows;
 }

@@ -24,7 +24,9 @@ void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
     // condition on the gentle path. EndingGate keeps the karma>80 gate, so
     // this does not by itself force Ending A; it only makes 體諒+high-karma
     // sufficient WITHOUT the hidden Ch4 umbrella.
-    player.SetHasUmbrella(true);
+    // B2.1: SetHeldUmbrella records the held true umbrella (and sets
+    // HasUmbrella) so the bag shows the 真傘 row after the gentle finale.
+    player.SetHeldUmbrella(HeldUmbrella::True);
     player.SetFlag("Flag_HasTrueUmbrella");
 }
 

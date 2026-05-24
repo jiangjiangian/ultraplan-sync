@@ -9,7 +9,11 @@ void CursedUmbrella::beClaimed(Player* player) {
     // one atomic transaction. SetFlag is the ripple seed (F.9-b): taking
     // the cursed umbrella in Ch1 is what drives Ending B and the Ch2-4
     // 學霸/環境 cold reactions; without it that path was unreachable.
-    player->SetHasUmbrella(true)
+    // B2.1: SetHeldUmbrella records the held kind AND sets HasUmbrella, so
+    // the bag shows the 詛咒傘 row while it is actually held (and it clears
+    // on a later SetHasUmbrella(false)). The Flag_TookCursedUmbrella ending
+    // marker is set separately below and persists for the run (EndingGate B).
+    player->SetHeldUmbrella(HeldUmbrella::Cursed)
            .decreaseKarma(karmaPenalty_)
            .SetFlag("Flag_TookCursedUmbrella");
     isActive_ = false;

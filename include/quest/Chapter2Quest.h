@@ -25,6 +25,12 @@ inline constexpr const char* kFlagFoundNote3        = "Flag_FoundNote3";
 inline constexpr const char* kFlagBookwormWoken     = "Flag_Bookworm";
 inline constexpr const char* kFlagBookwormRecovered = "Flag_BookwormRecovered";
 inline constexpr const char* kFlagCh2Cleared        = "Flag_Ch2Cleared";
+// B2.3 once-key: the 圖書館管理員 has already lent the player her 折疊傘
+// (管理員的傘). Set by TryLendLibrarianUmbrella so a re-talk to the librarian
+// does NOT re-grant / stack the loaner. Reuses an already-whitelisted dialog
+// flag name so the harness state.jsonl can observe it (dialog_lint
+// --list-flags). NOT an ending flag — purely the loaner-given latch.
+inline constexpr const char* kFlagLibrarianUmbrellaLent = "Flag_LibrarianUmbrella";
 
 // S5c-3 per-NPC "the Ch2 ripple karma already landed" once-keys. The
 // ripple dialog itself may re-show on re-talks (a consistent reaction);
@@ -68,6 +74,25 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
 // polled consume).
 void LiftChapter2Clear(Player& player, SemesterState state,
                        const DialogState& dialog);
+
+// B2.3 — the 圖書館管理員 lends the player her 折疊傘 (管理員的傘). E-interact
+// hook, sibling of TryRescueBookworm; called from GameController next to it.
+// chapter2.md 管理員 (b) already speaks the hand-over ("（遞過一把折疊傘）這個
+// 先拿著，別在外面淋著。") and the 補設定 (L356/L397) specifies a loaner that
+// shelters but still accrues rain — this wires that beat in engine. No-op
+// unless state==Chapter2_Midterms && npcId=="librarian". Gated on
+// Flag_Bookworm (the (b) state: the player has woken the 學霸 and come back),
+// so the loaner arrives exactly when her (b) line plays. Idempotent via
+// kFlagLibrarianUmbrellaLent so a re-talk never stacks umbrellas.
+//
+// Effect: SetHeldUmbrella(HeldUmbrella::Loaner) — the player now HOLDS
+// 管理員的傘 (a bag umbrella row whose description says it auto-reduces rain
+// while held) and HasUmbrella() becomes true so the existing
+// outdoors+umbrella ApplyRainSheltered drain kicks in. It does NOT set
+// Flag_HasTrueUmbrella — the loaner is explicitly NOT the true umbrella, so
+// it can never by itself satisfy Ending A's 持-TrueUmbrella condition.
+void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
+                              SemesterState state);
 
 // E-interact hook, sibling of TryRescueBookworm — lands the Ch1->Ch2
 // ripple karma the dialog opener cannot. chapter2.md routes 西裝學長 /

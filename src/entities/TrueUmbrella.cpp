@@ -5,7 +5,8 @@
 void TrueUmbrella::beClaimed(Player* player) {
     if (!player) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
-    player->SetHasUmbrella(true);
+    // B2.1: record WHICH umbrella is now in the bag (sets HasUmbrella too).
+    player->SetHeldUmbrella(HeldUmbrella::True);
     // TrueUmbrella-specific marker (S5e-2b): HasUmbrella() is set by
     // EVERY umbrella, so it cannot tell Ending A's 持-TrueUmbrella
     // apart. This flag is TrueUmbrella-only; GameController clears it
