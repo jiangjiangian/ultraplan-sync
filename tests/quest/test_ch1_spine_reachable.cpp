@@ -42,18 +42,24 @@ using nccu::World;
 // (test_spawn_reachability's flood-fill passes); it just requires routing
 // through the gap.
 //
-// 善有善報 redesign: this test pins a robust, mask+NPC-verified route that
-// walks the MINIMAL Ch1 reciprocity spine — talk to 苦主 at 綜合院館
-// (Flag_PromisedVictim), find HIS transparent umbrella near 集英樓
-// (Flag_HasVictimUmbrella), then carry it BACK to him (the GRANT:
-// TryReturnVictimUmbrella sets Flag_HasTrueUmbrella + publishes
-// UmbrellaClaimed → Ch1 clears → Interlude via the EventWiring sibling-if),
-// then exit the Interlude south (→ Chapter2_Midterms). The chapter clears
-// on RETURNING the umbrella, NOT on grabbing one off the ground. All legs
-// route through the x≈1041 gap / wall-north corridor / the clear x=1660
-// column. It drives the REAL ScriptInput+GameController harness seam
-// (exactly the Harness ordering). If a future mask edit re-seals the gap,
-// or the route regresses, the semester never reaches Ch2 and this fails.
+// 善有善報 redesign + A1 hard-gate: this test pins a robust, mask+NPC-verified
+// route that walks the MINIMAL Ch1 reciprocity spine IN ORDER —
+//   1. talk to 苦主 at 綜合院館 (Flag_PromisedVictim),
+//   2. confront the 西裝學長 at 集英樓 and commit a choice
+//      (Flag_SuitSeniorChoiceMade) — which is what makes the umbrella APPEAR
+//      (A1: MaybeSpawnChapter1VictimUmbrella; before the choice the pickup
+//      does NOT exist in the world, so the spine cannot be skipped),
+//   3. find HIS transparent umbrella near 集英樓 (Flag_HasVictimUmbrella),
+//   4. carry it BACK to him (the GRANT: TryReturnVictimUmbrella sets
+//      Flag_HasTrueUmbrella + publishes UmbrellaClaimed → Ch1 clears →
+//      Interlude via the EventWiring sibling-if),
+//   5. exit the Interlude south (→ Chapter2_Midterms).
+// The chapter clears on RETURNING the umbrella, NOT on grabbing one off the
+// ground. All legs route through the x≈1041 gap / wall-north corridor / the
+// clear x=1660 column. It drives the REAL ScriptInput+GameController harness
+// seam (exactly the Harness ordering). If a future mask edit re-seals the
+// gap, the route regresses, or the hard gate dead-ends, the semester never
+// reaches Ch2 and this fails.
 //
 // Companion guarantees: test_scriptinput_plan.cpp (goto reaches a clear
 // target / drive+E claims a non-blocking Item, both on this same mask)
@@ -122,13 +128,29 @@ const char* kSpineScript =
     "interact victim\n"               // → Flag_PromisedVictim (+5 karma)
     "choose 0\n"
     "advance\nadvance\nadvance\nadvance\nadvance\nadvance\n"
-    // (2) → 苦主's umbrella S of 集英樓 (1700,1610) down the clear EAST
-    //     corridor (x≈1744-1752 — avoids the thin western slots); pick it up.
-    "goto 1744 1168\n" "goto 1752 1520\n" "goto 1736 1528\n"
-    "goto 1720 1536\n" "goto 1700 1610\n"
+    // (2) A1 hard-gate: confront the 西裝學長 @集英樓 (1620,1560). The 集英樓
+    //     rect (1524,1353,224x192) walls its bottom at y≈1545 and the 學長 sits
+    //     just SOUTH of it — so a straight WEST drive at y≈1545 jams flush on
+    //     the wall (the (1646,1545) stick). Route DOWN the clear EAST corridor
+    //     to y≈1620 (BELOW the building) FIRST, THEN WEST to him (map_registry
+    //     --route "1660,1120 1752,1620 1620,1610"). `interact suit_senior`
+    //     finishes the flush approach + E. Commit choice (d) 善意提醒 (+5,
+    //     Flag_HelpedSenior) — this sets Flag_SuitSeniorChoiceMade, which makes
+    //     the 苦主's umbrella SPAWN (before this it does not exist anywhere).
+    //     The menu packs substates ≥1 ascending (b→0, c→1, d→2), so `choose 2`
+    //     picks (d).
+    "goto 1744 1168\n" "goto 1752 1620\n" "goto 1620 1610\n"
+    "interact suit_senior\n"          // → Flag_SuitSeniorChoiceMade (+5)
+    "choose 2\n"
+    "advance\nadvance\nadvance\nadvance\nadvance\n"
+    "wait 5\n"                        // → MaybeSpawnChapter1VictimUmbrella fires
+    // (3) → 苦主's umbrella S of 集英樓 (1700,1610), now spawned; pick it up.
+    //     The 學長 approach left the player just south of the building, so a
+    //     short EAST hop reaches the pickup.
+    "goto 1700 1610\n"
     "interact victimumb 1700 1610\n"  // → Flag_HasVictimUmbrella
     "wait 10\n"
-    // (3) carry it BACK to 苦主 up the east corridor; GRANT (silent) + the
+    // (4) carry it BACK to 苦主 up the east corridor; GRANT (silent) + the
     //     (d) 重逢致謝 exchange dialogue. T2: the chapter clear is DEFERRED
     //     until that dialogue CLOSES, so we must read it through (advance)
     //     before LiftChapter1Clear fires UmbrellaClaimed → Interlude.
@@ -138,7 +160,7 @@ const char* kSpineScript =
     "interact victim\n"               // GRANT (flags) + opens (d) exchange
     "advance\nadvance\nadvance\nadvance\nadvance\n"  // read + close the (d) scene
     "wait 20\n"                       // → LiftChapter1Clear fires → Interlude
-    // (4) Interlude exit (entry repositions to {500,1500}) → Chapter2.
+    // (5) Interlude exit (entry repositions to {500,1500}) → Chapter2.
     "goto 380 1750\n"                 // IL entry is {500,1500}; back to the
     "goto 1041 1750\n"                // gap (x=500 column is walled), then
     "goto 1041 1965\n"                // down through it into the IL exit zone
@@ -192,8 +214,9 @@ TEST_CASE("I7: minimal Ch1 spine reaches Chapter 2 on the shipped mask") {
     CHECK(r.promisedVictim);
     // The drive+E reached TrueUmbrella::beClaimed (Flag set only there).
     CHECK(r.hasTrueUmbrella);
-    // 苦主 (b) 承諾 grants +5 over the karma-50 start.
-    CHECK(r.karma == 55);
+    // 苦主 (b) 承諾 +5 over the karma-50 start, PLUS the 西裝學長 (d) 善意提醒
+    // +5 (A1: the spine now routes through the 學長 choice) = karma 60.
+    CHECK(r.karma == 60);
     // The spine progressed Ch1 → Interlude → Chapter2_Midterms. THIS is
     // the assertion that fails when the route is blocked (the player
     // soft-locks in Ch1 and the semester never advances): with the old

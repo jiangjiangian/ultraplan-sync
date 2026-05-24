@@ -611,6 +611,14 @@ void GameController::Update() {
     // ticked after the player's position is finalised this frame.
     world_.UpdateSportsLap();
 
+    // A1: Ch1 苦主's-umbrella deferred spawn (Ch1 + committed-學長-choice
+    // only; a cheap no-op every other state) — once the player has confronted
+    // the 西裝學長 and committed a choice (Flag_SuitSeniorChoiceMade), the
+    // transparent umbrella the 學長 dropped appears near 集英樓. Self-gates +
+    // one-shot inside, sibling of the notes spawn below. World stays pure
+    // data; the controller owns the per-frame tick (MVC).
+    world_.MaybeSpawnChapter1VictimUmbrella();
+
     // Ch2 散落筆記 deferred spawn (Ch2 + woken-學霸 only; a cheap no-op
     // every other state) — once the 學霸 is woken and asks for his notes,
     // the 3 notes appear. Self-gates + one-shot inside, sibling of the lap
@@ -692,6 +700,13 @@ void GameController::Update() {
                     // other NPC / state (early-returns inside).
                     TryRescueBookworm(*player, id,
                                       world_.Semester().Current());
+                    // A2: meeting the 圖書館管理員 (her (a) clue line) sets
+                    // Flag_MetLibrarian, the Ch2 chain head that UNLOCKS the
+                    // 學霸 (his dialog gate + the wake step). Runs BEFORE the
+                    // opener so her line plays the same talk that unlocks him.
+                    // No-op for every other NPC / state (early-returns inside).
+                    TryMeetLibrarian(*player, id,
+                                     world_.Semester().Current());
                     // B2.3: the 圖書館管理員 lends 管理員的傘 once the 學霸
                     // is woken (her (b) state) — the player then HOLDS the
                     // loaner (auto-shelter, a bag umbrella row), but it is

@@ -25,6 +25,16 @@ inline constexpr const char* kFlagFoundNote3        = "Flag_FoundNote3";
 inline constexpr const char* kFlagBookwormWoken     = "Flag_Bookworm";
 inline constexpr const char* kFlagBookwormRecovered = "Flag_BookwormRecovered";
 inline constexpr const char* kFlagCh2Cleared        = "Flag_Ch2Cleared";
+// A2 (hard-gate the Ch2 spine 管理員 → 學霸 → 撿筆記 → 學霸): set the FIRST
+// time the player talks to the 圖書館管理員 in Ch2 (TryMeetLibrarian, run at
+// the E-interact moment her clue line opens). Gates BOTH the 學霸 dialog
+// (DialogOpener routes him to a "先去問櫃台的管理員" redirect until it is set)
+// AND TryRescueBookworm's wake step (you cannot wake him before the librarian
+// points you to 羅馬廣場). A new engine flag — its constant here auto-joins
+// the dialog_lint whitelist (engine_flags() scans src/include). Idempotent
+// (SetFlag is a no-op once held); set only by TryMeetLibrarian, never by
+// content.
+inline constexpr const char* kFlagMetLibrarian      = "Flag_MetLibrarian";
 // B2.3 once-key: the 圖書館管理員 has already lent the player her 折疊傘
 // (管理員的傘). Set by TryLendLibrarianUmbrella so a re-talk to the librarian
 // does NOT re-grant / stack the loaner. Reuses an already-whitelisted dialog
@@ -74,6 +84,17 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
 // polled consume).
 void LiftChapter2Clear(Player& player, SemesterState state,
                        const DialogState& dialog);
+
+// A2 — the 圖書館管理員 is the Ch2 chain head. E-interact hook, sibling of
+// TryRescueBookworm; called from GameController next to it, BEFORE the opener
+// runs. Sets kFlagMetLibrarian the first time the player talks to her in Ch2
+// (her (a) clue line points to 羅馬廣場 / the 學霸), which UNLOCKS the 學霸:
+// before it is set, DialogOpener routes the 學霸 to a "先去問櫃台的管理員"
+// redirect and TryRescueBookworm refuses to wake him. No-op unless
+// state==Chapter2_Midterms && npcId=="librarian". Idempotent (SetFlag is a
+// no-op once held), so a re-talk is harmless.
+void TryMeetLibrarian(Player& player, std::string_view npcId,
+                      SemesterState state);
 
 // B2.3 — the 圖書館管理員 lends the player her 折疊傘 (管理員的傘). E-interact
 // hook, sibling of TryRescueBookworm; called from GameController next to it.

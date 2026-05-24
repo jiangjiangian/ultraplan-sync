@@ -21,6 +21,7 @@
 #include "dialog/DialogSource.h"
 #include "quest/ChapterVendors.h"
 #include "quest/ItemCatalog.h"
+#include "quest/Chapter2Quest.h"
 #include "controller/EventBus.h"
 #include "entities/GameObject.h"
 #include "state/SemesterState.h"
@@ -342,6 +343,22 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     in.Tap(Key::E);                                    // confirm buy
     Frame(controller, in);
     CHECK(p->ConsumableCount("EnergyDrink") == 1);     // <-- I5 supply fixed
+
+    // --- A2 (hard-gate): meet the 圖書館管理員 FIRST. She is the Ch2 chain
+    // head — until Flag_MetLibrarian is set, the 學霸 cannot be woken (the
+    // wake step refuses and the opener redirects to the 櫃台). Walk to her and
+    // tap E to fire the real TryMeetLibrarian hook. ---
+    const GameObject* lib = FindNpc(world, "librarian");
+    REQUIRE(lib != nullptr);
+    p->SetPosition(nccu::gfx::Vec2{lib->GetPosition().x - 8.0f,
+                                   lib->GetPosition().y});
+    in.Tap(Key::E);
+    Frame(controller, in);
+    CHECK(p->HasFlag(nccu::kFlagMetLibrarian));         // chain head met
+    for (int f = 0; f < 16 && world.Dialog().Active(); ++f) {
+        in.Tap(Key::E);
+        Frame(controller, in);
+    }
 
     // --- Talk to 學霸, PHASE 1: consumes the drink -> wakes him
     // (Flag_Bookworm). The new two-phase flow no longer recovers in one

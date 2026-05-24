@@ -101,19 +101,21 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
     const std::size_t totalCh1   = w.Objects().size();
     const std::size_t ch1Npcs    = RosterNpcIds(w).size();
     const std::size_t ch1Cash    = RosterCashCount(w);
-    // 善有善報 redesign: Ch1's ChapterQuestItems also seeds roster-tracked
-    // QuestFlagPickup(s) (the 苦主's umbrella) that are swept on a state
-    // change, so they too must be excluded from the "survives a swap" set.
-    const std::size_t ch1QuestItems =
-        nccu::ChapterQuestItems(SemesterState::Chapter1_AddDrop).size();
+    // A1: Ch1's ChapterQuestItems (the 苦主's umbrella) is now DEFERRED — it is
+    // NOT spawned at chapter entry (it appears only after
+    // Flag_SuitSeniorChoiceMade, via MaybeSpawnChapter1VictimUmbrella). So
+    // there is NO entry-spawned quest-item to subtract here; the table still
+    // declares 1 entry, but zero exist in the world at entry.
+    const std::size_t ch1QuestItems = 0;
     REQUIRE(ch1Npcs == 5);
     REQUIRE(ch1Cash == 5);                              // S5b-4 Ch1 spread
-    REQUIRE(ch1QuestItems == 1);                        // the 苦主's umbrella
+    REQUIRE(nccu::ChapterQuestItems(                    // table declares 1...
+                SemesterState::Chapter1_AddDrop).size() == 1);
     // Survives a roster swap = everything that is NOT a chapter-roster
-    // member. The roster is the 5 NPCs, the 5 CashPickups (S5b-4) AND the
-    // Ch1 quest-item pickup(s); all are subtracted; what remains is player
-    // + 3 morality umbrellas + the ctor 申請書 QuestFlagPickup (NOT roster-
-    // tracked) + ambient students.
+    // member. The roster is the 5 NPCs and the 5 CashPickups (S5b-4); the Ch1
+    // 苦主-umbrella quest item is deferred (not present at entry), so it is not
+    // part of this set. What remains is player + 3 morality umbrellas + the
+    // ctor 申請書 QuestFlagPickup (NOT roster-tracked) + ambient students.
     const std::size_t nonChapter =
         totalCh1 - ch1Npcs - ch1Cash - ch1QuestItems;
 

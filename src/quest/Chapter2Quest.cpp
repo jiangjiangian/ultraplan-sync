@@ -12,11 +12,36 @@ bool Chapter2NotesComplete(const Player& player) {
            player.HasFlag(kFlagFoundNote3);
 }
 
+void TryMeetLibrarian(Player& player, std::string_view npcId,
+                      SemesterState state) {
+    // A2: meeting the 圖書館管理員 is the Ch2 chain head. Her (a) clue line
+    // points the player to the 羅馬廣場 statue where the 學霸 is slumped, so
+    // talking to her UNLOCKS the 學霸 (the wake step + his dialog gate on this
+    // flag). Set at the E-interact moment her line opens — the existing
+    // hook idiom (Flag_Bookworm / Flag_SuitSeniorChoiceMade are likewise set
+    // at the interaction, not on a dialog-close callback). Idempotent.
+    if (state != SemesterState::Chapter2_Midterms) return;
+    if (npcId != "librarian") return;
+    player.SetFlag(kFlagMetLibrarian);
+}
+
 void TryRescueBookworm(Player& player, std::string_view npcId,
                        SemesterState state) {
     if (state != SemesterState::Chapter2_Midterms) return;
     if (npcId != "bookworm") return;
     if (player.HasFlag(kFlagBookwormRecovered)) return;   // already done
+
+    // A2: hard-gate — the player must visit the 圖書館管理員 first (she points
+    // to 羅馬廣場). Before that, the 學霸 cannot be woken; the opener routes
+    // him to a "先去問櫃台的管理員" redirect, so this nudge backs it up for the
+    // E-interact path. No EnergyDrink is consumed (the wake step is below).
+    if (!player.HasFlag(kFlagMetLibrarian)) {
+        EventBus::Instance().Publish(Event{
+            EventType::ShowMessage,
+            std::string("這個人睡得很沉……先去問櫃台的管理員吧，"
+                        "看看是誰拿走了傘。")});
+        return;
+    }
 
     if (!player.HasFlag(kFlagBookwormWoken)) {
         // PHASE 1 — 學霸 still slumped at the 羅馬廣場 statue. The
@@ -60,6 +85,21 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
     // thank-you recap). No EnergyDrink is consumed here — it was spent at
     // the wake step above.
     player.AddKarma(5).SetFlag(kFlagBookwormRecovered);
+    // A3 (bag-leak fix): the 3 notes are now HANDED BACK to the 學霸 as part of
+    // the exchange — so they must LEAVE the bag. BuildInventoryRows derives the
+    // 任務紙張 (學霸的筆記 xN) row purely from Flag_FoundNote1/2/3
+    // (ItemCatalog.cpp); without clearing them the owner still saw the 任務紙張
+    // row in the market bag AFTER returning the notes. Clear all three here, at
+    // the completion site, so the row disappears the next frame the bag is
+    // built. Mirrors the carried-item hygiene of the Ch3 trade (Chapter3Quest
+    // clears Flag_HasSausage / Flag_HasLoudspeaker the instant each is traded
+    // away) and the victim umbrella (TryReturnVictimUmbrella clears
+    // Flag_HasVictimUmbrella on the grant). Idempotent — ClearFlag is a no-op
+    // if absent, and the kFlagBookwormRecovered early-return above stops a
+    // re-talk from re-running this.
+    player.ClearFlag(kFlagFoundNote1)
+          .ClearFlag(kFlagFoundNote2)
+          .ClearFlag(kFlagFoundNote3);
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         std::string("傘換回來了。這次，更換是你。")});

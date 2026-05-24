@@ -199,9 +199,18 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // Ch2 = the 3 散落筆記, but those are DEFERRED: they must not appear
     // until the player wakes the 學霸 and he asks for them
     // (MaybeSpawnChapter2Notes, gated on Flag_Bookworm). So skip Ch2 here
-    // — at chapter entry no note exists. Every other state's items (none
-    // today) still spawn at entry through this shared helper.
-    if (state != SemesterState::Chapter2_Midterms)
+    // — at chapter entry no note exists.
+    //
+    // A1: Ch1 = the 苦主's transparent umbrella, now ALSO DEFERRED: it must
+    // not appear until the player has confronted the 西裝學長 and committed a
+    // choice (Flag_SuitSeniorChoiceMade) — the 學長 reveals where he dropped
+    // it (MaybeSpawnChapter1VictimUmbrella). So skip Ch1 here too — at chapter
+    // entry the umbrella does NOT exist in the world, so the player cannot
+    // grab it before the 學長 step (hard-gating the 苦主 → 學長 → 傘 → 苦主
+    // spine). Every other state's items (none today) still spawn at entry
+    // through this shared helper.
+    if (state != SemesterState::Chapter2_Midterms &&
+        state != SemesterState::Chapter1_AddDrop)
         SpawnChapterQuestItems(state);
 
     // Ch4 期末考終焉: the TrueUmbrella re-found behind the 體育館
@@ -312,6 +321,27 @@ bool World::MaybeSpawnChapter2Notes() {
     return true;
 }
 
+bool World::MaybeSpawnChapter1VictimUmbrella() {
+    // A1: the Ch1 苦主's transparent umbrella is REVEAL-AFTER-CHOICE, the
+    // sibling of MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella. It
+    // appears ONLY after the player has committed a choice with the 西裝學長
+    // (Flag_SuitSeniorChoiceMade, set by GameController on a confirmed
+    // suit_senior choice) — so it does not exist before the 學長 step. The
+    // placement (coord/flag/message) stays single-sourced in
+    // ChapterQuestItems(Chapter1) via the shared SpawnChapterQuestItems
+    // helper. One-shot per Ch1 visit (ch1VictimUmbrellaSpawned_). Roster-
+    // tracked, so it is swept if the player leaves Ch1 uncleared. Carrying it
+    // back to the 苦主 is the Ch1 clear (TryReturnVictimUmbrella's grant); the
+    // pickup itself only sets Flag_HasVictimUmbrella.
+    if (ch1VictimUmbrellaSpawned_) return false;
+    if (semester_.Current() != SemesterState::Chapter1_AddDrop) return false;
+    if (!player_ || !player_->HasFlag("Flag_SuitSeniorChoiceMade"))
+        return false;
+    SpawnChapterQuestItems(SemesterState::Chapter1_AddDrop);
+    ch1VictimUmbrellaSpawned_ = true;
+    return true;
+}
+
 bool World::MaybeSpawnChapter3Umbrella() {
     // T5: the Ch3 TrueUmbrella is REVEAL-AFTER-CLUE, the sibling of
     // MaybeSpawnChapter2Notes. It appears ONLY after the C-系 學姊 reveals
@@ -399,6 +429,9 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
     ch2NotesSpawned_ = false;
     // T5: same re-arm for the Ch3 reveal-after-clue umbrella one-shot.
     ch3UmbrellaSpawned_ = false;
+    // A1: same re-arm for the Ch1 reveal-after-choice victim's-umbrella
+    // one-shot, so a fresh Ch1 visit re-gates it on Flag_SuitSeniorChoiceMade.
+    ch1VictimUmbrellaSpawned_ = false;
 
     SpawnChapterNpcs(state);
 

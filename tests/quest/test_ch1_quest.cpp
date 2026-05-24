@@ -3,16 +3,25 @@
 #include "quest/ChapterGate.h"
 #include "quest/ChapterQuestItems.h"
 #include "dialog/DialogState.h"
+#include "dialog/DialogOpener.h"
+#include "dialog/DialogSource.h"
 #include "controller/EventBus.h"
 #include "controller/EventWiring.h"
 #include "entities/Player.h"
 #include "entities/QuestFlagPickup.h"
 #include "entities/CursedUmbrella.h"
+#include "entities/TransparentUmbrella.h"
 #include "state/SemesterStateMachine.h"
+#include "world/World.h"
 #include "gfx/Vec2.h"
 
+#include <cstddef>
 #include <string>
 #include <vector>
+
+#ifndef TEST_CONTENT_DIR
+#error "TEST_CONTENT_DIR must be defined by the build system"
+#endif
 
 using nccu::SemesterState;
 
@@ -192,5 +201,113 @@ TEST_CASE("Ch1 victim's-umbrella pickup sets Flag_HasVictimUmbrella") {
     pickup.OnPickup(&p);
     CHECK(p.HasFlag(nccu::kFlagHasVictimUmbrella));
     CHECK(cap.lastMessage == qi.message);             // its own pickup line
+    EventBus::Instance().Clear();
+}
+
+// A1 REGRESSION — the 西裝學長 must REDIRECT (line-only, no menu) before the
+// player has met the 苦主 (Flag_PromisedVictim). The spine is hard-gated
+// 苦主 → 學長 → 傘 → 苦主; talking to the 學長 first must NOT open the
+// ripple-critical choice menu (which would let the player commit the 學長
+// choice — and even claim a morality umbrella — before the chapter's first
+// beat). After the promise, the genuine menu shows. Revert-verify: drop the
+// `!Flag_PromisedVictim` redirect branch in DialogOpener and the first half
+// fails (a menu opens before the promise).
+TEST_CASE("A1: 西裝學長 redirects (no menu) until the 苦主 is met") {
+    nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
+    nccu::dialog::Reload();
+    const auto Ch1 = SemesterState::Chapter1_AddDrop;
+
+    // BEFORE the promise: line-only redirect, NO choice menu ever.
+    Player p = MakePlayer();
+    nccu::DialogState d;
+    nccu::OpenNpcDialog(d, p, "suit_senior", Ch1);
+    REQUIRE(d.Active());
+    bool reachedMenu = false;
+    for (int i = 0; i < 32 && d.Active(); ++i) {
+        if (d.AtChoice()) { reachedMenu = true; break; }
+        d.Advance();
+    }
+    CHECK_FALSE(reachedMenu);                 // brushed off, never a menu
+    CHECK(d.Choices().empty());
+
+    // AFTER the promise: the genuine (b)/(c)/(d) choice menu opens.
+    Player q = MakePlayer();
+    q.SetFlag("Flag_PromisedVictim");
+    nccu::DialogState d2;
+    nccu::OpenNpcDialog(d2, q, "suit_senior", Ch1);
+    REQUIRE(d2.Active());
+    bool reachedMenu2 = false;
+    for (int i = 0; i < 32 && d2.Active(); ++i) {
+        if (d2.AtChoice()) { reachedMenu2 = true; break; }
+        d2.Advance();
+    }
+    CHECK(reachedMenu2);                       // now the branch menu shows
+    CHECK_FALSE(d2.Choices().empty());
+}
+
+// A1 REGRESSION — the 苦主's umbrella pickup is DEFERRED: it does NOT exist
+// in the world at Ch1 entry, appears ONLY after Flag_SuitSeniorChoiceMade
+// (World::MaybeSpawnChapter1VictimUmbrella, the sibling of
+// MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella), spawns exactly once,
+// and is roster-swept on a state change. So the player cannot grab the
+// umbrella before the 學長 step — the spine is unskippable. Revert-verify:
+// re-add the Ch1 entry-spawn (drop the Chapter1_AddDrop skip in
+// SpawnChapterNpcs) and the first CHECK fails (an umbrella exists at entry).
+namespace {
+// Counts every QuestFlagPickup in the world. At Ch1 entry exactly ONE exists
+// (the ctor-spawned 申請書, Flag_FoundForm); the deferred victim-umbrella
+// pickup is the only other Ch1 quest item, so the count moving 1 -> 2 is
+// exactly "the victim umbrella spawned" (the 申請書 is never swept — it is
+// not roster-tracked).
+std::size_t CountQuestPickups(const nccu::World& w) {
+    std::size_t n = 0;
+    for (const auto& o : w.Objects())
+        if (dynamic_cast<const QuestFlagPickup*>(o.get())) ++n;
+    return n;
+}
+}  // namespace
+
+TEST_CASE("A1: 苦主's umbrella defers until Flag_SuitSeniorChoiceMade, then sweeps") {
+    EventBus::Instance().Clear();
+    nccu::World w("", /*loadSprites=*/false);
+
+    // At Ch1 entry (the ctor's default state) the victim-umbrella pickup does
+    // NOT exist — only the ctor 申請書 (Flag_FoundForm) is present.
+    CHECK(CountQuestPickups(w) == 1);
+
+    // Without the choice flag the deferred spawn is a no-op every frame.
+    CHECK_FALSE(w.MaybeSpawnChapter1VictimUmbrella());
+    CHECK(CountQuestPickups(w) == 1);
+
+    // Committing the 西裝學長 choice (Flag_SuitSeniorChoiceMade) makes the
+    // victim umbrella appear ONCE (count 1 申請書 -> 2: + the umbrella).
+    REQUIRE(w.GetPlayer() != nullptr);
+    w.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");
+    CHECK(w.MaybeSpawnChapter1VictimUmbrella());        // spawns this frame
+    CHECK(CountQuestPickups(w) == 2);
+    CHECK_FALSE(w.MaybeSpawnChapter1VictimUmbrella());  // one-shot
+    CHECK(CountQuestPickups(w) == 2);
+
+    // Leaving Ch1 sweeps the roster-tracked umbrella (re-arms the one-shot);
+    // the ctor 申請書 is NOT roster-tracked, so it persists (count back to 1).
+    w.RespawnChapterRoster(SemesterState::Interlude_Market);
+    CHECK(CountQuestPickups(w) == 1);
+    EventBus::Instance().Clear();
+}
+
+TEST_CASE("A1: MaybeSpawnChapter1VictimUmbrella is a no-op outside Ch1") {
+    EventBus::Instance().Clear();
+    nccu::World w("", /*loadSprites=*/false);
+    REQUIRE(w.GetPlayer() != nullptr);
+    w.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");   // flag set, but...
+
+    // Ch2: no Ch1-umbrella spawn (it is Ch1-scoped). The ctor 申請書 is NOT
+    // roster-tracked so it persists across the transition (count stays 1), and
+    // Ch2 spawns no quest items at entry (notes are deferred on the wake flag),
+    // so MaybeSpawnChapter1VictimUmbrella adds nothing.
+    w.Semester().Transition(SemesterState::Chapter2_Midterms);
+    w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
+    CHECK_FALSE(w.MaybeSpawnChapter1VictimUmbrella());
+    CHECK(CountQuestPickups(w) == 1);                   // 申請書 only
     EventBus::Instance().Clear();
 }

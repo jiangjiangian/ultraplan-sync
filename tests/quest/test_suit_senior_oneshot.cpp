@@ -38,6 +38,11 @@ TEST_CASE("C.3(b): first 西裝學長 talk presents the branch menu") {
     nccu::DialogState dlg;
     Player p{Vec2{0, 0}};
 
+    // A1 (hard-gate): the menu only opens once the 苦主 has been met and the
+    // umbrella promised (Flag_PromisedVictim). Without it the 學長 redirects a
+    // stranger line-only. Set the promise so the genuine menu shows.
+    p.SetFlag("Flag_PromisedVictim");
+
     nccu::OpenNpcDialog(dlg, p, "suit_senior",
                         SemesterState::Chapter1_AddDrop);
     REQUIRE(dlg.Active());
