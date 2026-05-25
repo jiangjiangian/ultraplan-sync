@@ -17,6 +17,7 @@
 #include "ui/QuestGiverIndicator.h"
 #include "state/InterludeExitMarker.h"
 #include "ui/GameHelp.h"
+#include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
 #include "ui/ReducedMotion.h"
 #include "gfx/Renderer.h"
@@ -686,58 +687,21 @@ void View::Draw(const World& world) {
     if (world.MenuOpen() && world.HelpOpen()) {
         const float W = viewportSize_.x;
         const float H = viewportSize_.y;
+        // Full-screen scrim ON TOP of the paused menu (overlay-only — the
+        // title screen Clears instead, so this stays at the call site).
         renderer_.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 205});
-        const float pad = 24.0f;
-        renderer_.DrawRect(Rect{pad, pad, W - pad * 2.0f, H - pad * 2.0f},
-                           Color{18, 20, 28, 245});
-        TextBuilder{"遊戲說明"}
-            .At(Vec2{W * 0.5f - 52.0f, pad + 6.0f})
-            .Size(24).Color(Colors::Gold).Draw();
-        // U2-T4: the help text grew past one panel (a 【道具須知】 economy/
-        // tips section was added), so it is PAGED — draw only the current
-        // page (World::HelpPage, ←/→ flips it in GameController). Each page
-        // is now ~half the old content, so a comfortable pitch 17 (blanks 8)
-        // fits the TALLER page (page 2: 雨傘外觀+道具須知+結局, 15 content +
-        // 3 blanks → 15*17 + 3*8 = 279 from hy0=64, ends ~343) above the page
-        // indicator (~y364) and the 返回 chip (~y392) in the 450 px window.
-        // Section headers (【…】) are gold so the sections read apart.
-        const int page = std::max(0, std::min(world.HelpPage(),
-                                               nccu::kGameHelpPageCount - 1));
-        const auto isHeader = [](std::string_view s) {
-            return !s.empty() && s.front() == static_cast<char>('\xE3');
-        };  // 【 is U+3010 → lead byte 0xE3
-        float hy = pad + 40.0f;
-        for (const std::string_view ln :
-             nccu::kGameHelpPages[static_cast<std::size_t>(page)]) {
-            if (!ln.empty())
-                TextBuilder{std::string{ln}}
-                    .At(Vec2{pad + 22.0f, hy})
-                    .Size(15)
-                    .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
-            hy += ln.empty() ? 8.0f : 17.0f;
-        }
-        // U2-T4: 「第 N／M 頁」 page indicator + the ←/→ flip hint, just above
-        // the 返回 chip so the paging is discoverable.
-        const std::string ind =
-            "第 " + std::to_string(page + 1) + "／" +
-            std::to_string(nccu::kGameHelpPageCount) + " 頁   ←／→ 翻頁";
-        TextBuilder{ind}.At(Vec2{W * 0.5f - 92.0f, H - pad - 62.0f})
-            .Size(15).Color(Color{200, 200, 210, 255}).Draw();
-        // T4c: make the 返回 prompt PROMINENT — it was faint dark-grey on
-        // the dark panel and easy to miss. A gold-bordered chip + bright
-        // bold-size gold label, centred at the bottom, so the way out is
-        // unmistakable. On EVERY page (U2-T4).
-        const float chipW = 188.0f, chipH = 26.0f;
-        const float chipX = W * 0.5f - chipW * 0.5f;
-        const float chipY = H - pad - chipH - 8.0f;
-        renderer_.DrawRect(Rect{chipX, chipY, chipW, chipH},
-                           Color{62, 52, 18, 255});
-        renderer_.DrawRect(Rect{chipX, chipY, chipW, 2.0f}, Colors::Gold);
-        renderer_.DrawRect(Rect{chipX, chipY + chipH - 2.0f, chipW, 2.0f},
-                           Colors::Gold);
-        TextBuilder{"M / E 返回選單"}
-            .At(Vec2{W * 0.5f - 58.0f, chipY + 5.0f})
-            .Size(17).Color(Colors::Gold).Draw();
+        // Shared 遊戲說明 page body (review MINOR de-dup): same panel/title/
+        // paged body/indicator/返回 chip the title screen draws. The overlay
+        // values: 245α panel, light indicator, "M / E 返回選單" chip at -58.
+        nccu::ui::DrawHelpPage(
+            [this](Rect r, Color c) { renderer_.DrawRect(r, c); },
+            nccu::ui::HelpPageStyle{
+                W, H,
+                std::max(0, std::min(world.HelpPage(),
+                                     nccu::kGameHelpPageCount - 1)),
+                Color{18, 20, 28, 245},
+                Color{200, 200, 210, 255},
+                "M / E 返回選單", -58.0f});
     }
 
     // U1-T2: the chapter bookend big card, drawn LAST so its brief

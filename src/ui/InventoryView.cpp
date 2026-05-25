@@ -47,9 +47,10 @@ RowKind KindOf(const InventoryRow& row) {
     // U2-T3: the Ch3 carried trade items are view-only 道具, not consumables.
     if (row.itemId == kItemSausage || row.itemId == kItemLoudspeaker)
         return RowKind::Food;
-    // Any umbrella sentinel (or a vendor umbrella id) → Umbrella.
-    if (row.itemId.find("umbrella") != std::string::npos ||
-        row.itemId.find("Umbrella") != std::string::npos)
+    // Any umbrella sentinel (or a vendor umbrella id) → Umbrella. Shares
+    // ItemCatalog::IsUmbrellaItemId (the SAME predicate BuildInventoryRows
+    // uses to exclude umbrellas from the count loop) so the two can't drift.
+    if (IsUmbrellaItemId(row.itemId))
         return RowKind::Umbrella;
     return RowKind::Consumable;        // a held, usable consumable
 }

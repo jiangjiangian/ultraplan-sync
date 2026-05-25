@@ -80,6 +80,15 @@ inline constexpr const char* kItemLoudspeaker   = "__quest_loudspeaker__";
 // quest papers are view-only entries.
 [[nodiscard]] bool IsUsableConsumable(std::string_view itemId);
 
+// True when `itemId` names an umbrella (any of the catalog umbrella
+// sentinels OR a vendor umbrella stock id — substring "Umbrella"/
+// "umbrella"). A held-over-head umbrella is surfaced by the held-kind row,
+// NOT the count loop, so BuildInventoryRows EXCLUDES these from the
+// consumable count (B2.1) and InventoryView classifies a row as the
+// Umbrella kind by it. Single source so the two callers (ItemCatalog's
+// row builder + InventoryView's row classifier) can never drift.
+[[nodiscard]] bool IsUmbrellaItemId(std::string_view itemId);
+
 // Item 2b — apply a held consumable's effect when the player uses it from
 // the open bag. This is the SAME effect each ConsumableItem::Consume body
 // applies (identical karma delta + identical ShowMessage text, sharing the

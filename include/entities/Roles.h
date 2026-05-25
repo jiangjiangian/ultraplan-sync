@@ -39,6 +39,28 @@ struct IInteractable {
     virtual void Interact(Player* initiator) = 0;
 };
 
+// Assignment-#6 combat scaffolding. A fourth INDEPENDENT role (same ISP
+// shape as the three above — no data members, behaviour contract only):
+// an entity that has hit-points and can be damaged / killed. The #6
+// Vampire-Survivors survival game needs a mortal player + mortal enemies;
+// modelling "can take damage" as its own role keeps it out of GameObject's
+// base (an item / decoration is NOT mortal) exactly as ISP wants. Today
+// only Player plays it; enemies added in #6 will too. Default-implemented
+// here (hp lives in the concrete class) so a leaf opts in by inheriting it
+// and overriding — but the common hp_/TakeDamage/IsDead shape is provided
+// as a convenience base a class can also just inherit verbatim.
+struct IMortal {
+    virtual ~IMortal() = default;
+    // Apply `amount` damage (clamped at 0). noexcept — never throws in the
+    // combat hot loop. A negative amount is ignored (use a heal API for
+    // recovery; damage only ever lowers hp).
+    virtual void TakeDamage(int amount) noexcept = 0;
+    // Out of hit-points?
+    [[nodiscard]] virtual bool IsDead() const noexcept = 0;
+    // Current hit-points (>= 0). For HUD / tests / #6 combat math.
+    [[nodiscard]] virtual int  Hp() const noexcept = 0;
+};
+
 // ── CRTP dispatch mixin ──────────────────────────────────────────────
 // WithRoles<Derived, Base> injects itself between an existing
 // GameObject-derived state base (Item / Character / ConsumableItem /
@@ -71,6 +93,12 @@ public:
         else
             return nullptr;
     }
+    IMortal* AsMortal() noexcept override {
+        if constexpr (std::derived_from<Derived, IMortal>)
+            return static_cast<Derived*>(this);
+        else
+            return nullptr;
+    }
 };
 
 // ── Generic role-dispatch helper (template showcase) ─────────────────
@@ -93,11 +121,15 @@ void ForEachRole(Container& objects, F&& fn) {
             if (IUpdatable* r = obj->AsUpdatable()) fn(*r);
         } else if constexpr (std::same_as<Role, IInteractable>) {
             if (IInteractable* r = obj->AsInteractable()) fn(*r);
+        } else if constexpr (std::same_as<Role, IMortal>) {
+            // Assignment-#6 combat: visit every mortal entity (the player
+            // + future enemies) so damage / death sweeps are one call.
+            if (IMortal* r = obj->AsMortal()) fn(*r);
         } else {
             static_assert(std::same_as<Role, IUpdatable>,
                           "ForEachRole supports the mutable roles "
-                          "(IUpdatable / IInteractable); render through "
-                          "GameObject::AsDrawable() directly.");
+                          "(IUpdatable / IInteractable / IMortal); render "
+                          "through GameObject::AsDrawable() directly.");
         }
     }
 }

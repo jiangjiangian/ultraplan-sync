@@ -23,14 +23,18 @@
 enum class HeldUmbrella { None, True, Cursed, Ugly, Victim, Fragile,
                           ProfessorTrap, Loaner };
 
-// ISP roles: IUpdatable + IDrawable. The old Interact(Player*) body was an
-// empty no-op ("Player does not respond to other Players in MVP"), so that
-// role is dropped — nothing ever invoked it through the container (the
-// E-interact sweep skips the player via ForEachActiveExcept). Update (input
-// + animation) and Render (the sprite) are real and kept. Player is final,
-// so WithRoles is keyed on Player itself.
+// ISP roles: IUpdatable + IDrawable + IMortal. The old Interact(Player*)
+// body was an empty no-op ("Player does not respond to other Players in
+// MVP"), so that role is dropped — nothing ever invoked it through the
+// container (the E-interact sweep skips the player via ForEachActiveExcept).
+// Update (input + animation) and Render (the sprite) are real and kept.
+// IMortal is Assignment-#6 combat scaffolding (hp / TakeDamage / IsDead):
+// the player has hit-points so the #6 survival mode can damage and kill it;
+// hp_ is NOT serialized (the autoplay harness emits only x/y/karma/money/
+// rain — see Harness.cpp), so adding it leaves state.jsonl byte-identical.
+// Player is final, so WithRoles is keyed on Player itself.
 class Player final : public WithRoles<Player, Character>,
-                     public IUpdatable, public IDrawable {
+                     public IUpdatable, public IDrawable, public IMortal {
 public:
     explicit Player(nccu::gfx::Vec2 position);
 
@@ -38,6 +42,20 @@ public:
     void Render(nccu::gfx::IRenderer& renderer) const override;
 
     void HandleInput(float deltaTime);
+
+    // ── IMortal (Assignment-#6 combat scaffolding) ──────────────────
+    // Starting / max hit-points. A round 100 so #6 can tune damage in
+    // percentage-like steps; not wired to any current gameplay (no enemy
+    // deals damage yet), so the present game is unaffected.
+    static constexpr int kMaxHp = 100;
+    // Lower hp by `amount` (clamped at 0; a non-positive amount is ignored
+    // — healing is a separate concern). noexcept for the combat hot loop.
+    void TakeDamage(int amount) noexcept override {
+        if (amount <= 0) return;
+        hp_ = (amount >= hp_) ? 0 : hp_ - amount;
+    }
+    [[nodiscard]] bool IsDead() const noexcept override { return hp_ <= 0; }
+    [[nodiscard]] int  Hp()     const noexcept override { return hp_; }
 
     // Mutators return *this so callers can chain:
     //   player.AddKarma(10).AddMoney(50).SetHasUmbrella(true);
@@ -195,6 +213,11 @@ private:
     bool hasUmbrella_;
     HeldUmbrella heldUmbrella_{HeldUmbrella::None};  // B2.1: bag umbrella row source
     int money_;
+    // Assignment-#6 combat hit-points. NOT serialized by the harness, so it
+    // never enters state.jsonl — the present game (no enemy damages the
+    // player) leaves it at kMaxHp for the whole run. In-class initialised so
+    // the existing Player ctor needs no change.
+    int hp_{kMaxHp};
     std::unordered_map<std::string, bool> flags_;
     std::unordered_map<std::string, int>  consumables_;
 

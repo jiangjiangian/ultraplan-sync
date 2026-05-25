@@ -544,4 +544,20 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
     }
 }
 
+void World::Sweep() {
+    // Snapshot the player's death BEFORE erase — the cached player_
+    // pointer dangles the instant its owning unique_ptr is destroyed
+    // (heap-use-after-free per [basic.stc.dynamic.deallocation]/4). The
+    // bool snapshot sidesteps that: we decide whether to clear the cache
+    // while the object still exists, then erase, then act on the snapshot.
+    const bool playerWillDie = player_ && !player_->IsActive();
+    objects_.erase(
+        std::remove_if(objects_.begin(), objects_.end(),
+            [](const std::unique_ptr<GameObject>& o) {
+                return !o || !o->IsActive();
+            }),
+        objects_.end());
+    if (playerWillDie) ClearPlayer();
+}
+
 } // namespace nccu

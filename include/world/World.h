@@ -342,6 +342,27 @@ public:
     // this once per detected SemesterState change.
     void RespawnChapterRoster(nccu::SemesterState state);
 
+    // End-of-frame deferred deletion (mark-then-sweep). The Update loops
+    // only mark dead objects (Deactivate / beClaimed / pickup), never
+    // erase mid-iteration — so a single remove-erase pass at the very end
+    // of the frame avoids iterator invalidation and the objects_.front()
+    // == Player invariant (per CLAUDE.md §5: "Deferred end-of-frame
+    // deletion; objects_.front()==Player"). The Player is the front
+    // object and is the LAST thing a frame ever marks dead (rain death),
+    // so dropping inactive objects keeps the Player at the front when it
+    // survives. When the Player itself was swept (its unique_ptr is about
+    // to be destroyed → the cached player_ would dangle, a
+    // heap-use-after-free per [basic.stc.dynamic.deallocation]/4), the
+    // cached pointer is cleared HERE while the object still exists, before
+    // the erase frees it. Idempotent on a frame with no dead objects.
+    //
+    // Lives on World (not the controller) because the object container and
+    // the cached player_ pointer are World's data — sweeping them is a
+    // pure data-model operation with no input/render concern (the review
+    // flagged the inline controller sweep as data logic that belongs on
+    // the model).
+    void Sweep();
+
 private:
     // Shared spawn path so the ctor and RespawnChapterRoster build
     // chapter NPCs identically (no construction drift). Appends one NPC
