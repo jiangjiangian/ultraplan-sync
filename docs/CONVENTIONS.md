@@ -80,3 +80,41 @@ file wins** — fix the code.
   mark `isActive_ = false` and let `World::Sweep()` erase at end-of-frame.
   `objects_.front()` stays the Player. No `dynamic_cast` (use the role
   accessors `As*()`); `static_cast` only behind a documented invariant.
+
+## 10. raylib resource lifecycle (RAII) — codifies the existing discipline
+These are not aspirational; they describe how `include/gfx/` already works and
+make it the standard for every new raylib-backed resource (incl. audio).
+- **R1 — one move-only RAII wrapper per raylib resource type.** Copy deleted,
+  move transfers ownership, dtor `Unload`s. Pattern: `gfx::Texture`
+  (`include/gfx/Texture.h`). Applies to `Texture2D`, `Font`, and (new)
+  `Sound`/`Music`. Prefer a dedicated wrapper over a bare
+  `unique_ptr<…, Deleter>` (see R3 for why).
+- **R2 — owner vs view.** Exactly one *owner* per GPU/audio id (its dtor
+  `Unload`s); any number of cheap non-owning *views* may alias it and never
+  `Unload` (no double-free). Pattern: `gfx::Texture` owner/view + the load-once
+  `detail::TextureCache`.
+- **R3 — explicit teardown, never a static dtor (the load-bearing rule).**
+  Process-lifetime caches are function-local statics, but are emptied by an
+  explicit `Shutdown*()` called from `main()` *while the window/GL context (and
+  audio device) is still alive — before* `~Window`/`CloseWindow`. A
+  static/Meyers dtor runs *after* `main()` returns, i.e. after `CloseWindow`
+  tore down the GL context, and `Unload*` on a dead context is UB — so a
+  `std::unique_ptr<Texture2D, UnloadDeleter>` at static scope is **wrong**
+  here. See `gfx::ShutdownTextureCache` / `gfx::ShutdownFont` and the teardown
+  order in `main.cpp`; audio adds `gfx::ShutdownAudio()` before `~AudioDevice`.
+- **R4 — scope guards for paired Begin/End.** `gfx::DrawScope`
+  (`Begin/EndDrawing`), `gfx::CameraScope` (`Begin/EndMode2D`) — RAII so an
+  early `return` cannot leave them unbalanced. Add new paired calls the same
+  way.
+- **R5 — `raylib.h` is confined to `engine/`** (render/platform/input/audio).
+  `game/` and `ui/` never include `raylib.h`, never call `Load*`/`Unload*`/
+  `Draw*` directly — they route through the wrappers, `IRenderer`, and the
+  `EventBus`.
+- **R6 — Audio mirrors R1–R3.** `engine/audio/AudioDevice` RAII
+  (`InitAudioDevice` ctor / `CloseAudioDevice` dtor); `Sound`/`Music` move-only
+  handles + a load-once `AudioManager` cache; `ShutdownAudio()` from `main()`
+  before `~AudioDevice`.
+- **raylib flags confinement.** raylib config/input enums (`FLAG_*`, `KEY_*`,
+  `ConfigFlags`) stay inside `engine/` (Window/Input); never leak into `game/`
+  logic — game code uses the typed `InputSource` abstraction. (Game *narrative*
+  flags are the separate `kFlag*` registry, §6 — do not conflate the two.)
