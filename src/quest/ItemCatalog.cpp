@@ -195,20 +195,6 @@ void PushRow(std::vector<InventoryRow>& rows, std::string_view itemId,
         std::string(info.description), usable, std::string(itemId)});
 }
 
-// B2.1: any umbrella itemId is a HELD-over-head umbrella, surfaced by the
-// HeldUmbrellaKind() row below — NOT a count-consumable. So it must be
-// EXCLUDED from the consumable-count loop (the Ch4 集英樓 vendor adds
-// "UglyUmbrella" to the count map; without this filter the bag drew TWO
-// umbrella rows — one from the count, one from the held-kind). The 苦主's
-// carried transparent umbrella is a FLAG, not a count entry, so it is
-// unaffected here. Substring match keeps it robust to both the English
-// vendor ids ("UglyUmbrella"/"CursedUmbrella"/"TransparentUmbrella") and any
-// future umbrella stock line.
-bool IsUmbrellaItemId(const std::string& id) {
-    return id.find("Umbrella") != std::string::npos ||
-           id.find("umbrella") != std::string::npos;
-}
-
 // B2.1: the catalog sentinel for a held umbrella kind. None ⇒ no row.
 const char* HeldUmbrellaItem(HeldUmbrella kind) {
     switch (kind) {
@@ -240,6 +226,22 @@ HeldUmbrella HeldUmbrellaForItemId(std::string_view itemId) {
     if (itemId == "CursedUmbrella")      return HeldUmbrella::Cursed;
     if (itemId == "TransparentUmbrella") return HeldUmbrella::True;
     return HeldUmbrella::None;
+}
+
+// B2.1: any umbrella itemId is a HELD-over-head umbrella, surfaced by the
+// held-kind row — NOT a count-consumable. So BuildInventoryRows EXCLUDES it
+// from the consumable-count loop (the Ch4 集英樓 vendor adds "UglyUmbrella"
+// to the count map; without this filter the bag drew TWO umbrella rows —
+// one from the count, one from the held-kind), and InventoryView uses it to
+// classify a row as the Umbrella kind. The 苦主's carried transparent
+// umbrella is a FLAG, not a count entry, so it is unaffected. Substring
+// match keeps it robust to both the English vendor ids ("UglyUmbrella"/
+// "CursedUmbrella"/"TransparentUmbrella") and any future umbrella stock
+// line. Hoisted out of the anonymous namespace (review MINOR) so
+// InventoryView shares this one definition instead of re-implementing it.
+bool IsUmbrellaItemId(std::string_view id) {
+    return id.find("Umbrella") != std::string_view::npos ||
+           id.find("umbrella") != std::string_view::npos;
 }
 
 std::vector<InventoryRow> BuildInventoryRows(const Player& player) {

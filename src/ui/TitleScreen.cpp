@@ -1,5 +1,6 @@
 #include "ui/TitleScreen.h"
 #include "ui/GameHelp.h"
+#include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with View)
 #include "ui/PressLatch.h"
 #include "gfx/DrawScope.h"
 #include "gfx/Renderer.h"
@@ -71,48 +72,16 @@ bool RunHelpPage(gfx::Window& win) {
             DrawScope frame;
             Renderer r;
             r.Clear(Colors::RayWhite);
-            const Rect panel{24.0f, 24.0f,
-                             static_cast<float>(kWinW) - 48.0f,
-                             static_cast<float>(kWinH) - 48.0f};
-            r.Rect(panel, kPanel);
-            TextBuilder{"遊戲說明"}
-                .At(Vec2{kWinW / 2.0f - 52.0f, 30.0f})
-                .Size(24).Color(Colors::Gold).Draw();
-            // U2-T4: matches the in-game overlay (View.cpp) — draw only the
-            // current page at pitch 17 (blanks 8), sized so the taller page
-            // (page 2) clears the indicator + 返回 chip. Section headers
-            // (【…】) are gold so the sections read apart.
-            float y = 64.0f;
-            const auto isHeader = [](std::string_view s) {
-                return !s.empty() && s.front() == static_cast<char>('\xE3');
-            };  // 【 is U+3010 → lead byte 0xE3
-            for (const std::string_view ln :
-                 nccu::kGameHelpPages[static_cast<std::size_t>(page)]) {
-                if (!ln.empty())
-                    TextBuilder{std::string{ln}}
-                        .At(Vec2{46.0f, y}).Size(15)
-                        .Color(isHeader(ln) ? Colors::Gold : Colors::White).Draw();
-                y += ln.empty() ? 8.0f : 17.0f;
-            }
-            // U2-T4: 「第 N／M 頁」 indicator + ←/→ hint above the chip.
-            const std::string ind =
-                "第 " + std::to_string(page + 1) + "／" +
-                std::to_string(nccu::kGameHelpPageCount) + " 頁   ←／→ 翻頁";
-            TextBuilder{ind}
-                .At(Vec2{kWinW / 2.0f - 92.0f,
-                         static_cast<float>(kWinH) - 24.0f - 62.0f})
-                .Size(15).Color(Color{120, 120, 130, 255}).Draw();
-            // T4c: a PROMINENT 返回 prompt — a gold-bordered chip + bright
-            // gold label so the way out is unmistakable (was faint dark-grey).
-            const float chipW = 188.0f, chipH = 26.0f;
-            const float chipX = kWinW / 2.0f - chipW * 0.5f;
-            const float chipY = static_cast<float>(kWinH) - 24.0f - chipH - 8.0f;
-            r.Rect(Rect{chipX, chipY, chipW, chipH}, Color{62, 52, 18, 255});
-            r.Rect(Rect{chipX, chipY, chipW, 2.0f}, Colors::Gold);
-            r.Rect(Rect{chipX, chipY + chipH - 2.0f, chipW, 2.0f}, Colors::Gold);
-            TextBuilder{"Enter / E 返回"}
-                .At(Vec2{kWinW / 2.0f - 56.0f, chipY + 5.0f})
-                .Size(17).Color(Colors::Gold).Draw();
+            // Shared 遊戲說明 page body (review MINOR de-dup with View.cpp's
+            // in-game overlay). The title-screen values: 200α panel (kPanel),
+            // dim-grey indicator, "Enter / E 返回" chip at -56. Pixel-
+            // identical to the prior inline draw.
+            nccu::ui::DrawHelpPage(
+                [&r](Rect rc, Color c) { r.Rect(rc, c); },
+                nccu::ui::HelpPageStyle{
+                    static_cast<float>(kWinW), static_cast<float>(kWinH),
+                    page, kPanel, Color{120, 120, 130, 255},
+                    "Enter / E 返回", -56.0f});
         }
     }
     return false;                              // window closed

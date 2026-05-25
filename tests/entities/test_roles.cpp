@@ -135,3 +135,55 @@ TEST_CASE("ForEachRole<IUpdatable> visits only the objects that tick") {
     ForEachRole<IUpdatable>(objs, [&](IUpdatable&) { ++visited; });
     CHECK(visited == 1);                     // just the NPC now
 }
+
+// ── IMortal (Assignment-#6 combat scaffolding) ──────────────────────
+TEST_CASE("Player plays the IMortal role; NPC / items do not") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    GameObject& gp = p;
+    CHECK(gp.AsMortal() != nullptr);         // the player has hit-points
+
+    NPC n{nccu::gfx::Vec2{0, 0}, std::vector<std::string>{"hi"}};
+    GameObject& gn = n;
+    CHECK(gn.AsMortal() == nullptr);         // an NPC is not mortal (today)
+
+    TrueUmbrella u{nccu::gfx::Vec2{0, 0}};
+    GameObject& gu = u;
+    CHECK(gu.AsMortal() == nullptr);         // an item is not mortal
+}
+
+TEST_CASE("IMortal: TakeDamage lowers hp, clamps at 0, IsDead flips") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    CHECK(p.Hp() == Player::kMaxHp);
+    CHECK_FALSE(p.IsDead());
+    p.TakeDamage(30);
+    CHECK(p.Hp() == Player::kMaxHp - 30);
+    CHECK_FALSE(p.IsDead());
+    p.TakeDamage(-5);                        // non-positive ignored
+    CHECK(p.Hp() == Player::kMaxHp - 30);
+    p.TakeDamage(1000);                      // over-kill clamps at 0
+    CHECK(p.Hp() == 0);
+    CHECK(p.IsDead());
+}
+
+TEST_CASE("ForEachRole<IMortal> visits only mortal entities, dispatches damage") {
+    std::vector<std::unique_ptr<GameObject>> objs;
+    objs.push_back(std::make_unique<Player>(nccu::gfx::Vec2{0, 0}));
+    objs.push_back(std::make_unique<NPC>(nccu::gfx::Vec2{0, 0},
+                                         std::vector<std::string>{"x"}));
+    objs.push_back(std::make_unique<TrueUmbrella>(nccu::gfx::Vec2{0, 0}));
+
+    int visited = 0;
+    ForEachRole<IMortal>(objs, [&](IMortal& m) { ++visited; m.TakeDamage(10); });
+    CHECK(visited == 1);                     // only the Player is mortal
+    // The damage really landed through the dispatched IMortal&.
+    CHECK(objs.front()->AsMortal()->Hp() == Player::kMaxHp - 10);
+}
+
+// ── GetCollisionLayer (was dead state; review MINOR) ────────────────
+TEST_CASE("GameObject collision layer: default 0, settable") {
+    Player p{nccu::gfx::Vec2{0, 0}};
+    GameObject& g = p;
+    CHECK(g.GetCollisionLayer() == 0);       // default layer
+    g.SetCollisionLayer(3);
+    CHECK(g.GetCollisionLayer() == 3);
+}

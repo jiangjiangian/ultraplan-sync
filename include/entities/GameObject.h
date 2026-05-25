@@ -28,6 +28,12 @@ public:
     virtual IUpdatable*      AsUpdatable()      noexcept { return nullptr; }
     virtual const IDrawable* AsDrawable() const noexcept { return nullptr; }
     virtual IInteractable*   AsInteractable()   noexcept { return nullptr; }
+    // Assignment-#6 combat scaffolding: a fourth role accessor, same shape
+    // as the three above. Default null = "not mortal" (items, decoration);
+    // Player (and #6 enemies) override via WithRoles to hand back an
+    // IMortal*. The scene container can then ForEachRole<IMortal>(...) to
+    // run a damage / death pass over exactly the mortal entities.
+    virtual IMortal*         AsMortal()          noexcept { return nullptr; }
 
     [[nodiscard]] bool CheckCollision(nccu::gfx::Rect other) const noexcept {
         return hitBox_.Intersects(other);
@@ -36,6 +42,17 @@ public:
     [[nodiscard]] bool IsActive() const noexcept { return isActive_; }
     void Deactivate() noexcept { isActive_ = false; }
     [[nodiscard]] nccu::gfx::Vec2 GetPosition() const noexcept { return position_; }
+
+    // Collision-layer tag (review MINOR: collisionLayer_ was set in the
+    // ctor but had no reader — dead state). 0 = the default layer (player,
+    // NPCs, items today). Exposed for the Assignment-#6 survival game,
+    // where layering (player / enemy / projectile / pickup) lets the
+    // CollisionSystem decide which pairs actually interact. SetCollision
+    // Layer lets a future spawner tag an entity without a new ctor arg.
+    [[nodiscard]] int  GetCollisionLayer() const noexcept {
+        return collisionLayer_;
+    }
+    void SetCollisionLayer(int layer) noexcept { collisionLayer_ = layer; }
 
     // Replaces dynamic_cast<NPC*> in the collision loop. Default: false
     // (items, the player, decoration). Movement blockers — NPCs, future
