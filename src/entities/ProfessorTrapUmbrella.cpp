@@ -4,7 +4,7 @@
 
 void ProfessorTrapUmbrella::beClaimed(Player* player) {
     if (!player) return;
-    if (spawnedEnemiesCount_ > 0) return;        // idempotent: a second call is a no-op
+    if (!isActive_) return;        // idempotent: a second call is a no-op (same guard as the sibling umbrellas)
     player->SetHeldUmbrella(HeldUmbrella::ProfessorTrap);  // B2.1: held-kind + shelter
     // Ripple seed (F.9-a): Ch1 偷教授傘 is the cause Ch2/Ch3/Ch4 cash in
     // — 助教 (c) -10 / Ch3 -10 / Ch4 對峙 -15. Without setting this here
