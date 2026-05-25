@@ -4,14 +4,15 @@ class Player;                 // global-namespace model object
 namespace nccu {
 class SemesterStateMachine;
 class DialogState;
-// Flag-driven chapter/ending gates, checked right after a dialog choice
-// is applied. Ch1: buying the ugly green umbrella (Flag_BoughtUglyUmbrella
-// set via 福利社阿姨's choice) -> Ending C. Sibling-if shape, same as the
-// 1c UmbrellaClaimed gate; future endings = add sibling ifs here, do not
-// generalise. The GDD's extra "coins==0" condition is Phase 2 (no money
-// economy yet) — 1d wires the flag condition only. On any transition it
-// also Close()s the open conversation so a stale Active dialog can't keep
-// eating input behind the terminal screen.
+// Flag-driven ending resolution, polled each non-dialog frame. ALL gated to
+// Chapter4_Finals; precedence A -> B -> D -> C (first match wins), and the
+// gate is TOTAL once Flag_TaFinaleChoiceMade is set (exactly one of the four
+// fires — no soft-lock). Endings come from EITHER touching an umbrella
+// (TookCursed -> B / BoughtUgly -> C) OR the 助教 finale (體諒 -> A or the
+// 風雨同行 D / 質問 cold-finale -> B). Resolution is DEFERRED while a dialog
+// is Active() so the closing 自白/finale narration is read first; on the
+// transition it Close()s the conversation. (The old Ch1 ugly-buy -> C
+// sibling-if is gone — the real Ending-C trigger is the Ch4 集英樓 Vendor.)
 void CheckEndingGates(Player& player, SemesterStateMachine& semester,
                       DialogState& dialog);
 }
