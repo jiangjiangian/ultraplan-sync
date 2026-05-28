@@ -4,7 +4,7 @@
 #include "ui/TitleScreen.h"
 #include "ui/CharacterSelect.h"
 #include "ui/LoadingScreen.h"
-#include "harness/Harness.h"
+#include "engine/platform/Harness.h"
 #include "engine/render/Window.h"
 #include "engine/render/DrawScope.h"
 #include "engine/render/Font.h"

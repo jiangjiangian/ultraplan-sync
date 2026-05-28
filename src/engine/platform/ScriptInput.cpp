@@ -1,4 +1,4 @@
-#include "harness/ScriptInput.h"
+#include "engine/platform/ScriptInput.h"
 
 #include "world/World.h"
 #include "entities/Player.h"

@@ -21,7 +21,7 @@
 #include "ui/RainHud.h"
 #include "ui/ReducedMotion.h"
 #include "engine/render/Renderer.h"
-#include "gfx/Time.h"
+#include "engine/platform/Time.h"
 #include "gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
 #include "gfx/Decorations.h"     // kDecorations — the placed ambient strips
 #include "engine/render/CameraScope.h"
