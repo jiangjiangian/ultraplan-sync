@@ -21,7 +21,7 @@
 #include "controller/GameController.h"
 #include "entities/Player.h"
 #include "ui/GameHelp.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/SemesterState.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"

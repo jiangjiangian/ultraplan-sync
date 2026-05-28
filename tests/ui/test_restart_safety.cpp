@@ -35,7 +35,7 @@
 #include "world/World.h"
 #include "controller/GameController.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/SemesterState.h"
 #include "engine/math/Vec2.h"
 

@@ -1,7 +1,7 @@
 #ifndef EVENT_WIRING_H_
 #define EVENT_WIRING_H_
 #include "ui/ChapterToast.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/SemesterStateMachine.h"
 #include "world/World.h"
 #include <iostream>

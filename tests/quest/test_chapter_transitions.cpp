@@ -5,7 +5,7 @@
 #include "ui/ChapterToast.h"
 #include "dialog/DialogState.h"
 #include "state/EndingGate.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "entities/GameObject.h"
 #include "ui/HudSlot.h"

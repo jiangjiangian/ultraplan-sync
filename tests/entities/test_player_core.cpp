@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <string>
 

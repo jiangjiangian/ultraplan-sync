@@ -1,5 +1,5 @@
 #include "vendor/Vendor.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "vendor/VendorMessages.h"
 #include "quest/ItemCatalog.h"

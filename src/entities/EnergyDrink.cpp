@@ -1,6 +1,6 @@
 #include "entities/EnergyDrink.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 void EnergyDrink::Consume(Player* player) {
     if (!player) return;

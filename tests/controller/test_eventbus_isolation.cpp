@@ -14,7 +14,7 @@
 // separate engine-hardening item — see .claude/BUGLEDGER.md.)
 
 #include "doctest/doctest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 namespace {
 

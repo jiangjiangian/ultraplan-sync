@@ -3,7 +3,7 @@
 #include "quest/Chapter3Quest.h"
 #include "quest/ItemCatalog.h"
 #include "dialog/DialogOpener.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"

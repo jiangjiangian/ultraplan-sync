@@ -30,7 +30,7 @@
 //     orthogonality check trips.
 
 #include "doctest/doctest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/GameController.h"
 #include "entities/Player.h"
 #include "world/World.h"

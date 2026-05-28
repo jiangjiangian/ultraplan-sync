@@ -1,5 +1,5 @@
 #include "quest/Chapter1Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "dialog/DialogState.h"
 #include "quest/ItemCatalog.h"        // ItemInfoFor — the 中文 toast name

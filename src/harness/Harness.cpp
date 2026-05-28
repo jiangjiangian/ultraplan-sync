@@ -7,7 +7,7 @@
 #include "dialog/DialogState.h"
 #include "state/SemesterStateMachine.h"
 #include "entities/GameObject.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "gfx/Input.h"
 #include "gfx/Time.h"
 #include "raylib.h"

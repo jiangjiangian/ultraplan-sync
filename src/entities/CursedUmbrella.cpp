@@ -1,6 +1,6 @@
 #include "entities/CursedUmbrella.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "quest/Flags.h"
 
 void CursedUmbrella::beClaimed(Player* player) {

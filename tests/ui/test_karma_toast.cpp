@@ -18,7 +18,7 @@
 
 #include "doctest/doctest.h"
 #include "entities/CursedUmbrella.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "entities/Player.h"
 #include "world/World.h"

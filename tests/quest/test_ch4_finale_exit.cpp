@@ -28,7 +28,7 @@
 #include "entities/GameObject.h"
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/SemesterState.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"

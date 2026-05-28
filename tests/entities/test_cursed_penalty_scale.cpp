@@ -18,7 +18,7 @@
 #include "doctest/doctest.h"
 #include "entities/CursedUmbrella.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "engine/math/Vec2.h"
 
 using nccu::gfx::Vec2;

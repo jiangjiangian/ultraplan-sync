@@ -1,4 +1,4 @@
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <mutex>     // std::unique_lock — <shared_mutex> no longer pulls this
                      // in transitively under newer libstdc++ (GCC 13+).

@@ -1,6 +1,6 @@
 #include "quest/Chapter2Quest.h"
 #include "dialog/DialogState.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include <string>
 

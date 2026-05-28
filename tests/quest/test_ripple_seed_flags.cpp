@@ -5,7 +5,7 @@
 #include "entities/TrueUmbrella.h"
 #include "entities/FragileUmbrella.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "engine/math/Vec2.h"
 
 // S5c-0 / F.9-a/b: the Ch1 "bad umbrella" claims are the SOURCE of the

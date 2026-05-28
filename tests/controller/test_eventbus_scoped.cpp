@@ -14,7 +14,7 @@
 // boundary, so each case below starts from a clean bus.
 
 #include "doctest/doctest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <memory>
 #include <string>
