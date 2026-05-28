@@ -1,6 +1,6 @@
 # 實體角色介面拆分 (ISP) 與 CRTP 靜態多型 — 架構說明
 
-本文件補充 `系統架構與UML分析：尋傘記.md` 的實體系統 (Entity System)
+本文件補充 `docs/UML.md`(舊版 `系統架構與UML分析：尋傘記.md` 已歸檔至 `docs/archive/legacy-uml/`)的實體系統 (Entity System)
 類別圖。它記錄一次**結構重構**：把 `GameObject` 的「胖介面」拆成三個
 獨立的角色介面 (role interface)，並以一個 CRTP mixin (`WithRoles`) 在
 **編譯期**靜態綁定角色能力查詢。對應檔案：
