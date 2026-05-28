@@ -1,9 +1,9 @@
 #ifndef GFX_RAYLIB_RENDERER_H_
 #define GFX_RAYLIB_RENDERER_H_
-#include "gfx/IRenderer.h"
-#include "gfx/Renderer.h"
-#include "gfx/TextBuilder.h"
-#include "gfx/Texture.h"
+#include "engine/render/IRenderer.h"
+#include "engine/render/Renderer.h"
+#include "engine/render/TextBuilder.h"
+#include "engine/render/Texture.h"
 #include <string>
 
 namespace nccu::gfx {

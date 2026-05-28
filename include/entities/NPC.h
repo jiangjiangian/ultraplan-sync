@@ -3,7 +3,7 @@
 #include "entities/Character.h"
 #include "world/CollisionMask.h"
 #include "state/SemesterState.h"
-#include "gfx/Texture.h"
+#include "engine/render/Texture.h"
 #include "engine/math/Rect.h"
 #include <cstdint>
 #include <optional>

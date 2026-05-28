@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "state/InterludeExitMarker.h"
 #include "state/InterludeExit.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 
 #include <string>
 #include <vector>

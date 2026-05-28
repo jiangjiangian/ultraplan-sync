@@ -1,6 +1,6 @@
 #ifndef TITLE_SCREEN_H_
 #define TITLE_SCREEN_H_
-#include "gfx/Window.h"
+#include "engine/render/Window.h"
 
 namespace nccu {
 

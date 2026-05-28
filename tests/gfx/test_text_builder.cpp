@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/TextBuilder.h"
+#include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
 #include "engine/math/Vec2.h"
 

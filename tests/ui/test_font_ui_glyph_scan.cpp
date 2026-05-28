@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Font.h"
+#include "engine/render/Font.h"
 #include "ui/EndingView.h"
 #include "ui/ChapterCard.h"
 #include "ui/GameHelp.h"

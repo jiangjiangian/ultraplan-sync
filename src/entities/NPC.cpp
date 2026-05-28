@@ -3,7 +3,7 @@
 #include "engine/events/EventBus.h"
 #include "world/Physics.h"
 #include "world/WorldConfig.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Color.h"
 #include "engine/math/Rect.h"
 #include "gfx/WalkCycle.h"

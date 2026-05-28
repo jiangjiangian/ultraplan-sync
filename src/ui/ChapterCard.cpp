@@ -1,5 +1,5 @@
 #include "ui/ChapterCard.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"

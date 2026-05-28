@@ -1,6 +1,6 @@
 #include "ui/HelpPageView.h"
 #include "ui/GameHelp.h"
-#include "gfx/TextBuilder.h"
+#include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
 
 #include <algorithm>

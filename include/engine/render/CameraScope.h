@@ -1,7 +1,7 @@
 #ifndef GFX_CAMERA_SCOPE_H_
 #define GFX_CAMERA_SCOPE_H_
 #include "raylib.h"
-#include "gfx/Camera2D.h"
+#include "engine/render/Camera2D.h"
 
 namespace nccu::gfx {
 

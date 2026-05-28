@@ -1,8 +1,8 @@
 #include "ui/LoadingScreen.h"
-#include "gfx/TexturePreload.h"
-#include "gfx/DrawScope.h"
-#include "gfx/Renderer.h"
-#include "gfx/TextBuilder.h"
+#include "engine/render/TexturePreload.h"
+#include "engine/render/DrawScope.h"
+#include "engine/render/Renderer.h"
+#include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
 #include "engine/math/Vec2.h"
 

@@ -2,7 +2,7 @@
 #include "ui/ReducedMotion.h"
 #include "dialog/DialogLayout.h"   // WrapToCells / CellWidth — the project's
                                    // EAW-aware wrap + measure (CJK = 2 cells)
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"

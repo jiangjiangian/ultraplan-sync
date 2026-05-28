@@ -2,9 +2,9 @@
 #include "ui/GameHelp.h"
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with View)
 #include "ui/PressLatch.h"
-#include "gfx/DrawScope.h"
-#include "gfx/Renderer.h"
-#include "gfx/TextBuilder.h"
+#include "engine/render/DrawScope.h"
+#include "engine/render/Renderer.h"
+#include "engine/render/TextBuilder.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
 #include "engine/math/Color.h"
