@@ -20,6 +20,7 @@
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
 #include "ui/hud/StatusPanel.h"
+#include "ui/overlay/MenuAffordance.h"
 #include "ui/overlay/PauseMenu.h"
 #include "ui/ReducedMotion.h"
 #include "engine/render/Renderer.h"
@@ -489,26 +490,10 @@ void View::RenderOverlays(const World& world) {
                           viewportSize_.x, viewportSize_.y);
     }
 
-    // Top-right affordance: a small always-on hint that an in-game menu
-    // exists ("M 選單"). Panel-backed so it stays legible on any tile;
-    // hidden while the menu itself is open (the menu replaces it).
-    if (!world.MenuOpen()) {
-        constexpr float kAffSize = 14.0f;
-        constexpr float kPad     = 5.0f;
-        const std::string aff = "M 選單";
-        int glyphs = 0;
-        for (unsigned char c : aff)
-            if ((c & 0xC0) != 0x80) ++glyphs;
-        // "M " is 1 narrow + 選單 2 wide → estimate width generously.
-        const float tw = static_cast<float>(glyphs) * kAffSize;
-        const float panelW = tw + kPad * 2.0f;
-        const float panelH = kAffSize + kPad * 2.0f;
-        const float px = viewportSize_.x - panelW - 6.0f;
-        renderer_.DrawRect(Rect{px, 6.0f, panelW, panelH},
-                           Color{20, 22, 30, 170});
-        TextBuilder{aff}.At(Vec2{px + kPad, 6.0f + kPad})
-            .Size(static_cast<int>(kAffSize)).Color(Colors::White).Draw();
-    }
+    // Top-right "M 選單" affordance — extracted to
+    // ui/overlay/MenuAffordance.cpp (P1 step 7c). Early-returns when
+    // MenuOpen is true, so the call is safe every frame.
+    DrawMenuAffordance(renderer_, world, viewportSize_.x, viewportSize_.y);
 
     // In-game pause menu overlay — extracted to ui/overlay/PauseMenu.cpp
     // (P1 step 7b). No-op when MenuOpen is false, so the call is safe
