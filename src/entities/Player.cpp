@@ -118,6 +118,17 @@ Player& Player::decreaseKarma(int amount) {
     return AddKarma(-amount);
 }
 
+// P2: per-chapter karma drain proportional to cursed-pickup count. Routed
+// through AddKarma so the [-100,100] clamp + KarmaChanged toast (signed delta)
+// continue to fire — the visible "業力 -5" banner is intentional: the player
+// SHOULD see the cumulative stain bite each chapter. A 0-taint run skips the
+// AddKarma call entirely so the KarmaChanged event stays unpublished and
+// non-cursed playtests remain byte-identical to baseline.
+Player& Player::ApplyCursedTaintDecay() {
+    if (cursedTaint_ > 0) AddKarma(-5 * cursedTaint_);
+    return *this;
+}
+
 Player& Player::resetRainMeter() noexcept {
     rainMeter_ = 0.0f;
     return *this;

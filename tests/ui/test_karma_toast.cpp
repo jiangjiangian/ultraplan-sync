@@ -77,25 +77,29 @@ TEST_CASE("decreaseKarma forwards through AddKarma — single publish only") {
     CHECK(cap.deltas[0] == "-10");
 }
 
-TEST_CASE("CursedUmbrella::beClaimed publishes KarmaChanged once via AddKarma") {
-    // Before Cycle 9.B, CursedUmbrella::beClaimed published a hand-
-    // rolled "Karma -30" KarmaChanged event ON TOP of the AddKarma
-    // mutation — wasn't a problem when KarmaChanged was a dead
-    // channel, but it would now emit two toasts (one from AddKarma's
-    // automatic publish, one from the manual one). This test pins the
-    // de-duplication: a single curse produces exactly one
-    // KarmaChanged with the signed-delta format.
+TEST_CASE("P2: CursedUmbrella::beClaimed publishes NO KarmaChanged (pickup is karma-neutral)") {
+    // Pre-P2 the cursed pickup ran .decreaseKarma(30) inline, which fired
+    // ONE KarmaChanged "-30" via Player::AddKarma's auto-publish (Cycle
+    // 9.B's de-duplication win). P2 moves the karma cost off the pickup
+    // and onto per-chapter ApplyCursedTaintDecay (SceneRouter Ch2/3/4
+    // entry), so the pickup itself emits ZERO KarmaChanged — the
+    // visible "業力 -5" banner now lands at the next chapter boundary
+    // instead, where the moral stain is actually compounding.
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
 
     CursedUmbrella umb{Vec2{0, 0}};
     umb.beClaimed(&p);
 
-    // Exactly one delivery, formatted as "%+d" so the subscriber can
-    // splice it straight into "業力 …".
+    CHECK(cap.deltas.empty());                       // no KarmaChanged at pickup
+    CHECK(p.GetKarma() == 50);                       // karma untouched
+    CHECK(p.GetCursedTaint() == 1);                  // taint bumped instead
+
+    // Now drive the per-chapter decay: ONE KarmaChanged "-5" fires.
+    p.ApplyCursedTaintDecay();
     REQUIRE(cap.deltas.size() == 1);
-    CHECK(cap.deltas[0] == "-30");
-    CHECK(p.GetKarma() == 50 - 30);
+    CHECK(cap.deltas[0] == "-5");
+    CHECK(p.GetKarma() == 45);
 }
 
 TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
