@@ -5,8 +5,8 @@
 
 namespace nccu {
 
-void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
-                        SemesterState state) {
+void TryAdvanceCh3Trade(EventBus& bus, Player& player,
+                        std::string_view npcId, SemesterState state) {
     if (state != SemesterState::Chapter3_SportsDay) return;
 
     const bool sausage = player.HasFlag(kFlagHasSausage);
@@ -17,14 +17,14 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
         // chapter3.md A 系 (b)「交易完成」`// karma +3`（物物交換鏈啟動）.
         if (sausage || loud || known) return;          // chain already past A
         if (!player.HasFlag(kFlagSportsLapDone)) {            // 校慶: run the lap first
-            EventBus::Instance().Publish(Event{
+            bus.Publish(Event{
                 EventType::ShowMessage,
                 std::string("A 系攤主：先去操場跑一圈參加校慶，"
                             "回來我請你吃香腸！")});
             return;
         }
         player.AddKarma(3).SetFlag(kFlagHasSausage);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("A 系攤主塞給你一根烤香腸。熱的，很燙手。")});
         return;
@@ -34,7 +34,7 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
         // chapter3.md B 系 (b)「交易完成」`// karma +3`（第二環完成）.
         if (loud || known) return;             // already past link 2
         if (!sausage) {                        // out-of-order → point back to A
-            EventBus::Instance().Publish(Event{
+            bus.Publish(Event{
                 EventType::ShowMessage,
                 std::string("B 系同學：你手上沒吃的啊？"
                             "先去 A 系烤香腸攤換一根熱香腸來。")});
@@ -43,7 +43,7 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
         // 香腸換大聲公 — consume the sausage, hand over the 大聲公.
         player.ClearFlag(kFlagHasSausage);
         player.AddKarma(3).SetFlag(kFlagHasLoudspeaker);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("B 系同學大喜，把那個大聲公塞進你懷裡。")});
         return;
@@ -54,7 +54,7 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
         // 情報取得）. 大聲公換情報——傘在體育館後台道具箱。
         if (known) return;                     // info already revealed
         if (!loud) {                           // out-of-order → point back to B
-            EventBus::Instance().Publish(Event{
+            bus.Publish(Event{
                 EventType::ShowMessage,
                 std::string("C 系學姊：空手來談情報？"
                             "先去 B 系把香腸換成大聲公再來找我。")});
@@ -62,7 +62,7 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
         }
         player.ClearFlag(kFlagHasLoudspeaker);
         player.AddKarma(5).SetFlag(kFlagKnowsUmbrellaLoc);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("C 系學姊壓低聲音："
                         "你的傘在體育館後台道具箱，第三個。")});
@@ -95,7 +95,7 @@ bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
     return true;   // any other quest-giver: unchanged (always shown)
 }
 
-void TryApplyCh3Ripple(Player& player, SemesterState state) {
+void TryApplyCh3Ripple(EventBus& bus, Player& player, SemesterState state) {
     if (state != SemesterState::Chapter3_SportsDay) return;
     if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // once
     if (!player.HasFlag(kFlagHasProfessorTrap)) return;
@@ -103,7 +103,7 @@ void TryApplyCh3Ripple(Player& player, SemesterState state) {
     // → `// karma -10`（Ch1 漣漪延伸至 Ch3）。獨立 once-key，與
     // Flag_Ch2Rippled_TA 分開，故 Ch2 已扣過本次仍照扣（L329）。
     player.AddKarma(-10).SetFlag(kFlagCh3RippledProfTrap);
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::ShowMessage,
         std::string("有人看了你手上的傘一眼："
                     "「那把……是教授研究室借出去的那把嗎？」")});

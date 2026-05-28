@@ -10,7 +10,7 @@
 
 namespace nccu {
 
-bool HandleInventory(World& world) {
+bool HandleInventory(EventBus& bus, World& world) {
     using nccu::gfx::Input;
     using nccu::gfx::Key;
     if (Input::IsPressed(Key::Tab))
@@ -59,7 +59,7 @@ bool HandleInventory(World& world) {
                         // gone" reading obvious. ApplyConsumableEffect
                         // publishes the same flavour ShowMessage the pickup
                         // path used to.
-                        ApplyConsumableEffect(*invP, sel.itemId);
+                        ApplyConsumableEffect(bus, *invP, sel.itemId);
                         (void)invP->ConsumeOne(sel.itemId);
                     }
                 }

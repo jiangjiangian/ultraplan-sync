@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_SCREENS_INVENTORY_SCREEN_H_
 #define CONTROLLER_SCREENS_INVENTORY_SCREEN_H_
 
+class EventBus;       // Plan P2 step 2: ApplyConsumableEffect takes bus
+
 namespace nccu {
 
 class World;
@@ -19,7 +21,7 @@ class World;
 //
 // Returns true while the bag is open (the world stays frozen), false
 // when the bag is closed (the controller falls through).
-[[nodiscard]] bool HandleInventory(World& world);
+[[nodiscard]] bool HandleInventory(EventBus& bus, World& world);
 
 } // namespace nccu
 

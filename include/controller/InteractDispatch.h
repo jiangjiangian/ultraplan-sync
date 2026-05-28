@@ -2,6 +2,7 @@
 #define CONTROLLER_INTERACT_DISPATCH_H_
 
 class Vendor;
+class EventBus;        // Plan P2 step 2: bus is threaded to RunInteractHooks
 
 namespace nccu {
 
@@ -21,7 +22,7 @@ class World;
 // to Vendor::TryBuy. Captured by reference so this function can set it
 // when an E tap opens a shop. Cleared the moment a non-vendor dialog
 // opens, OR on a vendor decline/buy.
-void DispatchInteract(World& world, Vendor*& pendingVendor);
+void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor);
 
 } // namespace nccu
 

@@ -5,6 +5,7 @@
 #include <string_view>
 
 class Player;                       // mutated by the return / grant
+class EventBus;                     // Plan P2 step 2: bus is injected
 
 namespace nccu {
 
@@ -52,8 +53,10 @@ class DialogState;                  // read const by LiftChapter1Clear
 // now); the Cursed / Fragile / ProfessorTrap umbrellas stay on the ground
 // as the morality / Ending-B paths and clear Ch1 via their own beClaimed —
 // this hook is the ONLY non-cursed clear path.
-void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
-                             SemesterState state);
+// Plan P2 step 2: `bus` is injected; this hook publishes ShowMessage
+// when the player meets the victim without yet having his umbrella.
+void TryReturnVictimUmbrella(EventBus& bus, Player& player,
+                             std::string_view npcId, SemesterState state);
 
 // T2: deferred Ch1 clear, the sibling of Chapter2Quest's LiftChapter2Clear.
 // Once TryReturnVictimUmbrella has granted Flag_HasTrueUmbrella, this fires
@@ -67,7 +70,9 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
 // dialogue is up / after it has already fired. Called by GameController next
 // to LiftChapter2Clear, BEFORE CheckChapterGates, so the published
 // transition is observed the same frame.
-void LiftChapter1Clear(Player& player, SemesterState state,
+// Plan P2 step 2: `bus` is injected; this poll publishes the
+// ShowMessage + UmbrellaClaimed pair that drives Ch1→Interlude.
+void LiftChapter1Clear(EventBus& bus, Player& player, SemesterState state,
                        const DialogState& dialog);
 
 // G3: sequential `!` gate for the Ch1 MAIN spine — now a THREE-step
@@ -123,7 +128,10 @@ inline constexpr int kCh1UglyUmbrellaPrice = 80;
 //
 // Returns true iff a purchase actually completed (for the test / caller),
 // false on every no-op / decline / poor path.
-bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
+// Plan P2 step 2: `bus` is injected; this dialog-confirm hook publishes
+// the 花費/餘額 / 你錢不夠 toast.
+bool TryBuyAuntieUglyUmbrella(EventBus& bus, Player& player,
+                              std::string_view npcId,
                               std::string_view choiceLabel,
                               SemesterState state);
 

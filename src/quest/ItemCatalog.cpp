@@ -144,7 +144,7 @@ bool IsUsableConsumable(std::string_view itemId) {
            itemId == "WaterproofSpray" || IsGenericFood(itemId);
 }
 
-void ApplyConsumableEffect(Player& player, std::string_view itemId) {
+void ApplyConsumableEffect(EventBus& bus, Player& player, std::string_view itemId) {
     // Mirror each ConsumableItem::Consume body EXACTLY (same karma delta,
     // same ShowMessage text), now player-triggered from the bag instead of
     // fired on pickup. The entity bodies stay the source of the constants
@@ -155,27 +155,27 @@ void ApplyConsumableEffect(Player& player, std::string_view itemId) {
         // G4: +3 karma AND -15 rain (mirrors EnergyDrink::Consume).
         player.AddKarma(EnergyDrink::kKarmaBonus)
               .DrainRainBy(EnergyDrink::kRainRelief);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             "喝完飲料，精神好多了，淋到的雨也擦乾了一些。"});
     } else if (itemId == "HotPack") {
         // G4: +5 karma AND -25 rain (mirrors HotPack::Consume; was a full
         // resetRainMeter()).
         player.AddKarma(HotPack::kKarmaBonus).DrainRainBy(HotPack::kRainRelief);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             "用了暖暖包，烘乾了大半的雨水，心情也好了一些。"});
     } else if (itemId == "WaterproofSpray") {
         // G4: -35 rain, no karma (mirrors WaterproofSpray::Consume).
         player.DrainRainBy(WaterproofSpray::kRainRelief);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             "噴了防水噴霧，雨水大半都被彈開了。"});
     } else if (IsGenericFood(itemId)) {
         // G4: a generic 小吃 dries off -15 rain (no karma, no entity class —
         // this is the only place these market buys carry an effect).
         player.DrainRainBy(kFoodRainRelief);
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             "吃了點熱的，身子暖了，雨水也擦掉了一些。"});
     }

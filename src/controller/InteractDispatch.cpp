@@ -16,7 +16,7 @@
 
 namespace nccu {
 
-void DispatchInteract(World& world, Vendor*& pendingVendor) {
+void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
     using nccu::gfx::Input;
     using nccu::gfx::Key;
     using nccu::gfx::Rect;
@@ -52,7 +52,7 @@ void DispatchInteract(World& world, Vendor*& pendingVendor) {
                         24.0f + 2.0f * kInteractReach,
                         24.0f + 2.0f * kInteractReach};
         ForEachActiveExcept(world.Objects(), player,
-            [&world, player, pHit, &pendingVendor](GameObject& o) {
+            [&bus, &world, player, pHit, &pendingVendor](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
                 // I5: a Vendor's NpcId() is empty, so without this it
                 // would fall to o.Interact() (NPC line-cycling) and
@@ -98,7 +98,7 @@ void DispatchInteract(World& world, Vendor*& pendingVendor) {
                     // the Interlude return-target (only the librarian-return
                     // hook scopes itself with it). Adding a chapter/NPC is
                     // now a RegisterHook line, not an edit here (OCP).
-                    RunInteractHooks(*player, id,
+                    RunInteractHooks(bus, *player, id,
                                      world.Semester().Current(),
                                      world.Semester().InterludeReturnTo());
                     OpenNpcDialog(world.Dialog(), *player, id,

@@ -47,7 +47,7 @@ TEST_CASE("G-3: returning 管理員的傘 grants +10 ONCE, clears the loaner") {
     const int k0 = p.GetKarma();
 
     // The +10 lands only in the Interlude that returns to Ch3.
-    nccu::TryReturnLibrarianUmbrella(
+    nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
         p, nccu::kNpcLibrarianReturn, SemesterState::Interlude_Market,
         SemesterState::Chapter3_SportsDay);
 
@@ -60,7 +60,7 @@ TEST_CASE("G-3: returning 管理員的傘 grants +10 ONCE, clears the loaner") {
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
 
     // Idempotent: a re-talk replays a closure line but grants NO second +10.
-    nccu::TryReturnLibrarianUmbrella(
+    nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
         p, nccu::kNpcLibrarianReturn, SemesterState::Interlude_Market,
         SemesterState::Chapter3_SportsDay);
     CHECK(p.GetKarma() == k0 + 10);
@@ -75,7 +75,7 @@ TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker
     {
         Player p = MakePlayer();
         GiveLoaner(p);
-        nccu::TryReturnLibrarianUmbrella(
+        nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
             p, nccu::kNpcLibrarianReturn, SemesterState::Interlude_Market,
             SemesterState::Chapter2_Midterms);
         CHECK(p.GetKarma() == 50);
@@ -85,7 +85,7 @@ TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker
     {
         Player p = MakePlayer();
         GiveLoaner(p);
-        nccu::TryReturnLibrarianUmbrella(
+        nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
             p, nccu::kNpcLibrarianReturn, SemesterState::Chapter2_Midterms,
             SemesterState::Chapter3_SportsDay);
         CHECK(p.GetKarma() == 50);
@@ -95,7 +95,7 @@ TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker
     {
         Player p = MakePlayer();
         GiveLoaner(p);
-        nccu::TryReturnLibrarianUmbrella(
+        nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
             p, "shop_auntie", SemesterState::Interlude_Market,
             SemesterState::Chapter3_SportsDay);
         CHECK(p.GetKarma() == 50);
@@ -104,7 +104,7 @@ TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker
     // Not holding the loaner (empty-handed): no grant, no spurious flag.
     {
         Player p = MakePlayer();
-        nccu::TryReturnLibrarianUmbrella(
+        nccu::TryReturnLibrarianUmbrella(EventBus::Instance(), 
             p, nccu::kNpcLibrarianReturn, SemesterState::Interlude_Market,
             SemesterState::Chapter3_SportsDay);
         CHECK(p.GetKarma() == 50);

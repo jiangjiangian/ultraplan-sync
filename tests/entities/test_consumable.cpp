@@ -174,7 +174,7 @@ TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
 
     // G4: ApplyConsumableEffect mirrors HotPack::Consume EXACTLY — +5 karma
     // and -25 rain (no longer a full reset).
-    nccu::ApplyConsumableEffect(p, "HotPack");
+    nccu::ApplyConsumableEffect(EventBus::Instance(), p, "HotPack");
     CHECK(p.GetKarma() == k0 + HotPack::kKarmaBonus);   // +5, same as Consume
     CHECK(p.GetRainMeter() ==
           doctest::Approx(60.0f - HotPack::kRainRelief));  // 35, same as Consume
@@ -191,7 +191,7 @@ TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
     const int qk = q.GetKarma();
     MessageCapture cap2;
     cap2.Attach();
-    nccu::ApplyConsumableEffect(q, "EnergyDrink");
+    nccu::ApplyConsumableEffect(EventBus::Instance(), q, "EnergyDrink");
     CHECK(q.GetKarma() == qk + EnergyDrink::kKarmaBonus);  // +3
     CHECK(q.GetRainMeter() ==
           doctest::Approx(40.0f - EnergyDrink::kRainRelief));  // 25
@@ -221,14 +221,14 @@ TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
         p.ApplyRain(18.0f, /*lethal=*/false);          // +90 (clamped <100)
         REQUIRE(p.GetRainMeter() == doctest::Approx(90.0f));
         MessageCapture cap; cap.Attach();
-        nccu::ApplyConsumableEffect(p, r.id);
+        nccu::ApplyConsumableEffect(EventBus::Instance(), p, r.id);
         CHECK(p.GetRainMeter() == doctest::Approx(90.0f - r.relief));
     }
 
     // Floor clamp: a small meter cannot go below 0 (no negative rain).
     Player low{nccu::gfx::Vec2{0, 0}};
     low.ApplyRain(2.0f, /*lethal=*/false);             // +10
-    nccu::ApplyConsumableEffect(low, "WaterproofSpray");  // -35 -> clamp 0
+    nccu::ApplyConsumableEffect(EventBus::Instance(), low, "WaterproofSpray");  // -35 -> clamp 0
     CHECK(low.GetRainMeter() == doctest::Approx(0.0f));
 
     // DrainRainBy unit: fixed subtraction, clamped, no teleport.

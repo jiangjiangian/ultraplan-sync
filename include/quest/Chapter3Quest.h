@@ -6,6 +6,7 @@
 #include <string_view>
 
 class Player;                       // mutated by the trade hooks
+class EventBus;                     // Plan P2 step 2: bus is injected
 
 namespace nccu {
 
@@ -54,7 +55,8 @@ inline constexpr float kSportsTrackR       = 130.0f;    // end-cap radius (r)
 // (Ch1-isomorphic: claim -> UmbrellaClaimed -> EventWiring Ch3
 // sibling-if -> Interlude returnTo Ch4); the chain is the karma /
 // narrative path, not a hard gate (mirrors Ch1's optional quest).
-void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
+// Plan P2 step 2: `bus` injected; publishes 拿到香腸/大聲公/位置 ShowMessage.
+void TryAdvanceCh3Trade(EventBus& bus, Player& player, std::string_view npcId,
                         SemesterState state);
 
 // Sequential quest-giver `!` gate for the A→B→C chain — true only for the
@@ -74,7 +76,8 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
 // Ch3 NPC notices", applied once per Ch3 via kFlagCh3RippledProfTrap
 // (independent of Ch2's key — the -10 is explicitly non-duplicate but
 // SEPARATE per chapter, L329). No-op outside Ch3 / without the flag.
-void TryApplyCh3Ripple(Player& player, SemesterState state);
+// Plan P2 step 2: `bus` injected; publishes the proftrap -10 ShowMessage.
+void TryApplyCh3Ripple(EventBus& bus, Player& player, SemesterState state);
 
 } // namespace nccu
 

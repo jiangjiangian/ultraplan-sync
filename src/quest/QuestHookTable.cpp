@@ -15,46 +15,50 @@ const std::vector<QuestHook>& InteractQuestHooks() {
     // TryMeetLibrarian's Flag_MetLibrarian gating downstream librarian
     // beats). Each adapter lambda drops the args its underlying free
     // function ignores, so the table stays homogeneous.
+    //
+    // Plan P2 step 2: each lambda now takes EventBus& bus as its first
+    // parameter (uniform signature). Publishing hooks forward it; non-
+    // publishing hooks ignore it.
     static const std::vector<QuestHook> kHooks = [] {
         std::vector<QuestHook> v;
         v.push_back({"TryReturnVictimUmbrella",
-            [](Player& p, std::string_view id, SemesterState s,
-               SemesterState) { TryReturnVictimUmbrella(p, id, s); }});
+            [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
+               SemesterState) { TryReturnVictimUmbrella(bus, p, id, s); }});
         v.push_back({"TryRescueBookworm",
-            [](Player& p, std::string_view id, SemesterState s,
-               SemesterState) { TryRescueBookworm(p, id, s); }});
+            [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
+               SemesterState) { TryRescueBookworm(bus, p, id, s); }});
         v.push_back({"TryMeetLibrarian",
-            [](Player& p, std::string_view id, SemesterState s,
+            [](EventBus&, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryMeetLibrarian(p, id, s); }});
         v.push_back({"TryLendLibrarianUmbrella",
-            [](Player& p, std::string_view id, SemesterState s,
+            [](EventBus&, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryLendLibrarianUmbrella(p, id, s); }});
         v.push_back({"TryReturnLibrarianUmbrella",
-            [](Player& p, std::string_view id, SemesterState s,
+            [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
                SemesterState ret) {
-                TryReturnLibrarianUmbrella(p, id, s, ret);
+                TryReturnLibrarianUmbrella(bus, p, id, s, ret);
             }});
         v.push_back({"TryApplyCh2Ripple",
-            [](Player& p, std::string_view id, SemesterState s,
+            [](EventBus&, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryApplyCh2Ripple(p, id, s); }});
         v.push_back({"TryAdvanceCh3Trade",
-            [](Player& p, std::string_view id, SemesterState s,
-               SemesterState) { TryAdvanceCh3Trade(p, id, s); }});
+            [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
+               SemesterState) { TryAdvanceCh3Trade(bus, p, id, s); }});
         v.push_back({"TryApplyCh3Ripple",
-            [](Player& p, std::string_view, SemesterState s,
-               SemesterState) { TryApplyCh3Ripple(p, s); }});
+            [](EventBus& bus, Player& p, std::string_view, SemesterState s,
+               SemesterState) { TryApplyCh3Ripple(bus, p, s); }});
         v.push_back({"TryApplyCh4Ripple",
-            [](Player& p, std::string_view id, SemesterState s,
+            [](EventBus&, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryApplyCh4Ripple(p, id, s); }});
         return v;
     }();
     return kHooks;
 }
 
-void RunInteractHooks(Player& player, std::string_view npcId,
+void RunInteractHooks(EventBus& bus, Player& player, std::string_view npcId,
                       SemesterState state, SemesterState returnTo) {
     for (const QuestHook& h : InteractQuestHooks())
-        h.fn(player, npcId, state, returnTo);
+        h.fn(bus, player, npcId, state, returnTo);
 }
 
 } // namespace nccu

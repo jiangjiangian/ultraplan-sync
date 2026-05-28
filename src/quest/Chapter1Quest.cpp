@@ -8,8 +8,8 @@
 
 namespace nccu {
 
-void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
-                             SemesterState state) {
+void TryReturnVictimUmbrella(EventBus& bus, Player& player,
+                             std::string_view npcId, SemesterState state) {
     if (state != SemesterState::Chapter1_AddDrop) return;
     if (npcId != "victim") return;
     if (player.HasFlag(kFlagHasTrueUmbrella)) return;   // already granted
@@ -24,7 +24,7 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
     if (!player.HasFlag(kFlagHasVictimUmbrella)) {
         // Promised but empty-handed — nudge toward the findable umbrella the
         // 西裝學長 dropped near 集英樓 (the QuestFlagPickup). No state change.
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("「找到我的傘了嗎？先幫他找回那把傘吧——"
                         "聽說那個西裝學長往集英樓跑了。」")});
@@ -59,7 +59,7 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
     player.SetFlag(kFlagHasTrueUmbrella);
 }
 
-void LiftChapter1Clear(Player& player, SemesterState state,
+void LiftChapter1Clear(EventBus& bus, Player& player, SemesterState state,
                        const DialogState& dialog) {
     if (state != SemesterState::Chapter1_AddDrop) return;
     if (!player.HasFlag(kFlagHasTrueUmbrella)) return;  // grant not done
@@ -75,14 +75,15 @@ void LiftChapter1Clear(Player& player, SemesterState state,
     // EventWiring Ch1 sibling-if. The once-key makes this fire exactly once
     // even though it is polled every non-dialog frame.
     player.SetFlag(kFlagClearChapter1);
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::ShowMessage,
         std::string("傘找回來了。雨還沒停，但你的心安定了一點。")});
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::UmbrellaClaimed, std::string("TrueUmbrella")});
 }
 
-bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
+bool TryBuyAuntieUglyUmbrella(EventBus& bus, Player& player,
+                              std::string_view npcId,
                               std::string_view choiceLabel,
                               SemesterState state) {
     if (state != SemesterState::Chapter1_AddDrop) return false;
@@ -104,7 +105,7 @@ bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
     // the purse can't cover the price, so the held umbrella is granted ONLY
     // on a real deduction (mirrors Vendor::TryBuy's order).
     if (!player.DeductMoney(kCh1UglyUmbrellaPrice)) {
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage, std::string(msg::kInsufficientFunds)});
         return false;
     }
@@ -122,7 +123,7 @@ bool TryBuyAuntieUglyUmbrella(Player& player, std::string_view npcId,
     // consistently with the market / 集英樓 Vendor ("買了螢光綠醜傘，花了 80
     // 元（剩 N 元）"). GetMoney() is the post-deduction balance.
     const std::string itemName{nccu::ItemInfoFor("UglyUmbrella").displayName};
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::ShowMessage,
         std::string(msg::kPurchasedPrefix) + itemName +
             std::string(msg::kSpentMid) + std::to_string(kCh1UglyUmbrellaPrice) +

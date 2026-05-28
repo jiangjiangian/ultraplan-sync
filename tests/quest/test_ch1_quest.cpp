@@ -65,20 +65,20 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     Player p = MakePlayer();
 
     // Wrong state / wrong npc -> no-op.
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter2_Midterms);
-    nccu::TryReturnVictimUmbrella(p, "ta", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter2_Midterms);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "ta", SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
 
     // Promised? NO -> no-op (the (a)/(b) dialogue owns the promise; nothing
     // to return yet). No grant.
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
 
     // Promised but WITHOUT the victim's umbrella -> reminder only, no grant.
     p.SetFlag(nccu::kFlagPromisedVictim);
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK_FALSE(p.HasUmbrella());
     CHECK(cap.umbrellaClaims.empty());
@@ -87,7 +87,7 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     // Promised AND holding the victim's umbrella -> the GRANT fires (flags
     // only — T2: NO UmbrellaClaimed yet, the (d) exchange must play first).
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));        // Ending A's condition
     CHECK(p.HasUmbrella());
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasVictimUmbrella));  // 苦主 took his傘
@@ -95,7 +95,7 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     CHECK_FALSE(p.HasFlag(nccu::kFlagClearChapter1)); // not fired yet
 
     // Idempotent on a re-talk: already granted -> still no UmbrellaClaimed.
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(cap.umbrellaClaims.empty());
     EventBus::Instance().Clear();
 }
@@ -107,7 +107,7 @@ TEST_CASE("TryReturnVictimUmbrella: umbrella without a promise never grants") {
     Capture cap = MakeCapture();
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagHasVictimUmbrella);          // umbrella, but no promise
-    nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
     EventBus::Instance().Clear();
@@ -131,7 +131,7 @@ TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
 
     // 1) The grant: flags set, but NO transition yet (UmbrellaClaimed held).
-    nccu::TryReturnVictimUmbrella(p, "victim", m.Current());
+    nccu::TryReturnVictimUmbrella(EventBus::Instance(), p, "victim", m.Current());
     CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(m.Current() == SemesterState::Chapter1_AddDrop);   // still Ch1
     CHECK(cap.umbrellaClaims.empty());
@@ -140,20 +140,20 @@ TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
     nccu::DialogState d;
     d.Open({"這就是我的傘，太好了，謝謝你！", "還你。雨還沒停，路上小心。"});
     REQUIRE(d.Active());
-    nccu::LiftChapter1Clear(p, m.Current(), d);
+    nccu::LiftChapter1Clear(EventBus::Instance(), p, m.Current(), d);
     CHECK(m.Current() == SemesterState::Chapter1_AddDrop);   // not yet
     CHECK(cap.umbrellaClaims.empty());
 
     // 3) The player finishes reading; the dialogue closes -> NOW it fires.
     d.Close();
-    nccu::LiftChapter1Clear(p, m.Current(), d);
+    nccu::LiftChapter1Clear(EventBus::Instance(), p, m.Current(), d);
     REQUIRE(cap.umbrellaClaims.size() == 1);
     CHECK(cap.umbrellaClaims[0] == "TrueUmbrella");
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter2_Midterms);
 
     // 4) Once-guard: a later poll does not re-publish / re-transition.
-    nccu::LiftChapter1Clear(p, SemesterState::Chapter1_AddDrop, d);
+    nccu::LiftChapter1Clear(EventBus::Instance(), p, SemesterState::Chapter1_AddDrop, d);
     CHECK(cap.umbrellaClaims.size() == 1);
     EventBus::Instance().Clear();
 }
@@ -329,17 +329,17 @@ TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C 
     const int karma0 = p.GetKarma();
 
     // Wrong state / wrong npc / wrong label -> all no-ops (no charge, no傘).
-    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter4_Finals));
-    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "victim", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
-    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "shop_auntie", "詢問雨傘", SemesterState::Chapter1_AddDrop));
     CHECK(p.GetMoney() == money0);
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
 
     // The real buy: 80 元 deducted, ugly umbrella in hand, toast shown.
-    CHECK(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
     CHECK(p.GetMoney() == money0 - nccu::kCh1UglyUmbrellaPrice);   // 100 -> 20
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Ugly);
@@ -352,7 +352,7 @@ TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C 
 
     // Idempotent: a re-talk picks the menu again, but already holding Ugly
     // must NOT re-deduct another 80.
-    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
     CHECK(p.GetMoney() == money0 - nccu::kCh1UglyUmbrellaPrice);   // still 20
     EventBus::Instance().Clear();
@@ -366,7 +366,7 @@ TEST_CASE("B3: Ch1 阿姨 醜傘 buy is fund-guarded (poor → no charge, no umb
     REQUIRE(p.DeductMoney(p.GetMoney() - 10));           // leave 10 < 80
     REQUIRE(p.GetMoney() < nccu::kCh1UglyUmbrellaPrice);
 
-    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(
+    CHECK_FALSE(nccu::TryBuyAuntieUglyUmbrella(EventBus::Instance(), 
         p, "shop_auntie", "購買醜綠傘", SemesterState::Chapter1_AddDrop));
     CHECK(p.GetMoney() == 10);                           // purse untouched
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);   // no umbrella granted

@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "engine/events/EventBus.h"
 #include "quest/QuestHookTable.h"
 #include "entities/Player.h"
 #include "engine/math/Vec2.h"
@@ -48,7 +49,7 @@ TEST_CASE("RunInteractHooks: a non-matching (npcId, state) mutates nothing") {
     const int    karma0 = p.GetKarma();
     const int    money0 = p.GetMoney();
     const bool   umb0   = p.HasUmbrella();
-    RunInteractHooks(p, "no_such_npc", SemesterState::Chapter1_AddDrop,
+    RunInteractHooks(EventBus::Instance(), p, "no_such_npc", SemesterState::Chapter1_AddDrop,
                      SemesterState::Chapter2_Midterms);
     CHECK(p.GetKarma()    == karma0);
     CHECK(p.GetMoney()    == money0);

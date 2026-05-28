@@ -25,8 +25,8 @@ void TryMeetLibrarian(Player& player, std::string_view npcId,
     player.SetFlag(kFlagMetLibrarian);
 }
 
-void TryRescueBookworm(Player& player, std::string_view npcId,
-                       SemesterState state) {
+void TryRescueBookworm(EventBus& bus, Player& player,
+                       std::string_view npcId, SemesterState state) {
     if (state != SemesterState::Chapter2_Midterms) return;
     if (npcId != "bookworm") return;
     if (player.HasFlag(kFlagBookwormRecovered)) return;   // already done
@@ -36,7 +36,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
     // him to a "先去問櫃台的管理員" redirect, so this nudge backs it up for the
     // E-interact path. No EnergyDrink is consumed (the wake step is below).
     if (!player.HasFlag(kFlagMetLibrarian)) {
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("這個人睡得很沉……先去問櫃台的管理員吧，"
                         "看看是誰拿走了傘。")});
@@ -52,7 +52,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
         // note exists anywhere before this moment.
         if (player.ConsumeOne("EnergyDrink")) {
             player.SetFlag(kFlagBookworm);
-            EventBus::Instance().Publish(Event{
+            bus.Publish(Event{
                 EventType::ShowMessage,
                 std::string("學霸回神了：「筆記……被風吹散了，"
                             "幫我撿回來？」")});
@@ -60,7 +60,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
             // chapter2.md 學霸 (c-fail) / §五.3 anti-softlock: a player who
             // did not buy an EnergyDrink in the market can still wake him
             // via the 圖書館地下室自動販賣機 (ChapterVendors(Chapter2)).
-            EventBus::Instance().Publish(Event{
+            bus.Publish(Event{
                 EventType::ShowMessage,
                 std::string("學霸沒有反應……需要提神飲料喚醒他。"
                             "（圖書館地下室自動販賣機 35 元）")});
@@ -70,7 +70,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
 
     // PHASE 2 — 學霸 is awake. Gate the exchange on the 3 notes.
     if (!Chapter2NotesComplete(player)) {
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("「我的筆記還沒撿齊吧？三頁，散在校園各處。」")});
         return;
@@ -100,7 +100,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
     player.ClearFlag(kFlagFoundNote1)
           .ClearFlag(kFlagFoundNote2)
           .ClearFlag(kFlagFoundNote3);
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::ShowMessage,
         std::string("傘換回來了。這次，更換是你。")});
 }
@@ -133,8 +133,9 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
     player.SetFlag(kFlagLibrarianUmbrella);
 }
 
-void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
-                                SemesterState state, SemesterState returnTo) {
+void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
+                                std::string_view npcId, SemesterState state,
+                                SemesterState returnTo) {
     // G-3: scope HARD to the Ch2→Ch3 Interlude return-point. The market that
     // returns to Ch3 is the only one where the player can still be holding the
     // 管理員 loaner (it was lent in Ch2 and is cleared on the NEXT chapter
@@ -146,7 +147,7 @@ void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
 
     if (player.HasFlag(kFlagLibrarianUmbrellaReturned)) {
         // Re-talk after returning: a short closure line, NO second karma.
-        EventBus::Instance().Publish(Event{
+        bus.Publish(Event{
             EventType::ShowMessage,
             std::string("這把傘已經還給圖書館了。")});
         return;
@@ -169,7 +170,7 @@ void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
           .SetHasUmbrella(false)
           .ClearFlag(kFlagLibrarianUmbrella)
           .SetFlag(kFlagLibrarianUmbrellaReturned);
-    EventBus::Instance().Publish(Event{
+    bus.Publish(Event{
         EventType::ShowMessage,
         std::string("你把管理員的傘還回了圖書館服務台。"
                     "「傘有借有還，謝謝你特地拿回來。」")});
