@@ -70,7 +70,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -220,7 +220,7 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 

@@ -131,7 +131,7 @@ TEST_CASE("Ch->IL transition pattern: both lines survive into next frame") {
     World w("", /*loadSprites=*/false);
     nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
 
-    nccu::PublishChapterTransitionToast(SemesterState::Interlude_Market);
+    nccu::PublishChapterTransitionToast(EventBus::Instance(), SemesterState::Interlude_Market);
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage, nccu::kInterludeArrivalHint,
         HudSlot::Bottom});
@@ -223,11 +223,11 @@ TEST_CASE("Chapter toast publish carries HudSlot::Top in the Event") {
         EventType::ShowMessage,
         [&](const Event& e) { lastSlot = e.slot; lastText = e.text; });
 
-    nccu::PublishChapterTransitionToast(SemesterState::Interlude_Market);
+    nccu::PublishChapterTransitionToast(EventBus::Instance(), SemesterState::Interlude_Market);
     CHECK(lastSlot == HudSlot::Top);
     CHECK(lastText == "✓ 章節清關 — 進入幕間市集");
 
-    nccu::PublishChapterTransitionToast(SemesterState::Ending_A);
+    nccu::PublishChapterTransitionToast(EventBus::Instance(), SemesterState::Ending_A);
     CHECK(lastSlot == HudSlot::Top);
     CHECK(lastText == "✓ 抵達結局");
 

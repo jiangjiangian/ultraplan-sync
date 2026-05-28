@@ -58,7 +58,7 @@ struct Ch4Fixture {
     nccu::GameController controller;
     TestInput in;
     explicit Ch4Fixture()
-        : world("", /*loadSprites=*/false), controller(world) {
+        : world("", /*loadSprites=*/false), controller(world, EventBus::Instance()) {
         nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
         nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
         EventBus::Instance().Clear();

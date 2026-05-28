@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
 #include "quest/Chapter4Quest.h"
+#include "engine/events/EventBus.h"
 #include "state/EndingGate.h"
 #include "state/SemesterStateMachine.h"
 #include "dialog/DialogState.h"
@@ -73,7 +74,7 @@ TEST_CASE("T4: 體諒 + karma>80 reaches Ending A WITHOUT the hidden umbrella") 
     p.SetFlag(nccu::kFlagTaFinaleChoiceMade);         // GameController self-lock
     nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);   // gentle grant (T4)
     CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_A);
 }
 
@@ -89,7 +90,7 @@ TEST_CASE("T4/G1: a 體諒 player with karma<=80 still gets the umbrella (-> D, 
     p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
     nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);
     CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));     // got the umbrella
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_D);   // karma<=80 -> D (was C)
 }
 
@@ -105,7 +106,7 @@ TEST_CASE("T4: harsh 質問 (coldFinale) still routes to Ending B, not A") {
     // GameController would call the grant; it no-ops without ConsoledTA.
     nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_B);   // coldFinale wins
 }
 
@@ -115,7 +116,7 @@ TEST_CASE("T4: Ending B/C unaffected by the gentle-umbrella change") {
         Player p = MakePlayer(); nccu::DialogState d;
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);   // no ConsoledTA -> no-op
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
     }
     SUBCASE("bought ugly -> C regardless of the new helper") {
@@ -123,7 +124,7 @@ TEST_CASE("T4: Ending B/C unaffected by the gentle-umbrella change") {
         Player p = MakePlayer(); nccu::DialogState d;
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         nccu::TryGrantTaFinaleUmbrella(p, "ta", kCh4);   // no-op
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_C);
     }
 }

@@ -45,25 +45,32 @@ namespace nccu {
 // `controller/DialogChoiceApply.{h,cpp}` so DialogScreen.cpp consumes
 // it directly without depending on GameController.h.
 
-GameController::GameController(World& world)
+GameController::GameController(World& world, EventBus& bus)
     : world_(world),
+      bus_(bus),
       worldSize_{::world::kSize, ::world::kSize},
       playerSize_{::world::kPlayerWidth, ::world::kPlayerHeight},
       sceneRouter_(world.Semester().Current()) {
     frameColliders_.reserve(64);  // dynamic actors only; terrain is the mask
-    WireDefaultSubscribers(EventBus::Instance(), world_.Semester(),
+    // Plan P2 — subscribe/wire side already takes EventBus&; the publish
+    // side starts paying it through too. Every subscriber registered here
+    // and every Publish() reachable from this controller's frame goes via
+    // bus_ from this point on (the chapter-transition stack is the first
+    // to be fully cleaned up; the entity/quest publishes still call
+    // Instance() for now and will be threaded in follow-up steps).
+    WireDefaultSubscribers(bus_, world_.Semester(),
                            world_.CurrentBuildingName());
     // Additional ShowMessage subscriber: mirrors the event text into
     // world_ for the transient HUD banner. Same lifetime as the
     // subscribers above — torn down by the ~GameController Clear() below.
-    WireHudMessageSubscriber(EventBus::Instance(), world_);
+    WireHudMessageSubscriber(bus_, world_);
     // Cycle 9.B H5: karma changes feed the same HUD banner via a
     // KarmaChanged -> ShowMessage hop. Wired AFTER the HUD subscriber
     // so the order of registration matches the intent (KarmaChanged
     // re-publishes ShowMessage; the HUD subscriber sees the resulting
     // ShowMessage on the next dispatch — both subscribers live for the
     // controller's lifetime and are torn down by the same Clear()).
-    WireKarmaToastSubscriber(EventBus::Instance());
+    WireKarmaToastSubscriber(bus_);
 
     // Build the ordered model-advance pipeline once (awsome_cpp.md §6/§7).
     // The order here IS the per-frame simulation order — Survival ->
@@ -81,7 +88,10 @@ GameController::~GameController() {
     // Drop subscribers before the World refs they captured die — closes
     // the static-destruction UB window where a singleton-bound lambda
     // would otherwise reference freed currentBuildingName / semester.
-    EventBus::Instance().Clear();
+    // Plan P2: use the injected bus, not Instance(). Same instance in
+    // production (main.cpp passes Instance()) — the change is making
+    // the dependency explicit.
+    bus_.Clear();
 }
 
 void GameController::Update() {
@@ -184,7 +194,7 @@ void GameController::Update() {
             // the latch reset on Interlude arrival is in
             // SceneRouter::Settle(), so the GameController only needs
             // to forward the mutable reference here.
-            MaybeAnnounceInterludeExit(sceneRouter_.InterludeExitLatchMut());
+            MaybeAnnounceInterludeExit(bus_, sceneRouter_.InterludeExitLatchMut());
             player->SetFlag(kFlagLeaveInterlude);
         }
     }
@@ -205,7 +215,7 @@ void GameController::Update() {
         // frame. No-op outside Ch2 / before recovery.
         LiftChapter2Clear(*player, world_.Semester().Current(),
                           world_.Dialog());
-        CheckChapterGates(*player, world_.Semester(), world_.Dialog());
+        CheckChapterGates(bus_, *player, world_.Semester(), world_.Dialog());
         // G2: defer-then-resolve the ending. FIRST open any pending Ch4
         // ending 自白 (inner monologue) — it makes world_.Dialog() active,
         // so the CheckEndingGates poll right after sees the open box and
@@ -220,7 +230,7 @@ void GameController::Update() {
         // 結局」). No-op outside Ch4 / while a box is up / once resolved.
         TryOpenEndingConfession(*player, world_.Dialog(),
                                 world_.Semester().Current());
-        CheckEndingGates(*player, world_.Semester(), world_.Dialog());
+        CheckEndingGates(bus_, *player, world_.Semester(), world_.Dialog());
     }
 
     // End-of-frame deferred deletion (the terminal pipeline stage). Same
@@ -272,7 +282,7 @@ bool GameController::HandlePauseMenu() {
 // Update() reads unchanged; pendingVendor_, input_, and sceneRouter_
 // are passed by reference so the free function can mutate them.
 bool GameController::HandleDialog() {
-    return nccu::HandleDialog(world_, pendingVendor_, input_, sceneRouter_);
+    return nccu::HandleDialog(bus_, world_, pendingVendor_, input_, sceneRouter_);
 }
 
 

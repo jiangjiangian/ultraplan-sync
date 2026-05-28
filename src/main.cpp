@@ -127,7 +127,13 @@ int main() {
                 }
             }
             nccu::View           view{kWinW, kWinH};
-            nccu::GameController  controller{world};
+            // Plan P2: the bus is the single shared instance for this run.
+            // GameController stores it as a member and threads it down into
+            // the gate/router/screen layers so every Publish reachable from
+            // the controller's frame goes through THIS bus (tests can
+            // construct a local bus and inject it instead).
+            EventBus&             bus = EventBus::Instance();
+            nccu::GameController  controller{world, bus};
             // Per-run audio orchestrator. Declared AFTER the controller
             // so reverse-destruction tears down audio FIRST — once audio
             // events exist, this lets AudioManager unsubscribe its own

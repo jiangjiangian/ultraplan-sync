@@ -1,6 +1,7 @@
 #ifndef CHAPTER_GATE_H_
 #define CHAPTER_GATE_H_
 class Player;                 // global-namespace model object
+class EventBus;               // Plan P2: bus is injected, not Instance()
 namespace nccu {
 class SemesterStateMachine;
 class DialogState;
@@ -18,7 +19,9 @@ class DialogState;
 // double-fire. Ch4 -> endings is EndingGate's job (later S5e), not here.
 // On any transition it Close()s the open conversation so a stale Active
 // dialog can't keep eating input behind the next chapter.
-void CheckChapterGates(Player& player, SemesterStateMachine& semester,
-                       DialogState& dialog);
+// Plan P2: `bus` is injected so the transition toast it publishes uses
+// the caller's bus instance, NOT EventBus::Instance() at this layer.
+void CheckChapterGates(EventBus& bus, Player& player,
+                       SemesterStateMachine& semester, DialogState& dialog);
 }
 #endif // CHAPTER_GATE_H_

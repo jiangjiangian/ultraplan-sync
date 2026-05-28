@@ -43,7 +43,7 @@ inline void WireStateTransitionSubscribers(
     // future gates by adding sibling ifs of this exact shape — do not
     // generalise yet.
     bus.Subscribe(EventType::UmbrellaClaimed,
-        [&semester](const Event& e) {
+        [&bus, &semester](const Event& e) {
             if (e.text == "TrueUmbrella" &&
                 semester.Current() == SemesterState::Chapter1_AddDrop) {
                 // Seed where the first market returns to (Ch2) before
@@ -57,8 +57,11 @@ inline void WireStateTransitionSubscribers(
                 // in ChapterGate (chapter1 has no Flag_ClearChapter1 stub).
                 // Without the toast the only visible change in state.jsonl
                 // was the umbrella claim text, masking the chapter snap.
+                // Plan P2: pass the lambda's captured bus rather than
+                // pulling Instance() — this subscriber already lives on
+                // `bus`, so it's the same instance, just no longer implicit.
                 nccu::PublishChapterTransitionToast(
-                    SemesterState::Interlude_Market);
+                    bus, SemesterState::Interlude_Market);
             }
             // S5d-2 Ch3 clear: the 啦啦隊's TrueUmbrella, reclaimed from
             // the 體育館後台道具箱. Same shape as the Ch1 sibling-if
@@ -72,6 +75,7 @@ inline void WireStateTransitionSubscribers(
                 semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
                 semester.Transition(SemesterState::Interlude_Market);
                 nccu::PublishChapterTransitionToast(
+                    bus,
                     SemesterState::Interlude_Market);
             }
         });

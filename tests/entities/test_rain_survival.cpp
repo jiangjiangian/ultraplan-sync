@@ -160,7 +160,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
         });
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
     REQUIRE(world.Semester().Current() == SemesterState::Chapter1_AddDrop);
@@ -231,7 +231,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
         });
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
     REQUIRE(world.Semester().Current() == SemesterState::Chapter1_AddDrop);
@@ -296,7 +296,7 @@ TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
     world.Semester().Transition(SemesterState::Interlude_Market);
 
     TestInput in;

@@ -56,11 +56,16 @@ namespace nccu {
 // frame after the chapter toast and overwrote the same single slot;
 // the chapter line was visible for 0.02 s (cycle9f-post-iteration-
 // diagnosis §B).
-inline void PublishChapterTransitionToast(SemesterState target) {
+//
+// Plan P2: `bus` is injected (was a header singleton call to
+// EventBus::Instance()). Callers thread the bus from main.cpp →
+// GameController member → the gate/router that decides the
+// transition, so this header no longer carries an implicit dependency
+// on the global Instance().
+inline void PublishChapterTransitionToast(EventBus& bus, SemesterState target) {
     const std::string msg = ChapterTransitionToast(target);
     if (msg.empty()) return;
-    EventBus::Instance().Publish(
-        Event{EventType::ShowMessage, msg, nccu::HudSlot::Top});
+    bus.Publish(Event{EventType::ShowMessage, msg, nccu::HudSlot::Top});
 }
 
 // H3 (Cycle 9): the Interlude's south-band exit zone is a silent trigger
@@ -83,11 +88,12 @@ inline constexpr const char* kInterludeExitPrep =
 // so the GameController integration and the regression test exercise the
 // same code path. GameController resets the latch on Interlude entry; the
 // caller is responsible for that lifecycle.
-inline bool MaybeAnnounceInterludeExit(bool& latched) {
+//
+// Plan P2: `bus` is injected — see PublishChapterTransitionToast above.
+inline bool MaybeAnnounceInterludeExit(EventBus& bus, bool& latched) {
     if (latched) return false;
     latched = true;
-    EventBus::Instance().Publish(
-        Event{EventType::ShowMessage, kInterludeExitPrep});
+    bus.Publish(Event{EventType::ShowMessage, kInterludeExitPrep});
     return true;
 }
 

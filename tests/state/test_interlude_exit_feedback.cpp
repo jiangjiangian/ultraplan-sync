@@ -63,7 +63,7 @@ TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
     bool latched = false;
 
     // First entry into the zone: publish.
-    CHECK(nccu::MaybeAnnounceInterludeExit(latched));
+    CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(latched);
     CHECK(Contains(texts, nccu::kInterludeExitPrep));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
@@ -71,8 +71,8 @@ TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
     // Player straddles / re-enters the band before leaving the Interlude:
     // no second publish. This is the "no spam" guarantee — the helper
     // only fires once per latch cycle.
-    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(latched));
-    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(latched));
+    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
+    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
 
     EventBus::Instance().Clear();
@@ -85,16 +85,16 @@ TEST_CASE("Interlude-visit latch lifecycle: reset on entry, fire on cross") {
     bool latched = false;
 
     // First visit: cross the band once.
-    CHECK(nccu::MaybeAnnounceInterludeExit(latched));
+    CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
 
     // Player leaves the Interlude, then comes back: GameController resets
     // the latch in the Interlude-arrival branch. Mimic that reset and
     // verify the next zone entry fires again exactly once.
     latched = false;                                 // GC's reset
-    CHECK(nccu::MaybeAnnounceInterludeExit(latched));
+    CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 2);
-    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(latched));
+    CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 2);
 
     EventBus::Instance().Clear();

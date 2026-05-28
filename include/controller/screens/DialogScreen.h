@@ -2,6 +2,7 @@
 #define CONTROLLER_SCREENS_DIALOG_SCREEN_H_
 
 class Vendor;
+class EventBus;     // Plan P2: bus is forwarded into the gate calls below
 
 namespace nccu {
 
@@ -23,7 +24,8 @@ class SceneRouter;
 // taking over). input is the InputHandler that owns the hold-E
 // auto-advance edge timing (Cycle 10.P0a). sceneRouter is the roster
 // settler for the same-frame transition close (Cycle 10.P0b / L8 fix).
-[[nodiscard]] bool HandleDialog(World& world, Vendor*& pendingVendor,
+[[nodiscard]] bool HandleDialog(EventBus& bus, World& world,
+                                Vendor*& pendingVendor,
                                 InputHandler& input,
                                 SceneRouter& sceneRouter);
 

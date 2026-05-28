@@ -1,6 +1,7 @@
 #include "state/EndingGate.h"
 #include "quest/Flags.h"
 #include "ui/ChapterToast.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
 #include "state/SemesterState.h"
@@ -19,8 +20,8 @@ namespace nccu {
 // the cursed/fallen path, then the bittersweet 風雨同行 (體諒 without the
 // full A), then the buy-out / 平穩 default. Each closes any stale dialog
 // and returns so only one fires per poll.
-void CheckEndingGates(Player& player, SemesterStateMachine& semester,
-                      DialogState& dialog) {
+void CheckEndingGates(EventBus& bus, Player& player,
+                      SemesterStateMachine& semester, DialogState& dialog) {
     if (semester.Current() != SemesterState::Chapter4_Finals) return;
 
     // G2 — endings stop being abrupt. The gate must NOT resolve while a
@@ -48,7 +49,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
         // H2: even the terminal screen flashes a toast first — without it
         // the FSM hop into Ending_A was indistinguishable in state.jsonl
         // from a frame where nothing happened (cycle9 H2 evidence).
-        PublishChapterTransitionToast(SemesterState::Ending_A);
+        PublishChapterTransitionToast(bus, SemesterState::Ending_A);
         dialog.Close();
         return;
     }
@@ -70,7 +71,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     if (player.HasFlag(kFlagTookCursedUmbrella) ||
         player.GetKarma() < 0 || coldFinale) {
         semester.Transition(SemesterState::Ending_B);
-        PublishChapterTransitionToast(SemesterState::Ending_B);
+        PublishChapterTransitionToast(bus, SemesterState::Ending_B);
         dialog.Close();
         return;
     }
@@ -90,7 +91,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     // (EndingView endingUmbrellaLook D → FragileBroken).
     if (player.HasFlag(kFlagConsoledTA)) {
         semester.Transition(SemesterState::Ending_D);
-        PublishChapterTransitionToast(SemesterState::Ending_D);
+        PublishChapterTransitionToast(bus, SemesterState::Ending_D);
         dialog.Close();
         return;
     }
@@ -110,7 +111,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     if (player.HasFlag(kFlagBoughtUglyUmbrella) ||
         player.HasFlag(kFlagTaFinaleChoiceMade)) {
         semester.Transition(SemesterState::Ending_C);
-        PublishChapterTransitionToast(SemesterState::Ending_C);
+        PublishChapterTransitionToast(bus, SemesterState::Ending_C);
         dialog.Close();
         return;
     }

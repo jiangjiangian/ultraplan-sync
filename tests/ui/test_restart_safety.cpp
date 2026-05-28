@@ -71,7 +71,7 @@ TEST_CASE("Restart resets karma/money/flags/consumables to a fresh game") {
     // Run #1: build, dirty it, then tear the run scope down (RAII).
     {
         World w("", /*loadSprites=*/false);
-        GameController c{w};
+        GameController c{w, EventBus::Instance()};
         DirtyTheRun(w);
     }   // ~GameController -> EventBus::Clear(); ~World frees the player
 
@@ -80,7 +80,7 @@ TEST_CASE("Restart resets karma/money/flags/consumables to a fresh game") {
     // destroyed World, never in a global).
     {
         World w("", /*loadSprites=*/false);
-        GameController c{w};
+        GameController c{w, EventBus::Instance()};
         const Player* p = w.GetPlayer();
         REQUIRE(p != nullptr);
         CHECK(p->GetKarma() == 50);                 // GDD start
@@ -115,7 +115,7 @@ TEST_CASE("Restart does not dangle or double-subscribe EventBus handlers") {
 
     auto runOneCycleAndCount = [&](int cycle) {
         World w("", /*loadSprites=*/false);
-        GameController c{w};
+        GameController c{w, EventBus::Instance()};
 
         // Fresh probe for THIS cycle (Clear() in the previous cycle's
         // controller dtor removed any earlier probe).

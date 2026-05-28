@@ -23,7 +23,7 @@
 
 namespace nccu {
 
-bool HandleDialog(World& world, Vendor*& pendingVendor,
+bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
                   InputHandler& input, SceneRouter& sceneRouter) {
     using nccu::gfx::Input;
     using nccu::gfx::Key;
@@ -124,7 +124,7 @@ bool HandleDialog(World& world, Vendor*& pendingVendor,
                     // the player closes the monologue. CheckChapterGates
                     // stays (a buy is never a chapter-clear trigger, so
                     // it is the same cheap no-op insurance as before).
-                    CheckChapterGates(*p, world.Semester(), dlg);
+                    CheckChapterGates(bus, *p, world.Semester(), dlg);
                     // Cycle 10.P0b (L8 fix): the gate calls above
                     // can Transition() — settle the roster NOW so
                     // the frame the player sees has a coherent
@@ -200,8 +200,8 @@ bool HandleDialog(World& world, Vendor*& pendingVendor,
                 // either way — once an ending fires, Current() is
                 // Ending_X and none of CheckChapterGates' Ch2/Ch3/
                 // Interlude sibling-ifs can match.
-                CheckEndingGates(*p, world.Semester(), dlg);
-                CheckChapterGates(*p, world.Semester(), dlg);
+                CheckEndingGates(bus, *p, world.Semester(), dlg);
+                CheckChapterGates(bus, *p, world.Semester(), dlg);
             }
         }
         // Cycle 10.P0b (L8 fix): any transition the dialog branch

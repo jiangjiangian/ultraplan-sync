@@ -327,7 +327,7 @@ TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
     nccu::LiftChapter2Clear(p, m.Current(), d);       // dialog closed
     REQUIRE(p.HasFlag(nccu::kFlagCh2Cleared));
 
-    nccu::CheckChapterGates(p, m, d);
+    nccu::CheckChapterGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter3_SportsDay);
     EventBus::Instance().Clear();

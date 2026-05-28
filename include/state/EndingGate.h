@@ -1,6 +1,7 @@
 #ifndef ENDING_GATE_H_
 #define ENDING_GATE_H_
 class Player;                 // global-namespace model object
+class EventBus;               // Plan P2: bus is injected, not pulled from Instance()
 namespace nccu {
 class SemesterStateMachine;
 class DialogState;
@@ -13,7 +14,11 @@ class DialogState;
 // is Active() so the closing 自白/finale narration is read first; on the
 // transition it Close()s the conversation. (The old Ch1 ugly-buy -> C
 // sibling-if is gone — the real Ending-C trigger is the Ch4 集英樓 Vendor.)
-void CheckEndingGates(Player& player, SemesterStateMachine& semester,
-                      DialogState& dialog);
+//
+// Plan P2: `bus` is injected so the transition toast it publishes uses the
+// caller's bus instance, NOT EventBus::Instance() at this layer. In
+// production main.cpp owns the single bus; tests pass their own.
+void CheckEndingGates(EventBus& bus, Player& player,
+                      SemesterStateMachine& semester, DialogState& dialog);
 }
 #endif // ENDING_GATE_H_
