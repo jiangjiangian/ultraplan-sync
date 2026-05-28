@@ -6,6 +6,9 @@
 #include "state/EndingGate.h"
 #include "quest/ChapterGate.h"
 #include "ui/ChapterToast.h"
+#include "controller/screens/EndingScreen.h"    // P3 step 1a: HandleEndingMenu free fn
+#include "controller/screens/PauseScreen.h"     // P3 step 1b: HandlePauseMenu free fn
+#include "controller/screens/InventoryScreen.h" // P3 step 1c: HandleInventory free fn
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
@@ -325,142 +328,20 @@ void GameController::Update() {
     sceneRouter_.SettleRoster(world_);
 }
 
-// A-T3: the ENDING SCREEN is a stable, interactive screen with a bottom
-// 3-option menu (回首頁 / 重新開始 / 結束). Handled FIRST and the world is
-// fully FROZEN here (the orchestrator returns before the pipeline /
-// interact / sweep, exactly like the dialog/inventory/pause freezes) —
-// once an ending fires the player's ONLY agency is this menu. ←/→ move the
-// cursor; E/Enter confirm the highlighted choice and route it through
-// World::PendingAppAction (the SINGLE place a full World teardown+rebuild
-// can safely happen — BUGLEDGER B2/H1; the controller never tears itself
-// down). 回首頁 and 重新開始 both request Restart (main.cpp tears the run
-// down to the title — a full state reset; for 重新開始 the player then
-// re-enters from the title, the accepted "Restart→title→select" flow);
-// 結束 requests Quit (the ONLY path that closes the window). ESC is NOT
-// read here — it stays the program's quit key owned by main.cpp. This
-// block is reached only in an Ending_* state, so normal play AND every
-// pre-A-T3 scripted harness run that never reaches an ending are
-// byte-identical (the smoke gate stays in Ch1).
+// P3 step 1a (was a 25-LOC inline body): the ending screen's bottom
+// 3-option menu lives in `controller/screens/EndingScreen.{h,cpp}` now.
+// Method retained as a thin delegate so the orchestrator early-return
+// chain at the top of Update() reads unchanged.
 bool GameController::HandleEndingMenu() {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
-    if (!IsEndingState(world_.Semester().Current())) return false;
-    if (Input::IsPressed(Key::Left))  world_.MoveEndingMenuCursor(-1);
-    if (Input::IsPressed(Key::Right)) world_.MoveEndingMenuCursor(1);
-    if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
-        switch (EndingMenuChoiceAt(world_.EndingMenuCursor())) {
-            case EndingMenuChoice::BackToTitle:
-                // Back to the title screen (full teardown → title).
-                world_.RequestAppAction(World::AppAction::Restart);
-                break;
-            case EndingMenuChoice::RestartGame:
-                // A fresh new game: same Restart teardown → title, from
-                // which the player starts Ch1 anew (state fully reset by
-                // the World rebuild; CLAUDE.md "must fully reset state").
-                world_.RequestAppAction(World::AppAction::Restart);
-                break;
-            case EndingMenuChoice::Quit:
-                // True quit — the only path that closes the canvas.
-                world_.RequestAppAction(World::AppAction::Quit);
-                break;
-        }
-    }
-    return true;   // frozen on the ending screen until an option is chosen
+    return nccu::HandleEndingMenu(world_);
 }
 
-// In-game pause menu (top-right). Opens with M; while open the world is
-// fully frozen (the orchestrator returns before the object tick /
-// movement / rain / sweep, exactly like the dialog/inventory freezes).
-// Checked AFTER the ending screen so the pause takes precedence over a
-// dialog or the Tab inventory. M also closes it (toggle / Resume), so it
-// is reachable and dismissable with one key. ESC is deliberately NOT a
-// menu key — it is the program's direct-quit key (raylib's default exit
-// key drives main.cpp's WindowShouldClose loops), so it must never be
-// consumed here. Restart/Quit only RECORD an intent on the World — the
-// actual World teardown+rebuild happens in main.cpp's outer loop, the
-// single place that can re-run the RAII-ordered composition root without
-// leaking EventBus subscribers (BUGLEDGER B2/H1). The controller never
-// destroys itself. Returns true while the menu (or its help overlay) is
-// up, OR on the frame M opens it; false when no menu is involved.
+// P3 step 1b (was an 80-LOC inline body): the M pause menu + 說明 help
+// overlay live in `controller/screens/PauseScreen.{h,cpp}` now. Method
+// retained as a thin delegate so the orchestrator early-return chain at
+// the top of Update() reads unchanged.
 bool GameController::HandlePauseMenu() {
-    {
-        using nccu::gfx::Input;
-        using nccu::gfx::Key;
-        const bool toggle = Input::IsPressed(Key::M);
-        if (world_.MenuOpen()) {
-            // REQUIREMENT #9: the 說明 help overlay sits ON TOP of the
-            // paused menu. While it is up, M / E / Enter dismisses it
-            // back to the menu and the menu cursor / sim stay frozen.
-            // (ESC is not a dismiss key — it quits the program.) Handled
-            // FIRST so a key meant for "close help" never also moves the
-            // menu cursor or triggers an AppAction.
-            if (world_.HelpOpen()) {
-                // U2-T4: the 說明 overlay is paged — ←/→ flip between the
-                // 操作+目標 page and the 雨傘外觀+道具須知+結局 page (the
-                // page index wraps; the View draws a 「第 N／M 頁」 indicator).
-                // Pure UI state (World::HelpPage, NOT serialized — see
-                // Harness.cpp), so a paged help leaves state.jsonl byte-
-                // identical. M / E / Enter still dismisses back to the menu.
-                constexpr int n = nccu::kGameHelpPageCount;
-                if (Input::IsPressed(Key::Right))
-                    world_.SetHelpPage((world_.HelpPage() + 1) % n);
-                if (Input::IsPressed(Key::Left))
-                    world_.SetHelpPage((world_.HelpPage() - 1 + n) % n);
-                if (Input::IsPressed(Key::M) ||
-                    Input::IsPressed(Key::Enter) ||
-                    Input::IsPressed(Key::E))
-                    world_.SetHelpOpen(false);
-                return true;                    // frozen behind help
-            }
-            if (Input::IsPressed(Key::Up))   world_.MoveMenuCursor(-1);
-            if (Input::IsPressed(Key::Down)) world_.MoveMenuCursor(1);
-            if (toggle) {                       // M = quick Resume
-                world_.SetMenuOpen(false);
-                return true;
-            }
-            if (Input::IsPressed(Key::Enter)) {
-                switch (world_.MenuCursor()) {
-                    case 0:                     // 繼續 (Resume)
-                        world_.SetMenuOpen(false);
-                        break;
-                    case 1:                     // 說明 (Help) — overlay
-                        world_.SetHelpOpen(true);
-                        break;
-                    case 2:                     // 減少動畫 (toggle)
-                        // Cycle 9.E.3: pause-menu UI for the
-                        // ReducedMotion accessibility flag added in
-                        // 9.E.1. Flip in place; the menu stays open so
-                        // the player can see the [開]/[關] state update
-                        // on the same row their cursor is on. Pure
-                        // World mutation — no AppAction, no menu close.
-                        world_.SetReducedMotion(!world_.ReducedMotion());
-                        break;
-                    case 3:                     // 擴大目標 (toggle)
-                        // Cycle 9.E.3: pause-menu UI for the
-                        // LargeTargets accessibility flag added in
-                        // 9.E.2. Same in-place toggle shape as row 2 —
-                        // the next gameplay frame's E-probe reach picks
-                        // up the new value via World::LargeTargets().
-                        world_.SetLargeTargets(!world_.LargeTargets());
-                        break;
-                    case 4:                     // 重新開始 (Restart)
-                        world_.RequestAppAction(
-                            World::AppAction::Restart);
-                        break;
-                    default:                    // 離開 (Quit)
-                        world_.RequestAppAction(
-                            World::AppAction::Quit);
-                        break;
-                }
-            }
-            return true;   // frozen while the menu is up
-        }
-        if (toggle) {                           // open from gameplay
-            world_.SetMenuOpen(true);
-            return true;
-        }
-    }
-    return false;   // no menu involved this frame — fall through
+    return nccu::HandlePauseMenu(world_);
 }
 
 // Dialog freeze: while a conversation is open the world is paused — the
@@ -674,72 +555,12 @@ bool GameController::HandleDialog() {
     return false;   // no dialog active — fall through
 }
 
-// Tab inventory overlay (S5b-5 + Item 2). Edge-triggered toggle, then —
-// while open — freeze the sim exactly like the dialog box (the
-// orchestrator returns before the pipeline / interact / sweep). Checked
-// AFTER the dialog handler so a conversation has priority and Tab can't
-// pop the panel mid-dialog. Returns true while the bag is open, false
-// otherwise.
+// P3 step 1c (was a 60-LOC inline body): the Tab inventory overlay lives
+// in `controller/screens/InventoryScreen.{h,cpp}` now. Method retained
+// as a thin delegate so the orchestrator early-return chain at the top
+// of Update() reads unchanged.
 bool GameController::HandleInventory() {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
-    if (Input::IsPressed(Key::Tab))
-        world_.SetInventoryOpen(!world_.InventoryOpen());
-    if (world_.InventoryOpen()) {
-        // Item 2(b): the bag is a hold-and-use list. ↑/↓ move the cursor;
-        // E/Enter on a CONSUMABLE row uses it (applies the SAME effect the
-        // pickup used to fire, then decrements the count); on a view-only
-        // row (金幣 / 雨傘 / 任務紙張) E/Enter is inert — the View already
-        // shows that row's description. The rows are rebuilt from the
-        // Player each frame the bag is open (BuildInventoryRows), so a row
-        // that hits 0 after use disappears next frame and the cursor is
-        // re-clamped. Normal movement / interact never run here (the early
-        // return below freezes the sim), so opening the bag can't move the
-        // player or re-trigger NPCs — only Tab (handled above) re-closes
-        // it. Build the rows ONCE; act on the captured snapshot.
-        if (Player* invP = world_.GetPlayer()) {
-            const std::vector<InventoryRow> rows = BuildInventoryRows(*invP);
-            const int n = static_cast<int>(rows.size());
-            int cur = world_.InventoryCursor();
-            if (n > 0) {
-                if (cur < 0)   cur = 0;
-                if (cur >= n)  cur = n - 1;
-                if (Input::IsPressed(Key::Up))   cur = (cur - 1 + n) % n;
-                if (Input::IsPressed(Key::Down)) cur = (cur + 1) % n;
-                // U2-T1: ←/→ jump a whole PAGE (the View pages the bag once
-                // rows exceed kInventoryRowsPerPage). The page index is
-                // DERIVED from the cursor render-side, so moving the cursor
-                // by ±a page is all that is needed — the shown page follows.
-                // Up/Down already flip the page when the selection crosses a
-                // boundary; ←/→ are the explicit fast path. Clamped (no
-                // wrap) so a page-jump can't skip past the ends. No new
-                // serialized state — InventoryCursor is not in state.jsonl.
-                if (Input::IsPressed(Key::Right))
-                    cur = std::min(n - 1, cur + nccu::kInventoryRowsPerPage);
-                if (Input::IsPressed(Key::Left))
-                    cur = std::max(0, cur - nccu::kInventoryRowsPerPage);
-                world_.SetInventoryCursor(cur);
-                if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
-                    const InventoryRow& sel = rows[static_cast<std::size_t>(cur)];
-                    if (sel.usable && IsUsableConsumable(sel.itemId) &&
-                        invP->ConsumableCount(sel.itemId) > 0) {
-                        // Apply the effect, THEN spend one. Order matters
-                        // for nothing here (the effect doesn't read the
-                        // count), but spending after keeps the "use → it's
-                        // gone" reading obvious. ApplyConsumableEffect
-                        // publishes the same flavour ShowMessage the pickup
-                        // path used to.
-                        ApplyConsumableEffect(*invP, sel.itemId);
-                        (void)invP->ConsumeOne(sel.itemId);
-                    }
-                }
-            } else {
-                world_.SetInventoryCursor(0);
-            }
-        }
-        return true;
-    }
-    return false;   // bag closed — fall through
+    return nccu::HandleInventory(world_);
 }
 
 // E-interact dispatch (talk / pick up / open a shop). Reads the E edge
