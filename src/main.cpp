@@ -9,6 +9,9 @@
 #include "engine/render/DrawScope.h"
 #include "engine/render/Font.h"
 #include "engine/render/Texture.h"
+#include "engine/audio/AudioDevice.h"
+#include "engine/audio/AudioManager.h"
+#include "engine/events/EventBus.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -42,6 +45,13 @@ int main() {
     // raylib's default font is ASCII-only; load the CJK font now that the
     // GL context exists, before any text (title / select / HUD) draws.
     nccu::gfx::EnsureFont();
+
+    // Audio device — one-per-process RAII handle. Today no-op (project
+    // ships no audio assets yet), but the scaffold lives in main()'s
+    // teardown order alongside Window/Font so that when the first sfx
+    // arrives, InitAudioDevice/CloseAudioDevice slot into a slot the
+    // composition root already accommodates. See include/engine/audio/.
+    nccu::audio::AudioDevice audioDevice;
 
     // Off unless UMBRELLA_SCRIPT is set; then it drives input headlessly
     // and skips the interactive title + character-select for a
@@ -118,6 +128,13 @@ int main() {
             }
             nccu::View           view{kWinW, kWinH};
             nccu::GameController  controller{world};
+            // Per-run audio orchestrator. Declared AFTER the controller
+            // so reverse-destruction tears down audio FIRST — once audio
+            // events exist, this lets AudioManager unsubscribe its own
+            // EventBus handlers before the controller dtor's bulk
+            // EventBus::Clear() (the same H1/B2 discipline that keeps
+            // restart-across-runs free of dangling subscribers).
+            nccu::audio::AudioManager audioManager{EventBus::Instance(), audioDevice};
 
             if (Player* p = world.GetPlayer())
                 p->SetTint(selection.tint);  // persona colour modulate
