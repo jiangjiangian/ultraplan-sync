@@ -1,6 +1,7 @@
 #include "entities/TransparentUmbrella.h"
 #include "controller/EventBus.h"
 #include "entities/Player.h"
+#include "quest/Flags.h"
 #include "gfx/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 
@@ -13,7 +14,7 @@ namespace {
 // rather than doing nothing (a silent no-op reads as a broken pickup).
 bool QuestGateOpen(Player* player) {
     if (!player) return true;                  // preserve prior null path
-    if (player->HasFlag("Flag_PromisedVictim")) return true;
+    if (player->HasFlag(nccu::kFlagPromisedVictim)) return true;
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         std::string("這把傘不是你的——先去找那位掉了傘的同學問問吧。")});

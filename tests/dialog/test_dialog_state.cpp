@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
 #include "controller/GameController.h"
@@ -37,7 +38,7 @@ TEST_CASE("Lines then a choice: Advance past last line enters choice mode") {
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
-        {"accept", -5, "Flag_ScoldedSenior", false}};
+        {"accept", -5, nccu::kFlagScoldedSenior, false}};
     d.Open({"intro"}, ch);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
@@ -51,7 +52,7 @@ TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes"
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
-        {"accept", -5, "Flag_ScoldedSenior", false}};
+        {"accept", -5, nccu::kFlagScoldedSenior, false}};
     d.Open({"intro"}, ch);
     d.Advance();                 // -> choice mode
     d.MoveChoice(-1);            // clamp at 0
@@ -63,14 +64,14 @@ TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes"
     REQUIRE(picked != nullptr);
     CHECK(picked->label == "accept");
     CHECK(picked->karmaDelta == -5);
-    CHECK(picked->setsFlag == "Flag_ScoldedSenior");
+    CHECK(picked->setsFlag == nccu::kFlagScoldedSenior);
     CHECK_FALSE(d.Active());
 }
 
 TEST_CASE("Choice WITH nextLines: confirm plays the follow-up, then closes") {
     DialogState d;
     std::vector<DialogChoice> ch{
-        {"help", 5, "Flag_PromisedVictim", true, {"c0", "c1"}},
+        {"help", 5, nccu::kFlagPromisedVictim, true, {"c0", "c1"}},
         {"ignore", -3, "", false}};
     d.Open({"intro"}, ch);
     CHECK(d.Advance() == nullptr);            // past "intro" -> choice mode
@@ -91,7 +92,7 @@ TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
-        {"accept", -5, "Flag_ScoldedSenior", false}};
+        {"accept", -5, nccu::kFlagScoldedSenior, false}};
     d.Open({"intro"}, ch);
     d.Advance();                 // -> choice mode
     d.MoveChoice(1);             // -> "accept"
@@ -100,19 +101,19 @@ TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)
     CHECK_FALSE(d.Active());                     // closed (no nextLines)
     // Pointer must still be valid AFTER Close cleared choices_.
     CHECK(picked->karmaDelta == -5);
-    CHECK(picked->setsFlag == "Flag_ScoldedSenior");
+    CHECK(picked->setsFlag == nccu::kFlagScoldedSenior);
     CHECK(picked->flagValue == false);
 }
 
 TEST_CASE("ApplyDialogChoice mutates player karma and flag") {
     Player p{nccu::gfx::Vec2{0, 0}};
     const int before = p.GetKarma();
-    nccu::DialogChoice c{"accept", -5, "Flag_ScoldedSenior", false};
+    nccu::DialogChoice c{"accept", -5, nccu::kFlagScoldedSenior, false};
     nccu::ApplyDialogChoice(p, c);
     CHECK(p.GetKarma() == before - 5);
-    CHECK_FALSE(p.HasFlag("Flag_ScoldedSenior"));   // flagValue false -> ClearFlag
-    nccu::DialogChoice c2{"help", 10, "Flag_HelpedSenior", true};
+    CHECK_FALSE(p.HasFlag(nccu::kFlagScoldedSenior));   // flagValue false -> ClearFlag
+    nccu::DialogChoice c2{"help", 10, nccu::kFlagHelpedSenior, true};
     nccu::ApplyDialogChoice(p, c2);
     CHECK(p.GetKarma() == before - 5 + 10);
-    CHECK(p.HasFlag("Flag_HelpedSenior"));
+    CHECK(p.HasFlag(nccu::kFlagHelpedSenior));
 }

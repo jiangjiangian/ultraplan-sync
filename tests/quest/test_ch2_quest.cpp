@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/ChapterGate.h"
 #include "quest/ItemCatalog.h"
@@ -34,7 +35,7 @@ TEST_CASE("ResolveOpenerSubState: Ch2 librarian (b) gated on the wake flag") {
               "librarian", SemesterState::Chapter2_Midterms, p) == 0);
     // The librarian now points to the 學霸; (b) confirms once he is woken,
     // NOT once the notes are in (notes only exist after waking).
-    p.SetFlag(nccu::kFlagBookwormWoken);
+    p.SetFlag(nccu::kFlagBookworm);
     CHECK(nccu::ResolveOpenerSubState(
               "librarian", SemesterState::Chapter2_Midterms, p) == 1);
 }
@@ -43,7 +44,7 @@ TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a)->(c) woken->(d) recovered") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState(
               "bookworm", SemesterState::Chapter2_Midterms, p) == 0);  // (a)
-    p.SetFlag(nccu::kFlagBookwormWoken);
+    p.SetFlag(nccu::kFlagBookworm);
     CHECK(nccu::ResolveOpenerSubState(
               "bookworm", SemesterState::Chapter2_Midterms, p) == 2);  // (c)
     p.SetFlag(nccu::kFlagBookwormRecovered);
@@ -66,21 +67,21 @@ TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
 
     // Wrong state / wrong npc -> no-op.
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookworm));
     nccu::TryRescueBookworm(p, "ta", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookworm));
 
     // PHASE 1, asleep with NO drink -> hint only, nothing set/consumed.
     const int k0 = p.GetKarma();
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookworm));
     CHECK(p.GetKarma() == k0);
 
     // PHASE 1, asleep WITH a drink -> consume + wake. NOT yet recovered,
     // and notes are irrelevant here (waking is what starts the note quest).
     p.AddConsumable("EnergyDrink");
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.HasFlag(nccu::kFlagBookworm));
     CHECK(p.ConsumableCount("EnergyDrink") == 0);   // spent at the wake step
     CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));
     CHECK(p.GetKarma() == k0);                       // +5 is at the exchange
@@ -113,7 +114,7 @@ TEST_CASE("B2.2: waking the 學霸 spends exactly one 提神飲料 from the bag"
     CHECK(p.ConsumableCount("EnergyDrink") == 2);
 
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.HasFlag(nccu::kFlagBookworm));
     CHECK(p.ConsumableCount("EnergyDrink") == 1);   // 2 -> 1, exactly one given
 
     // A second talk (now woken, notes incomplete) must NOT spend the other.
@@ -144,13 +145,13 @@ TEST_CASE("B2.3: 圖書館管理員 lends 管理員的傘 (held + shelter, NOT t
     CHECK_FALSE(p.HasUmbrella());
 
     // Woken -> her (b) hand-over: the player now holds 管理員的傘.
-    p.SetFlag(nccu::kFlagBookwormWoken);
+    p.SetFlag(nccu::kFlagBookworm);
     nccu::TryLendLibrarianUmbrella(p, "librarian",
                                    SemesterState::Chapter2_Midterms);
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);
     CHECK(p.HasUmbrella());                              // auto-shelter armed
-    CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrellaLent));
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));      // NOT the true umbrella
+    CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrella));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));      // NOT the true umbrella
 
     // The bag shows ONE 管理員的傘 row, no true-umbrella row.
     const auto rows = nccu::BuildInventoryRows(p);
@@ -177,7 +178,7 @@ TEST_CASE("TryRescueBookworm: notes BEFORE waking never trigger the exchange") {
     GiveNotes(p);                              // notes somehow in hand
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
     CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormRecovered));  // asleep -> no go
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));      // no drink -> asleep
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookworm));      // no drink -> asleep
     EventBus::Instance().Clear();
 }
 
@@ -219,7 +220,7 @@ TEST_CASE("A2: 學霸 cannot be woken before the 圖書館管理員 is met") {
 
     // ...but the librarian is unmet -> redirect, NOTHING consumed, NOT woken.
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBookworm));
     CHECK(p.ConsumableCount("EnergyDrink") == 1);        // drink untouched
 
     // TryMeetLibrarian is a no-op for the wrong npc / state.
@@ -234,7 +235,7 @@ TEST_CASE("A2: 學霸 cannot be woken before the 圖書館管理員 is met") {
 
     // Now the same wake talk succeeds (drink consumed, woken).
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    CHECK(p.HasFlag(nccu::kFlagBookwormWoken));
+    CHECK(p.HasFlag(nccu::kFlagBookworm));
     CHECK(p.ConsumableCount("EnergyDrink") == 0);
     EventBus::Instance().Clear();
 }
@@ -270,7 +271,7 @@ TEST_CASE("A2: 學霸 dialog redirects to the 管理員 until she is met") {
 // Flag_FoundNote1/2/3 so the market-bag 任務紙張 (學霸的筆記 xN) row
 // disappears. BuildInventoryRows derives that row purely from the note flags
 // (ItemCatalog.cpp), so before the fix the row lingered after the notes were
-// handed back. Revert-verify: drop the ClearFlag(kFlagFoundNote*) trio in
+// handed back. Revert-verify: drop the ClearFlag(nccu::kFlagFoundNote*) trio in
 // TryRescueBookworm's exchange and the post-return bag still shows the notes
 // row.
 TEST_CASE("A3: returning the 學霸's notes clears the bag 任務紙張 row") {
@@ -281,7 +282,7 @@ TEST_CASE("A3: returning the 學霸's notes clears the bag 任務紙張 row") {
     // Wake him, then collect all 3 notes — the bag shows the notes row.
     p.AddConsumable("EnergyDrink");
     nccu::TryRescueBookworm(p, "bookworm", SemesterState::Chapter2_Midterms);
-    REQUIRE(p.HasFlag(nccu::kFlagBookwormWoken));
+    REQUIRE(p.HasFlag(nccu::kFlagBookworm));
     GiveNotes(p);
     {
         const auto rows = nccu::BuildInventoryRows(p);
@@ -319,7 +320,7 @@ TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
     p.SetFlag(nccu::kFlagMetLibrarian);
     p.AddConsumable("EnergyDrink");
     nccu::TryRescueBookworm(p, "bookworm", m.Current());   // wake (phase 1)
-    REQUIRE(p.HasFlag(nccu::kFlagBookwormWoken));
+    REQUIRE(p.HasFlag(nccu::kFlagBookworm));
     GiveNotes(p);
     nccu::TryRescueBookworm(p, "bookworm", m.Current());   // exchange (phase 2)
     REQUIRE(p.HasFlag(nccu::kFlagBookwormRecovered));

@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter1Quest.h"
 #include "quest/ChapterGate.h"
 #include "quest/ChapterQuestItems.h"
@@ -66,19 +67,19 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     // Wrong state / wrong npc -> no-op.
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter2_Midterms);
     nccu::TryReturnVictimUmbrella(p, "ta", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
 
     // Promised? NO -> no-op (the (a)/(b) dialogue owns the promise; nothing
     // to return yet). No grant.
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
 
     // Promised but WITHOUT the victim's umbrella -> reminder only, no grant.
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK_FALSE(p.HasUmbrella());
     CHECK(cap.umbrellaClaims.empty());
     CHECK_FALSE(cap.lastMessage.empty());           // a nudge was shown
@@ -87,11 +88,11 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
     // only — T2: NO UmbrellaClaimed yet, the (d) exchange must play first).
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
-    CHECK(p.HasFlag("Flag_HasTrueUmbrella"));        // Ending A's condition
+    CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));        // Ending A's condition
     CHECK(p.HasUmbrella());
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasVictimUmbrella));  // 苦主 took his傘
     CHECK(cap.umbrellaClaims.empty());               // T2: clear is DEFERRED
-    CHECK_FALSE(p.HasFlag(nccu::kFlagCh1ClearFired)); // not fired yet
+    CHECK_FALSE(p.HasFlag(nccu::kFlagClearChapter1)); // not fired yet
 
     // Idempotent on a re-talk: already granted -> still no UmbrellaClaimed.
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
@@ -107,7 +108,7 @@ TEST_CASE("TryReturnVictimUmbrella: umbrella without a promise never grants") {
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagHasVictimUmbrella);          // umbrella, but no promise
     nccu::TryReturnVictimUmbrella(p, "victim", SemesterState::Chapter1_AddDrop);
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(cap.umbrellaClaims.empty());
     EventBus::Instance().Clear();
 }
@@ -126,12 +127,12 @@ TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
     REQUIRE(m.Current() == SemesterState::Chapter1_AddDrop);
 
     Player p = MakePlayer();
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     p.SetFlag(nccu::kFlagHasVictimUmbrella);
 
     // 1) The grant: flags set, but NO transition yet (UmbrellaClaimed held).
     nccu::TryReturnVictimUmbrella(p, "victim", m.Current());
-    CHECK(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK(p.HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(m.Current() == SemesterState::Chapter1_AddDrop);   // still Ch1
     CHECK(cap.umbrellaClaims.empty());
 
@@ -168,12 +169,12 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
 
     // Cursed claim is QuestGate-d on the promise (TransparentUmbrella), so
     // promise first, then claim (this mirrors the in-game gate).
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     CursedUmbrella cursed{nccu::gfx::Vec2{0.0f, 0.0f}};
     cursed.beClaimed(&p);
 
     CHECK(p.HasUmbrella());
-    CHECK(p.HasFlag("Flag_TookCursedUmbrella"));      // Ending B seed
+    CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));      // Ending B seed
     CHECK(p.GetKarma() == k0 - 30);                   // the -30 penalty
     REQUIRE(cap.umbrellaClaims.size() == 1);
     CHECK(cap.umbrellaClaims[0] == "CursedUmbrella"); // its own clear path
@@ -232,7 +233,7 @@ TEST_CASE("A1: 西裝學長 redirects (no menu) until the 苦主 is met") {
 
     // AFTER the promise: the genuine (b)/(c)/(d) choice menu opens.
     Player q = MakePlayer();
-    q.SetFlag("Flag_PromisedVictim");
+    q.SetFlag(nccu::kFlagPromisedVictim);
     nccu::DialogState d2;
     nccu::OpenNpcDialog(d2, q, "suit_senior", Ch1);
     REQUIRE(d2.Active());
@@ -282,7 +283,7 @@ TEST_CASE("A1: 苦主's umbrella defers until Flag_SuitSeniorChoiceMade, then sw
     // Committing the 西裝學長 choice (Flag_SuitSeniorChoiceMade) makes the
     // victim umbrella appear ONCE (count 1 申請書 -> 2: + the umbrella).
     REQUIRE(w.GetPlayer() != nullptr);
-    w.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");
+    w.GetPlayer()->SetFlag(nccu::kFlagSuitSeniorChoiceMade);
     CHECK(w.MaybeSpawnChapter1VictimUmbrella());        // spawns this frame
     CHECK(CountQuestPickups(w) == 2);
     CHECK_FALSE(w.MaybeSpawnChapter1VictimUmbrella());  // one-shot
@@ -299,7 +300,7 @@ TEST_CASE("A1: MaybeSpawnChapter1VictimUmbrella is a no-op outside Ch1") {
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
     REQUIRE(w.GetPlayer() != nullptr);
-    w.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");   // flag set, but...
+    w.GetPlayer()->SetFlag(nccu::kFlagSuitSeniorChoiceMade);   // flag set, but...
 
     // Ch2: no Ch1-umbrella spawn (it is Ch1-scoped). The ctor 申請書 is NOT
     // roster-tracked so it persists across the transition (count stays 1), and
@@ -343,7 +344,7 @@ TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C 
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Ugly);
     CHECK(p.HasUmbrella());                              // auto-shelter armed
     CHECK(p.GetKarma() == karma0);                       // // karma +0
-    CHECK_FALSE(p.HasFlag("Flag_BoughtUglyUmbrella"));   // NOT the C lock
+    CHECK_FALSE(p.HasFlag(nccu::kFlagBoughtUglyUmbrella));   // NOT the C lock
     CHECK_FALSE(cap.lastMessage.empty());                // 花費/餘額 toast
     CHECK(cap.lastMessage.find("80") != std::string::npos);   // the spend
     CHECK(cap.lastMessage.find("20") != std::string::npos);   // the balance

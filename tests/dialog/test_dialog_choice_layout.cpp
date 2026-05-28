@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogState.h"
 #include "dialog/DialogView.h"
 #include "dialog/DialogLayout.h"
@@ -41,7 +42,7 @@ struct PosSpy final : nccu::gfx::IRenderer {
 nccu::DialogState OpenFinaleMenu() {
     nccu::DialogState d;
     d.Open({"（他把傘遞過來）"},
-           {{"體諒助教的辛勞", 15, "Flag_ConsoledTA", true, {"x"}},
+           {{"體諒助教的辛勞", 15, nccu::kFlagConsoledTA, true, {"x"}},
             {"質問／強硬索回", -5, "", false, {"y"}},
             {std::string(nccu::kDialogExitLabel), 0, "", false, {}}});
     d.Advance();                         // step past opener -> choice mode

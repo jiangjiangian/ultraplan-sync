@@ -1,4 +1,5 @@
 // Item 1c regression ("能退出的選項"): the Ch4 助教 結算 menu must carry a
+#include "quest/Flags.h"
 // trailing no-commit exit. Picking it closes the conversation with ZERO
 // state change — NO Flag_TaFinaleChoiceMade, NO Flag_ConsoledTA, NO karma
 // applied — so the player can walk off and re-approach 助教 to decide the
@@ -17,7 +18,7 @@
 //     menu — the menu-tail CHECKs fail.
 //   * OR remove the `!exitChoice &&` guard on the Flag_TaFinaleChoiceMade
 //     set in GameController — declining then sets the self-lock flag, so
-//     CHECK_FALSE(HasFlag("Flag_TaFinaleChoiceMade")) fails and the menu
+//     CHECK_FALSE(HasFlag(nccu::kFlagTaFinaleChoiceMade)) fails and the menu
 //     is no longer re-presentable.
 
 #include "doctest/doctest.h"
@@ -107,10 +108,10 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     // 體諒 commit WOULD reach Ending A — proving the exit really withholds
     // that outcome, not that the conditions were merely unmet.
     p->AddKarma(40);                                    // ~90
-    p->SetFlag("Flag_HasTrueUmbrella");
+    p->SetFlag(nccu::kFlagHasTrueUmbrella);
     const int karma0 = p->GetKarma();
-    REQUIRE_FALSE(p->HasFlag("Flag_TaFinaleChoiceMade"));
-    REQUIRE_FALSE(p->HasFlag("Flag_ConsoledTA"));
+    REQUIRE_FALSE(p->HasFlag(nccu::kFlagTaFinaleChoiceMade));
+    REQUIRE_FALSE(p->HasFlag(nccu::kFlagConsoledTA));
 
     // Walk onto the 助教 and open the 結算 menu.
     p->SetPosition(nccu::gfx::Vec2{ta->GetPosition().x - 8.0f,
@@ -138,8 +139,8 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     // Nothing committed: dialog closed, the finale is NOT made, no karma
     // moved, Ending A did NOT fire, the spine is still in Ch4.
     CHECK_FALSE(world.Dialog().Active());
-    CHECK_FALSE(p->HasFlag("Flag_TaFinaleChoiceMade"));
-    CHECK_FALSE(p->HasFlag("Flag_ConsoledTA"));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagTaFinaleChoiceMade));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagConsoledTA));
     CHECK(p->GetKarma() == karma0);
     CHECK(world.Semester().Current() == SemesterState::Chapter4_Finals);
 

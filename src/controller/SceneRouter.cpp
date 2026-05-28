@@ -1,4 +1,5 @@
 #include "controller/SceneRouter.h"
+#include "quest/Flags.h"
 #include "ui/ChapterToast.h"
 #include "controller/EventBus.h"
 #include "state/InterludeExit.h"
@@ -107,7 +108,7 @@ void SceneRouter::SettleSideEffects(World& world) {
         cur == SemesterState::Chapter4_Finals) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetHasUmbrella(false);
-            ip->ClearFlag("Flag_HasTrueUmbrella");
+            ip->ClearFlag(kFlagHasTrueUmbrella);
         }
     }
 

@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/ChapterSpawns.h"
 #include "entities/GameObject.h"
 #include "entities/NPC.h"
@@ -41,7 +42,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
     REQUIRE(p != nullptr);
 
     SUBCASE("ScoldedSenior alone removes suit_senior from Ch4") {
-        p->SetFlag("Flag_ScoldedSenior");
+        p->SetFlag(nccu::kFlagScoldedSenior);
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
 
         // The other 4 archetypes stay; only suit_senior is gone.
@@ -54,8 +55,8 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
 
     SUBCASE("ScoldedSenior + HelpedSenior re-introduces suit_senior") {
         // Player mended the relationship in Ch2 (callback note).
-        p->SetFlag("Flag_ScoldedSenior");
-        p->SetFlag("Flag_HelpedSenior");
+        p->SetFlag(nccu::kFlagScoldedSenior);
+        p->SetFlag(nccu::kFlagHelpedSenior);
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
 
         CHECK(HasNpcId(w, "suit_senior"));
@@ -78,7 +79,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
 
     SUBCASE("HelpedSenior alone is the default — suit_senior stays") {
         // A player who never scolded the senior should always see him.
-        p->SetFlag("Flag_HelpedSenior");
+        p->SetFlag(nccu::kFlagHelpedSenior);
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
 
         CHECK(HasNpcId(w, "suit_senior"));
@@ -92,7 +93,7 @@ TEST_CASE("M7: filter is Ch4-only — other chapters keep suit_senior") {
     World w("", /*loadSprites=*/false);
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
-    p->SetFlag("Flag_ScoldedSenior");   // would skip Ch4 only
+    p->SetFlag(nccu::kFlagScoldedSenior);   // would skip Ch4 only
 
     w.RespawnChapterRoster(SemesterState::Chapter2_Midterms);
     CHECK(HasNpcId(w, "suit_senior"));

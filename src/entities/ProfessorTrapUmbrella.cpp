@@ -1,6 +1,7 @@
 #include "entities/ProfessorTrapUmbrella.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
+#include "quest/Flags.h"
 
 void ProfessorTrapUmbrella::beClaimed(Player* player) {
     if (!player) return;
@@ -10,7 +11,7 @@ void ProfessorTrapUmbrella::beClaimed(Player* player) {
     // — 助教 (c) -10 / Ch3 -10 / Ch4 對峙 -15. Without setting this here
     // the whole negative-ripple chain was unreachable (惡因無源). Inside
     // the idempotent guard so it lands exactly once.
-    player->SetFlag("Flag_HasProfessorTrap");
+    player->SetFlag(nccu::kFlagHasProfessorTrap);
     spawnedEnemiesCount_ = 3; // simulated: TA NPCs to be spawned by GameWorld on this event
     isActive_ = false;
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "ProfessorTrapUmbrella" });

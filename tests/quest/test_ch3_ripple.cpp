@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter3Quest.h"
 #include "dialog/DialogOpener.h"
 #include "controller/EventBus.h"
@@ -17,24 +18,24 @@ TEST_CASE("ResolveOpenerSubState: Ch3 ripple routes by Ch1/Ch2 flags") {
 
     // bookworm: (b) 未救回 by default, (a) Ch2 救回 once recovered.
     CHECK(nccu::ResolveOpenerSubState("bookworm", kCh3, p) == 1);
-    p.SetFlag("Flag_BookwormRecovered");
+    p.SetFlag(nccu::kFlagBookwormRecovered);
     CHECK(nccu::ResolveOpenerSubState("bookworm", kCh3, p) == 0);
 
     // ta: (a) default, (c) on HelpedTA_Ch1.
     CHECK(nccu::ResolveOpenerSubState("ta", kCh3, p) == 0);
-    p.SetFlag("Flag_HelpedTA_Ch1");
+    p.SetFlag(nccu::kFlagHelpedTACh1);
     CHECK(nccu::ResolveOpenerSubState("ta", kCh3, p) == 2);
 
     // victim: (b) no promise by default, (a) once promised.
     Player q = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("victim", kCh3, q) == 1);
-    q.SetFlag("Flag_PromisedVictim");
+    q.SetFlag(nccu::kFlagPromisedVictim);
     CHECK(nccu::ResolveOpenerSubState("victim", kCh3, q) == 0);
 
     // suit_senior: (a) default, (b) 物物交換鏈提示 on HelpedSenior.
     Player r = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh3, r) == 0);
-    r.SetFlag("Flag_HelpedSenior");
+    r.SetFlag(nccu::kFlagHelpedSenior);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh3, r) == 1);
 
     // Ch2 bookworm routing is untouched (separate state branch).
@@ -53,7 +54,7 @@ TEST_CASE("TryApplyCh3Ripple: ProfessorTrap -> -10 once per Ch3, key-independent
     nccu::TryApplyCh3Ripple(p, SemesterState::Chapter1_AddDrop);
     CHECK(p.GetKarma() == k0);
 
-    p.SetFlag("Flag_HasProfessorTrap");
+    p.SetFlag(nccu::kFlagHasProfessorTrap);
     // Wrong state still no-op even with the flag.
     nccu::TryApplyCh3Ripple(p, SemesterState::Chapter4_Finals);
     CHECK(p.GetKarma() == k0);
@@ -69,8 +70,8 @@ TEST_CASE("TryApplyCh3Ripple: ProfessorTrap -> -10 once per Ch3, key-independent
     // (chapter3.md L329「獨立計算，不重複」).
     Player q = MakePlayer();
     const int qk = q.GetKarma();
-    q.SetFlag("Flag_HasProfessorTrap");
-    q.SetFlag("Flag_Ch2Rippled_TA");                // Ch2 already debited
+    q.SetFlag(nccu::kFlagHasProfessorTrap);
+    q.SetFlag(nccu::kFlagCh2RippledTA);                // Ch2 already debited
     nccu::TryApplyCh3Ripple(q, kCh3);
     CHECK(q.GetKarma() == qk - 10);
     EventBus::Instance().Clear();

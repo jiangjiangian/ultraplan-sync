@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter2Quest.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogSource.h"
@@ -22,28 +23,28 @@ TEST_CASE("ResolveOpenerSubState: Ch4 西裝學長 splits by HelpedSenior + karm
     // !HelpedSenior -> (a) (不出場 is a known omission; degrade).
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh4, p) == 0);
 
-    p.SetFlag("Flag_HelpedSenior");
+    p.SetFlag(nccu::kFlagHelpedSenior);
     p.AddKarma(100);                                  // clamp ~100 (>70)
     CHECK(p.GetKarma() > 70);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh4, p) == 1);  // (b)
 
     Player q = MakePlayer();
-    q.SetFlag("Flag_HelpedSenior");
+    q.SetFlag(nccu::kFlagHelpedSenior);
     q.AddKarma(-100);                                 // < 30
     CHECK(q.GetKarma() < 30);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh4, q) == 2);  // (c)
 
     Player r = MakePlayer();                          // default karma ~50
-    r.SetFlag("Flag_HelpedSenior");
+    r.SetFlag(nccu::kFlagHelpedSenior);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh4, r) == 0);  // (a) mid
 }
 
 TEST_CASE("ResolveOpenerSubState: Ch4 助教 (b)/(c) precedence + bookworm/victim") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("ta", kCh4, p) == 0);           // (a)
-    p.SetFlag("Flag_HasProfessorTrap");
+    p.SetFlag(nccu::kFlagHasProfessorTrap);
     CHECK(nccu::ResolveOpenerSubState("ta", kCh4, p) == 2);           // (c)
-    p.SetFlag("Flag_HelpedTA_Ch1");
+    p.SetFlag(nccu::kFlagHelpedTACh1);
     CHECK(nccu::ResolveOpenerSubState("ta", kCh4, p) == 1);  // (b) 優先 over (c)
 
     Player b = MakePlayer();
@@ -53,7 +54,7 @@ TEST_CASE("ResolveOpenerSubState: Ch4 助教 (b)/(c) precedence + bookworm/victi
 
     Player v = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("victim", kCh4, v) == 0);       // 釋懷
-    v.SetFlag("Flag_PromisedVictim");
+    v.SetFlag(nccu::kFlagPromisedVictim);
     CHECK(nccu::ResolveOpenerSubState("victim", kCh4, v) == 1);       // 淡漠
     v.SetHasUmbrella(true);                                           // 傘已在手
     CHECK(nccu::ResolveOpenerSubState("victim", kCh4, v) == 0);       // 釋懷
@@ -63,7 +64,7 @@ TEST_CASE("OpenNpcDialog: Ch4 助教 (c) routing must NOT spuriously set HelpedT
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;
-    p.SetFlag("Flag_HasProfessorTrap");               // routes 助教 -> (c)
+    p.SetFlag(nccu::kFlagHasProfessorTrap);               // routes 助教 -> (c)
     const int k0 = p.GetKarma();
 
     nccu::OpenNpcDialog(d, p, "ta", kCh4);
@@ -72,7 +73,7 @@ TEST_CASE("OpenNpcDialog: Ch4 助教 (c) routing must NOT spuriously set HelpedT
     // `Flag_HelpedTA_Ch1 = true`, which the parser records as (c)'s
     // setsFlag. The auto-apply is Ch1-scoped, so routing to Ch4 (c)
     // must NOT grant HelpedTA_Ch1 nor move karma.
-    CHECK_FALSE(p.HasFlag("Flag_HelpedTA_Ch1"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedTACh1));
     CHECK(p.GetKarma() == k0);
 }
 
@@ -80,7 +81,7 @@ TEST_CASE("OpenNpcDialog: Ch1 1b-3 ta reward recap still applies (guard intact)"
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;
-    p.SetFlag("Flag_FoundForm");                       // routes Ch1 ta -> 1
+    p.SetFlag(nccu::kFlagFoundForm);                       // routes Ch1 ta -> 1
     const int k0 = p.GetKarma();
 
     nccu::OpenNpcDialog(d, p, "ta", SemesterState::Chapter1_AddDrop);
@@ -89,5 +90,5 @@ TEST_CASE("OpenNpcDialog: Ch1 1b-3 ta reward recap still applies (guard intact)"
     // the 1b-3 mechanism alive). Assert the INVARIANT — the auto-apply
     // did something (karma moved or a flag was granted) — not the exact
     // reward flag name (test_dialog_opener owns the Ch1 specifics).
-    CHECK((p.GetKarma() != k0 || p.HasFlag("Flag_HelpedTA_Ch1")));
+    CHECK((p.GetKarma() != k0 || p.HasFlag(nccu::kFlagHelpedTACh1)));
 }

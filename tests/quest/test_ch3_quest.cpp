@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter3Quest.h"
 #include "quest/ItemCatalog.h"
 #include "dialog/DialogOpener.h"
@@ -39,7 +40,7 @@ TEST_CASE("TryAdvanceCh3Trade: 物物交換鏈 advances one link per talk, in or
     // 校慶 lap gate: A won't trade until the player has run the 操場 lap.
     nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));   // no lap yet → no-op
-    p.SetFlag(nccu::kFlagLapDone);
+    p.SetFlag(nccu::kFlagSportsLapDone);
 
     // Link 1: A -> sausage, +3. Idempotent on a re-talk.
     nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
@@ -90,7 +91,7 @@ TEST_CASE("B2.4: the Ch3 trade chain swaps bag rows cleanly (sausage -> 大聲�
     }
 
     // Link 1: get the sausage -> exactly the 香腸 row, no 大聲公 row.
-    p.SetFlag(nccu::kFlagLapDone);
+    p.SetFlag(nccu::kFlagSportsLapDone);
     nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
     {
         const auto rows = nccu::BuildInventoryRows(p);
@@ -150,7 +151,7 @@ TEST_CASE("Ch3IndicatorVisible: the A->B->C `!` reveals one link at a time") {
     // "先去操場跑一圈" redirect (teaching step 1 in-fiction); the same `!`
     // hands over the sausage after the lap.
     CHECK(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));   // lit pre-lap
-    p.SetFlag(nccu::kFlagLapDone);
+    p.SetFlag(nccu::kFlagSportsLapDone);
     // After the lap: A still lit (chain head), the chain links B/C stay dark.
     CHECK(nccu::Ch3IndicatorVisible("vendor_sausage_a", p));
     CHECK_FALSE(nccu::Ch3IndicatorVisible("loudspeaker_b", p));
@@ -182,7 +183,7 @@ TEST_CASE("World::UpdateSportsLap: a full 操場 lap sets Flag_SportsLapDone") {
     REQUIRE(w.Semester().Current() == kCh3);
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
-    REQUIRE_FALSE(p->HasFlag(nccu::kFlagLapDone));
+    REQUIRE_FALSE(p->HasFlag(nccu::kFlagSportsLapDone));
     CHECK(w.SportsLapProgress() == doctest::Approx(0.0f));
 
     // Walk the player one full circle around the track centre.
@@ -195,7 +196,7 @@ TEST_CASE("World::UpdateSportsLap: a full 操場 lap sets Flag_SportsLapDone") {
                                        cy + r * std::sin(a)});
         w.UpdateSportsLap();
     }
-    CHECK(p->HasFlag(nccu::kFlagLapDone));
+    CHECK(p->HasFlag(nccu::kFlagSportsLapDone));
     CHECK(w.SportsLapProgress() == doctest::Approx(1.0f));
 
     // Standing in the centre (off the track band) never sweeps the lap.
@@ -206,7 +207,7 @@ TEST_CASE("World::UpdateSportsLap: a full 操場 lap sets Flag_SportsLapDone") {
         p2->SetPosition(nccu::gfx::Vec2{cx, cy});   // dead centre
         w2.UpdateSportsLap();
     }
-    CHECK_FALSE(p2->HasFlag(nccu::kFlagLapDone));
+    CHECK_FALSE(p2->HasFlag(nccu::kFlagSportsLapDone));
 }
 
 TEST_CASE("ResolveOpenerSubState: Ch3 chain NPCs route (a)->(b) on their flag") {

@@ -1,4 +1,5 @@
 // REQUIREMENT #4 regression: buying from a Vendor must NEVER be forced.
+#include "quest/Flags.h"
 // Every vendor menu carries a trailing "不買" (decline) choice; picking
 // it closes the conversation with ZERO economy mutation — no money
 // deducted, no consumable added, no item.setsFlag set, no PickupAcquired
@@ -106,7 +107,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     REQUIRE(p != nullptr);
     p->AddMoney(300);
     const int money0 = p->GetMoney();
-    REQUIRE_FALSE(p->HasFlag("Flag_BoughtUglyUmbrella"));
+    REQUIRE_FALSE(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
     REQUIRE(p->ConsumableCount("UglyUmbrella") == 0);
 
     p->SetPosition(nccu::gfx::Vec2{vend->GetPosition().x - 8.0f,
@@ -144,7 +145,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     CHECK_FALSE(world.Dialog().Active());
     CHECK(p->GetMoney() == money0);
     CHECK(p->GetKarma() == karma0);
-    CHECK_FALSE(p->HasFlag("Flag_BoughtUglyUmbrella"));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
     CHECK(p->ConsumableCount("UglyUmbrella") == 0);
     CHECK(pickupHits == 0);
 
@@ -165,7 +166,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     in.Tap(Key::E);                                     // confirm BUY
     Frame(controller, in);
     CHECK(p->GetMoney() == money0 - 100);
-    CHECK(p->HasFlag("Flag_BoughtUglyUmbrella"));
+    CHECK(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
     CHECK(pickupHits == 1);
 
     nccu::gfx::Input::SetSource(nullptr);

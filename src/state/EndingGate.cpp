@@ -1,4 +1,5 @@
 #include "state/EndingGate.h"
+#include "quest/Flags.h"
 #include "ui/ChapterToast.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
@@ -41,8 +42,8 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     // choice). Flag_HasTrueUmbrella is TrueUmbrella-specific and was
     // cleared on Ch4 entry, so it means exactly "re-claimed in Ch4".
     if (player.GetKarma() > 80 &&
-        player.HasFlag("Flag_HasTrueUmbrella") &&
-        player.HasFlag("Flag_ConsoledTA")) {
+        player.HasFlag(kFlagHasTrueUmbrella) &&
+        player.HasFlag(kFlagConsoledTA)) {
         semester.Transition(SemesterState::Ending_A);
         // H2: even the terminal screen flashes a toast first — without it
         // the FSM hop into Ending_A was indistinguishable in state.jsonl
@@ -64,9 +65,9 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     // choice fell through ALL gates and, because the finale menu
     // self-locks via Flag_TaFinaleChoiceMade, soft-locked the game in
     // Ch4 forever (no ending reachable — a §5 red-line violation).
-    const bool coldFinale = player.HasFlag("Flag_TaFinaleChoiceMade") &&
-                            !player.HasFlag("Flag_ConsoledTA");
-    if (player.HasFlag("Flag_TookCursedUmbrella") ||
+    const bool coldFinale = player.HasFlag(kFlagTaFinaleChoiceMade) &&
+                            !player.HasFlag(kFlagConsoledTA);
+    if (player.HasFlag(kFlagTookCursedUmbrella) ||
         player.GetKarma() < 0 || coldFinale) {
         semester.Transition(SemesterState::Ending_B);
         PublishChapterTransitionToast(SemesterState::Ending_B);
@@ -87,7 +88,7 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     // still gets the more meaningful D (the moral choice outranks a
     // shopping decision). EndingSummary feeds the UI the 破傘 glyph
     // (EndingView endingUmbrellaLook D → FragileBroken).
-    if (player.HasFlag("Flag_ConsoledTA")) {
+    if (player.HasFlag(kFlagConsoledTA)) {
         semester.Transition(SemesterState::Ending_D);
         PublishChapterTransitionToast(SemesterState::Ending_D);
         dialog.Close();
@@ -106,8 +107,8 @@ void CheckEndingGates(Player& player, SemesterStateMachine& semester,
     // a finale path, and C catches the buy-out / any residual. Strictly
     // gated so pre-finale Ch4 free-roam (explore, take cursed, buy the
     // ugly umbrella) is byte-unchanged.
-    if (player.HasFlag("Flag_BoughtUglyUmbrella") ||
-        player.HasFlag("Flag_TaFinaleChoiceMade")) {
+    if (player.HasFlag(kFlagBoughtUglyUmbrella) ||
+        player.HasFlag(kFlagTaFinaleChoiceMade)) {
         semester.Transition(SemesterState::Ending_C);
         PublishChapterTransitionToast(SemesterState::Ending_C);
         dialog.Close();

@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/ChapterGate.h"
 #include "quest/ChapterSpawns.h"
 #include "ui/ChapterToast.h"
@@ -87,7 +88,7 @@ TEST_CASE("ChapterGate Ch2 -> Interlude publishes toast") {
     nccu::DialogState d;
 
     m.Transition(SemesterState::Chapter2_Midterms);
-    p.SetFlag("Flag_Ch2Cleared");
+    p.SetFlag(nccu::kFlagCh2Cleared);
     nccu::CheckChapterGates(p, m, d);
 
     CHECK(m.Current() == SemesterState::Interlude_Market);
@@ -105,7 +106,7 @@ TEST_CASE("ChapterGate Ch3 -> Interlude (Flag_Ch3Cleared) publishes toast") {
     nccu::DialogState d;
 
     m.Transition(SemesterState::Chapter3_SportsDay);
-    p.SetFlag("Flag_Ch3Cleared");
+    p.SetFlag(nccu::kFlagCh3Cleared);
     nccu::CheckChapterGates(p, m, d);
 
     CHECK(m.Current() == SemesterState::Interlude_Market);
@@ -147,7 +148,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
         nccu::DialogState d;
         m.Transition(SemesterState::Interlude_Market);
         m.SetInterludeReturnTo(SemesterState::Chapter2_Midterms);
-        p.SetFlag("Flag_LeaveInterlude");
+        p.SetFlag(nccu::kFlagLeaveInterlude);
         nccu::CheckChapterGates(p, m, d);
         CHECK(m.Current() == SemesterState::Chapter2_Midterms);
         CHECK(last == "✓ 進入第二章 期中考");
@@ -160,7 +161,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
         nccu::DialogState d;
         m.Transition(SemesterState::Interlude_Market);
         m.SetInterludeReturnTo(SemesterState::Chapter3_SportsDay);
-        p.SetFlag("Flag_LeaveInterlude");
+        p.SetFlag(nccu::kFlagLeaveInterlude);
         nccu::CheckChapterGates(p, m, d);
         CHECK(m.Current() == SemesterState::Chapter3_SportsDay);
         CHECK(last == "✓ 進入第三章 運動會");
@@ -173,7 +174,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
         nccu::DialogState d;
         m.Transition(SemesterState::Interlude_Market);
         m.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
-        p.SetFlag("Flag_LeaveInterlude");
+        p.SetFlag(nccu::kFlagLeaveInterlude);
         nccu::CheckChapterGates(p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
         CHECK(last == "✓ 進入第四章 期末考");
@@ -189,8 +190,8 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         Player p{Vec2{0, 0}};
         m.Transition(SemesterState::Chapter4_Finals);
         p.AddKarma(81 - p.GetKarma());            // > 80
-        p.SetFlag("Flag_HasTrueUmbrella");
-        p.SetFlag("Flag_ConsoledTA");
+        p.SetFlag(nccu::kFlagHasTrueUmbrella);
+        p.SetFlag(nccu::kFlagConsoledTA);
         nccu::CheckEndingGates(p, m, d);
         CHECK(m.Current() == SemesterState::Ending_A);
         CHECK(last == "✓ 抵達結局");
@@ -202,7 +203,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         nccu::DialogState d;
         Player p{Vec2{0, 0}};
         m.Transition(SemesterState::Chapter4_Finals);
-        p.SetFlag("Flag_TookCursedUmbrella");
+        p.SetFlag(nccu::kFlagTookCursedUmbrella);
         nccu::CheckEndingGates(p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
         CHECK(last == "✓ 抵達結局");
@@ -214,7 +215,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         nccu::DialogState d;
         Player p{Vec2{0, 0}};
         m.Transition(SemesterState::Chapter4_Finals);
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         nccu::CheckEndingGates(p, m, d);
         CHECK(m.Current() == SemesterState::Ending_C);
         CHECK(last == "✓ 抵達結局");
@@ -284,7 +285,7 @@ TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
     nccu::DialogState d;
 
     m.Transition(SemesterState::Chapter2_Midterms);
-    p.SetFlag("Flag_Ch2Cleared");
+    p.SetFlag(nccu::kFlagCh2Cleared);
     nccu::CheckChapterGates(p, m, d);
 
     CHECK(w.HudMessage(nccu::HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");

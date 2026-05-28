@@ -1,5 +1,6 @@
 #ifndef CHAPTER1_QUEST_H_
 #define CHAPTER1_QUEST_H_
+#include "quest/Flags.h"
 #include "state/SemesterState.h"
 #include <string_view>
 
@@ -9,29 +10,18 @@ namespace nccu {
 
 class DialogState;                  // read const by LiftChapter1Clear
 
-// Ch1 加退選之亂 「善有善報」 quest flags — single source of truth, shared
-// by the victim's-umbrella pickup table (ChapterQuestItems), the return
-// hook below and DialogOpener's Ch1 victim routing so the names never
-// drift (the kFlag* convention of Chapter2Quest.h / Chapter3Quest.h).
-//
-// Flag_PromisedVictim is set by the (b) 承諾 DialogChoice (chapter1.md 苦主
-// (b), `Flag_PromisedVictim = true` / `// karma +5`, applied by
-// ApplyDialogChoice), NOT here — it is the existing 承諾 beat and also
-// drives the Ch1→Ch3→Ch4 ripple, so it lives with the dialogue. This
-// header owns only the NEW reciprocity flag.
-//
-// Set by the QuestFlagPickup the player finds out in the world (the
-// transparent umbrella the 西裝學長 dropped near 集英樓); read by
-// TryReturnVictimUmbrella's GRANT phase. Mirrors Flag_HasSausage /
-// Flag_FoundForm: a single-use quest item modelled as a flag, not the
-// count-only consumable inventory.
-inline constexpr const char* kFlagHasVictimUmbrella = "Flag_HasVictimUmbrella";
-
-// T2 once-key: the Ch1 clear (UmbrellaClaimed publish → Interlude) has
-// already fired. LiftChapter1Clear is polled every non-dialog frame, so
-// this guard makes the publish happen exactly once after the (d) exchange
-// dialogue closes. Mirrors Chapter2Quest's kFlagCh2Cleared once-guard.
-inline constexpr const char* kFlagCh1ClearFired = "Flag_ClearChapter1";
+// Ch1 加退選之亂 「善有善報」 quest flag usage. The actual `kFlag*` constants
+// live in `quest/Flags.h` (single source of truth for every `Flag_*` string).
+// This header documents how Ch1 USES them — Flag_PromisedVictim is set by
+// the (b) 承諾 DialogChoice in chapter1.md (`Flag_PromisedVictim = true` /
+// `// karma +5`, applied by ApplyDialogChoice); kFlagHasVictimUmbrella is
+// set by the QuestFlagPickup the player finds near 集英樓 (mirrors
+// Flag_HasSausage / Flag_FoundForm: a single-use quest item modelled as a
+// flag, not the count-only consumable inventory) and read by
+// TryReturnVictimUmbrella's GRANT phase. kFlagClearChapter1 is the T2
+// once-key: the Ch1 clear (UmbrellaClaimed publish → Interlude) has already
+// fired, polled by LiftChapter1Clear so the publish happens exactly once
+// after the (d) exchange dialogue closes.
 
 // E-interact hook: returning the 苦主 (victim) his umbrella in Ch1. The
 // reciprocity heart of the redesigned chapter — the chapter clears only
@@ -72,7 +62,7 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
 // scene before Ch1 snaps to the Interlude. Publishes ShowMessage THEN
 // UmbrellaClaimed("TrueUmbrella") (beClaimed's HUD-slot order) and the
 // EventWiring Ch1 sibling-if then transitions Ch1→Interlude (returnTo Ch2).
-// Once-guarded (kFlagCh1ClearFired) so it fires exactly once though polled
+// Once-guarded (kFlagClearChapter1) so it fires exactly once though polled
 // every non-dialog frame. No-op outside Ch1 / before the grant / while the
 // dialogue is up / after it has already fired. Called by GameController next
 // to LiftChapter2Clear, BEFORE CheckChapterGates, so the published

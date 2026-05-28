@@ -1,6 +1,7 @@
 #include "entities/CursedUmbrella.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
+#include "quest/Flags.h"
 
 void CursedUmbrella::beClaimed(Player* player) {
     if (player == nullptr) return;
@@ -15,7 +16,7 @@ void CursedUmbrella::beClaimed(Player* player) {
     // marker is set separately below and persists for the run (EndingGate B).
     player->SetHeldUmbrella(HeldUmbrella::Cursed)
            .decreaseKarma(karmaPenalty_)
-           .SetFlag("Flag_TookCursedUmbrella");
+           .SetFlag(nccu::kFlagTookCursedUmbrella);
     isActive_ = false;
     // KarmaChanged is no longer published here directly: as of Cycle
     // 9.B H5, Player::AddKarma (which decreaseKarma forwards to)

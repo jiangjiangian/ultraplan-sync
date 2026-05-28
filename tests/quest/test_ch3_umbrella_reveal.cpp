@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "world/World.h"
 #include "entities/Player.h"
 #include "entities/TrueUmbrella.h"

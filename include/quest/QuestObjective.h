@@ -59,7 +59,7 @@ inline std::string CurrentObjective(SemesterState state,
     using namespace nccu::objective;
     switch (state) {
         case SemesterState::Chapter1_AddDrop:
-            if (!player.HasFlag("Flag_PromisedVictim"))
+            if (!player.HasFlag(kFlagPromisedVictim))
                 return std::string{kCh1MeetVictim};
             if (!player.HasFlag(nccu::kFlagHasVictimUmbrella))
                 return std::string{kCh1FindUmbrella};
@@ -67,7 +67,7 @@ inline std::string CurrentObjective(SemesterState state,
         case SemesterState::Interlude_Market:
             return std::string{kInterludeMarket};
         case SemesterState::Chapter2_Midterms:
-            if (!player.HasFlag("Flag_Bookworm"))
+            if (!player.HasFlag(kFlagBookworm))
                 return std::string{kCh2FindBookworm};
             if (!nccu::Chapter2NotesComplete(player))
                 return std::string{kCh2FindNotes};

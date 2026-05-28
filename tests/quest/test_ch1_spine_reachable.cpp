@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "harness/ScriptInput.h"
 #include "controller/GameController.h"
 #include "world/World.h"
@@ -105,8 +106,8 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
     const Player* p = world.GetPlayer();
     return SpineResult{
         world.Semester().Current(),
-        p && p->HasFlag("Flag_PromisedVictim"),
-        p && p->HasFlag("Flag_HasTrueUmbrella"),
+        p && p->HasFlag(nccu::kFlagPromisedVictim),
+        p && p->HasFlag(nccu::kFlagHasTrueUmbrella),
         p ? p->GetKarma() : -999,
         f};
 }

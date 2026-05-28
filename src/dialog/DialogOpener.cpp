@@ -90,8 +90,8 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
                           const Player& player) {
     if (state == SemesterState::Chapter1_AddDrop) {
         if (npcId == "ta") {
-            if (player.HasFlag("Flag_HelpedTA_Ch1")) return 1;
-            if (player.HasFlag("Flag_FoundForm"))     return 1;
+            if (player.HasFlag(kFlagHelpedTACh1)) return 1;
+            if (player.HasFlag(kFlagFoundForm))     return 1;
             return 0;
         }
         if (npcId == "victim") {
@@ -103,8 +103,8 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             //     （含「先幫他找傘」的提示由 TryReturnVictimUmbrella 的
             //      ShowMessage 呈現；(b) 是 line-only recap）。
             //   否則                                -> (a) 在雨中初遇 [0]。
-            if (player.HasFlag("Flag_HasTrueUmbrella")) return 3;   // (d)
-            if (player.HasFlag("Flag_PromisedVictim"))  return 1;   // (b)
+            if (player.HasFlag(kFlagHasTrueUmbrella)) return 3;   // (d)
+            if (player.HasFlag(kFlagPromisedVictim))  return 1;   // (b)
             return 0;                                               // (a)
         }
     }
@@ -122,15 +122,15 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         //   苦主  Flag_BoughtUglyUmbrella              -> (d) 醜傘辨識
         //   阿姨  Flag_BoughtUglyUmbrella              -> (b) 醜傘辨識
         if (npcId == "suit_senior") {
-            if (player.HasFlag("Flag_HelpedSenior"))  return 1;  // (b) +3
-            if (player.HasFlag("Flag_ScoldedSenior")) return 2;  // (c) -3
+            if (player.HasFlag(kFlagHelpedSenior))  return 1;  // (b) +3
+            if (player.HasFlag(kFlagScoldedSenior)) return 2;  // (c) -3
             return 0;                                            // (a) 路過
         }
         if (npcId == "ta") {
             // Precedence (chapter2.md L225 「取代 (a)/(b) 段」 >
             // L211 「取代 (a) 段」): ProfessorTrap outranks HelpedTA.
-            if (player.HasFlag("Flag_HasProfessorTrap")) return 2;  // (c) -10
-            if (player.HasFlag("Flag_HelpedTA_Ch1"))     return 1;  // (b)
+            if (player.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c) -10
+            if (player.HasFlag(kFlagHelpedTACh1))     return 1;  // (b)
             return 0;                                               // (a)
         }
         if (npcId == "librarian") {
@@ -138,7 +138,7 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             // -> (b) 喚醒學霸後的確認 recap。純資訊節點（chapter2.md：
             // 不給 karma、無 flag），故 OpenNpcDialog 的 once-apply 區對
             // (b) 是 no-op，純 line-only recap（ta/victim recap 先例）。
-            if (player.HasFlag(kFlagBookwormWoken)) return 1;
+            if (player.HasFlag(kFlagBookworm)) return 1;
             return 0;
         }
         if (npcId == "bookworm") {
@@ -155,23 +155,23 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             //     名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應)。
             //   否則                -> (a) 常態遊魂初遇 [0]。
             if (player.HasFlag(kFlagBookwormRecovered)) return 3;
-            if (player.HasFlag(kFlagBookwormWoken))     return 2;  // (c)
-            if (player.HasFlag("Flag_TookCursedUmbrella")) return 1;  // (b)
+            if (player.HasFlag(kFlagBookworm))     return 2;  // (c)
+            if (player.HasFlag(kFlagTookCursedUmbrella)) return 1;  // (b)
             return 0;                                                // (a)
         }
         if (npcId == "shop_auntie") {
             // B5: 買過集英樓螢光綠醜傘 -> (b) 阿姨認出你（取代 (a)）。
             // 否則 (a) 考試週招呼。(c) 狼狽版仍由 rainMeter 機制觸發，
             // 非 opener 路由（沿用原狀，已知省略）。
-            if (player.HasFlag("Flag_BoughtUglyUmbrella")) return 1;  // (b)
+            if (player.HasFlag(kFlagBoughtUglyUmbrella)) return 1;  // (b)
             return 0;                                                // (a)
         }
         if (npcId == "victim") {
             // B5: Ch1 承諾過 -> (c) 她記得承諾（取代 (a)）；買過醜傘
             // -> (d) 她注意到那把醜傘（取代 (b)）。兩旗標互不相斥，
             // 承諾的情感回扣優先於醜傘的辨識橋段。否則 (a) 常態路過。
-            if (player.HasFlag("Flag_PromisedVictim")) return 2;     // (c)
-            if (player.HasFlag("Flag_BoughtUglyUmbrella")) return 3;  // (d)
+            if (player.HasFlag(kFlagPromisedVictim)) return 2;     // (c)
+            if (player.HasFlag(kFlagBoughtUglyUmbrella)) return 3;  // (d)
             return 0;                                                // (a)
         }
     }
@@ -197,13 +197,13 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
         }
         if (npcId == "ta") {
             // (c) Flag_HelpedTA_Ch1 分支；否則 (a) 登記桌初次接觸.
-            if (player.HasFlag("Flag_HelpedTA_Ch1")) return 2;
+            if (player.HasFlag(kFlagHelpedTACh1)) return 2;
             return 0;
         }
         if (npcId == "victim") {
             // (a) Flag_PromisedVictim=true 且傘尚未歸還 /
             // (b) =false 或 Ch1 無承諾.
-            if (player.HasFlag("Flag_PromisedVictim")) return 0;
+            if (player.HasFlag(kFlagPromisedVictim)) return 0;
             return 1;
         }
         if (npcId == "suit_senior") {
@@ -212,7 +212,7 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             // flattened (KNOWN OMISSION); ScoldedSenior「不觸發對話」
             // is likewise not expressible as a subState — accepted,
             // would need a chapter3.md edit.
-            if (player.HasFlag("Flag_HelpedSenior")) return 1;
+            if (player.HasFlag(kFlagHelpedSenior)) return 1;
             return 0;
         }
         if (npcId == "vendor_sausage_a") {
@@ -244,7 +244,7 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             // keeps him); degrade to (a) 假笑面具. Otherwise karma
             // splits the arc: >70 崩潰坦白 (b), <30 翻臉 (c), the
             // 30..70 middle stays (a).
-            if (!player.HasFlag("Flag_HelpedSenior")) return 0;
+            if (!player.HasFlag(kFlagHelpedSenior)) return 0;
             if (player.GetKarma() > 70) return 1;   // (b)
             if (player.GetKarma() < 30) return 2;   // (c)
             return 0;                               // (a)
@@ -258,15 +258,15 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
             // (b)/(c) 互斥, HelpedTA_Ch1 優先 (chapter4.md L235); the
             // (c) -15 still lands separately via TryApplyCh4Ripple.
             // (a) 巡考慌張 default. (d) 體諒 is the S5e-2d choice.
-            if (player.HasFlag("Flag_HelpedTA_Ch1"))     return 1;  // (b)
-            if (player.HasFlag("Flag_HasProfessorTrap")) return 2;  // (c)
+            if (player.HasFlag(kFlagHelpedTACh1))     return 1;  // (b)
+            if (player.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c)
             return 0;                                                // (a)
         }
         if (npcId == "victim") {
             // (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338).
             // 否則 (a) 釋懷（已歸還 or Ch1 無承諾, L325). HasUmbrella()
             // is set by TrueUmbrella::beClaimed.
-            if (player.HasFlag("Flag_PromisedVictim") &&
+            if (player.HasFlag(kFlagPromisedVictim) &&
                 !player.HasUmbrella()) return 1;
             return 0;
         }
@@ -301,8 +301,8 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     // morality umbrellas stay gated on Flag_PromisedVictim too (Transparent
     // Umbrella::QuestGateOpen), so this never dead-ends the Ending-B path.
     if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
-        !player.HasFlag("Flag_PromisedVictim") &&
-        !player.HasFlag("Flag_SuitSeniorChoiceMade")) {
+        !player.HasFlag(kFlagPromisedVictim) &&
+        !player.HasFlag(kFlagSuitSeniorChoiceMade)) {
         dlg.Open({"（西裝學長上下打量你一眼，不太耐煩）",
                   "「你哪位？我趕時間，剛面試完還有事。」",
                   "「加退選沒搶到？那是你的事，別來煩我。」",
@@ -324,7 +324,7 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     // otherwise) so a re-talk after waking never wrongly redirects.
     if (state == SemesterState::Chapter2_Midterms && npcId == "bookworm" &&
         !player.HasFlag(kFlagMetLibrarian) &&
-        !player.HasFlag(kFlagBookwormWoken)) {
+        !player.HasFlag(kFlagBookworm)) {
         dlg.Open({"（他整個人趴在雕像基座上，睡得不省人事）",
                   "（你叫了幾聲，他毫無反應，只是含糊地翻了個身）",
                   "（看來得先弄清楚這人是誰——"
@@ -343,7 +343,7 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     // re-applied karma/flag). shop_auntie / victim stay re-enterable
     // (low impact; after C.1 a shop_auntie re-entry is harmless).
     if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
-        player.HasFlag("Flag_SuitSeniorChoiceMade")) {
+        player.HasFlag(kFlagSuitSeniorChoiceMade)) {
         OpenNpcDialogSub(dlg, npcId, state, 0);   // opener lines, NO choices
         dlg.SetNpcContext(std::string(npcId));
         return;
@@ -364,7 +364,7 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
         for (const auto& e : nccu::dialog::Entries(npcId, state))
             if (e.subState == taSub) { openerLines = e.lines; break; }
 
-        if (player.HasFlag("Flag_TaFinaleChoiceMade")) {
+        if (player.HasFlag(kFlagTaFinaleChoiceMade)) {
             dlg.Open(std::move(openerLines));     // recap, NO menu
             dlg.SetNpcContext(std::string(npcId));
             return;
@@ -379,7 +379,7 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
         // implicit. DialogChoice carries one flag (Flag_ConsoledTA); the
         // HasTrueUmbrella grant is wired in GameController on confirm.
         taChoices.push_back(DialogChoice{
-            "體諒助教的辛勞", 15, "Flag_ConsoledTA", true,
+            "體諒助教的辛勞", 15, kFlagConsoledTA, true,
             {"（你接過那把傘，順手替他把懷裡的考卷扶正）",
              "「辛苦了，先去睡一下吧。」",
              "（助教愣了一下）「……你不追究？」",

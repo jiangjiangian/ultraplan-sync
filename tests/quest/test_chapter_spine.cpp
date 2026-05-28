@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/ChapterGate.h"
 #include "state/EndingGate.h"
 #include "controller/EventWiring.h"
@@ -32,34 +33,34 @@ TEST_CASE("chapter spine: Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter2_Midterms);
 
     // --- Market 1 -> Ch2. Exit flag is consumed on transition. ---
-    p.SetFlag("Flag_LeaveInterlude");
+    p.SetFlag(nccu::kFlagLeaveInterlude);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Chapter2_Midterms);
-    CHECK_FALSE(p.HasFlag("Flag_LeaveInterlude"));   // consumed
+    CHECK_FALSE(p.HasFlag(nccu::kFlagLeaveInterlude));   // consumed
 
     // --- Ch2 cleared -> Interlude, now returning to Ch3. ---
-    p.SetFlag("Flag_Ch2Cleared");
+    p.SetFlag(nccu::kFlagCh2Cleared);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter3_SportsDay);
 
     // --- Market 2 -> Ch3. ---
-    p.SetFlag("Flag_LeaveInterlude");
+    p.SetFlag(nccu::kFlagLeaveInterlude);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Chapter3_SportsDay);
-    CHECK_FALSE(p.HasFlag("Flag_LeaveInterlude"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagLeaveInterlude));
 
     // --- Ch3 cleared -> Interlude, now returning to Ch4. ---
-    p.SetFlag("Flag_Ch3Cleared");
+    p.SetFlag(nccu::kFlagCh3Cleared);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK(m.InterludeReturnTo() == SemesterState::Chapter4_Finals);
 
     // --- Market 3 -> Ch4 (no 4th market; Ch4 -> endings is later). ---
-    p.SetFlag("Flag_LeaveInterlude");
+    p.SetFlag(nccu::kFlagLeaveInterlude);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Chapter4_Finals);
-    CHECK_FALSE(p.HasFlag("Flag_LeaveInterlude"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagLeaveInterlude));
 
     // --- Sanity: Ch4 has no sibling-if here; the spine ends. ---
     nccu::CheckChapterGates(p, m, d);
@@ -77,7 +78,7 @@ TEST_CASE("chapter spine: re-entry does not instantly exit (flag consumed)") {
     m.Transition(SemesterState::Interlude_Market);
 
     // First leave consumes Flag_LeaveInterlude.
-    p.SetFlag("Flag_LeaveInterlude");
+    p.SetFlag(nccu::kFlagLeaveInterlude);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Chapter3_SportsDay);
 
@@ -95,7 +96,7 @@ TEST_CASE("chapter spine: gate closes a still-active dialog on transition") {
     m.Transition(SemesterState::Chapter2_Midterms);
     d.Open({"queued line"});
     REQUIRE(d.Active());
-    p.SetFlag("Flag_Ch2Cleared");
+    p.SetFlag(nccu::kFlagCh2Cleared);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Interlude_Market);
     CHECK_FALSE(d.Active());

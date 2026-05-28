@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "vendor/Vendor.h"
@@ -121,7 +122,7 @@ TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance"
 
     VendorConfig cfg;
     cfg.name  = "集英樓便利商店";
-    cfg.stock = {VendorItem{"UglyUmbrella", 100, -1, "Flag_BoughtUglyUmbrella"}};
+    cfg.stock = {VendorItem{"UglyUmbrella", 100, -1, nccu::kFlagBoughtUglyUmbrella}};
 
     Vendor v({0, 0}, cfg);
     REQUIRE(p.GetMoney() == 100);
@@ -129,7 +130,7 @@ TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance"
     CHECK(p.GetMoney() == 0);                   // 100 - 100
     // The 中文 name (not "UglyUmbrella"), the price, and the 0 balance.
     CHECK(cap.lastMsg == "買了螢光綠醜傘，花了 100 元（剩 0 元）");
-    CHECK(p.HasFlag("Flag_BoughtUglyUmbrella")); // Ending C seed still set
+    CHECK(p.HasFlag(nccu::kFlagBoughtUglyUmbrella)); // Ending C seed still set
 }
 
 // Every itemId a vendor sells must resolve to a 中文 catalog name so no

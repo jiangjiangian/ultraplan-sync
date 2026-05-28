@@ -1,4 +1,5 @@
 // Restart-safety regression (in-game menu 重新開始 + BUGLEDGER B2/H1).
+#include "quest/Flags.h"
 //
 // The new in-game pause menu's "重新開始" routes main.cpp's outer loop
 // to tear down the per-run {World, View, GameController} scope and build
@@ -54,13 +55,13 @@ void DirtyTheRun(World& w) {
     REQUIRE(p != nullptr);
     p->AddMoney(150);                       // 100 -> 250
     p->AddKarma(-40);                       //  50 ->  10
-    p->SetFlag("Flag_TookCursedUmbrella");
-    p->SetFlag("Flag_HelpedTA_Ch1");
+    p->SetFlag(nccu::kFlagTookCursedUmbrella);
+    p->SetFlag(nccu::kFlagHelpedTACh1);
     p->AddConsumable("HotPack").AddConsumable("HotPack");
     p->SetHasUmbrella(true);
     CHECK(p->GetMoney() == 250);
     CHECK(p->GetKarma() == 10);
-    CHECK(p->HasFlag("Flag_TookCursedUmbrella"));
+    CHECK(p->HasFlag(nccu::kFlagTookCursedUmbrella));
     CHECK(p->ConsumableCount("HotPack") == 2);
 }
 
@@ -86,8 +87,8 @@ TEST_CASE("Restart resets karma/money/flags/consumables to a fresh game") {
         CHECK(p->GetMoney() == 100);                // GDD start
         CHECK(p->GetRainMeter() == doctest::Approx(0.0f));
         CHECK_FALSE(p->HasUmbrella());
-        CHECK_FALSE(p->HasFlag("Flag_TookCursedUmbrella"));
-        CHECK_FALSE(p->HasFlag("Flag_HelpedTA_Ch1"));
+        CHECK_FALSE(p->HasFlag(nccu::kFlagTookCursedUmbrella));
+        CHECK_FALSE(p->HasFlag(nccu::kFlagHelpedTACh1));
         CHECK(p->ConsumableCount("HotPack") == 0);
         CHECK(w.Semester().Current() ==
               nccu::SemesterState::Chapter1_AddDrop);

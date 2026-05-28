@@ -71,7 +71,7 @@ World::World(const std::string& playerSpritePath, bool loadSprites)
     // Ch1 跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起 ->
     // Flag_FoundForm -> 助教給獎勵對白（集英樓 2 樓線索）。
     objects_.push_back(std::make_unique<QuestFlagPickup>(
-        nccu::gfx::Vec2{560.0f, 1725.0f}, "Flag_FoundForm"));
+        nccu::gfx::Vec2{560.0f, 1725.0f}, kFlagFoundForm));
 
     // Cache the Player BEFORE spawning chapter NPCs so the front-is-
     // Player invariant is established up front and never disturbed:
@@ -123,8 +123,8 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     const bool skipScoldedSenior =
         state == SemesterState::Chapter4_Finals &&
         player_ != nullptr &&
-        player_->HasFlag("Flag_ScoldedSenior") &&
-        !player_->HasFlag("Flag_HelpedSenior");
+        player_->HasFlag(kFlagScoldedSenior) &&
+        !player_->HasFlag(kFlagHelpedSenior);
 
     for (const auto& spawn : ChapterNpcSpawns(state)) {
         if (skipScoldedSenior &&
@@ -372,7 +372,7 @@ bool World::MaybeSpawnChapter2Notes() {
     // / re-frame never double-spawns.
     if (ch2NotesSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter2_Midterms) return false;
-    if (!player_ || !player_->HasFlag(kFlagBookwormWoken)) return false;
+    if (!player_ || !player_->HasFlag(kFlagBookworm)) return false;
     SpawnChapterQuestItems(SemesterState::Chapter2_Midterms);
     ch2NotesSpawned_ = true;
     return true;
@@ -392,7 +392,7 @@ bool World::MaybeSpawnChapter1VictimUmbrella() {
     // pickup itself only sets Flag_HasVictimUmbrella.
     if (ch1VictimUmbrellaSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter1_AddDrop) return false;
-    if (!player_ || !player_->HasFlag("Flag_SuitSeniorChoiceMade"))
+    if (!player_ || !player_->HasFlag(kFlagSuitSeniorChoiceMade))
         return false;
     SpawnChapterQuestItems(SemesterState::Chapter1_AddDrop);
     ch1VictimUmbrellaSpawned_ = true;
@@ -441,7 +441,7 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
     if (semester_.InterludeReturnTo() != SemesterState::Chapter3_SportsDay)
         return false;
     if (!player_) return false;
-    if (!player_->HasFlag(kFlagLibrarianUmbrellaLent)) return false;
+    if (!player_->HasFlag(kFlagLibrarianUmbrella)) return false;
     if (player_->HeldUmbrellaKind() != HeldUmbrella::Loaner) return false;
     if (player_->HasFlag(kFlagLibrarianUmbrellaReturned)) return false;
 
@@ -462,7 +462,7 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
 
 void World::UpdateSportsLap() noexcept {
     if (semester_.Current() != SemesterState::Chapter3_SportsDay) return;
-    if (!player_ || player_->HasFlag(kFlagLapDone)) return;
+    if (!player_ || player_->HasFlag(kFlagSportsLapDone)) return;
     const float dx = player_->GetPosition().x - kSportsTrackCx;
     const float dy = player_->GetPosition().y - kSportsTrackCy;
     const float dist = std::hypot(dx, dy);
@@ -483,11 +483,11 @@ void World::UpdateSportsLap() noexcept {
     lapSwept_    += d;
     lapPrevAngle_ = ang;
     if (std::fabs(lapSwept_) >= 2.0f * kPi * 0.92f)   // ~one lap (8% slack)
-        player_->SetFlag(kFlagLapDone);
+        player_->SetFlag(kFlagSportsLapDone);
 }
 
 float World::SportsLapProgress() const noexcept {
-    if (player_ && player_->HasFlag(kFlagLapDone)) return 1.0f;
+    if (player_ && player_->HasFlag(kFlagSportsLapDone)) return 1.0f;
     constexpr float kTwoPi = 6.28318530717958647692f;
     const float f = std::fabs(lapSwept_) / kTwoPi;
     return f < 0.0f ? 0.0f : (f > 1.0f ? 1.0f : f);
@@ -495,7 +495,7 @@ float World::SportsLapProgress() const noexcept {
 
 bool World::SportsLapActive() const noexcept {
     return semester_.Current() == SemesterState::Chapter3_SportsDay
-        && player_ != nullptr && !player_->HasFlag(kFlagLapDone);
+        && player_ != nullptr && !player_->HasFlag(kFlagSportsLapDone);
 }
 
 void World::RespawnChapterRoster(nccu::SemesterState state) {

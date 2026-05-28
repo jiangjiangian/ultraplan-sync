@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogLoader.h"
 
 #include <string>
@@ -80,7 +81,7 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     // hard-caps substate letters at 'a'..'d'; choice indices 0/1/2 stay
     // b/c/d (ending scripts byte-identical).
     CHECK(s_b->karmaDelta == 3);
-    CHECK(s_b->setsFlag == "Flag_ScoldedSenior");
+    CHECK(s_b->setsFlag == nccu::kFlagScoldedSenior);
     CHECK(s_b->flagValue == true);
     CHECK(s_b->choiceLabel == "理性指出他品行不該，要回雨傘");
 
@@ -90,7 +91,7 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     // label, no 「玩家」 subject. suit_senior subState 2, 5 dialog lines.
     REQUIRE(s_c->lines.size() == 5);
     CHECK(s_c->karmaDelta == 0);
-    CHECK(s_c->setsFlag == "Flag_ScoldedSenior");
+    CHECK(s_c->setsFlag == nccu::kFlagScoldedSenior);
     CHECK(s_c->flagValue == false);
     CHECK(s_c->choiceLabel == "接受，取傘後交給學長");
 
@@ -102,7 +103,7 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     REQUIRE(s_d->lines.size() == 5);
     CHECK(s_d->lines[0] == "……怪怪的？你什麼意思？");
     CHECK(s_d->karmaDelta == 5);
-    CHECK(s_d->setsFlag == "Flag_HelpedSenior");
+    CHECK(s_d->setsFlag == nccu::kFlagHelpedSenior);
     CHECK(s_d->flagValue == true);
     CHECK(s_d->choiceLabel == "點破傘的疑點，轉而提供正規協助");
 
@@ -130,14 +131,14 @@ TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
     // 「…」 author-override case: 苦主 (b) heading is
     //   `### (b) 玩家給予安慰（選擇「我去幫你追」）`
     // The 「我去幫你追」 span wins over the surrounding （…）. Expected:
-    // victim subState 1, 5 dialog lines, setsFlag "Flag_PromisedVictim"
+    // victim subState 1, 5 dialog lines, setsFlag nccu::kFlagPromisedVictim
     // -> true, choiceLabel "我去幫你追".
     const auto& victim = chapter.npcs.at("苦主");
     const auto* v_b = Find(victim, 1);
     REQUIRE(v_b != nullptr);
     CHECK(v_b->choiceLabel == "我去幫你追");
     CHECK(v_b->karmaDelta == 5);
-    CHECK(v_b->setsFlag == "Flag_PromisedVictim");
+    CHECK(v_b->setsFlag == nccu::kFlagPromisedVictim);
     CHECK(v_b->flagValue == true);
 
     // Trailing-（…）-stripped case: 苦主 (a) heading

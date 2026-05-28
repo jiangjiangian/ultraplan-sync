@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "state/InterludeExit.h"
 #include "quest/ChapterGate.h"
 #include "state/SemesterStateMachine.h"
@@ -51,8 +52,8 @@ TEST_CASE("InterludeExit: entering the south zone routes to returnTo") {
     // Player walks into the south band: the GameController arms the flag,
     // CheckChapterGates consumes it and routes to returnTo.
     REQUIRE(nccu::InInterludeExitZone(Vec2{500.0f, 2000.0f}));
-    p.SetFlag("Flag_LeaveInterlude");
+    p.SetFlag(nccu::kFlagLeaveInterlude);
     nccu::CheckChapterGates(p, m, d);
     CHECK(m.Current() == SemesterState::Chapter3_SportsDay);
-    CHECK_FALSE(p.HasFlag("Flag_LeaveInterlude"));   // consumed
+    CHECK_FALSE(p.HasFlag(nccu::kFlagLeaveInterlude));   // consumed
 }

@@ -10,7 +10,7 @@ namespace nccu {
 // Every other Ch4 npcId is dark — the finale is gate-driven, so a `!` on
 // the ripple-flavour archetypes would be pure noise.
 bool Ch4IndicatorVisible(std::string_view npcId, const Player& player) {
-    if (npcId == "ta") return !player.HasFlag("Flag_TaFinaleChoiceMade");
+    if (npcId == "ta") return !player.HasFlag(kFlagTaFinaleChoiceMade);
     return false;
 }
 
@@ -18,8 +18,8 @@ void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
                               SemesterState state) {
     if (state != SemesterState::Chapter4_Finals) return;
     if (npcId != "ta") return;
-    if (!player.HasFlag("Flag_ConsoledTA")) return;   // gentle branch only
-    if (player.HasFlag("Flag_HasTrueUmbrella")) return;  // idempotent
+    if (!player.HasFlag(kFlagConsoledTA)) return;   // gentle branch only
+    if (player.HasFlag(kFlagHasTrueUmbrella)) return;  // idempotent
     // The 助教 hands YOUR umbrella back when you're kind — Ending A's 持傘
     // condition on the gentle path. EndingGate keeps the karma>80 gate, so
     // this does not by itself force Ending A; it only makes 體諒+high-karma
@@ -27,7 +27,7 @@ void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
     // B2.1: SetHeldUmbrella records the held true umbrella (and sets
     // HasUmbrella) so the bag shows the 真傘 row after the gentle finale.
     player.SetHeldUmbrella(HeldUmbrella::True);
-    player.SetFlag("Flag_HasTrueUmbrella");
+    player.SetFlag(kFlagHasTrueUmbrella);
 }
 
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
@@ -38,7 +38,7 @@ void TryApplyCh4Ripple(Player& player, std::string_view npcId,
         // (b) karma>70 崩潰坦白 `// karma +10` — only on the (b) route
         // (HelpedSenior && karma>70), once.
         if (player.HasFlag(kFlagCh4RippledSenior)) return;
-        if (player.HasFlag("Flag_HelpedSenior") && player.GetKarma() > 70)
+        if (player.HasFlag(kFlagHelpedSenior) && player.GetKarma() > 70)
             player.AddKarma(10).SetFlag(kFlagCh4RippledSenior);
         return;
     }
@@ -46,7 +46,7 @@ void TryApplyCh4Ripple(Player& player, std::string_view npcId,
     if (npcId == "bookworm") {
         // (b) Ch2 救他 callback `// karma +5`, once.
         if (player.HasFlag(kFlagCh4RippledBookworm)) return;
-        if (player.HasFlag("Flag_BookwormRecovered"))
+        if (player.HasFlag(kFlagBookwormRecovered))
             player.AddKarma(5).SetFlag(kFlagCh4RippledBookworm);
         return;
     }
@@ -68,10 +68,10 @@ void TryApplyCh4Ripple(Player& player, std::string_view npcId,
         // when both hold, (b) shows but the -15 still lands. Separate
         // once-keys so a HelpedTA+ProfTrap player nets +10-15 = -5.
         if (!player.HasFlag(kFlagCh4RippledTAHelped) &&
-            player.HasFlag("Flag_HelpedTA_Ch1"))
+            player.HasFlag(kFlagHelpedTACh1))
             player.AddKarma(10).SetFlag(kFlagCh4RippledTAHelped);
         if (!player.HasFlag(kFlagCh4RippledProfTrap) &&
-            player.HasFlag("Flag_HasProfessorTrap"))
+            player.HasFlag(kFlagHasProfessorTrap))
             player.AddKarma(-15).SetFlag(kFlagCh4RippledProfTrap);
         return;
     }
@@ -89,7 +89,7 @@ bool TryOpenEndingConfession(Player& player, DialogState& dialog,
 
     // Cursed-caught-up 自白 — the Flag_TookCursedUmbrella carried from Ch1
     // resolves to Ending B in Ch4. Give it a beat before the doom.
-    if (player.HasFlag("Flag_TookCursedUmbrella") &&
+    if (player.HasFlag(kFlagTookCursedUmbrella) &&
         !player.HasFlag(kFlagCh4ConfessedCursed)) {
         player.SetFlag(kFlagCh4ConfessedCursed);
         dialog.Open({
@@ -100,7 +100,7 @@ bool TryOpenEndingConfession(Player& player, DialogState& dialog,
     }
 
     // 務實 自白 — bought the 螢光綠醜傘; resolves to Ending C.
-    if (player.HasFlag("Flag_BoughtUglyUmbrella") &&
+    if (player.HasFlag(kFlagBoughtUglyUmbrella) &&
         !player.HasFlag(kFlagCh4ConfessedUgly)) {
         player.SetFlag(kFlagCh4ConfessedUgly);
         dialog.Open({
@@ -113,8 +113,8 @@ bool TryOpenEndingConfession(Player& player, DialogState& dialog,
     // Reclaimed-true 自白 — found the hidden 體育館 真傘 from the ground,
     // BEFORE the 助教 finale (the gentle finale plays its own nextLines, so
     // gate on !Flag_TaFinaleChoiceMade to avoid a double beat there).
-    if (player.HasFlag("Flag_HasTrueUmbrella") &&
-        !player.HasFlag("Flag_TaFinaleChoiceMade") &&
+    if (player.HasFlag(kFlagHasTrueUmbrella) &&
+        !player.HasFlag(kFlagTaFinaleChoiceMade) &&
         !player.HasFlag(kFlagCh4ConfessedTrue)) {
         player.SetFlag(kFlagCh4ConfessedTrue);
         dialog.Open({

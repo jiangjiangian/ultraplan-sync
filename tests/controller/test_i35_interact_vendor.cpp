@@ -1,4 +1,5 @@
 // Regression guards for BUGLEDGER I3 (interact-an-NPC is geometrically
+#include "quest/Flags.h"
 // impossible — the whole A/B/C spine soft-locked in Ch1) and I5
 // (Vendor::TryBuy had no runtime caller — Ending C / the Ch2 EnergyDrink
 // were unreachable). Both drive the REAL GameController::Update() loop
@@ -244,7 +245,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     REQUIRE(p != nullptr);
     p->AddMoney(300);                                  // afford the 100 umbrella
     const int money0 = p->GetMoney();
-    CHECK_FALSE(p->HasFlag("Flag_BoughtUglyUmbrella"));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
 
     // Teleport adjacent (this test targets the BUY wiring, not pathing;
     // the I3 cases already prove walk-up+E reaches the dialog).
@@ -274,14 +275,14 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     Frame(controller, in);
 
     CHECK(p->GetMoney() == money0 - 100);              // soft-cap economy intact
-    CHECK(p->HasFlag("Flag_BoughtUglyUmbrella"));      // Ending C key set
+    CHECK(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));      // Ending C key set
     // B2.1: the 醜傘 buy is now a HELD umbrella, not a count-consumable —
     // the player holds it (auto-shelter) and the bag shows a single ugly
     // umbrella row, with NO phantom "UglyUmbrella" consumable entry.
     CHECK(p->ConsumableCount("UglyUmbrella") == 0);    // not a consumable
     CHECK(p->HeldUmbrellaKind() == HeldUmbrella::Ugly);
     CHECK(p->HasUmbrella());                           // now sheltered
-    CHECK_FALSE(p->HasFlag("Flag_HasTrueUmbrella"));   // NOT the true umbrella
+    CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));   // NOT the true umbrella
     {
         const auto rows = nccu::BuildInventoryRows(*p);
         int umbRows = 0;
@@ -322,9 +323,9 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     // The 3 散落筆記 are an orthogonal pickup quest; pre-set them so this
     // test isolates the I5 EnergyDrink-supply defect (the rescue needs
     // notes-complete AND a drink — we exercise the drink path).
-    p->SetFlag("Flag_FoundNote1");
-    p->SetFlag("Flag_FoundNote2");
-    p->SetFlag("Flag_FoundNote3");
+    p->SetFlag(nccu::kFlagFoundNote1);
+    p->SetFlag(nccu::kFlagFoundNote2);
+    p->SetFlag(nccu::kFlagFoundNote3);
     CHECK(p->ConsumableCount("EnergyDrink") == 0);     // none until bought
 
     // --- Buy the EnergyDrink at the Ch2 自動販賣機 vendor. ---
@@ -369,9 +370,9 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
-    CHECK(p->HasFlag("Flag_Bookworm"));                // woken
+    CHECK(p->HasFlag(nccu::kFlagBookworm));                // woken
     CHECK(p->ConsumableCount("EnergyDrink") == 0);     // drink spent at wake
-    CHECK_FALSE(p->HasFlag("Flag_BookwormRecovered")); // not yet — needs notes
+    CHECK_FALSE(p->HasFlag(nccu::kFlagBookwormRecovered)); // not yet — needs notes
 
     // Close the wake (c) dialog so the next E is a fresh interaction.
     for (int f = 0; f < 16 && world.Dialog().Active(); ++f) {
@@ -385,7 +386,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
-    CHECK(p->HasFlag("Flag_BookwormRecovered"));
+    CHECK(p->HasFlag(nccu::kFlagBookwormRecovered));
 
     // Close the 學霸 (d) thanks dialog; LiftChapter2Clear then sets
     // Flag_Ch2Cleared on the next non-dialog frame, the spine's Ch2 clear.
@@ -395,7 +396,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     }
     CHECK_FALSE(world.Dialog().Active());
     Frame(controller, in);                             // LiftChapter2Clear
-    CHECK(p->HasFlag("Flag_Ch2Cleared"));              // <-- Ch2 spine clears
+    CHECK(p->HasFlag(nccu::kFlagCh2Cleared));              // <-- Ch2 spine clears
 
     nccu::gfx::Input::SetSource(nullptr);
     nccu::gfx::Time::SetFixedStep(0.0f);

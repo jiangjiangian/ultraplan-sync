@@ -43,7 +43,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
         return;
     }
 
-    if (!player.HasFlag(kFlagBookwormWoken)) {
+    if (!player.HasFlag(kFlagBookworm)) {
         // PHASE 1 — 學霸 still slumped at the 羅馬廣場 statue. The
         // EnergyDrink is consumed HERE, at the wake step (chapter2.md 學霸
         // (c)「玩家有提神飲料時」). Waking sets Flag_Bookworm and the 學霸
@@ -51,7 +51,7 @@ void TryRescueBookworm(Player& player, std::string_view npcId,
         // deferred spawn then drops the 3 notes, gated on this flag, so NO
         // note exists anywhere before this moment.
         if (player.ConsumeOne("EnergyDrink")) {
-            player.SetFlag(kFlagBookwormWoken);
+            player.SetFlag(kFlagBookworm);
             EventBus::Instance().Publish(Event{
                 EventType::ShowMessage,
                 std::string("學霸回神了：「筆記……被風吹散了，"
@@ -118,8 +118,8 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
                               SemesterState state) {
     if (state != SemesterState::Chapter2_Midterms) return;
     if (npcId != "librarian") return;
-    if (!player.HasFlag(kFlagBookwormWoken)) return;   // her (b) state only
-    if (player.HasFlag(kFlagLibrarianUmbrellaLent)) return;  // once — no stack
+    if (!player.HasFlag(kFlagBookworm)) return;   // her (b) state only
+    if (player.HasFlag(kFlagLibrarianUmbrella)) return;  // once — no stack
 
     // chapter2.md 管理員 (b)「（遞過一把折疊傘）這個先拿著，別在外面淋著。」:
     // the player now HOLDS 管理員的傘. SetHeldUmbrella records the held kind
@@ -130,7 +130,7 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
     // (DialogOpener routes 管理員 → (b) on Flag_Bookworm), so no inline
     // ShowMessage is needed here (it would echo the (b) scene).
     player.SetHeldUmbrella(HeldUmbrella::Loaner);
-    player.SetFlag(kFlagLibrarianUmbrellaLent);
+    player.SetFlag(kFlagLibrarianUmbrella);
 }
 
 void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
@@ -155,7 +155,7 @@ void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
     // Defensive: the marker only spawns while the player holds the loaner, but
     // re-check both the flag AND the held kind so a stray talk can't grant the
     // +10 without actually surrendering 管理員的傘.
-    if (!player.HasFlag(kFlagLibrarianUmbrellaLent) ||
+    if (!player.HasFlag(kFlagLibrarianUmbrella) ||
         player.HeldUmbrellaKind() != HeldUmbrella::Loaner) {
         return;
     }
@@ -167,7 +167,7 @@ void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
     // stays unaffected.
     player.AddKarma(10)
           .SetHasUmbrella(false)
-          .ClearFlag(kFlagLibrarianUmbrellaLent)
+          .ClearFlag(kFlagLibrarianUmbrella)
           .SetFlag(kFlagLibrarianUmbrellaReturned);
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
@@ -177,7 +177,7 @@ void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
 
 bool Ch2IndicatorVisible(std::string_view npcId, bool isQuestGiver,
                          const Player& player) {
-    const bool woken     = player.HasFlag(kFlagBookwormWoken);
+    const bool woken     = player.HasFlag(kFlagBookworm);
     const bool recovered = player.HasFlag(kFlagBookwormRecovered);
     if (npcId == "librarian")
         return !woken;                 // chain head: lit until 學霸 is woken
@@ -206,9 +206,9 @@ void TryApplyCh2Ripple(Player& player, std::string_view npcId,
         // a follow-on -3 would wrongly claw back the rational +3 the choice
         // just earned. The flag is still consumed via the once-key so the
         // arc routes exactly once; only the karma debt is gone.
-        if (player.HasFlag("Flag_HelpedSenior")) {
+        if (player.HasFlag(kFlagHelpedSenior)) {
             player.AddKarma(3).SetFlag(kFlagCh2RippledSuitSenior);
-        } else if (player.HasFlag("Flag_ScoldedSenior")) {
+        } else if (player.HasFlag(kFlagScoldedSenior)) {
             player.SetFlag(kFlagCh2RippledSuitSenior);          // karma-neutral
         }
         return;
@@ -221,7 +221,7 @@ void TryApplyCh2Ripple(Player& player, std::string_view npcId,
         // applied. (b) HelpedTA_Ch1 is an information ripple with no
         // `// karma`, so there is nothing to land for it (no key set —
         // it never had a karma debt to settle).
-        if (player.HasFlag("Flag_HasProfessorTrap")) {
+        if (player.HasFlag(kFlagHasProfessorTrap)) {
             player.AddKarma(-10).SetFlag(kFlagCh2RippledTA);
         }
         return;

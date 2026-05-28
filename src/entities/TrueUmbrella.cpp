@@ -1,6 +1,7 @@
 #include "entities/TrueUmbrella.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
+#include "quest/Flags.h"
 
 void TrueUmbrella::beClaimed(Player* player) {
     if (!player) return;
@@ -13,7 +14,7 @@ void TrueUmbrella::beClaimed(Player* player) {
     // on Ch4 entry (chapter4.md 傘再度失蹤), so in Ch4 it means exactly
     // "re-claimed the Ch4 TrueUmbrella" — Ending A's precise condition,
     // with no leak from a stray ctor Fragile/ProfTrap.
-    player->SetFlag("Flag_HasTrueUmbrella");
+    player->SetFlag(nccu::kFlagHasTrueUmbrella);
     isActive_ = false; // mark for end-of-frame sweep
     // Publish ORDER matters (Cycle 9.B follow-up to 9.A.2): the
     // UmbrellaClaimed subscriber wired by EventWiring publishes the

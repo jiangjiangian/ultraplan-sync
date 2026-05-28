@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "ui/ChapterToast.h"
 #include "controller/EventBus.h"
 #include "controller/EventWiring.h"
@@ -154,7 +155,7 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
     p->SetHasUmbrella(true);
-    p->SetFlag("Flag_HasTrueUmbrella");
+    p->SetFlag(nccu::kFlagHasTrueUmbrella);
 
     // FSM jumps straight to Ch4 (mimics ChapterGate Interlude→Ch4).
     w.Semester().Transition(SemesterState::Chapter4_Finals);
@@ -163,7 +164,7 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     // chapter4.md L6「傘再度失蹤」: the player walks out of 集英樓 with
     // no umbrella. The fix's Ch4 branch is the GDD enforcement.
     CHECK_FALSE(p->HasUmbrella());
-    CHECK_FALSE(p->HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(r.LastRosterState() == SemesterState::Chapter4_Finals);
 
     EventBus::Instance().Clear();
@@ -185,7 +186,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
     // Pretend the player carried a held umbrella out of Ch1 (e.g. the真傘
     // the 苦主 handed back, or the Ch1 阿姨 ugly umbrella) into the bag.
     p->SetHeldUmbrella(HeldUmbrella::True);
-    p->SetFlag("Flag_HasTrueUmbrella");
+    p->SetFlag(nccu::kFlagHasTrueUmbrella);
     REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::True);
 
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
@@ -193,7 +194,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
 
     CHECK_FALSE(p->HasUmbrella());
     CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // bag umbrella gone
-    CHECK_FALSE(p->HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));
     EventBus::Instance().Clear();
 }
 
@@ -305,9 +306,9 @@ TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
 
     // End-of-Ch1 bag: money (persists), the form (the carried item), a held
     // umbrella (the 苦主's真傘), and a Ch1 consumable bought in the market.
-    p->SetFlag("Flag_FoundForm");
+    p->SetFlag(nccu::kFlagFoundForm);
     p->SetHeldUmbrella(HeldUmbrella::True);
-    p->SetFlag("Flag_HasTrueUmbrella");
+    p->SetFlag(nccu::kFlagHasTrueUmbrella);
     p->AddConsumable("EnergyDrink");
     {
         const auto rows = nccu::BuildInventoryRows(*p);

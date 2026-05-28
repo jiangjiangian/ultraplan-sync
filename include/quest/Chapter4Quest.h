@@ -1,5 +1,6 @@
 #ifndef CHAPTER4_QUEST_H_
 #define CHAPTER4_QUEST_H_
+#include "quest/Flags.h"
 #include "state/SemesterState.h"
 #include <string_view>
 
@@ -9,27 +10,21 @@ namespace nccu {
 
 class DialogState;   // mutated by TryOpenEndingConfession (opens the 自白)
 
-// Ch4 期末考終焉 peak-ripple once-keys. chapter4.md karma is `- ` bullet
-// -doc (not `>` blockquote) → NOTHING is parser-applied; every Ch4
-// karma is path-b. These land the reactive ripple karma the (a)/(b)/(c)
+// Ch4 期末考終焉 peak-ripple usage notes. The `kFlag*` constants live in
+// `quest/Flags.h`. chapter4.md karma is `- ` bullet-doc (not `>`
+// blockquote) → NOTHING is parser-applied; every Ch4 karma is path-b. The
+// kFlagCh4Rippled* once-keys land the reactive ripple karma the (a)/(b)/(c)
 // routing (S5e-2a, line-only) cannot, once per Ch4 per effect, so the
 // virtuous path can actually clear karma>80 for Ending A and the
 // ProfessorTrap arc cashes in its final -15.
-inline constexpr const char* kFlagCh4RippledSenior   = "Flag_Ch4Rippled_Senior";
-inline constexpr const char* kFlagCh4RippledBookworm = "Flag_Ch4Rippled_Bookworm";
-inline constexpr const char* kFlagCh4RippledTAHelped = "Flag_Ch4Rippled_TAHelped";
-inline constexpr const char* kFlagCh4RippledProfTrap = "Flag_Ch4Rippled_ProfTrap";
-inline constexpr const char* kFlagCh4RippledAuntie   = "Flag_Ch4Rippled_Auntie";
-
-// Ch1 漣漪種子: the player bought 福利社阿姨 a hot coffee in Chapter 1
-// (chapter1.md 福利社阿姨 (d), a non-trivial generous choice — same
-// GDD §2.2 model as Flag_HelpedSenior's "請學長喝熱咖啡"). Set via the
-// Ch1 DialogChoice path; consumed in Ch4 by ResolveOpenerSubState (阿姨
-// (a) direct-info vs (d) indirect-info routing) and TryApplyCh4Ripple
-// (the +3 情分 callback). Named by the GDD's own LLM input-schema
-// example (遊戲企劃與敘事架構.md "Flag_BoughtCoffeeForAuntie_Ch1").
-inline constexpr const char* kFlagBoughtCoffeeForAuntie =
-    "Flag_BoughtCoffeeForAuntie_Ch1";
+//
+// kFlagBoughtCoffeeForAuntie — Ch1 漣漪種子: the player bought 福利社阿姨
+// a hot coffee in Chapter 1 (chapter1.md 福利社阿姨 (d), a non-trivial
+// generous choice — same GDD §2.2 model as Flag_HelpedSenior's "請學長喝
+// 熱咖啡"). Set via the Ch1 DialogChoice path; consumed in Ch4 by
+// ResolveOpenerSubState (阿姨 (a) direct-info vs (d) indirect-info routing)
+// and TryApplyCh4Ripple (the +3 情分 callback). Named by the GDD's own
+// LLM input-schema example (遊戲企劃與敘事架構.md "Flag_BoughtCoffeeForAuntie_Ch1").
 
 // Item 1b — Ch4 finale `!` target hint. The Ch4 roster is gate-driven so
 // every NPC ships isQuestGiver=false (ChapterSpawns.h kChapter4), which
@@ -75,14 +70,12 @@ void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
                        SemesterState state);
 
-// G2 once-keys for the Ch4 ending 自白 (inner monologue). Each ending
+// kFlagCh4ConfessedCursed / kFlagCh4ConfessedUgly / kFlagCh4ConfessedTrue
+// — G2 once-keys for the Ch4 ending 自白 (inner monologue). Each ending
 // trigger plays its brief confession EXACTLY once before the gate resolves
 // (the gate is deferred behind any active dialog), so the ending emerges
 // coherently instead of snapping on the raw trigger frame. Code-only flags
 // (no content reference) — set by TryOpenEndingConfession.
-inline constexpr const char* kFlagCh4ConfessedCursed = "Flag_Ch4Confessed_Cursed";
-inline constexpr const char* kFlagCh4ConfessedUgly   = "Flag_Ch4Confessed_Ugly";
-inline constexpr const char* kFlagCh4ConfessedTrue   = "Flag_Ch4Confessed_True";
 
 // G2 — defer each Ch4 ending behind a short inner-monologue (自白) so the
 // resolution is coherent, not abrupt. Polled by GameController every

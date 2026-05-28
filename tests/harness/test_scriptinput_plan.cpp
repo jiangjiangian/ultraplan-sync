@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "harness/ScriptInput.h"
 #include "controller/GameController.h"
 #include "world/World.h"
@@ -206,7 +207,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     // choice flag so the deferred spawn fires on the first frame and this test
     // still exercises the genuine drive+E→OnPickup path it is named for.
     REQUIRE(world.GetPlayer() != nullptr);
-    world.GetPlayer()->SetFlag("Flag_SuitSeniorChoiceMade");
+    world.GetPlayer()->SetFlag(nccu::kFlagSuitSeniorChoiceMade);
 
     ScriptInput in;
     std::istringstream src(
@@ -236,7 +237,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     // Flag_HasVictimUmbrella is set ONLY there (ChapterQuestItems(Ch1)), so
     // this proves the synthetic E edge actuated the game on a reachable
     // non-blocking Item — exactly what this case is named for.
-    CHECK(p->HasFlag("Flag_HasVictimUmbrella"));
+    CHECK(p->HasFlag(nccu::kFlagHasVictimUmbrella));
 }
 
 // The headline guarantee: two runs of the SAME script (mixing every verb)

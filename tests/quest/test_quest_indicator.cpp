@@ -1,4 +1,5 @@
 // Items 1b + 4a + 4b regression for the quest `!` decision layer.
+#include "quest/Flags.h"
 //
 // QuestIndicatorVisible is the single source of truth the View consults
 // (ui/View.cpp) to decide whether an NPC paints a quest `!`. It folds the
@@ -44,7 +45,7 @@ TEST_CASE("Ch4IndicatorVisible: 助教 is the finale `!` until the choice is mad
     CHECK_FALSE(nccu::Ch4IndicatorVisible("bookworm", p));
     CHECK_FALSE(nccu::Ch4IndicatorVisible("shop_auntie", p));
     // Once the 結算 choice is committed, even 助教 goes dark (resolved).
-    p.SetFlag("Flag_TaFinaleChoiceMade");
+    p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
     CHECK_FALSE(nccu::Ch4IndicatorVisible("ta", p));
 }
 
@@ -60,7 +61,7 @@ TEST_CASE("QuestIndicatorVisible Ch4: 助教 lights regardless of roster bit") {
     // An empty-id object (Player / item / ambient student) never lights.
     CHECK_FALSE(
         nccu::QuestIndicatorVisible("", /*isQuestGiver=*/false, kCh4, p));
-    p.SetFlag("Flag_TaFinaleChoiceMade");
+    p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
     CHECK_FALSE(nccu::QuestIndicatorVisible("ta", false, kCh4, p));
 }
 
@@ -101,7 +102,7 @@ TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
         nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
 
     // --- step 2: promised -> the `!` MOVES to 西裝學長 (the confrontation). ---
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
     CHECK(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
     CHECK_FALSE(
@@ -110,7 +111,7 @@ TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
         nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
 
     // --- step 3: 學長 choice made -> the `!` returns to 苦主 (return傘). ---
-    p.SetFlag("Flag_SuitSeniorChoiceMade");
+    p.SetFlag(nccu::kFlagSuitSeniorChoiceMade);
     CHECK(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
     CHECK_FALSE(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
     CHECK(nccu::QuestIndicatorVisible("victim", /*isQuestGiver=*/true, kCh1, p));
@@ -118,7 +119,7 @@ TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
         nccu::QuestIndicatorVisible("suit_senior", /*isQuestGiver=*/false, kCh1, p));
 
     // --- done: the grant (Flag_HasTrueUmbrella) darkens EVERY spine `!`. ---
-    p.SetFlag("Flag_HasTrueUmbrella");
+    p.SetFlag(nccu::kFlagHasTrueUmbrella);
     CHECK_FALSE(nccu::Ch1IndicatorVisible("victim", /*isQuestGiver=*/true, p));
     CHECK_FALSE(nccu::Ch1IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));
     CHECK_FALSE(
@@ -146,7 +147,7 @@ TEST_CASE("T3: QuestIndicatorVisible Ch2 sequences 管理員 -> 學霸") {
     // Wake the 學霸: the head goes dark, the `!` moves to 學霸 — even though
     // his roster bit is FALSE (revert-verify: AND isQuestGiver in the Ch2
     // branch and this CHECK fails — 學霸 could never light).
-    p.SetFlag(nccu::kFlagBookwormWoken);
+    p.SetFlag(nccu::kFlagBookworm);
     CHECK_FALSE(
         nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
     CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));

@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
@@ -41,7 +42,7 @@ TEST_CASE("C.3(b): first 西裝學長 talk presents the branch menu") {
     // A1 (hard-gate): the menu only opens once the 苦主 has been met and the
     // umbrella promised (Flag_PromisedVictim). Without it the 學長 redirects a
     // stranger line-only. Set the promise so the genuine menu shows.
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
 
     nccu::OpenNpcDialog(dlg, p, "suit_senior",
                         SemesterState::Chapter1_AddDrop);
@@ -58,7 +59,7 @@ TEST_CASE("C.3(b): after the choice flag, 西裝學長 recaps line-only") {
     const int karma0 = p.GetKarma();
 
     // GameController sets this when a suit_senior choice is confirmed.
-    p.SetFlag("Flag_SuitSeniorChoiceMade");
+    p.SetFlag(nccu::kFlagSuitSeniorChoiceMade);
 
     nccu::OpenNpcDialog(dlg, p, "suit_senior",
                         SemesterState::Chapter1_AddDrop);
@@ -76,7 +77,7 @@ TEST_CASE("C.3(b): the guard is scoped to 西裝學長 — 苦主 still branches
     Player p{Vec2{0, 0}};
 
     // The suit_senior guard flag must not leak onto other choice-openers.
-    p.SetFlag("Flag_SuitSeniorChoiceMade");
+    p.SetFlag(nccu::kFlagSuitSeniorChoiceMade);
 
     nccu::OpenNpcDialog(dlg, p, "victim",
                         SemesterState::Chapter1_AddDrop);
