@@ -1,6 +1,6 @@
 #ifndef GFX_TEXTURE_PRELOAD_H_
 #define GFX_TEXTURE_PRELOAD_H_
-#include "gfx/Texture.h"
+#include "engine/render/Texture.h"
 #include "gfx/Decorations.h"          // kDecorations — ambient strips
 #include "ui/CharacterSelect.h"       // kPersonas — player + preview sheets
 #include "world/Buildings.h"          // kAll — building art

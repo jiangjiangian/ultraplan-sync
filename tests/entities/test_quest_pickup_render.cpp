@@ -2,7 +2,7 @@
 #include "quest/Flags.h"
 #include "entities/QuestFlagPickup.h"
 #include "entities/Player.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 #include "quest/Chapter1Quest.h"
 

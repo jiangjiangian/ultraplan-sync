@@ -3,7 +3,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogView.h"
 #include "dialog/DialogLayout.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include <string>
 #include <vector>
 

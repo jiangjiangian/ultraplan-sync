@@ -20,12 +20,12 @@
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
 #include "ui/ReducedMotion.h"
-#include "gfx/Renderer.h"
+#include "engine/render/Renderer.h"
 #include "gfx/Time.h"
 #include "gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
 #include "gfx/Decorations.h"     // kDecorations — the placed ambient strips
-#include "gfx/CameraScope.h"
-#include "gfx/TextBuilder.h"
+#include "engine/render/CameraScope.h"
+#include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
 #include <algorithm>
 #include <cmath>

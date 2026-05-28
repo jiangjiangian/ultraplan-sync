@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "ui/QuestGiverIndicator.h"
 #include "entities/NPC.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 
 #include <vector>
 

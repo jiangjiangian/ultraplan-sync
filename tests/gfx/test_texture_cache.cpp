@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Texture.h"
+#include "engine/render/Texture.h"
 #include <string>
 
 // NB: do NOT `using namespace nccu::gfx;` here — raylib.h (pulled in via

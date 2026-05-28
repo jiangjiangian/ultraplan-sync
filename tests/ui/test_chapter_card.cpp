@@ -2,7 +2,7 @@
 #include "ui/ChapterCard.h"
 #include "state/SemesterState.h"
 #include "dialog/DialogLayout.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 #include <string>
 #include <vector>

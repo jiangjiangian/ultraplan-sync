@@ -1,8 +1,8 @@
 #ifndef VIEW_H_
 #define VIEW_H_
-#include "gfx/RaylibRenderer.h"
-#include "gfx/Camera2D.h"
-#include "gfx/Texture.h"
+#include "engine/render/RaylibRenderer.h"
+#include "engine/render/Camera2D.h"
+#include "engine/render/Texture.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Rect.h"
 #include "ui/ChapterCard.h"

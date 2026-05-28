@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "engine/math/Color.h"
 #include "engine/math/Rect.h"
-#include "gfx/Texture.h"
+#include "engine/render/Texture.h"
 #include "engine/math/Vec2.h"
 
 namespace nccu::gfx {

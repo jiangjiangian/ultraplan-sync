@@ -2,7 +2,7 @@
 #define GFX_TEXT_BUILDER_H_
 #include "raylib.h"
 #include "engine/math/Color.h"
-#include "gfx/Font.h"
+#include "engine/render/Font.h"
 #include "engine/math/Vec2.h"
 #include <string>
 #include <utility>

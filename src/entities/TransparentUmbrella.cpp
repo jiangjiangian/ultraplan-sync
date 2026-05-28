@@ -2,7 +2,7 @@
 #include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "quest/Flags.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 
 #include <string>

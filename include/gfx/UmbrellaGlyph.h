@@ -1,7 +1,7 @@
 #ifndef GFX_UMBRELLA_GLYPH_H_
 #define GFX_UMBRELLA_GLYPH_H_
 #include "engine/math/Color.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 
 // SINGLE SOURCE OF TRUTH for how every umbrella variant is drawn — a pure

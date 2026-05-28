@@ -1,7 +1,7 @@
 #include "entities/DlcSign.h"
 #include "engine/events/EventBus.h"
 #include "engine/math/Color.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 
 #include <string>

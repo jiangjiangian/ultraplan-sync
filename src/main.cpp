@@ -5,10 +5,10 @@
 #include "ui/CharacterSelect.h"
 #include "ui/LoadingScreen.h"
 #include "harness/Harness.h"
-#include "gfx/Window.h"
-#include "gfx/DrawScope.h"
-#include "gfx/Font.h"
-#include "gfx/Texture.h"
+#include "engine/render/Window.h"
+#include "engine/render/DrawScope.h"
+#include "engine/render/Font.h"
+#include "engine/render/Texture.h"
 #include <cstdlib>
 #include <cstring>
 

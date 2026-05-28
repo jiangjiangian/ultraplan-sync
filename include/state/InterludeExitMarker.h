@@ -1,7 +1,7 @@
 #ifndef INTERLUDE_EXIT_MARKER_H_
 #define INTERLUDE_EXIT_MARKER_H_
 #include "state/InterludeExit.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 #include <cmath>
 #include <vector>

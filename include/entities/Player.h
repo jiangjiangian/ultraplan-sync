@@ -2,7 +2,7 @@
 #define PLAYER_H_
 #include "entities/Character.h"
 #include "engine/math/Color.h"
-#include "gfx/Texture.h"
+#include "engine/render/Texture.h"
 #include "engine/math/Vec2.h"
 #include <optional>
 #include <string>

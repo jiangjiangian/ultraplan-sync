@@ -3,7 +3,7 @@
 #include "entities/FragileUmbrella.h"
 #include "entities/ProfessorTrapUmbrella.h"
 #include "entities/CursedUmbrella.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 
 #include <set>
 #include <tuple>

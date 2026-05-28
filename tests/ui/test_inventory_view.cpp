@@ -5,7 +5,7 @@
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "entities/Player.h"
-#include "gfx/IRenderer.h"
+#include "engine/render/IRenderer.h"
 #include "gfx/UmbrellaGlyph.h"
 #include "dialog/DialogLayout.h"   // CellWidth — U2-T2 wrap assertions
 

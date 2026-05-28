@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Camera2D.h"
+#include "engine/render/Camera2D.h"
 #include "engine/math/Vec2.h"
 
 using namespace nccu::gfx;
