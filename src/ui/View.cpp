@@ -79,22 +79,41 @@ View::View(int windowWidth, int windowHeight)
     }
 }
 
+// Draw() is the dispatcher — chapter card transition first (runs every
+// frame), then split: endings replace the world, otherwise the world is
+// drawn under the follow camera, then the screen-space HUD, then every
+// overlay. Each helper owns ONE concern; see the doc block in View.h.
 void View::Draw(const World& world) {
-    using namespace nccu::gfx;
-    using nccu::queries::ForEachActive;
-
     const SemesterState st = world.Semester().Current();
 
-    // U1-T2: detect a chapter-boundary FSM transition and arm the big
-    // bookend card. Done BEFORE the ending early-return so lastSemester_
-    // stays current across every state (a Ch4 -> Ending hop arms NOTHING —
-    // ChapterCardForTransition returns None for an ending dest — so the
-    // EndingView owns that beat). Pure render-side: the trigger reads the
-    // World snapshot the View already has; no event, no publish, no model
-    // write, so state.jsonl is byte-identical. The card rides the deferred-
-    // transition gap for the 找到傘了 beat: a chapter only flips to the
-    // market once its closing narration dialog has closed (LiftChapterXClear
-    // / the gate), so the card naturally appears after the reclaim scene.
+    UpdateChapterCardTransition(st);
+
+    if (IsEndingState(st)) {
+        RenderEnding(world, st);
+        return;   // ending replaces the world; agency is the menu drawn there
+    }
+
+    if (const Player* p = world.GetPlayer()) {
+        camera_.Follow(p->GetPosition(), screenCenter_)
+               .ClampToWorld(worldSize_, viewportSize_);
+    }
+
+    RenderWorld(world, st);
+    RenderHud(world, st);
+    RenderOverlays(world);
+}
+
+// U1-T2: detect a chapter-boundary FSM transition and arm the big bookend
+// card. Done BEFORE the ending early-return so lastSemester_ stays current
+// across every state (a Ch4 → Ending hop arms NOTHING —
+// ChapterCardForTransition returns None for an ending dest — so the
+// EndingView owns that beat). Pure render-side: the trigger reads the World
+// snapshot the View already has; no event, no publish, no model write, so
+// state.jsonl is byte-identical. The card rides the deferred-transition
+// gap for the 找到傘了 beat: a chapter only flips to the market once its
+// closing narration dialog has closed (LiftChapterXClear / the gate), so
+// the card naturally appears after the reclaim scene.
+void View::UpdateChapterCardTransition(SemesterState st) {
     if (!lastSemester_.has_value()) {
         // First paint of this run: treat the World's opening state as a
         // fresh entry so the inciting 傘，不見了 card fires for Chapter 1
@@ -113,61 +132,62 @@ void View::Draw(const World& world) {
                                   ChapterCardSubtitle(k, st));
         lastSemester_ = st;
     }
+}
 
-    if (IsEndingState(st)) {
-        // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
-        // to OPAQUE black FIRST, every frame, before drawing the card. This
-        // branch early-returns (no Renderer::Clear runs below), and
-        // DrawEndingCard's own backdrop is Color{0,0,0,a} with `a` ramping
-        // from 0 during the fade-in (endingAlpha_). raylib's BeginDrawing
-        // does NOT clear and EndDrawing swaps TWO buffers, so at low alpha
-        // the semi-transparent backdrop let the stale swap-chain content
-        // (the last world frame, or the OTHER buffer) bleed through and
-        // flicker — exactly the "像關閉畫布" the owner saw. An opaque clear
-        // here makes the fade a clean card-over-solid-black with no
-        // bleed-through and no per-buffer alternation. (Verified on harness
-        // shots: pre-fix the first ending frames showed the world map behind
-        // faint text; post-fix every ending frame is steady.)
-        Renderer{}.Clear(Colors::Black);
+void View::RenderEnding(const World& world, SemesterState st) {
+    using namespace nccu::gfx;
 
-        // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
-        // second luminance ramp and see the card opaque on first paint.
-        endingAlpha_ = EndingFadeAlphaStep(
-            endingAlpha_, nccu::gfx::Time::DeltaSeconds(),
-            world.ReducedMotion());
-        // Item 1: the ending .md (its narrative + the new 字卡 reason
-        // callbacks) is NEVER drawn because this branch early-returns —
-        // so the "why you reached this ending" must be surfaced IN CODE.
-        // Extract the render primitives (karma + the EndingGate flags)
-        // into a render-only DTO here, where the View still owns World/
-        // Player, and hand it to the EndingView. EndingView never touches
-        // World/Player itself (MVC purity) — it just renders the DTO.
-        EndingSummary es;
-        es.state = st;
-        if (const Player* ep = world.GetPlayer()) {
-            es.karma            = ep->GetKarma();
-            es.hasTrueUmbrella  = ep->HasFlag(kFlagHasTrueUmbrella);
-            es.consoledTA       = ep->HasFlag(kFlagConsoledTA);
-            es.tookCursed       = ep->HasFlag(kFlagTookCursedUmbrella);
-            es.boughtUgly       = ep->HasFlag(kFlagBoughtUglyUmbrella);
-            es.finaleChoiceMade = ep->HasFlag(kFlagTaFinaleChoiceMade);
-        }
-        // A-T3: the ending screen is now an INTERACTIVE, STEADY screen with a
-        // bottom 3-option menu (回首頁 / 重新開始 / 結束). The View only
-        // RENDERS the highlighted row (World::EndingMenuCursor, a pure UI
-        // cursor moved by ←/→ in GameController); the menu INTENT
-        // (Restart / Quit) flows through World::PendingAppAction set in the
-        // controller — no gameplay logic in the View (MVC red line).
-        DrawEndingCard(renderer_, es, world.Semester().CurrentName(),
-                       endingAlpha_, viewportSize_.x, viewportSize_.y,
-                       world.EndingMenuCursor());
-        return;   // ending replaces the world; agency is the menu below
+    // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
+    // to OPAQUE black FIRST, every frame, before drawing the card. This
+    // branch early-returns (no Renderer::Clear runs below), and
+    // DrawEndingCard's own backdrop is Color{0,0,0,a} with `a` ramping
+    // from 0 during the fade-in (endingAlpha_). raylib's BeginDrawing
+    // does NOT clear and EndDrawing swaps TWO buffers, so at low alpha
+    // the semi-transparent backdrop let the stale swap-chain content
+    // (the last world frame, or the OTHER buffer) bleed through and
+    // flicker — exactly the "像關閉畫布" the owner saw. An opaque clear
+    // here makes the fade a clean card-over-solid-black with no
+    // bleed-through and no per-buffer alternation. (Verified on harness
+    // shots: pre-fix the first ending frames showed the world map behind
+    // faint text; post-fix every ending frame is steady.)
+    Renderer{}.Clear(Colors::Black);
+
+    // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
+    // second luminance ramp and see the card opaque on first paint.
+    endingAlpha_ = EndingFadeAlphaStep(
+        endingAlpha_, nccu::gfx::Time::DeltaSeconds(),
+        world.ReducedMotion());
+    // Item 1: the ending .md (its narrative + the new 字卡 reason
+    // callbacks) is NEVER drawn because this branch early-returns —
+    // so the "why you reached this ending" must be surfaced IN CODE.
+    // Extract the render primitives (karma + the EndingGate flags)
+    // into a render-only DTO here, where the View still owns World/
+    // Player, and hand it to the EndingView. EndingView never touches
+    // World/Player itself (MVC purity) — it just renders the DTO.
+    EndingSummary es;
+    es.state = st;
+    if (const Player* ep = world.GetPlayer()) {
+        es.karma            = ep->GetKarma();
+        es.hasTrueUmbrella  = ep->HasFlag(kFlagHasTrueUmbrella);
+        es.consoledTA       = ep->HasFlag(kFlagConsoledTA);
+        es.tookCursed       = ep->HasFlag(kFlagTookCursedUmbrella);
+        es.boughtUgly       = ep->HasFlag(kFlagBoughtUglyUmbrella);
+        es.finaleChoiceMade = ep->HasFlag(kFlagTaFinaleChoiceMade);
     }
+    // A-T3: the ending screen is now an INTERACTIVE, STEADY screen with a
+    // bottom 3-option menu (回首頁 / 重新開始 / 結束). The View only
+    // RENDERS the highlighted row (World::EndingMenuCursor, a pure UI
+    // cursor moved by ←/→ in GameController); the menu INTENT
+    // (Restart / Quit) flows through World::PendingAppAction set in the
+    // controller — no gameplay logic in the View (MVC red line).
+    DrawEndingCard(renderer_, es, world.Semester().CurrentName(),
+                   endingAlpha_, viewportSize_.x, viewportSize_.y,
+                   world.EndingMenuCursor());
+}
 
-    if (const Player* p = world.GetPlayer()) {
-        camera_.Follow(p->GetPosition(), screenCenter_)
-               .ClampToWorld(worldSize_, viewportSize_);
-    }
+void View::RenderWorld(const World& world, SemesterState st) {
+    using namespace nccu::gfx;
+    using nccu::queries::ForEachActive;
 
     Renderer{}.Clear(Colors::RayWhite);
     {
@@ -342,6 +362,10 @@ void View::Draw(const World& world) {
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
         }
     }
+}
+
+void View::RenderHud(const World& world, SemesterState st) {
+    using namespace nccu::gfx;
 
     // 操場 校慶 lap progress ring (HUD, screen space) — fills clockwise as
     // the lap completes; the screen companion to the ground track.
@@ -552,6 +576,10 @@ void View::Draw(const World& world) {
                 .Size(kObjSize).Color(Colors::White).Draw();
         }
     }
+}
+
+void View::RenderOverlays(const World& world) {
+    using namespace nccu::gfx;
 
     // Transient ShowMessage toasts: above the world/HUD labels, BELOW the
     // dialog box — an open conversation takes visual precedence, matching

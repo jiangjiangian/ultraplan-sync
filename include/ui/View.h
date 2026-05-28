@@ -60,6 +60,31 @@ private:
         nccu::gfx::Texture texture;    // the loaded strip (move-only)
     };
 
+    // Per-frame render passes — Draw() is the dispatcher; each helper owns
+    // ONE concern so the 720-line god-method is split into reviewable chunks
+    // (P1 step 4). All access the View's member state directly (camera_,
+    // textures, decoration clock, chapter card, etc.) — no parameters added.
+    //
+    //   UpdateChapterCardTransition — detect a SemesterState boundary and arm
+    //     the 傘又掉了 / 找到傘了 bookend card; runs every frame (before the
+    //     ending early-return) so the chapter card state stays current.
+    //   RenderEnding — the ending screen branch: opaque black framebuffer,
+    //     EndingSummary DTO + DrawEndingCard. Called only when the FSM is in
+    //     an ending state; the caller returns immediately after.
+    //   RenderWorld — inside the CameraScope: worldmap base, the 操場 lap
+    //     track decal, the painter's-order pass (buildings + decorations +
+    //     active objects), quest-giver `!` overlays, Interlude exit marker.
+    //   RenderHud — screen-space: 操場 lap ring, top-left status panel
+    //     (karma/money/rain/chapter), rain vignette, objective panel.
+    //   RenderOverlays — hud messages, dialog box, inventory, M-menu hint,
+    //     pause menu, help overlay, chapter bookend card. Order matters: the
+    //     chapter card is drawn LAST so it sits above everything else.
+    void UpdateChapterCardTransition(SemesterState st);
+    void RenderEnding(const World& world, SemesterState st);
+    void RenderWorld(const World& world, SemesterState st);
+    void RenderHud(const World& world, SemesterState st);
+    void RenderOverlays(const World& world);
+
     nccu::gfx::RaylibRenderer        renderer_;
     nccu::gfx::Camera2D              camera_;
     nccu::gfx::Texture               worldmap_;
