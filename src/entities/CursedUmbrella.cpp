@@ -6,26 +6,27 @@
 void CursedUmbrella::beClaimed(Player* player) {
     if (player == nullptr) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
-    // Fluent mutators — all return Player&, so the state changes read as
-    // one atomic transaction. SetFlag is the ripple seed (F.9-b): taking
-    // the cursed umbrella in Ch1 is what drives Ending B and the Ch2-4
-    // 學霸/環境 cold reactions; without it that path was unreachable.
-    // B2.1: SetHeldUmbrella records the held kind AND sets HasUmbrella, so
-    // the bag shows the 詛咒傘 row while it is actually held (and it clears
-    // on a later SetHasUmbrella(false)). The Flag_TookCursedUmbrella ending
-    // marker is set separately below and persists for the run (EndingGate B).
+    // P2 cursed-taint policy. Pickup no longer takes karma in one shot;
+    // instead IncCursedTaint() bumps the counter and the per-chapter
+    // ApplyCursedTaintDecay (SceneRouter Ch2/3/4 entry) bleeds -5 * taint
+    // each transition. So the FIRST cursed pickup costs -5 per remaining
+    // chapter transition (≤ -15 over Ch2/3/4 entries); a second pickup
+    // raises the rate to -10/transition; a third to -15/transition — the
+    // moral stain compounds with re-offending. Flag_TookCursedUmbrella is
+    // still set unconditionally (Ending B precondition is unchanged), but
+    // because A→B precedence holds in EndingGate, a player who later
+    // earns karma > 80 + the gentle finale still REACHES Ending A — the
+    // taint never hard-locks B, it just makes redemption mathematically
+    // harder. SetHeldUmbrella records the kind for the bag row (B2.1).
     player->SetHeldUmbrella(HeldUmbrella::Cursed)
-           .decreaseKarma(karmaPenalty_)
+           .IncCursedTaint()
            .SetFlag(nccu::kFlagTookCursedUmbrella);
     isActive_ = false;
-    // KarmaChanged is no longer published here directly: as of Cycle
-    // 9.B H5, Player::AddKarma (which decreaseKarma forwards to)
-    // publishes KarmaChanged itself with a signed-delta payload, so a
-    // second publish from this site would emit a duplicate "業力 -30"
-    // toast for the same penalty. The cursed-umbrella narrative cue is
-    // carried by the ShowMessage line below — the bus subscriber turns
-    // the AddKarma side effect into the numeric toast, and this
-    // ShowMessage delivers the human-readable explanation.
+    // No KarmaChanged publish on this frame (taint decay handles karma at
+    // chapter boundaries via AddKarma, which fires its own signed-delta
+    // KarmaChanged). The pickup-time narrative cue stays as the same
+    // ShowMessage line — the player still hears "成為了你最討厭的人" the
+    // instant the deed is done.
     EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
     EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
 }

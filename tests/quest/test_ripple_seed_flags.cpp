@@ -28,20 +28,25 @@ TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
     CHECK(p.HasFlag(nccu::kFlagHasProfessorTrap));
 }
 
-TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + keeps the penalty") {
+TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)") {
+    // Was: "...+ keeps the penalty" with a one-shot -30 at pickup. P2 moves
+    // the karma cost off the pickup and onto per-chapter ApplyCursedTaintDecay
+    // (SceneRouter Ch2/3/4 entry). The flag + the ending-B path stay intact.
     EventBus::Instance().Clear();
     Player p{nccu::gfx::Vec2{0, 0}};
     const int k0 = p.GetKarma();
     CHECK_FALSE(p.HasFlag(nccu::kFlagTookCursedUmbrella));
+    CHECK(p.GetCursedTaint() == 0);
 
     CursedUmbrella cursed{nccu::gfx::Vec2{0, 0}};
     cursed.beClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));
-    CHECK(p.GetKarma() == k0 - 30);          // F2: locked -30 big-event penalty
+    CHECK(p.GetCursedTaint() == 1);          // P2: taint bumped, not karma
+    CHECK(p.GetKarma() == k0);               // karma unchanged at pickup
 
-    cursed.beClaimed(&p);                    // idempotent
+    cursed.beClaimed(&p);                    // idempotent (isActive_ guard)
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));
-    CHECK(p.GetKarma() == k0 - 30);          // not double-penalised
+    CHECK(p.GetCursedTaint() == 1);          // NOT double-bumped
 }
 
 // Regression — CLAUDE.md §5 red line: "Umbrella beClaimed / pickups

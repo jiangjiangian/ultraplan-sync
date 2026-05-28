@@ -62,6 +62,19 @@ public:
     Player& AddKarma(int delta);            // clamped to [-100, 100]
     Player& decreaseKarma(int amount);      // thin wrapper, prefer AddKarma
     Player& resetRainMeter() noexcept;
+
+    // P2 cursed-taint mechanic (replaces the prior one-shot -30 at pickup):
+    // each CursedUmbrella pickup increments the taint counter, and every
+    // chapter transition (Ch2/Ch3/Ch4 entry — the same hook that resets the
+    // held umbrella) bleeds karma -= 5 * cursedTaint_. Two pickups → -10/
+    // chapter; three → -15/chapter — so cursed-stacking now reads as a
+    // sliding moral cost the player can FEEL across the run instead of a
+    // single sticker shock. Never cleared (the "moral stain is permanent"
+    // contract); silent under taint=0 so non-cursed runs are byte-identical.
+    Player& IncCursedTaint() noexcept { ++cursedTaint_; return *this; }
+    Player& ApplyCursedTaintDecay();
+    [[nodiscard]] int GetCursedTaint() const noexcept { return cursedTaint_; }
+
     // SetHasUmbrella(false) is the canonical "the umbrella is gone" call
     // (Ch4 entry's 傘再度失蹤; the per-chapter「傘又掉了」reset). B2.1: losing
     // the umbrella must also empty the held-umbrella slot so the bag's
@@ -213,6 +226,11 @@ private:
     bool hasUmbrella_;
     HeldUmbrella heldUmbrella_{HeldUmbrella::None};  // B2.1: bag umbrella row source
     int money_;
+    // P2: cursed-pickup count, drives ApplyCursedTaintDecay's per-chapter
+    // karma drain. In-class init so the existing Player ctor needs no change;
+    // never cleared by SetHasUmbrella/chapter-reset (the moral stain is the
+    // run-permanent half of cursed, paired with Flag_TookCursedUmbrella).
+    int cursedTaint_{0};
     // Assignment-#6 combat hit-points. NOT serialized by the harness, so it
     // never enters state.jsonl — the present game (no enemy damages the
     // player) leaves it at kMaxHp for the whole run. In-class initialised so

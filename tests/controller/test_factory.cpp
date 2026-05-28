@@ -41,11 +41,14 @@ TEST_CASE("Factory creates CursedUmbrella with correct dynamic type") {
     CHECK(u != nullptr);
 }
 
-TEST_CASE("CursedUmbrella applies karma penalty on beClaimed") {
+TEST_CASE("CursedUmbrella beClaimed bumps cursedTaint, defers karma to ApplyCursedTaintDecay") {
+    // P2 (was F2): pickup itself is karma-neutral; the moral cost lands at
+    // each subsequent chapter entry via ApplyCursedTaintDecay (-5 * taint).
     Player p({0, 0});
     int before = p.GetKarma();
     CursedUmbrella u({0, 0});
     u.beClaimed(&p);
-    CHECK(p.GetKarma() == before - 30);  // F2: locked -30 big-event penalty
-    CHECK(p.HasUmbrella() == true);
+    CHECK(p.GetCursedTaint() == 1);              // taint incremented
+    CHECK(p.GetKarma() == before);               // karma untouched at pickup
+    CHECK(p.HasUmbrella() == true);              // bag still shows cursed row
 }

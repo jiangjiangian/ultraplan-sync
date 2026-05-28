@@ -141,8 +141,14 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
           << ",\"karma\":" << p->GetKarma()
           << ",\"money\":" << p->GetMoney()
           << ",\"rain\":" << p->GetRainMeter()
-          << ",\"umbrella\":" << (p->HasUmbrella() ? "true" : "false")
-          << ",\"flags\":[";
+          << ",\"umbrella\":" << (p->HasUmbrella() ? "true" : "false");
+        // P2: only emit cursedTaint when non-zero so non-cursed playtest
+        // oracles (e.g. `3ea809bb…`) stay byte-identical. A taint > 0 run
+        // intentionally writes a NEW field — visible diff vs the oracle
+        // is by design for that scenario, like the flags array growing.
+        if (p->GetCursedTaint() > 0)
+            o << ",\"cursedTaint\":" << p->GetCursedTaint();
+        o << ",\"flags\":[";
         bool first = true;
         for (const auto& f : KnownFlags()) {
             if (!p->HasFlag(f)) continue;

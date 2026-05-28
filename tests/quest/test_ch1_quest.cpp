@@ -175,7 +175,8 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
 
     CHECK(p.HasUmbrella());
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));      // Ending B seed
-    CHECK(p.GetKarma() == k0 - 30);                   // the -30 penalty
+    CHECK(p.GetCursedTaint() == 1);                   // P2: taint bumped at pickup
+    CHECK(p.GetKarma() == k0);                        // P2: pickup-time karma-neutral
     REQUIRE(cap.umbrellaClaims.size() == 1);
     CHECK(cap.umbrellaClaims[0] == "CursedUmbrella"); // its own clear path
     // Idempotent (CLAUDE.md §5 / BUGLEDGER L2).

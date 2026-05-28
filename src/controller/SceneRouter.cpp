@@ -109,6 +109,13 @@ void SceneRouter::SettleSideEffects(World& world) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetHasUmbrella(false);
             ip->ClearFlag(kFlagHasTrueUmbrella);
+            // P2 cursed-taint decay: at every numbered-chapter entry, bleed
+            // -5 * cursedTaint_ from karma. A taint-0 run skips the AddKarma
+            // call entirely (no KarmaChanged published) so non-cursed playtests
+            // stay byte-identical to the oracle; a taint=1 run loses -5 here on
+            // each of Ch2/Ch3/Ch4 entry (= -15 total over a clean Ch1 cursed
+            // pickup); a taint=2 run doubles that to -10/transition, etc.
+            ip->ApplyCursedTaintDecay();
         }
     }
 

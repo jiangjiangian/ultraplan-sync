@@ -9,15 +9,14 @@ public:
     explicit CursedUmbrella(nccu::gfx::Vec2 position)
         : TransparentUmbrella(position, "CursedUmbrella",
                               nccu::gfx::Color{95, 45, 115, 255},
-                              UmbrellaStyle::Drooping),
-          karmaPenalty_(30) {}
+                              UmbrellaStyle::Drooping) {}
 
+    // P2: pickup no longer applies an immediate karma penalty. It increments
+    // Player::cursedTaint_ instead; the per-chapter ApplyCursedTaintDecay
+    // (SceneRouter Ch2/3/4 entry) bleeds -5 * taint each transition so the
+    // moral cost is felt cumulatively across the run rather than as a single
+    // sticker shock. Flag_TookCursedUmbrella is still set (Ending B path).
     void beClaimed(Player* player) override;
-
-    [[nodiscard]] int GetKarmaPenalty() const noexcept { return karmaPenalty_; }
-
-private:
-    int karmaPenalty_;
 };
 
 #endif // CURSED_UMBRELLA_H_
