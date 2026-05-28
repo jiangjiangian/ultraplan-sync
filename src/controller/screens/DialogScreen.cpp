@@ -194,7 +194,7 @@ bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
                 // holding Ugly → no re-deduct) and fund-guarded inside.
                 if (!exitChoice)
                     (void)TryBuyAuntieUglyUmbrella(
-                        *p, npc, c->label, world.Semester().Current());
+                        bus, *p, npc, c->label, world.Semester().Current());
                 // Ending gates first, then chapter gates (existing
                 // precedent: EndingGate predates this). Order is safe
                 // either way — once an ending fires, Current() is

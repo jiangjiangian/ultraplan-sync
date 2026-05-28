@@ -206,7 +206,7 @@ void GameController::Update() {
         // the dialog early-return above) so the deferred publish lands once
         // the exchange box is dismissed. No-op outside Ch1 / before the
         // grant / while the dialogue is up.
-        LiftChapter1Clear(*player, world_.Semester().Current(),
+        LiftChapter1Clear(bus_, *player, world_.Semester().Current(),
                           world_.Dialog());
         // S5c-2: lift Flag_Ch2Cleared only once 學霸 is recovered AND
         // the (d) thanks dialog has closed (deferred so the gate does
@@ -291,7 +291,7 @@ bool GameController::HandleDialog() {
 // as a thin delegate so the orchestrator early-return chain at the top
 // of Update() reads unchanged.
 bool GameController::HandleInventory() {
-    return nccu::HandleInventory(world_);
+    return nccu::HandleInventory(bus_, world_);
 }
 
 // P3 step 1d (was a 94-LOC inline body): the E-interact dispatch lives in
@@ -300,7 +300,7 @@ bool GameController::HandleInventory() {
 // passed by reference so the free function can set it when an E tap
 // opens a shop menu.
 void GameController::DispatchInteract() {
-    nccu::DispatchInteract(world_, pendingVendor_);
+    nccu::DispatchInteract(bus_, world_, pendingVendor_);
 }
 
 } // namespace nccu

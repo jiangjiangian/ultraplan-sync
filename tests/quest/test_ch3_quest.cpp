@@ -26,48 +26,48 @@ TEST_CASE("TryAdvanceCh3Trade: 物物交換鏈 advances one link per talk, in or
     const int k0 = p.GetKarma();
 
     // Out of order: talking B / C first is a no-op (no sausage yet).
-    nccu::TryAdvanceCh3Trade(p, "loudspeaker_b", kCh3);
-    nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "loudspeaker_b", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "senior_c", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasLoudspeaker));
     CHECK_FALSE(p.HasFlag(nccu::kFlagKnowsUmbrellaLoc));
     CHECK(p.GetKarma() == k0);
 
     // Wrong state never advances.
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a",
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a",
                              SemesterState::Chapter1_AddDrop);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));
 
     // 校慶 lap gate: A won't trade until the player has run the 操場 lap.
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));   // no lap yet → no-op
     p.SetFlag(nccu::kFlagSportsLapDone);
 
     // Link 1: A -> sausage, +3. Idempotent on a re-talk.
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);
     CHECK(p.HasFlag(nccu::kFlagHasSausage));
     CHECK(p.GetKarma() == k0 + 3);
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);
     CHECK(p.GetKarma() == k0 + 3);                  // not doubled
 
     // Link 2: B with sausage -> consume sausage, gain loudspeaker, +3.
-    nccu::TryAdvanceCh3Trade(p, "loudspeaker_b", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "loudspeaker_b", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));   // consumed
     CHECK(p.HasFlag(nccu::kFlagHasLoudspeaker));
     CHECK(p.GetKarma() == k0 + 6);
-    nccu::TryAdvanceCh3Trade(p, "loudspeaker_b", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "loudspeaker_b", kCh3);
     CHECK(p.GetKarma() == k0 + 6);
 
     // A must NOT re-give the sausage now the chain has moved past it.
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));
     CHECK(p.GetKarma() == k0 + 6);
 
     // Link 3: C with loudspeaker -> consume, learn umbrella loc, +5.
-    nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "senior_c", kCh3);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasLoudspeaker));   // consumed
     CHECK(p.HasFlag(nccu::kFlagKnowsUmbrellaLoc));
     CHECK(p.GetKarma() == k0 + 11);
-    nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "senior_c", kCh3);
     CHECK(p.GetKarma() == k0 + 11);                 // chain fully spent
     EventBus::Instance().Clear();
 }
@@ -92,7 +92,7 @@ TEST_CASE("B2.4: the Ch3 trade chain swaps bag rows cleanly (sausage -> 大聲�
 
     // Link 1: get the sausage -> exactly the 香腸 row, no 大聲公 row.
     p.SetFlag(nccu::kFlagSportsLapDone);
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);
     {
         const auto rows = nccu::BuildInventoryRows(p);
         CHECK(has(rows, nccu::kItemSausage));
@@ -101,7 +101,7 @@ TEST_CASE("B2.4: the Ch3 trade chain swaps bag rows cleanly (sausage -> 大聲�
 
     // Link 2: trade sausage for 大聲公 -> the 香腸 row is GONE (consumed),
     // the 大聲公 row appears. The transfer leaves no stale row.
-    nccu::TryAdvanceCh3Trade(p, "loudspeaker_b", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "loudspeaker_b", kCh3);
     {
         const auto rows = nccu::BuildInventoryRows(p);
         CHECK_FALSE(has(rows, nccu::kItemSausage));    // no stale carried item
@@ -110,7 +110,7 @@ TEST_CASE("B2.4: the Ch3 trade chain swaps bag rows cleanly (sausage -> 大聲�
 
     // Link 3: trade 大聲公 for 情報 -> the 大聲公 row is GONE; 情報 is
     // knowledge, so the bag carries neither item now.
-    nccu::TryAdvanceCh3Trade(p, "senior_c", kCh3);
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "senior_c", kCh3);
     {
         const auto rows = nccu::BuildInventoryRows(p);
         CHECK_FALSE(has(rows, nccu::kItemSausage));
@@ -135,7 +135,7 @@ TEST_CASE("Item 4a: talking A pre-lap surfaces the 操場 lap hint in-fiction") 
         [&](const Event& e) { lastMsg = e.text; ++msgs; });
 
     Player p = MakePlayer();
-    nccu::TryAdvanceCh3Trade(p, "vendor_sausage_a", kCh3);   // pre-lap talk
+    nccu::TryAdvanceCh3Trade(EventBus::Instance(), p, "vendor_sausage_a", kCh3);   // pre-lap talk
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasSausage));           // no sausage yet
     CHECK(msgs == 1);                                        // a hint fired
     CHECK(lastMsg.find("操場") != std::string::npos);        // points at the lap

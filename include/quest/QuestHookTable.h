@@ -6,6 +6,7 @@
 #include <vector>
 
 class Player;
+class EventBus;     // Plan P2 step 2: hooks may publish — bus threaded through
 
 namespace nccu {
 
@@ -37,7 +38,13 @@ namespace nccu {
 // They are all adapted to ONE arity here so the table is homogeneous; an
 // adapter lambda drops the args a given hook ignores. `returnTo` is
 // World::Semester().InterludeReturnTo(), forwarded every call.
-using QuestHookFn = std::function<void(Player& player,
+// Plan P2 step 2: `bus` is the first parameter so the publishing hooks
+// (TryReturnVictimUmbrella / TryRescueBookworm / TryReturnLibrarianUmbrella /
+// TryAdvanceCh3Trade / TryApplyCh3Ripple) can route their ShowMessage
+// through the injected bus rather than the global Instance(). Non-
+// publishing hooks ignore it (their adapter lambdas drop the arg).
+using QuestHookFn = std::function<void(EventBus& bus,
+                                       Player& player,
                                        std::string_view npcId,
                                        SemesterState state,
                                        SemesterState returnTo)>;
@@ -59,7 +66,7 @@ struct QuestHook {
 // Run every hook in registered order. Self-gating inside each hook means
 // only the ones whose (state, npcId) match do anything. Free function so a
 // doctest can drive the full table against a Player without the controller.
-void RunInteractHooks(Player& player, std::string_view npcId,
+void RunInteractHooks(EventBus& bus, Player& player, std::string_view npcId,
                       SemesterState state, SemesterState returnTo);
 
 } // namespace nccu

@@ -5,6 +5,7 @@
 #include <string_view>
 
 class Player;                       // mutated by the rescue / lift
+class EventBus;                     // Plan P2 step 2: bus is injected
 
 namespace nccu {
 
@@ -66,8 +67,10 @@ inline constexpr const char* kNpcLibrarianReturn = "librarian_return";
 //
 // Deliberately does NOT set Flag_Ch2Cleared — that is lifted later so the
 // (d) thanks dialog is readable first (see LiftChapter2Clear).
-void TryRescueBookworm(Player& player, std::string_view npcId,
-                       SemesterState state);
+// Plan P2 step 2: `bus` is injected; this hook publishes ShowMessage
+// for every wake / recovery / hint beat.
+void TryRescueBookworm(EventBus& bus, Player& player,
+                       std::string_view npcId, SemesterState state);
 
 // Deferred chapter-clear lift. Sets Flag_Ch2Cleared only once 學霸 is
 // recovered AND no dialog is open — i.e. after the player has finished
@@ -133,8 +136,11 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
 //                   true umbrella). If the player skips this, the loaner still
 //                   auto-clears on Ch3 entry (no karma) — so this is purely a
 //                   positive optional choice, never a soft-lock.
-void TryReturnLibrarianUmbrella(Player& player, std::string_view npcId,
-                                SemesterState state, SemesterState returnTo);
+// Plan P2 step 2: `bus` is injected; publishes the 責任感 +10 thank-you
+// / replay ShowMessage.
+void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
+                                std::string_view npcId, SemesterState state,
+                                SemesterState returnTo);
 
 // E-interact hook, sibling of TryRescueBookworm — lands the Ch1->Ch2
 // ripple karma the dialog opener cannot. chapter2.md routes 西裝學長 /

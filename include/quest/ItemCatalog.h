@@ -5,6 +5,8 @@
 #include <string_view>
 #include <vector>
 
+class EventBus;                 // Plan P2 step 2: ApplyConsumableEffect injects it
+
 namespace nccu {
 
 // Item 2(d) — the SINGLE code catalog of every item the player can hold,
@@ -97,7 +99,10 @@ inline constexpr const char* kItemLoudspeaker   = "__quest_loudspeaker__";
 // map — the caller (controller) decrements via Player::ConsumeOne so the
 // "spend one" bookkeeping stays in one place. Publishes the flavour
 // ShowMessage through the EventBus exactly like the pickup path used to.
-void ApplyConsumableEffect(Player& player, std::string_view itemId);
+// Plan P2 step 2: `bus` is injected; publishes the flavour ShowMessage
+// + per-effect ShowMessage exactly where the pickup path used to.
+void ApplyConsumableEffect(EventBus& bus, Player& player,
+                           std::string_view itemId);
 
 // Item 2(c)/(e) — one render-only row of the Tab inventory. The DTO the
 // View draws: a 中文 name, a count (0 ⇒ no "xN" suffix, used by the

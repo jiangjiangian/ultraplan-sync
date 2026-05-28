@@ -50,19 +50,19 @@ TEST_CASE("TryApplyCh3Ripple: ProfessorTrap -> -10 once per Ch3, key-independent
     const int k0 = p.GetKarma();
 
     // No flag / wrong state -> no-op.
-    nccu::TryApplyCh3Ripple(p, kCh3);
-    nccu::TryApplyCh3Ripple(p, SemesterState::Chapter1_AddDrop);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), p, kCh3);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), p, SemesterState::Chapter1_AddDrop);
     CHECK(p.GetKarma() == k0);
 
     p.SetFlag(nccu::kFlagHasProfessorTrap);
     // Wrong state still no-op even with the flag.
-    nccu::TryApplyCh3Ripple(p, SemesterState::Chapter4_Finals);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), p, SemesterState::Chapter4_Finals);
     CHECK(p.GetKarma() == k0);
 
-    nccu::TryApplyCh3Ripple(p, kCh3);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), p, kCh3);
     CHECK(p.GetKarma() == k0 - 10);
     CHECK(p.HasFlag(nccu::kFlagCh3RippledProfTrap));
-    nccu::TryApplyCh3Ripple(p, kCh3);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), p, kCh3);
     CHECK(p.GetKarma() == k0 - 10);                 // once only
 
     // The Ch3 key is independent of the Ch2 one: a player who already
@@ -72,7 +72,7 @@ TEST_CASE("TryApplyCh3Ripple: ProfessorTrap -> -10 once per Ch3, key-independent
     const int qk = q.GetKarma();
     q.SetFlag(nccu::kFlagHasProfessorTrap);
     q.SetFlag(nccu::kFlagCh2RippledTA);                // Ch2 already debited
-    nccu::TryApplyCh3Ripple(q, kCh3);
+    nccu::TryApplyCh3Ripple(EventBus::Instance(), q, kCh3);
     CHECK(q.GetKarma() == qk - 10);
     EventBus::Instance().Clear();
 }
