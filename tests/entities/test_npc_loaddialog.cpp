@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "entities/NPC.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "state/SemesterState.h"
 #include "engine/math/Vec2.h"
 #include <vector>

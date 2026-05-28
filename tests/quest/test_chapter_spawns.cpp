@@ -4,7 +4,7 @@
 #include "entities/CashPickup.h"
 #include "world/World.h"
 #include "entities/Player.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include <algorithm>
 #include <set>
 #include <string>

@@ -2,7 +2,7 @@
 #define GAME_OBJECT_H_
 #include "engine/math/Vec2.h"
 #include "engine/math/Rect.h"
-#include "entities/Roles.h"   // IUpdatable / IDrawable / IInteractable + WithRoles
+#include "engine/core/Roles.h"   // IUpdatable / IDrawable / IInteractable + WithRoles
 #include <string>
 #include <string_view>
 #include <vector>

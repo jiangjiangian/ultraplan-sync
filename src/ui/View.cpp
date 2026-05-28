@@ -1,7 +1,7 @@
 #include "ui/View.h"
 #include "world/World.h"
 #include "entities/Player.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "controller/GameObjectQueries.h"
 #include "world/Buildings.h"
 #include "world/Obstacles.h"

@@ -39,7 +39,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "engine/events/EventBus.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/input/Input.h"
 #include "engine/platform/Time.h"
 

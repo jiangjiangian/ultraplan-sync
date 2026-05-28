@@ -4,7 +4,7 @@
 #include "dialog/DialogSource.h"
 #include "entities/NPC.h"
 #include "entities/Player.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "world/World.h"
 #include "state/SemesterState.h"
 #include "engine/math/Vec2.h"

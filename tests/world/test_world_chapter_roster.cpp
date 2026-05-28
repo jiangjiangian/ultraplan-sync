@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "quest/ChapterSpawns.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "entities/NPC.h"
 #include "entities/Player.h"
 #include "world/World.h"

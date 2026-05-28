@@ -1,6 +1,6 @@
 #ifndef WORLD_H_
 #define WORLD_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "ui/HudSlot.h"
 #include "ui/MessageView.h"
 #include "entities/Player.h"

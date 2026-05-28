@@ -1,6 +1,6 @@
 #ifndef GAME_OBJECT_FACTORY_H_
 #define GAME_OBJECT_FACTORY_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/math/Vec2.h"
 #include <memory>
 

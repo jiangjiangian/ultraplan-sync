@@ -1,6 +1,6 @@
 #ifndef GAME_OBJECT_QUERIES_H_
 #define GAME_OBJECT_QUERIES_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include <memory>
 
 // Generic helpers for iterating containers of std::unique_ptr<GameObject>.
