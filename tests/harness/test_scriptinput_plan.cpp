@@ -7,7 +7,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "entities/GameObject.h"
-#include "gfx/Input.h"
+#include "engine/input/Input.h"
 #include "gfx/Time.h"
 
 #include <cmath>

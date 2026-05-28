@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "harness/ScriptInput.h"
-#include "gfx/Key.h"
+#include "engine/input/Key.h"
 
 #include <sstream>
 

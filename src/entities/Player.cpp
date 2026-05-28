@@ -1,8 +1,8 @@
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
 #include "engine/render/IRenderer.h"
-#include "gfx/Input.h"
-#include "gfx/Key.h"
+#include "engine/input/Input.h"
+#include "engine/input/Key.h"
 #include "engine/math/Color.h"
 #include "engine/math/Rect.h"
 

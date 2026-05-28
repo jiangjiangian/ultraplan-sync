@@ -11,7 +11,7 @@
 #include "world/CollisionMask.h"
 #include "quest/NpcSpawns.h"
 #include "engine/math/Rect.h"
-#include "gfx/Input.h"
+#include "engine/input/Input.h"
 #include "gfx/Time.h"
 
 #include <cmath>

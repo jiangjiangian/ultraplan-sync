@@ -1,7 +1,7 @@
 #ifndef GFX_INPUT_H_
 #define GFX_INPUT_H_
 #include "raylib.h"
-#include "gfx/Key.h"
+#include "engine/input/Key.h"
 
 namespace nccu::gfx {
 

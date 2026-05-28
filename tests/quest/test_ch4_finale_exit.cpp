@@ -30,8 +30,8 @@
 #include "dialog/DialogSource.h"
 #include "engine/events/EventBus.h"
 #include "state/SemesterState.h"
-#include "gfx/Input.h"
-#include "gfx/Key.h"
+#include "engine/input/Input.h"
+#include "engine/input/Key.h"
 #include "gfx/Time.h"
 
 #include <set>
