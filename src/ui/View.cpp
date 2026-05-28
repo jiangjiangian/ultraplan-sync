@@ -26,6 +26,8 @@
 #include "ui/overlay/HelpOverlay.h"
 #include "ui/overlay/MenuAffordance.h"
 #include "ui/overlay/PauseMenu.h"
+#include "ui/world/QuestGiverIndicators.h"
+#include "ui/world/SportsLapTrack.h"
 #include "ui/ReducedMotion.h"
 #include "engine/render/Renderer.h"
 #include "engine/platform/Time.h"
@@ -201,45 +203,11 @@ void View::RenderWorld(const World& world, SemesterState st) {
         CameraScope cam{camera_};
         Renderer{}.Texture(worldmap_, Vec2{0.0f, 0.0f});
 
-        // 操場 校慶 lap track — a dotted STADIUM outline (running-track
-        // shape: top + bottom straights joined by left + right semicircles)
-        // on the field the player laps; dots already passed disappear so it
-        // shrinks as the lap completes (走完動態消除). Drawn HERE — right
-        // after the base map, BEFORE the building/object painter's pass — so
-        // it is a GROUND DECAL: 綜合院館 (which overlaps the 操場's east
-        // edge) and the runners paint OVER it (layering request:
-        // 地圖 → 線條 → 綜院). World space (inside the CameraScope).
-        if (world.SportsLapActive()) {
-            const float prog = world.SportsLapProgress();
-            constexpr int kDots = 48;
-            constexpr float kPi = 3.14159265f;
-            const float cx = nccu::kSportsTrackCx, cy = nccu::kSportsTrackCy;
-            const float a  = nccu::kSportsTrackHalfLen, r = nccu::kSportsTrackR;
-            const float straight = 2.0f * a, arc = kPi * r;
-            const float perim = 2.0f * straight + 2.0f * arc;
-            for (int i = 0; i < kDots; ++i) {
-                const float frac = static_cast<float>(i) /
-                                   static_cast<float>(kDots);
-                if (frac < prog) continue;          // already walked → erased
-                const float d = frac * perim;       // distance along perimeter
-                float x, y;
-                if (d < straight) {                 // top straight, L→R
-                    x = cx - a + d;            y = cy - r;
-                } else if (d < straight + arc) {    // right end-cap (east)
-                    const float th = (d - straight) / r;        // 0..pi
-                    x = cx + a + r * std::sin(th);
-                    y = cy - r * std::cos(th);
-                } else if (d < 2.0f * straight + arc) {  // bottom straight, R→L
-                    x = cx + a - (d - straight - arc);  y = cy + r;
-                } else {                            // left end-cap (west)
-                    const float th = (d - 2.0f * straight - arc) / r;
-                    x = cx - a - r * std::sin(th);
-                    y = cy + r * std::cos(th);
-                }
-                renderer_.DrawRect(Rect{x - 5.0f, y - 5.0f, 10.0f, 10.0f},
-                                   Color{255, 255, 255, 240});  // lane-marker white
-            }
-        }
+        // 操場 lap track ground decal — extracted to
+        // ui/world/SportsLapTrack.cpp (P1 step 7f). Drawn BEFORE the
+        // painter's-order pass so 綜合院館 + the runners paint OVER it.
+        // No-op when no lap is active.
+        DrawSportsLapTrack(renderer_, world);
 
         // Painter's order: buildings keyed on their ground line, objects
         // on their feet (top-left + player height). Lower y paints first,
@@ -324,32 +292,11 @@ void View::RenderWorld(const World& world, SemesterState st) {
             }
         }
 
-        // Quest-giver "!" overlay (H4). Drawn AFTER the painter's-order
-        // pass but still inside the CameraScope so the icon follows the
-        // NPC in world space — and on top of buildings/sprites that might
-        // otherwise occlude a quest-giver tucked behind a footprint.
-        // QuestIndicatorVisible (quest layer) is the SINGLE decision point:
-        // it folds the roster's virtual IsQuestGiver() bit together with
-        // the per-chapter rules (Ch3 sequential A→B→C chain, Item 4a head
-        // light; Ch4 finale 助教-only `!`, Item 1b) so the View stays
-        // pure-render — no gameplay logic, no dynamic_cast. NB the Ch4
-        // finale NPC is isQuestGiver=false in the roster, so the decision
-        // can NO LONGER short-circuit on IsQuestGiver() alone; the predicate
-        // owns it. QuestGiverIndicator routes every primitive through
-        // IRenderer, keeping the helper headless-testable.
-        const Player* qgPlayer = world.GetPlayer();
-        const nccu::SemesterState qgState = world.Semester().Current();
-        ForEachActive(world.Objects(), [&](const GameObject& o) {
-            if (!qgPlayer) return;
-            if (!nccu::QuestIndicatorVisible(o.NpcId(), o.IsQuestGiver(),
-                                             qgState, *qgPlayer)) return;
-            // The hit box lives at the NPC's feet; QuestGiverIndicator
-            // lifts the "!" above the bottom-anchored sprite top.
-            DrawQuestGiverIndicator(
-                renderer_,
-                Rect{o.GetPosition().x, o.GetPosition().y,
-                     ::world::kPlayerWidth, ::world::kPlayerHeight});
-        });
+        // Quest-giver "!" overlays — extracted to
+        // ui/world/QuestGiverIndicators.cpp (P1 step 7f). Drawn after
+        // the painter's-order pass but inside the CameraScope so each
+        // "!" sits ON TOP of buildings that might occlude its NPC.
+        DrawQuestGiverIndicators(renderer_, world);
 
         // H3 visual ground marker — only paint the dashed gold exit line
         // while the player is inside the Interlude (other chapters reuse
