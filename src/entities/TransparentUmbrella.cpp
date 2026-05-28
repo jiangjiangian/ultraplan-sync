@@ -1,5 +1,6 @@
 #include "entities/TransparentUmbrella.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "entities/Player.h"
 #include "quest/Flags.h"
 #include "engine/render/IRenderer.h"
@@ -15,7 +16,7 @@ namespace {
 bool QuestGateOpen(Player* player) {
     if (!player) return true;                  // preserve prior null path
     if (player->HasFlag(nccu::kFlagPromisedVictim)) return true;
-    EventBus::Instance().Publish(Event{
+    nccu::events::Sink().Publish(Event{
         EventType::ShowMessage,
         std::string("這把傘不是你的——先去找那位掉了傘的同學問問吧。")});
     return false;

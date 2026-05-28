@@ -1,6 +1,7 @@
 #include "entities/CursedUmbrella.h"
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "quest/Flags.h"
 
 void CursedUmbrella::beClaimed(Player* player) {
@@ -27,6 +28,6 @@ void CursedUmbrella::beClaimed(Player* player) {
     // KarmaChanged). The pickup-time narrative cue stays as the same
     // ShowMessage line — the player still hears "成為了你最討厭的人" the
     // instant the deed is done.
-    EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
+    nccu::events::Sink().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
 }

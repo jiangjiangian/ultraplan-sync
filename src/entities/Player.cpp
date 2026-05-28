@@ -1,5 +1,6 @@
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "engine/render/IRenderer.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
@@ -109,7 +110,7 @@ Player& Player::AddKarma(int delta) {
     // toast that fades the same as any other).
     char buf[16];
     std::snprintf(buf, sizeof(buf), "%+d", delta);
-    EventBus::Instance().Publish(
+    nccu::events::Sink().Publish(
         Event{EventType::KarmaChanged, std::string{buf}});
     return *this;
 }
@@ -192,5 +193,5 @@ void Player::RespawnAtGate() {
     hitBox_.x = position_.x;
     hitBox_.y = position_.y;
     resetRainMeter();
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "你淋成落湯雞了，被傳送回正門。半天就這樣過去了。" });
 }

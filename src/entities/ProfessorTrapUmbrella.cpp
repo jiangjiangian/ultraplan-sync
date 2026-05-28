@@ -1,6 +1,7 @@
 #include "entities/ProfessorTrapUmbrella.h"
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "quest/Flags.h"
 
 void ProfessorTrapUmbrella::beClaimed(Player* player) {
@@ -14,6 +15,6 @@ void ProfessorTrapUmbrella::beClaimed(Player* player) {
     player->SetFlag(nccu::kFlagHasProfessorTrap);
     spawnedEnemiesCount_ = 3; // simulated: TA NPCs to be spawned by GameWorld on this event
     isActive_ = false;
-    EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "ProfessorTrapUmbrella" });
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你撿到了 ProfessorTrapUmbrella，遠處傳來助教們的腳步聲！" });
+    nccu::events::Sink().Publish(Event{ EventType::UmbrellaClaimed, "ProfessorTrapUmbrella" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "你撿到了 ProfessorTrapUmbrella，遠處傳來助教們的腳步聲！" });
 }

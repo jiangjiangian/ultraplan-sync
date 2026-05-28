@@ -1,5 +1,6 @@
 #include "world/BuildingTracker.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "engine/math/Color.h"
 
 #include <string>
@@ -13,7 +14,7 @@ const buildings::Building* BuildingTracker::Update(gfx::Vec2 playerCenter) {
     if (found != current_) {
         current_ = found;
         if (found) {
-            EventBus::Instance().Publish(Event{ EventType::EnteredBuilding, std::string{found->name} });
+            nccu::events::Sink().Publish(Event{ EventType::EnteredBuilding, std::string{found->name} });
         }
     }
     return current_;

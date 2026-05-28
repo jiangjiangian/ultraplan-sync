@@ -1,5 +1,6 @@
 #include "entities/CashPickup.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "entities/Player.h"
 #include "engine/math/Color.h"
 #include "engine/render/IRenderer.h"
@@ -41,5 +42,5 @@ void CashPickup::OnPickup(Player* player) {
     player->AddMoney(value_);
     isActive_ = false;
 
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string("撿到 ") + std::to_string(value_) + " 元" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, std::string("撿到 ") + std::to_string(value_) + " 元" });
 }
