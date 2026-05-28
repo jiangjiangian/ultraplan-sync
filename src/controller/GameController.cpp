@@ -9,6 +9,8 @@
 #include "controller/screens/EndingScreen.h"    // P3 step 1a: HandleEndingMenu free fn
 #include "controller/screens/PauseScreen.h"     // P3 step 1b: HandlePauseMenu free fn
 #include "controller/screens/InventoryScreen.h" // P3 step 1c: HandleInventory free fn
+#include "controller/InteractDispatch.h"        // P3 step 1d: DispatchInteract free fn
+#include "controller/screens/DialogScreen.h"    // P3 step 1e: HandleDialog free fn
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
@@ -37,92 +39,11 @@
 
 namespace nccu {
 
-namespace {
-
-// I5: a Vendor has an empty NpcId(), so its open conversation is tagged
-// with this sentinel context (NOT a real npcId — DialogOpener never
-// produces it, the C.3 suit_senior / ta one-shot guards compare against
-// real ids only, so this is inert for every existing routing). The
-// dialog confirm branch reads dlg.NpcId() == kVendorContext to know the
-// confirmed choice is a stock line and route it to Vendor::TryBuy.
-constexpr std::string_view kVendorContext = "__vendor__";
-
-// The trailing "不買" (decline) label appended to every vendor menu.
-// REQUIREMENT #4: a purchase must never be forced — the player can
-// always walk away without spending money or setting a flag. The
-// confirm branch recognises a chosen index == cfg.stock.size() (this
-// entry, always the LAST choice) as "decline": it closes the dialog
-// and does NOT call Vendor::TryBuy, so no DeductMoney / AddConsumable /
-// item.setsFlag / EventBus purchase event fires.
-constexpr std::string_view kVendorDeclineLabel = "先不買，謝謝";
-
-// Build the shop conversation: the greeting line(s) then one choice per
-// in-stock item, then a final "不買" decline choice. The stock choice
-// label is the vendor's own formatted stock line (NPC::Interact already
-// cycles those, so this reuses the exact same browsing text). No
-// karma/flag on the DialogChoice itself — the economy side-effects
-// (DeductMoney, AddConsumable, the EventBus purchase events, the
-// soft-cap, item.setsFlag) ALL stay inside Vendor::TryBuy, untouched;
-// the stock choice only carries the index (its position in Choices()).
-// The decline choice carries nothing and is detected positionally
-// (index == stock size) so it can never mutate state — REQUIREMENT #4.
-void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
-    const VendorConfig& cfg = vendor.Config();
-    std::vector<std::string> greeting;
-    if (!cfg.greetingLines.empty()) greeting = cfg.greetingLines;
-    else                            greeting.push_back(cfg.greeting);
-
-    std::vector<DialogChoice> choices;
-    for (const auto& item : cfg.stock) {
-        // Sold-out lines are still shown (TryBuy answers "賣完了" on
-        // confirm) so the stock count stays visible; an unlimited or
-        // in-stock line is buyable. Label mirrors NPC::Interact's
-        // "<id> - <price> 元" preview.
-        choices.push_back(DialogChoice{
-            item.itemId + std::string(" - ") +
-                std::to_string(item.price) + std::string(" 元"),
-            0, std::string{}, false, {}});
-    }
-    // REQUIREMENT #4: the always-present decline option. Appended LAST
-    // so a stock choice keeps its 0-based index == its stock slot (the
-    // pinned TryBuy(stockIdx) contract is unchanged); the decline index
-    // is exactly cfg.stock.size(). Present even when stock is empty so a
-    // greeting-only stall is still a real, exitable choice (no forced
-    // dead-end). karmaDelta 0 / setsFlag "" — it carries no side effect.
-    choices.push_back(DialogChoice{
-        std::string(kVendorDeclineLabel), 0, std::string{}, false, {}});
-    dlg.Open(std::move(greeting), std::move(choices));
-    dlg.SetNpcContext(std::string(kVendorContext));
-}
-
-}  // namespace
-
-void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
-    // Item 5a — once-only self-flagging choices. A choice that grants a
-    // ONE-OFF reward expresses it as "karma +N AND set this flag true";
-    // the Ch1 福利社阿姨 (d) 請咖啡 (karma +5, Flag_BoughtCoffeeForAuntie_
-    // Ch1) is exactly this shape. shop_auntie is a re-enterable choice-
-    // opener (its (b)/(c) 詢問傘/醜傘 are inert flavour with karma +0 / no
-    // flag, so re-talking them is harmless and stays allowed), but WITHOUT
-    // this guard a player could re-pick 請咖啡 every visit and farm +5
-    // each time. So: if the choice would SET a flag the player ALREADY
-    // holds, the reward has already been collected — skip BOTH the karma
-    // and the (idempotent) flag write. This is the karma-application spot
-    // the suit_senior / ta self-locks (Flag_SuitSeniorChoiceMade /
-    // Flag_TaFinaleChoiceMade) protect structurally by never re-presenting
-    // their menus; shop_auntie's menu IS re-presented, so the guard lives
-    // here instead. A clearing choice (flagValue=false) or a flag the
-    // player does not yet hold applies normally (first pick still rewards).
-    if (!choice.setsFlag.empty() && choice.flagValue &&
-        player.HasFlag(choice.setsFlag)) {
-        return;   // reward already collected — no double-dip
-    }
-    player.AddKarma(choice.karmaDelta);
-    if (!choice.setsFlag.empty()) {
-        if (choice.flagValue) player.SetFlag(choice.setsFlag);
-        else                  player.ClearFlag(choice.setsFlag);
-    }
-}
+// P3 step 1d: the file-local OpenVendorMenu + kVendorContext +
+// kVendorDeclineLabel moved into `controller/VendorMenu.{h,cpp}`.
+// P3 step 1e: ApplyDialogChoice moved into
+// `controller/DialogChoiceApply.{h,cpp}` so DialogScreen.cpp consumes
+// it directly without depending on GameController.h.
 
 GameController::GameController(World& world)
     : world_(world),
@@ -344,216 +265,16 @@ bool GameController::HandlePauseMenu() {
     return nccu::HandlePauseMenu(world_);
 }
 
-// Dialog freeze: while a conversation is open the world is paused — the
-// orchestrator runs ONLY this handler and skips the object tick /
-// movement / collision / building-entry / sweep. IsKeyPressed is edge-
-// triggered, so the E that opened the box (handled in DispatchInteract
-// last frame) does not auto-advance it this frame. Also routes a confirmed
-// vendor stock line to Vendor::TryBuy. Returns true while a conversation
-// is open (the world stays frozen), false when no dialog is active.
+// P3 step 1e (was a 200-LOC inline body): the dialog freeze + vendor
+// confirm + finale choice locks + per-choice gates live in
+// `controller/screens/DialogScreen.{h,cpp}` now. Method retained as a
+// thin delegate so the orchestrator early-return chain at the top of
+// Update() reads unchanged; pendingVendor_, input_, and sceneRouter_
+// are passed by reference so the free function can mutate them.
 bool GameController::HandleDialog() {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
-    using nccu::gfx::Time;
-    {
-        DialogState& dlg = world_.Dialog();
-        // I5: drop the pending-vendor target the instant its menu is no
-        // longer the open conversation (closed greeting-only, advanced
-        // past with no stock, replaced by an NPC dialog, swept by a
-        // chapter transition). Keeps the non-owning Vendor* from ever
-        // outliving the World object it points at — once cleared, the
-        // confirm branch's `pendingVendor_ && ...` guard is inert.
-        if (pendingVendor_ &&
-            (!dlg.Active() || dlg.NpcId() != kVendorContext))
-            pendingVendor_ = nullptr;
-        if (dlg.Active()) {
-            Player* p = world_.GetPlayer();
-            if (dlg.AtChoice()) {
-                if (Input::IsPressed(Key::Up))   dlg.MoveChoice(-1);
-                if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
-            }
-            // Cycle 9.E (audit H2 / D5 / SC 2.2.2): hold-E to fast-advance
-            // dialog. Tap-press (edge IsPressed) keeps its existing
-            // mash-once-per-press semantics; HOLDING E for >= 300 ms then
-            // also fires the same advance branch every ~4 frames so a
-            // long-winded NPC can be skimmed without finger pain. The
-            // gameplay E-probe (out of this dialog branch, line ~432) is
-            // edge-only and untouched — held-E only auto-advances dialog,
-            // never re-triggers interactions / vendor menus.
-            //
-            // Cycle 10.P0a: the edge/hold edge timing now lives on
-            // InputHandler::TickDialogAdvance — the exact same edge OR
-            // ≥300 ms held + 4-frame cooldown contract, pinned by
-            // test_input_handler. The Controller asks "should advance
-            // this frame?" and acts.
-            const float ddt = Time::DeltaSeconds();
-            const bool advanceE = input_.TickDialogAdvance(ddt);
-            if (advanceE) {
-                // Capture the npc BEFORE Advance() — confirming the last
-                // choice can Close() the dialog, which clears NpcId().
-                const std::string npc = dlg.NpcId();
-                // I5: capture the highlighted stock index BEFORE Advance()
-                // — confirming resets choiceCursor_ (Close/next-lines).
-                const bool atChoice = dlg.AtChoice();
-                const std::size_t stockIdx =
-                    static_cast<std::size_t>(dlg.ChoiceCursor());
-                if (const DialogChoice* c = dlg.Advance(); c && p) {
-                    // I5: a confirmed Vendor stock line drives the real
-                    // purchase. ALL economy side-effects (DeductMoney,
-                    // AddConsumable, the ShowMessage + PickupAcquired
-                    // EventBus events, the money soft-cap, item.setsFlag
-                    // → e.g. Flag_BoughtUglyUmbrella for Ending C) stay
-                    // inside Vendor::TryBuy exactly as the pinned
-                    // test_vendor contract asserts — the DialogChoice
-                    // carries no karma/flag of its own, so the generic
-                    // ApplyDialogChoice below is a no-op for it. The Ch2
-                    // EnergyDrink reaches the count inventory through
-                    // this same TryBuy → AddConsumable path, so
-                    // TryRescueBookworm's ConsumeOne("EnergyDrink") can
-                    // now succeed in-engine (Flag_Ch2Cleared reachable).
-                    if (npc == kVendorContext && pendingVendor_ &&
-                        atChoice) {
-                        // REQUIREMENT #4: the LAST choice is always the
-                        // "不買" decline (OpenVendorMenu appends it after
-                        // every stock line), so its index is exactly the
-                        // stock size. Picking it must NOT buy — close the
-                        // conversation and drop the pending vendor with
-                        // ZERO economy mutation (no DeductMoney, no
-                        // AddConsumable, no item.setsFlag, no EventBus
-                        // purchase event). Only a real stock index
-                        // (< stock size) reaches Vendor::TryBuy, whose
-                        // pinned side-effect contract is unchanged.
-                        const std::size_t stockN =
-                            pendingVendor_->Config().stock.size();
-                        if (stockIdx >= stockN) {        // decline
-                            pendingVendor_ = nullptr;
-                            dlg.Close();
-                            // Cycle 10.P0b: roster settle picks up any
-                            // FSM transition (none expected here, but
-                            // cheap insurance against a future side
-                            // effect inside Close()). View-only — does
-                            // not mutate player.pos / flags / events,
-                            // so the harness state.jsonl observable
-                            // timeline is unchanged.
-                            sceneRouter_.SettleRoster(world_);
-                            return true;
-                        }
-                        (void)pendingVendor_->TryBuy(p, stockIdx);
-                        pendingVendor_ = nullptr;
-                        // G2: do NOT resolve the ending here. A confirmed
-                        // stock pick has no nextLines, so the vendor box is
-                        // already CLOSED at this point — calling
-                        // CheckEndingGates now would snap Ending C the same
-                        // frame the 醜傘 is bought, with no closing beat
-                        // (the owner's abrupt-ending complaint). Instead the
-                        // non-dialog poll (end of Update) runs
-                        // TryOpenEndingConfession first → opens the 務實 自白
-                        // → CheckEndingGates defers behind it → C fires once
-                        // the player closes the monologue. CheckChapterGates
-                        // stays (a buy is never a chapter-clear trigger, so
-                        // it is the same cheap no-op insurance as before).
-                        CheckChapterGates(*p, world_.Semester(), dlg);
-                        // Cycle 10.P0b (L8 fix): the gate calls above
-                        // can Transition() — settle the roster NOW so
-                        // the frame the player sees has a coherent
-                        // npcs[]. Pre-fix, the respawn waited for the
-                        // NEXT frame's top-of-Update() check. View-only:
-                        // SettleSideEffects (player pos, consumables,
-                        // events) still runs at top of NEXT Update so
-                        // the harness state.jsonl is byte-identical.
-                        sceneRouter_.SettleRoster(world_);
-                        return true;
-                    }
-                    ApplyDialogChoice(*p, *c);
-                    // 1c: the trailing "我再想想…" exit (kDialogExitLabel)
-                    // is a no-commit back-out — it must NOT trip any
-                    // menu's post-choice bookkeeping below. ApplyDialog
-                    // Choice was already a no-op for it (zero karma /
-                    // empty flag); the guard here additionally stops the
-                    // 助教 finale self-lock from firing, so the moral
-                    // choice stays UNMADE and re-approachable (mirrors the
-                    // vendor decline's "no side effect" contract).
-                    const bool exitChoice = c->label == kDialogExitLabel;
-                    // C.3(b): a confirmed 西裝學長 choice locks the
-                    // branch menu so re-talking can't stack mutually-
-                    // exclusive ripple flags. DialogOpener reads this
-                    // flag and recaps line-only thereafter.
-                    if (!exitChoice && npc == "suit_senior")
-                        p->SetFlag(kFlagSuitSeniorChoiceMade);
-                    // S5e-2d: a confirmed 助教 (d) 結算 choice in Ch4
-                    // locks the menu (one-shot, like C.3(b)) so the
-                    // moral choice (體諒 → Flag_ConsoledTA, +15) can't
-                    // be flipped/re-applied on a re-talk. ApplyDialog
-                    // Choice already set Flag_ConsoledTA + karma; the
-                    // CheckEndingGates below routes Ending A if its
-                    // karma>80 + TrueUmbrella conditions also hold. The
-                    // 1c exit is excluded so backing out does NOT set
-                    // Flag_TaFinaleChoiceMade (no premature Ending C/B).
-                    if (!exitChoice && npc == "ta" &&
-                        world_.Semester().Current() ==
-                            SemesterState::Chapter4_Finals) {
-                        p->SetFlag(kFlagTaFinaleChoiceMade);
-                        // T4: the gentle finale returns YOUR umbrella. When
-                        // the player chose 體諒 (ApplyDialogChoice just set
-                        // Flag_ConsoledTA), the 助教 presses the true
-                        // umbrella back — TryGrantTaFinaleUmbrella sets
-                        // Flag_HasTrueUmbrella + HasUmbrella so the gentle
-                        // path can reach Ending A WITHOUT also finding the
-                        // hidden Ch4 umbrella (both routes now reach A;
-                        // EndingGate keeps the karma>80 gate). The harsh
-                        // 質問 branch never sets Flag_ConsoledTA, so the
-                        // helper no-ops and that path resolves to Ending B
-                        // (coldFinale). The spoken "拿回你的傘" beat lives in
-                        // the 體諒 choice's nextLines (DialogOpener T4).
-                        TryGrantTaFinaleUmbrella(
-                            *p, npc, world_.Semester().Current());
-                    }
-                    // B3: the Ch1 福利社阿姨 (c) 購買醜綠傘 is a REAL buy.
-                    // The DialogChoice itself carries no money/umbrella (it
-                    // stays a pure choice-opener entry — setsFlag "", karma
-                    // 0, so the existing test_dialog_opener assertions hold);
-                    // the economy lands HERE, attributed by npc + the chosen
-                    // label, mirroring how the 助教 finale grants the true
-                    // umbrella on confirm. Deducts 80 元 + grants the held
-                    // ugly umbrella with a 花費/餘額 toast; does NOT set
-                    // Flag_BoughtUglyUmbrella (that is the Ch4 Vendor's
-                    // Ending-C lock). No-op for the 阿姨's other choices and
-                    // for the 1c exit (label mismatch). Idempotent (already
-                    // holding Ugly → no re-deduct) and fund-guarded inside.
-                    if (!exitChoice)
-                        (void)TryBuyAuntieUglyUmbrella(
-                            *p, npc, c->label, world_.Semester().Current());
-                    // Ending gates first, then chapter gates (existing
-                    // precedent: EndingGate predates this). Order is safe
-                    // either way — once an ending fires, Current() is
-                    // Ending_X and none of CheckChapterGates' Ch2/Ch3/
-                    // Interlude sibling-ifs can match.
-                    CheckEndingGates(*p, world_.Semester(), dlg);
-                    CheckChapterGates(*p, world_.Semester(), dlg);
-                }
-            }
-            // Cycle 10.P0b (L8 fix): any transition the dialog branch
-            // produced (CheckEndingGates / CheckChapterGates) must
-            // roll its roster into View BEFORE the frame draws. The
-            // early-return paths above already called SettleRoster
-            // themselves; this one covers the fall-through path (a
-            // non-purchase, non-terminal advance). View-only: the
-            // harness-observable side effects (player pos, consumables,
-            // events) wait until top-of-next-Update's SettleSideEffects
-            // so state.jsonl stays byte-identical.
-            sceneRouter_.SettleRoster(world_);
-            return true;
-        } else {
-            // Dialog not active this tick: drop any stale hold-E
-            // accumulation so the next conversation starts fresh.
-            // Cheap; idempotent — InputHandler tracks IsDown(E) itself
-            // and would reset on release anyway, but an explicit drop
-            // here keeps the contract obvious.
-            input_.ResetDialogAdvance();
-        }
-    }
-    return false;   // no dialog active — fall through
+    return nccu::HandleDialog(world_, pendingVendor_, input_, sceneRouter_);
 }
+
 
 // P3 step 1c (was a 60-LOC inline body): the Tab inventory overlay lives
 // in `controller/screens/InventoryScreen.{h,cpp}` now. Method retained
@@ -563,106 +284,13 @@ bool GameController::HandleInventory() {
     return nccu::HandleInventory(world_);
 }
 
-// E-interact dispatch (talk / pick up / open a shop). Reads the E edge
-// and the player's reach box, so it stays in the controller layer. For a
-// non-flavor NPC it runs the registered QuestHook table (RunInteractHooks)
-// — the ~14 inline TryXxx calls are now DATA (quest/QuestHookTable.cpp),
-// in the SAME order and with the SAME self-gating semantics — then opens
-// the per-(npcId, state) dialog. A flavor NPC short-circuits to its own
-// line-cycling Interact; a non-NPC (pickup / Vendor) routes through its
-// IInteractable role. Same operations, same order as the inline block.
+// P3 step 1d (was a 94-LOC inline body): the E-interact dispatch lives in
+// `controller/InteractDispatch.{h,cpp}` now. Method retained as a thin
+// delegate so Update()'s call site reads unchanged; `pendingVendor_` is
+// passed by reference so the free function can set it when an E tap
+// opens a shop menu.
 void GameController::DispatchInteract() {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
-    using nccu::gfx::Rect;
-    using nccu::queries::ForEachActiveExcept;
-    Player* player = world_.GetPlayer();
-    if (Input::IsPressed(Key::E) && player) {
-        // I3 fix: the movement collider for a BlocksMovement() NPC is a
-        // player-sized box at the NPC origin, and Rect::Intersects is
-        // strict, so physics::ResolveMove halts the player EXACTLY flush
-        // against a static NPC (touching, never strictly overlapping). A
-        // 24x24 E-probe at the player origin therefore never collides —
-        // dialog could never open for a walked-up player (harness OR
-        // human). Give the E-probe an explicit interaction reach: inflate
-        // it by kInteractReach on every side so a flush-blocked player
-        // still overlaps the NPC's hitbox. The MOVEMENT collider is left
-        // exactly as-is (frameColliders_ above, unchanged) — the player
-        // still cannot walk through an NPC; only the talk reach grows.
-        // The margin (8 px, a third of the 24 px box) is far smaller than
-        // the world spacing between NPCs/items, so it can only reach an
-        // object the player is already standing flush against.
-        // Cycle 9.E (audit M2 / D7 / SC 2.5.8): a "larger targets"
-        // accessibility profile (World::LargeTargets(),
-        // UMBRELLA_LARGE_TARGETS=1) widens the reach to 16 px on each
-        // side — effective talk box 56x56 instead of 40x40 — so a
-        // tremor-affected player can still trigger NPC dialog without
-        // pixel-precise alignment. The MOVEMENT collider above is
-        // unchanged (the player still cannot walk through an NPC); ONLY
-        // the E-probe reach grows. Default off ⇒ byte-equivalent to
-        // pre-9.E behaviour and to the prior `kInteractReach = 8.0f`.
-        const float kInteractReach = world_.LargeTargets() ? 16.0f : 8.0f;
-        const Rect pHit{player->GetPosition().x - kInteractReach,
-                        player->GetPosition().y - kInteractReach,
-                        24.0f + 2.0f * kInteractReach,
-                        24.0f + 2.0f * kInteractReach};
-        ForEachActiveExcept(world_.Objects(), player,
-            [this, player, pHit](GameObject& o) {
-                if (!o.CheckCollision(pHit)) return;
-                // I5: a Vendor's NpcId() is empty, so without this it
-                // would fall to o.Interact() (NPC line-cycling) and
-                // Vendor::TryBuy would have no runtime caller — Ending C
-                // / the Ch2 EnergyDrink were unreachable. Route a shop
-                // interaction to a buy-choice dialog instead; the purchase
-                // itself (money / inventory / EventBus events / soft-cap /
-                // setsFlag) stays entirely inside Vendor::TryBuy, invoked
-                // on confirm in the dialog branch above. One menu per E
-                // tap: skip if a dialog already opened this pass.
-                if (o.IsVendor()) {
-                    if (world_.Dialog().Active()) return;
-                    auto* vendor = static_cast<Vendor*>(&o);
-                    OpenVendorMenu(world_.Dialog(), *vendor);
-                    pendingVendor_ = vendor;
-                    return;
-                }
-                if (const std::string_view id = o.NpcId(); !id.empty()) {
-                    // G-2: a Ch1 stationary FLAVOR NPC (搶課同學 / 撐傘路人 /
-                    // 揹書包學生) cycles its own chapter1.md line pool one line
-                    // per talk via NPC::Interact() — a deterministic,
-                    // reproducible pick (no RNG on the state path). Route it
-                    // HERE, BEFORE any spine hook, and return: a flavor NPC
-                    // must never reach TryReturnVictimUmbrella / OpenNpcDialog
-                    // etc., so it provably sets NO quest flag and cannot
-                    // perturb the hard-gated 苦主→學長→苦主 spine. (The dialog
-                    // it shows is a one-line ShowMessage toast, same channel
-                    // as an ambient-pedestrian Interact, not the dialog box.)
-                    if (nccu::IsChapter1FlavorNpc(id)) {
-                        if (auto* it = o.AsInteractable()) it->Interact(player);
-                        return;
-                    }
-                    // Run the registered Ch1-Ch4 quest hooks, IN ORDER,
-                    // BEFORE the dialog opener — exactly the inline TryXxx
-                    // sequence this replaces (TryReturnVictimUmbrella ->
-                    // TryRescueBookworm -> TryMeetLibrarian ->
-                    // TryLendLibrarianUmbrella -> TryReturnLibrarianUmbrella
-                    // -> TryApplyCh2Ripple -> TryAdvanceCh3Trade ->
-                    // TryApplyCh3Ripple -> TryApplyCh4Ripple). Each hook
-                    // self-gates on (state, npcId) and is a cheap no-op
-                    // outside its chapter, so running the whole table per
-                    // interact is correct and order-stable. The 4th arg is
-                    // the Interlude return-target (only the librarian-return
-                    // hook scopes itself with it). Adding a chapter/NPC is
-                    // now a RegisterHook line, not an edit here (OCP).
-                    RunInteractHooks(*player, id,
-                                     world_.Semester().Current(),
-                                     world_.Semester().InterludeReturnTo());
-                    OpenNpcDialog(world_.Dialog(), *player, id,
-                                  world_.Semester().Current());     // talk
-                } else if (auto* it = o.AsInteractable()) {
-                    it->Interact(player);                            // pick up / Vendor
-                }
-            });
-    }
+    nccu::DispatchInteract(world_, pendingVendor_);
 }
 
 } // namespace nccu
