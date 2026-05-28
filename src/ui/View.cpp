@@ -19,6 +19,9 @@
 #include "ui/GameHelp.h"
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
+#include "ui/hud/ObjectiveBar.h"
+#include "ui/hud/RainVignette.h"
+#include "ui/hud/SportsLapRing.h"
 #include "ui/hud/StatusPanel.h"
 #include "ui/overlay/HelpOverlay.h"
 #include "ui/overlay/MenuAffordance.h"
@@ -371,83 +374,25 @@ void View::RenderWorld(const World& world, SemesterState st) {
 void View::RenderHud(const World& world, SemesterState st) {
     using namespace nccu::gfx;
 
-    // 操場 校慶 lap progress ring (HUD, screen space) — fills clockwise as
-    // the lap completes; the screen companion to the ground track.
-    if (world.SportsLapActive()) {
-        const float prog = world.SportsLapProgress();
-        constexpr int kDots = 16;
-        constexpr float kTwoPi = 6.2831853f;
-        const float cx = viewportSize_.x - 60.0f, cy = 120.0f, r = 24.0f;
-        for (int i = 0; i < kDots; ++i) {
-            const float frac = static_cast<float>(i) /
-                               static_cast<float>(kDots);
-            const float a = -kTwoPi * 0.25f + frac * kTwoPi;  // top, clockwise
-            const float x = cx + r * std::cos(a);
-            const float y = cy + r * std::sin(a);
-            renderer_.DrawRect(Rect{x - 3.0f, y - 3.0f, 6.0f, 6.0f},
-                               frac < prog ? Color{255, 230, 90, 255}
-                                           : Color{255, 255, 255, 70});
-        }
-    }
+    // 操場 校慶 lap progress ring (HUD, screen space) — extracted to
+    // ui/hud/SportsLapRing.cpp (P1 step 7e). Early-returns when no
+    // sports lap is active.
+    DrawSportsLapRing(renderer_, world, viewportSize_.x, viewportSize_.y);
 
     // Top-left status panel (karma/money/chapter/rain + control hints).
     // Extracted to ui/hud/StatusPanel.cpp (P1 step 7a). Render-only;
     // hugs the widest row via UTF-8 codepoint width estimation.
     DrawStatusPanel(renderer_, world);
 
-    // Rain "pressure" vignette — PURE render derived only from
-    // GetRainMeter() (no sim/state/input touched: MVC §5). The rain is
-    // non-lethal this cycle; the feedback is purely visual. Screen-edge
-    // darkening in two tiers (≥60 subtle, ≥85 stronger) drawn as four
-    // border bands (cheap, no full-screen texture/alloc, deterministic).
-    if (const Player* p = world.GetPlayer()) {
-        const float rm = p->GetRainMeter();
-        unsigned char va = 0;
-        if (rm >= 85.0f)      va = 90;
-        else if (rm >= 60.0f) va = 45;
-        if (va > 0) {
-            const Color v{0, 0, 0, va};
-            const float W = viewportSize_.x;
-            const float H = viewportSize_.y;
-            const float b = std::min(W, H) * 0.12f;  // band thickness
-            renderer_.DrawRect(Rect{0.0f, 0.0f, W, b}, v);          // top
-            renderer_.DrawRect(Rect{0.0f, H - b, W, b}, v);         // bottom
-            renderer_.DrawRect(Rect{0.0f, 0.0f, b, H}, v);          // left
-            renderer_.DrawRect(Rect{W - b, 0.0f, b, H}, v);         // right
-        }
-    }
+    // Rain "pressure" vignette — extracted to ui/hud/RainVignette.cpp
+    // (P1 step 7e). No-op when RainMeter < 60.
+    DrawRainVignette(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // Quest objective: a panel-backed one-liner, top-centre but BELOW
-    // the left status column (its lines end ~y86) so it never overlaps
-    // the karma/chapter readout — the playtest's "不要佔到左上數值狀態
-    // ，放一個面板當底". Smaller than the status text; the dark panel
-    // makes the bright text pop ("比較顯眼"). Width is estimated from the
-    // UTF-8 codepoint count (lead bytes — continuation bytes are
-    // 10xxxxxx) treating each glyph as ~size wide, enough to centre a
-    // one-liner without a text-measurement dependency in the View.
-    if (const Player* p = world.GetPlayer()) {
-        const std::string obj = CurrentObjective(st, *p);
-        if (!obj.empty()) {
-            constexpr int   kObjSize = 14;
-            constexpr float kPad     = 6.0f;
-            // Measure the actual rendered text so the backing panel hugs it
-            // exactly — it grows and shrinks with the objective string
-            // instead of guessing a fixed width from a glyph count.
-            const Vec2 m = TextBuilder{obj}.Size(kObjSize).Measure();
-            const float panelW = m.x + kPad * 2.0f;
-            const float panelH = m.y + kPad * 2.0f;
-            float px = viewportSize_.x * 0.5f - panelW * 0.5f;
-            if (px < 4.0f) px = 4.0f;
-            // Sit BELOW the top-left status panel (≤6 rows reaches ~y132),
-            // so a wide objective bar never touches the karma/money/rain
-            // readout — the playtest's "任務指引往下一點不要碰到數值面板".
-            constexpr float kPanelY = 138.0f;
-            renderer_.DrawRect(Rect{px, kPanelY, panelW, panelH},
-                               Color{20, 22, 30, 185});
-            TextBuilder{obj}.At(Vec2{px + kPad, kPanelY + kPad})
-                .Size(kObjSize).Color(Colors::White).Draw();
-        }
-    }
+    // Quest objective bar — extracted to ui/hud/ObjectiveBar.cpp
+    // (P1 step 7e). No-op when there is no Player or the objective
+    // string is empty for the current chapter.
+    DrawObjectiveBar(renderer_, world, st,
+                     viewportSize_.x, viewportSize_.y);
 }
 
 void View::RenderOverlays(const World& world) {
