@@ -5,7 +5,9 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "entities/Player.h"
+#include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace nccu {
@@ -27,6 +29,248 @@ bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
     return npcId == "suit_senior" || npcId == "victim" ||
            npcId == "shop_auntie";
 }
+
+// =============================================================================
+// Per-(state, npcId) opener-substate resolvers — the table form of what used
+// to be a 200-line switch in ResolveOpenerSubState. Each resolver answers ONE
+// question: "given this player's flags/karma, which subState of this NPC's
+// chapter*.md entries should the line-only / recap opener show?". Returning 0
+// always means "the (a) baseline opener of OpenNpcDialog"; the caller short-
+// circuits sub==0 back to the menu-vs-line-only path so a resolver returning
+// 0 cannot accidentally drop a player into a non-existent recap.
+//
+// Routing is line-only recap. Any karma/flag the entry's prose carries is
+// path-b (TryApplyChNRipple / quest hooks), NOT applied by the opener — the
+// only place a routed (b)/(c)/(d) opener line writes player state is the
+// Ch1-scoped 1b-3 reward-recap guard in OpenNpcDialog (申請書 / 承諾 reward).
+// The dispatch lookup below is O(N) over ≤ ~20 rows — trivially fast.
+// =============================================================================
+
+// ---- Ch1 加退選之亂 ---------------------------------------------------------
+
+// 助教 申請書 errand recap — once granted (Flag_HelpedTA_Ch1) OR after the
+// player has the 申請書 in hand (Flag_FoundForm), her opener moves to (b)
+// thank-you/idle. Otherwise (a) "請幫我撿一張表" plea.
+int Ch1Ta(const Player& p) {
+    if (p.HasFlag(kFlagHelpedTACh1)) return 1;
+    if (p.HasFlag(kFlagFoundForm))   return 1;
+    return 0;
+}
+
+// 苦主 善有善報 routing:
+//   授予真傘後 (Flag_HasTrueUmbrella) → (d) 重逢致謝 recap [3]
+//     (授予 + 清關已由 TryReturnVictimUmbrella 完成；(d) 純對白，loader
+//      無旗標，once-apply 不重套——victim recap 先例)。
+//   已承諾 (Flag_PromisedVictim)      → (b) 承諾後續 [1]
+//     (「先幫他找傘」提示由 TryReturnVictimUmbrella 的 ShowMessage 呈現；
+//      (b) 是 line-only recap)。
+//   否則                              → (a) 在雨中初遇 [0]。
+int Ch1Victim(const Player& p) {
+    if (p.HasFlag(kFlagHasTrueUmbrella)) return 3;
+    if (p.HasFlag(kFlagPromisedVictim))  return 1;
+    return 0;
+}
+
+// ---- Ch2 期中考週 ----------------------------------------------------------
+// S5c-3 ripple routing. Line-only recap; the once-per-Ch2 karma is landed by
+// TryApplyCh2Ripple, not here. B5: 學霸/苦主/阿姨's reactive beats USED to be
+// inline `*（若 Flag_X）*` lines the parser silently drops. They are now
+// re-authored as genuine flag-gated SEPARATE subStates in chapter2.md and
+// routed here so the line actually displays.
+
+int Ch2SuitSenior(const Player& p) {
+    if (p.HasFlag(kFlagHelpedSenior))  return 1;  // (b) +3
+    if (p.HasFlag(kFlagScoldedSenior)) return 2;  // (c) -3
+    return 0;                                       // (a) 路過
+}
+
+// Precedence (chapter2.md L225 「取代 (a)/(b) 段」 > L211 「取代 (a) 段」):
+// ProfessorTrap outranks HelpedTA.
+int Ch2Ta(const Player& p) {
+    if (p.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c) -10
+    if (p.HasFlag(kFlagHelpedTACh1))      return 1;  // (b)
+    return 0;                                          // (a)
+}
+
+// (a) 詢問線索：指向羅馬廣場雕像下的學霸 → (b) 喚醒學霸後的確認 recap. 純資訊
+// 節點（chapter2.md：不給 karma、無 flag），故 OpenNpcDialog 的 once-apply 區
+// 對 (b) 是 no-op，純 line-only recap（ta/victim recap 先例）。
+int Ch2Librarian(const Player& p) {
+    return p.HasFlag(kFlagBookworm) ? 1 : 0;
+}
+
+// 兩階段任務機（TryRescueBookworm，鑰匙 Flag_Bookworm）的對話映射：
+//   Recovered          → (d) 致謝 recap [3]（line-only；+5 已在 rescue 套，
+//     (d) blockquote 無 flag 註解，once-apply 不重套）。
+//   喚醒後未換回傘      → (c) 已喚醒、等撿筆記 recap [2]（喚醒互動本身的提示
+//     由 TryRescueBookworm 的 ShowMessage 呈現；(c) 子段現已重寫為純對白、可
+//     路由）。
+//   喚醒前持詛咒傘      → (b) 詛咒冷反應變體 [1]（chapter2.md (b)「取代 (a)」；
+//     學霸直覺感應到那把寫著別人名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應）。
+//   否則                → (a) 常態遊魂初遇 [0]。
+int Ch2Bookworm(const Player& p) {
+    if (p.HasFlag(kFlagBookwormRecovered))  return 3;
+    if (p.HasFlag(kFlagBookworm))           return 2;  // (c)
+    if (p.HasFlag(kFlagTookCursedUmbrella)) return 1;  // (b)
+    return 0;                                            // (a)
+}
+
+// B5: 買過集英樓螢光綠醜傘 → (b) 阿姨認出你（取代 (a)）。否則 (a) 考試週招呼。
+// (c) 狼狽版仍由 rainMeter 機制觸發，非 opener 路由（沿用原狀，已知省略）。
+int Ch2ShopAuntie(const Player& p) {
+    return p.HasFlag(kFlagBoughtUglyUmbrella) ? 1 : 0;
+}
+
+// B5: Ch1 承諾過 → (c) 她記得承諾（取代 (a)）；買過醜傘 → (d) 她注意到那把
+// 醜傘（取代 (b)）。兩旗標互不相斥，承諾的情感回扣優先於醜傘的辨識橋段。
+// 否則 (a) 常態路過。
+int Ch2Victim(const Player& p) {
+    if (p.HasFlag(kFlagPromisedVictim))     return 2;  // (c)
+    if (p.HasFlag(kFlagBoughtUglyUmbrella)) return 3;  // (d)
+    return 0;                                            // (a)
+}
+
+// ---- Ch3 校慶運動會 --------------------------------------------------------
+// 物物交換鏈三節點：route to (b)「交易完成 / 情報揭露」once this NPC's link
+// has been done, else (a). The (a) sub-blocks「玩家尚未帶X / 玩家帶著X」are
+// parser-flattened conditional lines (KNOWN OMISSION, same class as S5c-2
+// (c)/(c-fail) and 學霸 (a) cursed line) — accepted, not routable without a
+// chapter3.md edit. (b) is line-only recap; the +3/+3/+5 is landed by
+// TryAdvanceCh3Trade, not the opener's once-apply.
+//
+// S5d-3 ripple routing (genuine flag-gated SEPARATE subStates; chapter3.md
+// karma is `- \`// karma\`` bullet-doc, NOT a `>` blockquote, so nothing here
+// is parser-applied — these routes are pure narrative recap, the only code-
+// karma is ProfTrap -10 via TryApplyCh3Ripple).
+
+// (a) Ch2 救回分支（Flag_BookwormRecovered=true）/ (b) 未救回分支（=false）.
+int Ch3Bookworm(const Player& p) {
+    return p.HasFlag(kFlagBookwormRecovered) ? 0 : 1;
+}
+
+// (c) Flag_HelpedTA_Ch1 分支；否則 (a) 登記桌初次接觸.
+int Ch3Ta(const Player& p) {
+    return p.HasFlag(kFlagHelpedTACh1) ? 2 : 0;
+}
+
+// (a) Flag_PromisedVictim=true 且傘尚未歸還 / (b) =false 或 Ch1 無承諾.
+int Ch3Victim(const Player& p) {
+    return p.HasFlag(kFlagPromisedVictim) ? 0 : 1;
+}
+
+// HelpedSenior → (b) 物物交換鏈提示（省一步）. Else (a), whose Helped=true/false
+// condition lines are parser-flattened (KNOWN OMISSION); ScoldedSenior「不觸發
+// 對話」 is likewise not expressible as a subState — accepted, would need a
+// chapter3.md edit.
+int Ch3SuitSenior(const Player& p) {
+    return p.HasFlag(kFlagHelpedSenior) ? 1 : 0;
+}
+
+int Ch3VendorSausage(const Player& p) {
+    if (p.HasFlag(kFlagHasSausage) ||
+        p.HasFlag(kFlagHasLoudspeaker) ||
+        p.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
+    return 0;
+}
+
+int Ch3Loudspeaker(const Player& p) {
+    if (p.HasFlag(kFlagHasLoudspeaker) ||
+        p.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
+    return 0;
+}
+
+int Ch3SeniorC(const Player& p) {
+    return p.HasFlag(kFlagKnowsUmbrellaLoc) ? 1 : 0;
+}
+
+// ---- Ch4 期末考終焉 --------------------------------------------------------
+// S5e-2a peak ripple routing (line-only recap; chapter4.md karma is `- \`//
+// karma\`` bullet-doc, NOT a `>` blockquote, so nothing is parser-applied —
+// the Ch4 karma that matters is landed by TryApplyCh4Ripple (S5e-2c) and the
+// 助教 (d) 體諒 choice (S5e-2d)). 助教 (d) is NOT routed here — it is a
+// code-constructed choice-opener (S5e-2d).
+
+// chapter4.md L88: !HelpedSenior / ScoldedSenior → 學長 不出場. Spawn-
+// suppression is a KNOWN OMISSION (roster keeps him); degrade to (a) 假笑面具.
+// Otherwise karma splits the arc: >70 崩潰坦白 (b), <30 翻臉 (c), the 30..70
+// middle stays (a).
+int Ch4SuitSenior(const Player& p) {
+    if (!p.HasFlag(kFlagHelpedSenior)) return 0;
+    if (p.GetKarma() > 70) return 1;   // (b)
+    if (p.GetKarma() < 30) return 2;   // (c)
+    return 0;                           // (a)
+}
+
+// (b) Ch2 救他 callback / (c) 未救.
+int Ch4Bookworm(const Player& p) {
+    return p.HasFlag(kFlagBookwormRecovered) ? 1 : 2;
+}
+
+// (b)/(c) 互斥, HelpedTA_Ch1 優先 (chapter4.md L235); the (c) -15 still lands
+// separately via TryApplyCh4Ripple. (a) 巡考慌張 default. (d) 體諒 is the
+// S5e-2d choice.
+int Ch4Ta(const Player& p) {
+    if (p.HasFlag(kFlagHelpedTACh1))      return 1;  // (b)
+    if (p.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c)
+    return 0;                                          // (a)
+}
+
+// (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338). 否則 (a) 釋懷
+// （已歸還 or Ch1 無承諾, L325). HasUmbrella() is set by TrueUmbrella::beClaimed.
+int Ch4Victim(const Player& p) {
+    if (p.HasFlag(kFlagPromisedVictim) && !p.HasUmbrella()) return 1;
+    return 0;
+}
+
+// B3: the Ch1→Ch4 阿姨 ripple the GDD names (Flag_BoughtCoffeeForAuntie_Ch1)
+// but engine never read. Ch1 請過咖啡情分 → (a) 直接情報（subState 0，主動說
+// 助教往哪跑）；否則 → (d) 間接情報（subState 3，只說「那個常來的助教很趕」）.
+// The +3 (a)-route callback is path-b via TryApplyCh4Ripple (chapter4.md karma
+// is bullet-doc, not a `>` blockquote — nothing here is parser-applied). (b)/(c)
+// 推銷綠傘/拒買 stay the Ending-C 集英樓 Vendor flavour beats.
+int Ch4ShopAuntie(const Player& p) {
+    return p.HasFlag(kFlagBoughtCoffeeForAuntie) ? 0 : 3;
+}
+
+// ---- Dispatch table --------------------------------------------------------
+
+using OpenerResolver = int (*)(const Player&);
+
+struct DispatchEntry {
+    SemesterState state;
+    std::string_view npcId;
+    OpenerResolver resolver;
+};
+
+// One row per (state, npcId) that routes by subState. Any (state, npcId) not
+// listed falls through to subState 0 (the (a) baseline opener of
+// OpenNpcDialog). Order within a state is for readability only — lookup is
+// linear and the keys are unique.
+constexpr std::array<DispatchEntry, 20> kDispatch{{
+    {SemesterState::Chapter1_AddDrop,   "ta",                Ch1Ta},
+    {SemesterState::Chapter1_AddDrop,   "victim",            Ch1Victim},
+
+    {SemesterState::Chapter2_Midterms,  "suit_senior",       Ch2SuitSenior},
+    {SemesterState::Chapter2_Midterms,  "ta",                Ch2Ta},
+    {SemesterState::Chapter2_Midterms,  "librarian",         Ch2Librarian},
+    {SemesterState::Chapter2_Midterms,  "bookworm",          Ch2Bookworm},
+    {SemesterState::Chapter2_Midterms,  "shop_auntie",       Ch2ShopAuntie},
+    {SemesterState::Chapter2_Midterms,  "victim",            Ch2Victim},
+
+    {SemesterState::Chapter3_SportsDay, "bookworm",          Ch3Bookworm},
+    {SemesterState::Chapter3_SportsDay, "ta",                Ch3Ta},
+    {SemesterState::Chapter3_SportsDay, "victim",            Ch3Victim},
+    {SemesterState::Chapter3_SportsDay, "suit_senior",       Ch3SuitSenior},
+    {SemesterState::Chapter3_SportsDay, "vendor_sausage_a",  Ch3VendorSausage},
+    {SemesterState::Chapter3_SportsDay, "loudspeaker_b",     Ch3Loudspeaker},
+    {SemesterState::Chapter3_SportsDay, "senior_c",          Ch3SeniorC},
+
+    {SemesterState::Chapter4_Finals,    "suit_senior",       Ch4SuitSenior},
+    {SemesterState::Chapter4_Finals,    "bookworm",          Ch4Bookworm},
+    {SemesterState::Chapter4_Finals,    "ta",                Ch4Ta},
+    {SemesterState::Chapter4_Finals,    "victim",            Ch4Victim},
+    {SemesterState::Chapter4_Finals,    "shop_auntie",       Ch4ShopAuntie},
+}};
 
 }  // namespace
 
@@ -88,200 +332,8 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
 
 int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
                           const Player& player) {
-    if (state == SemesterState::Chapter1_AddDrop) {
-        if (npcId == "ta") {
-            if (player.HasFlag(kFlagHelpedTACh1)) return 1;
-            if (player.HasFlag(kFlagFoundForm))     return 1;
-            return 0;
-        }
-        if (npcId == "victim") {
-            // 善有善報 routing:
-            //   授予真傘後 (Flag_HasTrueUmbrella) -> (d) 重逢致謝 recap [3]
-            //     （授予 + 清關已由 TryReturnVictimUmbrella 完成；(d) 純
-            //      對白，loader 無旗標，once-apply 不重套——victim recap 先例）。
-            //   已承諾 (Flag_PromisedVictim)        -> (b) 承諾後續 [1]
-            //     （含「先幫他找傘」的提示由 TryReturnVictimUmbrella 的
-            //      ShowMessage 呈現；(b) 是 line-only recap）。
-            //   否則                                -> (a) 在雨中初遇 [0]。
-            if (player.HasFlag(kFlagHasTrueUmbrella)) return 3;   // (d)
-            if (player.HasFlag(kFlagPromisedVictim))  return 1;   // (b)
-            return 0;                                               // (a)
-        }
-    }
-    if (state == SemesterState::Chapter2_Midterms) {
-        // S5c-3 ripple routing. Line-only recap; the once-per-Ch2 karma
-        // is landed by TryApplyCh2Ripple, not here.
-        //
-        // B5: 學霸/苦主/阿姨's reactive beats USED to be inline
-        // `*（若 Flag_X）*` lines the parser silently drops. They are now
-        // re-authored as genuine flag-gated SEPARATE subStates in
-        // chapter2.md and routed here so the line actually displays
-        // (mirrors the 助教 "(c) 取代 (a) 段" pattern):
-        //   學霸  Flag_TookCursedUmbrella & !Recovered -> (b) 詛咒冷反應
-        //   苦主  Flag_PromisedVictim                  -> (c) 承諾回扣
-        //   苦主  Flag_BoughtUglyUmbrella              -> (d) 醜傘辨識
-        //   阿姨  Flag_BoughtUglyUmbrella              -> (b) 醜傘辨識
-        if (npcId == "suit_senior") {
-            if (player.HasFlag(kFlagHelpedSenior))  return 1;  // (b) +3
-            if (player.HasFlag(kFlagScoldedSenior)) return 2;  // (c) -3
-            return 0;                                            // (a) 路過
-        }
-        if (npcId == "ta") {
-            // Precedence (chapter2.md L225 「取代 (a)/(b) 段」 >
-            // L211 「取代 (a) 段」): ProfessorTrap outranks HelpedTA.
-            if (player.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c) -10
-            if (player.HasFlag(kFlagHelpedTACh1))     return 1;  // (b)
-            return 0;                                               // (a)
-        }
-        if (npcId == "librarian") {
-            // (a) 詢問線索：指向羅馬廣場雕像下的學霸（不再交辦撿筆記）
-            // -> (b) 喚醒學霸後的確認 recap。純資訊節點（chapter2.md：
-            // 不給 karma、無 flag），故 OpenNpcDialog 的 once-apply 區對
-            // (b) 是 no-op，純 line-only recap（ta/victim recap 先例）。
-            if (player.HasFlag(kFlagBookworm)) return 1;
-            return 0;
-        }
-        if (npcId == "bookworm") {
-            // 兩階段任務機（TryRescueBookworm，鑰匙 Flag_Bookworm）的
-            // 對話映射：
-            //   Recovered          -> (d) 致謝 recap [3]（line-only；+5 已
-            //     在 rescue 套，(d) blockquote 無 flag 註解，once-apply
-            //     不重套）。
-            //   喚醒後未換回傘      -> (c) 已喚醒、等撿筆記 recap [2]
-            //     （喚醒互動本身的提示由 TryRescueBookworm 的 ShowMessage
-            //     呈現；(c) 子段現已重寫為純對白、可路由）。
-            //   喚醒前持詛咒傘      -> (b) 詛咒冷反應變體 [1]
-            //     (chapter2.md (b)「取代 (a)」；學霸直覺感應到那把寫著別人
-            //     名字的傘——CursedUmbrella.cpp 註記的 Ch2 冷反應)。
-            //   否則                -> (a) 常態遊魂初遇 [0]。
-            if (player.HasFlag(kFlagBookwormRecovered)) return 3;
-            if (player.HasFlag(kFlagBookworm))     return 2;  // (c)
-            if (player.HasFlag(kFlagTookCursedUmbrella)) return 1;  // (b)
-            return 0;                                                // (a)
-        }
-        if (npcId == "shop_auntie") {
-            // B5: 買過集英樓螢光綠醜傘 -> (b) 阿姨認出你（取代 (a)）。
-            // 否則 (a) 考試週招呼。(c) 狼狽版仍由 rainMeter 機制觸發，
-            // 非 opener 路由（沿用原狀，已知省略）。
-            if (player.HasFlag(kFlagBoughtUglyUmbrella)) return 1;  // (b)
-            return 0;                                                // (a)
-        }
-        if (npcId == "victim") {
-            // B5: Ch1 承諾過 -> (c) 她記得承諾（取代 (a)）；買過醜傘
-            // -> (d) 她注意到那把醜傘（取代 (b)）。兩旗標互不相斥，
-            // 承諾的情感回扣優先於醜傘的辨識橋段。否則 (a) 常態路過。
-            if (player.HasFlag(kFlagPromisedVictim)) return 2;     // (c)
-            if (player.HasFlag(kFlagBoughtUglyUmbrella)) return 3;  // (d)
-            return 0;                                                // (a)
-        }
-    }
-    if (state == SemesterState::Chapter3_SportsDay) {
-        // 物物交換鏈三節點：route to (b)「交易完成 / 情報揭露」once
-        // this NPC's link has been done, else (a). The (a) sub-blocks
-        // 「玩家尚未帶X / 玩家帶著X」are parser-flattened conditional
-        // lines (KNOWN OMISSION, same class as S5c-2 (c)/(c-fail) and
-        // 學霸 (a) cursed line) — accepted, not routable without a
-        // chapter3.md edit. (b) is line-only recap; the +3/+3/+5 is
-        // landed by TryAdvanceCh3Trade, not the opener's once-apply.
-        //
-        // S5d-3 ripple routing (genuine flag-gated SEPARATE subStates;
-        // chapter3.md karma is `- \`// karma\`` bullet-doc, NOT a `>`
-        // blockquote, so nothing here is parser-applied — these route
-        // are pure narrative recap, the only code-karma is ProfTrap
-        // -10 via TryApplyCh3Ripple).
-        if (npcId == "bookworm") {
-            // (a) Ch2 救回分支（Flag_BookwormRecovered=true）/
-            // (b) 未救回分支（=false）.
-            if (player.HasFlag(kFlagBookwormRecovered)) return 0;
-            return 1;
-        }
-        if (npcId == "ta") {
-            // (c) Flag_HelpedTA_Ch1 分支；否則 (a) 登記桌初次接觸.
-            if (player.HasFlag(kFlagHelpedTACh1)) return 2;
-            return 0;
-        }
-        if (npcId == "victim") {
-            // (a) Flag_PromisedVictim=true 且傘尚未歸還 /
-            // (b) =false 或 Ch1 無承諾.
-            if (player.HasFlag(kFlagPromisedVictim)) return 0;
-            return 1;
-        }
-        if (npcId == "suit_senior") {
-            // HelpedSenior -> (b) 物物交換鏈提示（省一步）. Else (a),
-            // whose Helped=true/false condition lines are parser-
-            // flattened (KNOWN OMISSION); ScoldedSenior「不觸發對話」
-            // is likewise not expressible as a subState — accepted,
-            // would need a chapter3.md edit.
-            if (player.HasFlag(kFlagHelpedSenior)) return 1;
-            return 0;
-        }
-        if (npcId == "vendor_sausage_a") {
-            if (player.HasFlag(kFlagHasSausage) ||
-                player.HasFlag(kFlagHasLoudspeaker) ||
-                player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
-            return 0;
-        }
-        if (npcId == "loudspeaker_b") {
-            if (player.HasFlag(kFlagHasLoudspeaker) ||
-                player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
-            return 0;
-        }
-        if (npcId == "senior_c") {
-            if (player.HasFlag(kFlagKnowsUmbrellaLoc)) return 1;
-            return 0;
-        }
-    }
-    if (state == SemesterState::Chapter4_Finals) {
-        // S5e-2a peak ripple routing (line-only recap; chapter4.md
-        // karma is `- \`// karma\`` bullet-doc, NOT a `>` blockquote,
-        // so nothing is parser-applied — the Ch4 karma that matters is
-        // landed by TryApplyCh4Ripple (S5e-2c) and the 助教 (d) 體諒
-        // choice (S5e-2d)). 助教 (d) is NOT routed here — it is a
-        // code-constructed choice-opener (S5e-2d).
-        if (npcId == "suit_senior") {
-            // chapter4.md L88: !HelpedSenior / ScoldedSenior → 學長
-            // 不出場. Spawn-suppression is a KNOWN OMISSION (roster
-            // keeps him); degrade to (a) 假笑面具. Otherwise karma
-            // splits the arc: >70 崩潰坦白 (b), <30 翻臉 (c), the
-            // 30..70 middle stays (a).
-            if (!player.HasFlag(kFlagHelpedSenior)) return 0;
-            if (player.GetKarma() > 70) return 1;   // (b)
-            if (player.GetKarma() < 30) return 2;   // (c)
-            return 0;                               // (a)
-        }
-        if (npcId == "bookworm") {
-            // (b) Ch2 救他 callback / (c) 未救.
-            if (player.HasFlag(kFlagBookwormRecovered)) return 1;
-            return 2;
-        }
-        if (npcId == "ta") {
-            // (b)/(c) 互斥, HelpedTA_Ch1 優先 (chapter4.md L235); the
-            // (c) -15 still lands separately via TryApplyCh4Ripple.
-            // (a) 巡考慌張 default. (d) 體諒 is the S5e-2d choice.
-            if (player.HasFlag(kFlagHelpedTACh1))     return 1;  // (b)
-            if (player.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c)
-            return 0;                                                // (a)
-        }
-        if (npcId == "victim") {
-            // (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338).
-            // 否則 (a) 釋懷（已歸還 or Ch1 無承諾, L325). HasUmbrella()
-            // is set by TrueUmbrella::beClaimed.
-            if (player.HasFlag(kFlagPromisedVictim) &&
-                !player.HasUmbrella()) return 1;
-            return 0;
-        }
-        if (npcId == "shop_auntie") {
-            // B3: the Ch1→Ch4 阿姨 ripple the GDD names
-            // (Flag_BoughtCoffeeForAuntie_Ch1) but engine never read.
-            // Ch1 請過咖啡情分 → (a) 直接情報（subState 0，主動說助教
-            // 往哪跑）；否則 → (d) 間接情報（subState 3，只說「那個常
-            // 來的助教很趕」）. The +3 (a)-route callback is path-b via
-            // TryApplyCh4Ripple (chapter4.md karma is bullet-doc, not a
-            // `>` blockquote — nothing here is parser-applied). (b)/(c)
-            // 推銷綠傘/拒買 stay the Ending-C 集英樓 Vendor flavour beats.
-            if (player.HasFlag(kFlagBoughtCoffeeForAuntie)) return 0;  // (a)
-            return 3;                                                 // (d)
-        }
+    for (const auto& e : kDispatch) {
+        if (e.state == state && e.npcId == npcId) return e.resolver(player);
     }
     return 0;
 }
