@@ -8,7 +8,7 @@
 #include "state/SemesterStateMachine.h"
 #include "entities/GameObject.h"
 #include "engine/events/EventBus.h"
-#include "gfx/Input.h"
+#include "engine/input/Input.h"
 #include "gfx/Time.h"
 #include "raylib.h"
 

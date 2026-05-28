@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "controller/InputHandler.h"
-#include "gfx/Input.h"
-#include "gfx/Key.h"
+#include "engine/input/Input.h"
+#include "engine/input/Key.h"
 #include <cstdint>
 
 // Cycle 10.P0a: pin the edge / hold timing the InputHandler extracted

@@ -1,7 +1,7 @@
 #ifndef INPUT_HANDLER_H_
 #define INPUT_HANDLER_H_
-#include "gfx/Input.h"
-#include "gfx/Key.h"
+#include "engine/input/Input.h"
+#include "engine/input/Key.h"
 
 namespace nccu {
 

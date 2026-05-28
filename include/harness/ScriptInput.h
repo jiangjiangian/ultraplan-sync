@@ -1,6 +1,6 @@
 #ifndef SCRIPT_INPUT_H_
 #define SCRIPT_INPUT_H_
-#include "gfx/Input.h"
+#include "engine/input/Input.h"
 
 #include <istream>
 #include <string>
