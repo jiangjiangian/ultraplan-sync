@@ -20,6 +20,7 @@
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
 #include "ui/hud/StatusPanel.h"
+#include "ui/overlay/HelpOverlay.h"
 #include "ui/overlay/MenuAffordance.h"
 #include "ui/overlay/PauseMenu.h"
 #include "ui/ReducedMotion.h"
@@ -500,32 +501,10 @@ void View::RenderOverlays(const World& world) {
     // every frame.
     DrawPauseMenu(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // REQUIREMENT #9 + U2-T4: the in-game 說明 (how-to-play) overlay —
-    // drawn ABOVE the menu (which is still up behind it). Pure function of
-    // World::HelpOpen() + World::HelpPage(); the same shared GameHelp text
-    // the title screen uses, so the two never drift. A near-full-screen
-    // panel showing one PAGE of the (now-paged) help; ←/→ flip the page,
-    // M/E/Enter (all handled in GameController) dismiss it back to the menu
-    // (ESC quits the program).
-    if (world.MenuOpen() && world.HelpOpen()) {
-        const float W = viewportSize_.x;
-        const float H = viewportSize_.y;
-        // Full-screen scrim ON TOP of the paused menu (overlay-only — the
-        // title screen Clears instead, so this stays at the call site).
-        renderer_.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 205});
-        // Shared 遊戲說明 page body (review MINOR de-dup): same panel/title/
-        // paged body/indicator/返回 chip the title screen draws. The overlay
-        // values: 245α panel, light indicator, "M / E 返回選單" chip at -58.
-        nccu::ui::DrawHelpPage(
-            [this](Rect r, Color c) { renderer_.DrawRect(r, c); },
-            nccu::ui::HelpPageStyle{
-                W, H,
-                std::max(0, std::min(world.HelpPage(),
-                                     nccu::kGameHelpPageCount - 1)),
-                Color{18, 20, 28, 245},
-                Color{200, 200, 210, 255},
-                "M / E 返回選單", -58.0f});
-    }
+    // In-game 說明 (how-to-play) overlay — extracted to
+    // ui/overlay/HelpOverlay.cpp (P1 step 7d). No-op unless MenuOpen
+    // AND HelpOpen are both true, so the call is safe every frame.
+    DrawHelpOverlay(renderer_, world, viewportSize_.x, viewportSize_.y);
 
     // U1-T2: the chapter bookend big card, drawn LAST so its brief
     // full-attention beat sits above the world / HUD / dialog / menus.
