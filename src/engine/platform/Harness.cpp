@@ -1,6 +1,6 @@
-#include "harness/Harness.h"
+#include "engine/platform/Harness.h"
 
-#include "harness/ScriptInput.h"
+#include "engine/platform/ScriptInput.h"
 #include "quest/Flags.h"
 #include "world/World.h"
 #include "entities/Player.h"
@@ -9,7 +9,7 @@
 #include "entities/GameObject.h"
 #include "engine/events/EventBus.h"
 #include "engine/input/Input.h"
-#include "gfx/Time.h"
+#include "engine/platform/Time.h"
 #include "raylib.h"
 
 #include <cstdio>

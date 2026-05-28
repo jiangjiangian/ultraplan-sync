@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "harness/ScriptInput.h"
+#include "engine/platform/ScriptInput.h"
 #include "engine/input/Key.h"
 
 #include <sstream>

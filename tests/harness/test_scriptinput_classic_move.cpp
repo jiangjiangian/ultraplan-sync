@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
-#include "harness/ScriptInput.h"
+#include "engine/platform/ScriptInput.h"
 #include "controller/GameController.h"
 #include "world/World.h"
 #include "dialog/DialogSource.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
-#include "gfx/Time.h"
+#include "engine/platform/Time.h"
 
 #include <sstream>
 

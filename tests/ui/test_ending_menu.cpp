@@ -34,7 +34,7 @@
 #include "state/SemesterState.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
-#include "gfx/Time.h"
+#include "engine/platform/Time.h"
 
 #include <cstdlib>
 #include <set>

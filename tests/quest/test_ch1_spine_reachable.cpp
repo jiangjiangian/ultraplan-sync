@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
-#include "harness/ScriptInput.h"
+#include "engine/platform/ScriptInput.h"
 #include "controller/GameController.h"
 #include "world/World.h"
 #include "entities/Player.h"
@@ -12,7 +12,7 @@
 #include "quest/NpcSpawns.h"
 #include "engine/math/Rect.h"
 #include "engine/input/Input.h"
-#include "gfx/Time.h"
+#include "engine/platform/Time.h"
 
 #include <cmath>
 #include <sstream>
