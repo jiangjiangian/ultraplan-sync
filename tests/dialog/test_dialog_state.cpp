@@ -2,7 +2,7 @@
 #include "quest/Flags.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
-#include "controller/GameController.h"
+#include "controller/DialogChoiceApply.h"
 
 using nccu::DialogState;
 using nccu::DialogChoice;

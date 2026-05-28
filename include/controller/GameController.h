@@ -18,10 +18,6 @@ namespace nccu {
 class World;
 struct DialogChoice;
 
-// Applies a confirmed dialog choice's side effects to the player. Free
-// function so it is unit-testable without the controller's input loop.
-void ApplyDialogChoice(Player& player, const DialogChoice& choice);
-
 // The input + simulation layer. One Update() advances the world by a
 // frame: ticks every object, resolves player collision, dispatches the
 // E-key interact, detects building entry, sweeps the dead. Owns the
