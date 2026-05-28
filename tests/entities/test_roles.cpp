@@ -10,7 +10,7 @@
 #include "entities/QuestFlagPickup.h"
 #include "vendor/Vendor.h"
 #include "vendor/VendorConfig.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <memory>
 #include <vector>

@@ -1,5 +1,5 @@
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "gfx/IRenderer.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"

@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "entities/CashPickup.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/GameObjectFactory.h"
 #include "entities/Player.h"
 

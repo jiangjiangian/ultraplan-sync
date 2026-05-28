@@ -27,7 +27,7 @@
 #include "world/World.h"
 #include "controller/GameController.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "ui/MessageView.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"

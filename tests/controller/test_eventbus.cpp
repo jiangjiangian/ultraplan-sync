@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 TEST_CASE("EventBus delivers events to subscribers") {
     EventBus::Instance().Clear();

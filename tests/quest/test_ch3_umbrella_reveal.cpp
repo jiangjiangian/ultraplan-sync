@@ -4,7 +4,7 @@
 #include "entities/Player.h"
 #include "entities/TrueUmbrella.h"
 #include "quest/Chapter3Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/SemesterState.h"
 #include "engine/math/Vec2.h"
 

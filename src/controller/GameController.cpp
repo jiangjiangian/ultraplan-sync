@@ -18,7 +18,7 @@
 #include "vendor/Vendor.h"
 #include "state/InterludeExit.h"
 #include "controller/GameObjectQueries.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "controller/SimSystem.h"
 #include "quest/QuestHookTable.h"

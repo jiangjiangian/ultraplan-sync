@@ -4,7 +4,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "state/EndingGate.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
 #include "engine/math/Vec2.h"

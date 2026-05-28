@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
 #include "quest/Chapter2Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/NPC.h"
 #include "entities/Player.h"
 #include "entities/GameObject.h"

@@ -1,7 +1,7 @@
 #include "controller/SceneRouter.h"
 #include "quest/Flags.h"
 #include "ui/ChapterToast.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "state/InterludeExit.h"
 #include "entities/Player.h"
 #include "state/SemesterState.h"

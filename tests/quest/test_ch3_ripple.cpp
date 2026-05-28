@@ -2,7 +2,7 @@
 #include "quest/Flags.h"
 #include "quest/Chapter3Quest.h"
 #include "dialog/DialogOpener.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "engine/math/Vec2.h"
 

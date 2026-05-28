@@ -1,6 +1,6 @@
 #include "entities/WaterproofSpray.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 void WaterproofSpray::Consume(Player* player) {
     if (!player) return;

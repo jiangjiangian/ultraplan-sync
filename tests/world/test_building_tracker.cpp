@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "world/BuildingTracker.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <array>
 #include <string>

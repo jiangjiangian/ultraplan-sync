@@ -23,7 +23,7 @@
 #include "quest/ChapterVendors.h"
 #include "quest/ItemCatalog.h"
 #include "quest/Chapter2Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/GameObject.h"
 #include "state/SemesterState.h"
 #include "gfx/Input.h"

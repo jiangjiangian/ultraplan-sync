@@ -1,5 +1,5 @@
 #include "entities/CashPickup.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "engine/math/Color.h"
 #include "gfx/IRenderer.h"

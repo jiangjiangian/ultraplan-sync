@@ -1,5 +1,5 @@
 #include "entities/TransparentUmbrella.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "quest/Flags.h"
 #include "gfx/IRenderer.h"

@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "entities/DlcSign.h"
 #include "entities/GameObject.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "world/World.h"
 #include "state/SemesterState.h"

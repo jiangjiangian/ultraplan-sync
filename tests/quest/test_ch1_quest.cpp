@@ -6,7 +6,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogSource.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "entities/Player.h"
 #include "entities/QuestFlagPickup.h"

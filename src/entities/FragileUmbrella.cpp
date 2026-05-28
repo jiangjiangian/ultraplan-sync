@@ -1,6 +1,6 @@
 #include "entities/FragileUmbrella.h"
 #include "entities/Player.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 void FragileUmbrella::beClaimed(Player* player) {
     if (!player) return;

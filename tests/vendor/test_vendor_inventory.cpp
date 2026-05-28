@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "vendor/Vendor.h"
 #include "vendor/VendorConfig.h"

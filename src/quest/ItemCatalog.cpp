@@ -6,7 +6,7 @@
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "quest/Chapter3Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <algorithm>
 #include <string>

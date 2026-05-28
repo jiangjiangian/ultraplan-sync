@@ -1,5 +1,5 @@
 #include "quest/Chapter3Quest.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include <string>
 

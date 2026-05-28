@@ -1,6 +1,6 @@
 #include "entities/NPC.h"
 #include "dialog/DialogSource.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "world/Physics.h"
 #include "world/WorldConfig.h"
 #include "gfx/IRenderer.h"

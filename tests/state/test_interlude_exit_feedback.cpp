@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "ui/ChapterToast.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
 #include "state/InterludeExit.h"
 #include "world/World.h"

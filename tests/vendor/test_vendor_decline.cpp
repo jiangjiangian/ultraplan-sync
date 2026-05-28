@@ -28,7 +28,7 @@
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "quest/ChapterVendors.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include "entities/GameObject.h"
 #include "state/SemesterState.h"
 #include "gfx/Input.h"

@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "controller/EventWiring.h"
 #include "state/SemesterStateMachine.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 #include <string>
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;

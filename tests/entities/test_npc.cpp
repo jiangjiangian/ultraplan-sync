@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "entities/NPC.h"
-#include "controller/EventBus.h"
+#include "engine/events/EventBus.h"
 
 #include <string>
 #include <vector>
