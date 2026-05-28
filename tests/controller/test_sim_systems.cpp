@@ -3,8 +3,8 @@
 #include "world/World.h"
 #include "entities/Player.h"
 #include "entities/NPC.h"
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 
 #include <cstdint>
 #include <memory>

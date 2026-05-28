@@ -26,7 +26,7 @@
 #include "gfx/Decorations.h"     // kDecorations — the placed ambient strips
 #include "gfx/CameraScope.h"
 #include "gfx/TextBuilder.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>

@@ -2,7 +2,7 @@
 #include "entities/NPC.h"
 #include "entities/GameObject.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <vector>
 
 using nccu::SemesterState;

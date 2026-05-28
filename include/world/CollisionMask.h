@@ -1,6 +1,6 @@
 #ifndef COLLISION_MASK_H_
 #define COLLISION_MASK_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <cstdint>
 #include <vector>
 

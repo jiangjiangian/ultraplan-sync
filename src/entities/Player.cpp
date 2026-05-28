@@ -3,8 +3,8 @@
 #include "gfx/IRenderer.h"
 #include "gfx/Input.h"
 #include "gfx/Key.h"
-#include "gfx/Color.h"
-#include "gfx/Rect.h"
+#include "engine/math/Color.h"
+#include "engine/math/Rect.h"
 
 #include <algorithm>
 #include <array>

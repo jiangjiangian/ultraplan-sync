@@ -3,7 +3,7 @@
 #include "quest/Chapter1Quest.h"
 #include "quest/Chapter2Quest.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 #include <vector>
 

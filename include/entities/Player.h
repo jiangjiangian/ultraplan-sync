@@ -1,9 +1,9 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 #include "entities/Character.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include "gfx/Texture.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <optional>
 #include <string>
 #include <unordered_map>

@@ -1,7 +1,7 @@
 #include "ui/HelpPageView.h"
 #include "ui/GameHelp.h"
 #include "gfx/TextBuilder.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 
 #include <algorithm>
 #include <cstddef>

@@ -4,8 +4,8 @@
 #include "world/Physics.h"
 #include "world/WorldConfig.h"
 #include "gfx/IRenderer.h"
-#include "gfx/Color.h"
-#include "gfx/Rect.h"
+#include "engine/math/Color.h"
+#include "engine/math/Rect.h"
 #include "gfx/WalkCycle.h"
 #include <algorithm>
 #include <cmath>

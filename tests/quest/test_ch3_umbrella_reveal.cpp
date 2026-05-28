@@ -6,7 +6,7 @@
 #include "quest/Chapter3Quest.h"
 #include "controller/EventBus.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <cstddef>
 

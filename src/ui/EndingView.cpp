@@ -1,9 +1,9 @@
 #include "ui/EndingView.h"
 #include "dialog/DialogLayout.h"
 #include "gfx/IRenderer.h"
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
-#include "gfx/Color.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Color.h"
 #include "gfx/UmbrellaGlyph.h"
 #include <algorithm>
 #include <cstdio>

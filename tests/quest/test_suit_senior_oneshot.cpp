@@ -5,7 +5,7 @@
 #include "dialog/DialogSource.h"
 #include "entities/Player.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #ifndef TEST_CONTENT_DIR
 #error "TEST_CONTENT_DIR must be defined by the build system"

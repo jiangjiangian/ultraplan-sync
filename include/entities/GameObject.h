@@ -1,7 +1,7 @@
 #ifndef GAME_OBJECT_H_
 #define GAME_OBJECT_H_
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 #include "entities/Roles.h"   // IUpdatable / IDrawable / IInteractable + WithRoles
 #include <string>
 #include <string_view>

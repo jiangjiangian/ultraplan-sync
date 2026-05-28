@@ -23,7 +23,7 @@
 // `kPauseHintColor` symbol — the test is a structural pin.
 
 #include "doctest/doctest.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include <cmath>
 
 using nccu::gfx::Color;

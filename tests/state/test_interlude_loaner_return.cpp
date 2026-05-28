@@ -8,7 +8,7 @@
 #include "world/World.h"
 #include "state/SemesterState.h"
 #include "state/SemesterStateMachine.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string_view>
 
 using nccu::SemesterState;

@@ -2,7 +2,7 @@
 #define CHAPTER3_QUEST_H_
 #include "quest/Flags.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string_view>
 
 class Player;                       // mutated by the trade hooks

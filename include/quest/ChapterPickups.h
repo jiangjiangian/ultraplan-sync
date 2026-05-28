@@ -1,7 +1,7 @@
 #ifndef CHAPTER_PICKUPS_H_
 #define CHAPTER_PICKUPS_H_
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <vector>
 
 namespace nccu {

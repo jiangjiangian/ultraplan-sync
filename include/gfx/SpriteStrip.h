@@ -1,7 +1,7 @@
 #ifndef GFX_SPRITE_STRIP_H_
 #define GFX_SPRITE_STRIP_H_
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
 #include "state/SemesterState.h"
 #include <cmath>
 

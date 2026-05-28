@@ -5,7 +5,7 @@
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
 #include "ui/EndingView.h"   // IsEndingState (G1 TOTAL proof)
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;
 using nccu::IsEndingState;

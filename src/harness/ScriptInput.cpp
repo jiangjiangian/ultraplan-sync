@@ -5,8 +5,8 @@
 #include "entities/GameObject.h"
 #include "dialog/DialogState.h"
 #include "gfx/Key.h"
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 #include "raylib.h"
 
 #include <cctype>

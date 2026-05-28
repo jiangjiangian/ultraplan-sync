@@ -6,7 +6,7 @@
 #include "entities/FragileUmbrella.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 // S5c-0 / F.9-a/b: the Ch1 "bad umbrella" claims are the SOURCE of the
 // negative ripples Ch2/Ch3/Ch4 cash in (助教 -10/-15, 學霸 cold, Ending

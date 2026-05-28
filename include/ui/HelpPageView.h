@@ -1,8 +1,8 @@
 #ifndef HELP_PAGE_VIEW_H_
 #define HELP_PAGE_VIEW_H_
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
-#include "gfx/Color.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Color.h"
 #include <functional>
 #include <string_view>
 

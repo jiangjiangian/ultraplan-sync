@@ -1,7 +1,7 @@
 #ifndef QUEST_FLAG_PICKUP_H_
 #define QUEST_FLAG_PICKUP_H_
 #include "entities/Item.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 #include <vector>
 

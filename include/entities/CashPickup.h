@@ -1,7 +1,7 @@
 #ifndef CASH_PICKUP_H_
 #define CASH_PICKUP_H_
 #include "entities/Item.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 // CashPickup: a one-shot ground item that converts its `value_` field into
 // the player's money pool on collision. Mirrors the consumable-item shape

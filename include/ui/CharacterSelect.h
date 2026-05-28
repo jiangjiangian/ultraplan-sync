@@ -1,7 +1,7 @@
 #ifndef CHARACTER_SELECT_H_
 #define CHARACTER_SELECT_H_
 #include "gfx/Window.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include <array>
 #include <string>
 #include <string_view>

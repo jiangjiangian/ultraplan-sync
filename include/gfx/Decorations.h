@@ -1,7 +1,7 @@
 #ifndef GFX_DECORATIONS_H_
 #define GFX_DECORATIONS_H_
 #include "gfx/SpriteStrip.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include "quest/Chapter3Quest.h"   // kSportsTrackCx/Cy — 操場 centre
 #include "state/SemesterState.h"
 #include <array>

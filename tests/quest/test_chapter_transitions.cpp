@@ -14,7 +14,7 @@
 #include "state/SemesterStateMachine.h"
 #include "entities/TrueUmbrella.h"
 #include "world/World.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <algorithm>
 #include <string>
 #include <vector>

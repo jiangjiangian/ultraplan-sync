@@ -1,6 +1,6 @@
 #ifndef GFX_WALK_CYCLE_H_
 #define GFX_WALK_CYCLE_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <array>
 #include <cmath>
 #include <cstddef>

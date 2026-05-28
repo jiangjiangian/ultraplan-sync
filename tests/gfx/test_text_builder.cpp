@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "gfx/TextBuilder.h"
-#include "gfx/Color.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Color.h"
+#include "engine/math/Vec2.h"
 
 using namespace nccu::gfx;
 

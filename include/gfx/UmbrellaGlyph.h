@@ -1,8 +1,8 @@
 #ifndef GFX_UMBRELLA_GLYPH_H_
 #define GFX_UMBRELLA_GLYPH_H_
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include "gfx/IRenderer.h"
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 
 // SINGLE SOURCE OF TRUTH for how every umbrella variant is drawn — a pure
 // rect-only vector glyph the owner pinned in the iteration brief. The same

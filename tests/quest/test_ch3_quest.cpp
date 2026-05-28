@@ -8,7 +8,7 @@
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
 #include "world/World.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <cmath>
 #include <string>

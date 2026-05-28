@@ -4,8 +4,8 @@
 #include "controller/SceneRouter.h"
 #include "controller/SimSystem.h"
 #include "state/SemesterState.h"
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
 #include <memory>
 #include <string>
 #include <vector>

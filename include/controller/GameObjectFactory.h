@@ -1,7 +1,7 @@
 #ifndef GAME_OBJECT_FACTORY_H_
 #define GAME_OBJECT_FACTORY_H_
 #include "entities/GameObject.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <memory>
 
 enum class ObjectType {

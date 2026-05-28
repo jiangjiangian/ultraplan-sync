@@ -4,7 +4,7 @@
 #include "dialog/DialogOpener.h"
 #include "controller/EventBus.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 using nccu::SemesterState;
 

@@ -2,7 +2,7 @@
 #define CHAPTER_VENDORS_H_
 #include "vendor/VendorConfig.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 #include <vector>
 

@@ -5,7 +5,7 @@
 #include "state/SemesterStateMachine.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;

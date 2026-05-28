@@ -1,7 +1,7 @@
 #ifndef VENDOR_SPRITE_H_
 #define VENDOR_SPRITE_H_
 #include "quest/PipoyaRoster.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <cstddef>
 #include <string>
 

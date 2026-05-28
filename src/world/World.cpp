@@ -14,7 +14,7 @@
 #include "entities/QuestFlagPickup.h"
 #include "vendor/Vendor.h"
 #include "vendor/VendorSprite.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <algorithm>
 #include <cassert>
 #include <cmath>

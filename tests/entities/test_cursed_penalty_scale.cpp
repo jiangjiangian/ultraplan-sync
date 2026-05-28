@@ -19,7 +19,7 @@
 #include "entities/CursedUmbrella.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 using nccu::gfx::Vec2;
 
