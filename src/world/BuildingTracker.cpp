@@ -1,6 +1,6 @@
 #include "world/BuildingTracker.h"
 #include "controller/EventBus.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 
 #include <string>
 

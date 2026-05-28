@@ -1,7 +1,7 @@
 #include "quest/ChapterVendors.h"
 #include "quest/Flags.h"
 #include "vendor/VendorLoader.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <optional>
 #include <string>

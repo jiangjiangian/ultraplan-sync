@@ -1,6 +1,6 @@
 #ifndef GFX_RECT_H_
 #define GFX_RECT_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 namespace nccu::gfx {
 

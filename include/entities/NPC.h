@@ -4,7 +4,7 @@
 #include "world/CollisionMask.h"
 #include "state/SemesterState.h"
 #include "gfx/Texture.h"
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 #include <cstdint>
 #include <optional>
 #include <string>

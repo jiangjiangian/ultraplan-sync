@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 
 using namespace nccu::gfx;
 

@@ -7,7 +7,7 @@
 #include "entities/Player.h"
 #include "entities/GameObject.h"
 #include "controller/EventBus.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <cstddef>
 #include <set>

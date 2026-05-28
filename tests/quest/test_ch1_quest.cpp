@@ -14,7 +14,7 @@
 #include "entities/TransparentUmbrella.h"
 #include "state/SemesterStateMachine.h"
 #include "world/World.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <cstddef>
 #include <string>

@@ -22,7 +22,7 @@
 #include "controller/EventWiring.h"
 #include "entities/Player.h"
 #include "world/World.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <string>
 #include <vector>

@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/QuestHookTable.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <string_view>
 #include <vector>

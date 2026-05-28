@@ -2,7 +2,7 @@
 #include "quest/Flags.h"
 #include "entities/QuestFlagPickup.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 TEST_CASE("QuestFlagPickup sets its flag on the player and deactivates") {
     Player p{nccu::gfx::Vec2{0, 0}};

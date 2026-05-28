@@ -7,7 +7,7 @@
 #include "controller/EventBus.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #ifndef TEST_CONTENT_DIR
 #error "TEST_CONTENT_DIR must be defined by the build system"

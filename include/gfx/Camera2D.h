@@ -1,6 +1,6 @@
 #ifndef GFX_CAMERA2_D_H_
 #define GFX_CAMERA2_D_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 namespace nccu::gfx {
 

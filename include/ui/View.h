@@ -3,8 +3,8 @@
 #include "gfx/RaylibRenderer.h"
 #include "gfx/Camera2D.h"
 #include "gfx/Texture.h"
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 #include "ui/ChapterCard.h"
 #include "state/SemesterState.h"
 #include <cstddef>

@@ -2,8 +2,8 @@
 #include "ui/MessageView.h"
 #include "dialog/DialogLayout.h"
 #include "gfx/IRenderer.h"
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
 #include <string>
 #include <vector>
 

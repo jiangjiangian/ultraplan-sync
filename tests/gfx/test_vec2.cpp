@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <cmath>
 
 using namespace nccu::gfx;

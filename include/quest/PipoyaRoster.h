@@ -1,6 +1,6 @@
 #ifndef PIPOYA_ROSTER_H_
 #define PIPOYA_ROSTER_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <algorithm>
 #include <cstddef>
 #include <filesystem>

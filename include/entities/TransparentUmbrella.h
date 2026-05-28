@@ -1,7 +1,7 @@
 #ifndef TRANSPARENT_UMBRELLA_H_
 #define TRANSPARENT_UMBRELLA_H_
 #include "entities/Item.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include "gfx/UmbrellaGlyph.h"
 
 // REQUIREMENT #9: the umbrellas a player chooses between in Ch1 must

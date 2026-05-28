@@ -1,7 +1,7 @@
 #ifndef PHYSICS_H_
 #define PHYSICS_H_
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 #include "world/CollisionMask.h"
 #include <vector>
 

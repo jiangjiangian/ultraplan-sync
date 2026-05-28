@@ -32,7 +32,7 @@
 #include "gfx/Input.h"
 #include "gfx/Key.h"
 #include "gfx/Time.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 #include <set>
 #include <string>

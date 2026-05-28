@@ -3,7 +3,7 @@
 #include "entities/Player.h"
 #include "vendor/VendorMessages.h"
 #include "quest/ItemCatalog.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 
 #include <string>
 #include <utility>

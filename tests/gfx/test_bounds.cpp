@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "gfx/Bounds.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 using namespace nccu::gfx;
 

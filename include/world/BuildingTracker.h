@@ -1,7 +1,7 @@
 #ifndef BUILDING_TRACKER_H_
 #define BUILDING_TRACKER_H_
 #include "world/Buildings.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <limits>
 
 namespace nccu {

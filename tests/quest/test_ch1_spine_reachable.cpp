@@ -10,7 +10,7 @@
 #include "state/SemesterState.h"
 #include "world/CollisionMask.h"
 #include "quest/NpcSpawns.h"
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 #include "gfx/Input.h"
 #include "gfx/Time.h"
 

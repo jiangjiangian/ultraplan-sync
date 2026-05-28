@@ -23,7 +23,7 @@
 #include "quest/Chapter4Quest.h"
 #include "quest/Chapter3Quest.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 using nccu::SemesterState;
 

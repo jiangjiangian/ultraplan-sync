@@ -1,8 +1,8 @@
 #ifndef GFX_I_RENDERER_H_
 #define GFX_I_RENDERER_H_
-#include "gfx/Color.h"
-#include "gfx/Rect.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Color.h"
+#include "engine/math/Rect.h"
+#include "engine/math/Vec2.h"
 #include <string_view>
 
 namespace nccu::gfx {

@@ -1,6 +1,6 @@
 #ifndef INTERLUDE_EXIT_H_
 #define INTERLUDE_EXIT_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 
 namespace nccu {
 

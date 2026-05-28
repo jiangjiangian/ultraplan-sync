@@ -1,6 +1,6 @@
 #ifndef BUILDINGS_H_
 #define BUILDINGS_H_
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 #include <array>
 #include <string_view>
 

@@ -1,7 +1,7 @@
 #ifndef DLC_SIGN_H_
 #define DLC_SIGN_H_
 #include "entities/GameObject.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 
 // B2: a re-readable world "easter-egg" sign — a big bold "?" standing at

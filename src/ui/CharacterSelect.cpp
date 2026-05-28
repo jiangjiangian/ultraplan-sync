@@ -6,9 +6,9 @@
 #include "gfx/Input.h"
 #include "gfx/Key.h"
 #include "gfx/Texture.h"
-#include "gfx/Color.h"
-#include "gfx/Vec2.h"
-#include "gfx/Rect.h"
+#include "engine/math/Color.h"
+#include "engine/math/Vec2.h"
+#include "engine/math/Rect.h"
 #include <cstddef>
 #include <string>
 #include <vector>

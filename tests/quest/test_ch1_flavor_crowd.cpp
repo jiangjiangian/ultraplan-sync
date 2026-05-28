@@ -7,7 +7,7 @@
 #include "entities/GameObject.h"
 #include "world/World.h"
 #include "state/SemesterState.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <set>
 #include <string>
 #include <string_view>

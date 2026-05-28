@@ -7,7 +7,7 @@
 #include "controller/EventBus.h"
 #include "dialog/DialogState.h"
 #include "entities/Player.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;

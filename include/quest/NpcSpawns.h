@@ -1,6 +1,6 @@
 #ifndef NPC_SPAWNS_H_
 #define NPC_SPAWNS_H_
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <string>
 #include <string_view>
 #include <vector>

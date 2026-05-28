@@ -2,7 +2,7 @@
 #define VENDOR_H_
 #include "entities/NPC.h"
 #include "vendor/VendorConfig.h"
-#include "gfx/Vec2.h"
+#include "engine/math/Vec2.h"
 #include <cstddef>
 
 // Vendor: an NPC that doubles as a shop counter. The base NPC class still

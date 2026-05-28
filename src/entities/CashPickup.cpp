@@ -1,9 +1,9 @@
 #include "entities/CashPickup.h"
 #include "controller/EventBus.h"
 #include "entities/Player.h"
-#include "gfx/Color.h"
+#include "engine/math/Color.h"
 #include "gfx/IRenderer.h"
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 
 #include <string>
 

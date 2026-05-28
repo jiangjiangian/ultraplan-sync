@@ -1,7 +1,7 @@
 #ifndef QUEST_GIVER_INDICATOR_H_
 #define QUEST_GIVER_INDICATOR_H_
 #include "gfx/IRenderer.h"
-#include "gfx/Rect.h"
+#include "engine/math/Rect.h"
 
 namespace nccu {
 
