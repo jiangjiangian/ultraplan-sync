@@ -100,7 +100,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     std::string script = preRoute ? preRoute : "";
     script += "interact ";

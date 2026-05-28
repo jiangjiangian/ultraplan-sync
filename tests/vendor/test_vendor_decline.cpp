@@ -94,7 +94,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
         [&](const Event&) { ++pickupHits; });
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;

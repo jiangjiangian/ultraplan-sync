@@ -2,6 +2,7 @@
 #include "quest/Flags.h"
 #include "engine/platform/ScriptInput.h"
 #include "controller/GameController.h"
+#include "engine/events/EventBus.h"
 #include "world/World.h"
 #include "entities/Player.h"
 #include "dialog/DialogState.h"
@@ -83,7 +84,7 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
     nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     ScriptInput in;
     std::istringstream src(script);

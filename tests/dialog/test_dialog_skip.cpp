@@ -80,7 +80,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -178,7 +178,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 

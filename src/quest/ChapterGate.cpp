@@ -1,6 +1,7 @@
 #include "quest/ChapterGate.h"
 #include "quest/Flags.h"
 #include "ui/ChapterToast.h"
+#include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
 #include "state/SemesterState.h"
@@ -8,8 +9,8 @@
 
 namespace nccu {
 
-void CheckChapterGates(Player& player, SemesterStateMachine& semester,
-                       DialogState& dialog) {
+void CheckChapterGates(EventBus& bus, Player& player,
+                       SemesterStateMachine& semester, DialogState& dialog) {
     // Chapter 2 cleared -> back to the market, which then returns to Ch3.
     // Flag_Ch2Cleared is a deliberate spine stub: it will be set by the
     // real Chapter 2 quest in S5c. Wiring the transition now makes the
@@ -21,7 +22,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
         // H2: announce the destination so the player sees the FSM move.
         // Publish AFTER Transition() so a subscriber that reacts to the
         // text (HUD mirror) reads the already-current state if it asks.
-        PublishChapterTransitionToast(SemesterState::Interlude_Market);
+        PublishChapterTransitionToast(bus, SemesterState::Interlude_Market);
         dialog.Close();
     }
 
@@ -31,7 +32,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
         player.HasFlag(kFlagCh3Cleared)) {
         semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
         semester.Transition(SemesterState::Interlude_Market);
-        PublishChapterTransitionToast(SemesterState::Interlude_Market);
+        PublishChapterTransitionToast(bus, SemesterState::Interlude_Market);
         dialog.Close();
     }
 
@@ -45,7 +46,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
         player.ClearFlag(kFlagLeaveInterlude);
         const SemesterState target = semester.InterludeReturnTo();
         semester.Transition(target);
-        PublishChapterTransitionToast(target);
+        PublishChapterTransitionToast(bus, target);
         dialog.Close();
     }
 }

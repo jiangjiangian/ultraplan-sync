@@ -92,7 +92,7 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;

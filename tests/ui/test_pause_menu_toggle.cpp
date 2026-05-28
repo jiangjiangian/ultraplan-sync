@@ -100,7 +100,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -141,7 +141,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -189,7 +189,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -243,7 +243,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
 
     SUBCASE("row 4 → Restart") {
         World world("", /*loadSprites=*/false);
-        GameController controller{world};
+        GameController controller{world, EventBus::Instance()};
         TestInput in;
         nccu::gfx::Input::SetSource(&in);
         Frame(controller, in);
@@ -269,7 +269,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
 
     SUBCASE("row 5 → Quit") {
         World world("", /*loadSprites=*/false);
-        GameController controller{world};
+        GameController controller{world, EventBus::Instance()};
         TestInput in;
         nccu::gfx::Input::SetSource(&in);
         Frame(controller, in);
@@ -306,7 +306,7 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
     Frame(controller, in);                         // settle

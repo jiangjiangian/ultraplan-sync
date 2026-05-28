@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "engine/events/EventBus.h"
 #include "quest/Flags.h"
 #include "state/EndingGate.h"
 #include "state/SemesterStateMachine.h"
@@ -33,7 +34,7 @@ TEST_CASE("ending gate: no gate fires outside Chapter4_Finals") {
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         p.AddKarma(100);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == s);
     }
 }
@@ -45,7 +46,7 @@ TEST_CASE("ending gate A: karma>80 + TrueUmbrella + 體諒 -> Ending A") {
     p.AddKarma(100);                         // > 80 (clamped 100)
     p.SetFlag(nccu::kFlagHasTrueUmbrella);
     p.SetFlag(nccu::kFlagConsoledTA);
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_A);
 }
 
@@ -57,7 +58,7 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag(nccu::kFlagHasTrueUmbrella);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
     SUBCASE("no TrueUmbrella but 體諒+karma>80 -> Ending D (G1), not A") {
@@ -66,7 +67,7 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag(nccu::kFlagConsoledTA);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);
     }
     SUBCASE("karma not > 80 but 體諒+持真傘 -> Ending D (G1), not A") {
@@ -74,7 +75,7 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;   // default ~50
         p.SetFlag(nccu::kFlagHasTrueUmbrella); p.SetFlag(nccu::kFlagConsoledTA);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);
     }
 }
@@ -84,14 +85,14 @@ TEST_CASE("ending gate B: cursed umbrella OR karma<0 -> Ending B") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
     }
     SUBCASE("karma below zero") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(-200);                    // clamps to -100 (<0)
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
     }
 }
@@ -101,7 +102,7 @@ TEST_CASE("ending gate C: bought the ugly umbrella -> Ending C") {
     Player p{nccu::gfx::Vec2{0, 0}};
     nccu::DialogState d;
     p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_C);
 }
 
@@ -117,7 +118,7 @@ TEST_CASE("ending gate: Ch1 阿姨 (c) buy is a pure narrative seed (audit F1)")
     nccu::DialogState d;
     // Sanity: no Ch1 flag — the seed leaves player state untouched.
     CHECK_FALSE(p.HasFlag(nccu::kFlagBoughtUglyUmbrella));
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Chapter4_Finals);   // no ending
 }
 
@@ -131,7 +132,7 @@ TEST_CASE("ending gate: precedence A > B > C") {
     p.SetFlag(nccu::kFlagConsoledTA);
     p.SetFlag(nccu::kFlagTookCursedUmbrella);
     p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_A);
 }
 
@@ -139,7 +140,7 @@ TEST_CASE("ending gate: no flags -> stays in Ch4") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::gfx::Vec2{0, 0}};
     nccu::DialogState d;
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Chapter4_Finals);
 }
 
@@ -165,7 +166,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         p.SetFlag(nccu::kFlagHasTrueUmbrella);        // reclaimed in Ch4
         p.SetFlag(nccu::kFlagTaFinaleChoiceMade);     // finale choice made
         // NO Flag_ConsoledTA (chose 質問/強硬), NO cursed, NO ugly buy.
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);   // was: stuck Ch4
     }
     SUBCASE("體諒 but karma<=80 (not-perfect honest) -> Ending D (G1)") {
@@ -176,7 +177,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         p.SetFlag(nccu::kFlagConsoledTA);             // chose 體諒
         p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
         // karma not > 80 -> not A; not cursed/cold -> not B; 體諒 -> D.
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);   // was: stuck Ch4 (pre-L1), C (pre-G1)
     }
     SUBCASE("體諒 + karma>80 but no TrueUmbrella -> Ending D (G1)") {
@@ -188,7 +189,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         p.SetFlag(nccu::kFlagConsoledTA);
         p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
         // missing Flag_HasTrueUmbrella -> not A; consoled -> not cold B -> D.
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);   // was: stuck Ch4 (pre-L1), C (pre-G1)
     }
     SUBCASE("precedence: cold finale never overrides an earned A") {
@@ -200,7 +201,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         p.SetFlag(nccu::kFlagHasTrueUmbrella);
         p.SetFlag(nccu::kFlagConsoledTA);
         p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_A);
     }
 }
@@ -218,13 +219,13 @@ TEST_CASE("ending gate: pre-finale Ch4 free-roam is byte-unchanged") {
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag(nccu::kFlagHasTrueUmbrella);
         // no Flag_ConsoledTA, no Flag_TaFinaleChoiceMade
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
     SUBCASE("no flags, finale NOT made -> stays Ch4") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::gfx::Vec2{0, 0}}; nccu::DialogState d;
-        nccu::CheckEndingGates(p, m, d);
+        nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
 }
@@ -244,14 +245,14 @@ TEST_CASE("G2: ending gate DEFERS behind an active dialog, then resolves on clos
 
     // While the narration is up the gate must do NOTHING — the player reads
     // it first. (Pre-G2 this snapped Ending C the same frame.)
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Chapter4_Finals);   // deferred
     CHECK(d.Active());                                       // box untouched
 
     // Player finishes reading and closes the box; the NEXT poll resolves
     // the (persistent-flag) ending and Close()s any residual dialog.
     d.Close();
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_C);
     CHECK_FALSE(d.Active());                  // terminal screen: no stale dialog
 }
@@ -273,7 +274,7 @@ SemesterState ResolveCh4(int karma, bool trueUmb, bool consoled,
     if (finaleMade) p.SetFlag(nccu::kFlagTaFinaleChoiceMade);
     if (cursed)     p.SetFlag(nccu::kFlagTookCursedUmbrella);
     if (boughtUgly) p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
-    nccu::CheckEndingGates(p, m, d);
+    nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     return m.Current();
 }
 }  // namespace

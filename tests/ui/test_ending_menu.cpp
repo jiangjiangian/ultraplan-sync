@@ -111,7 +111,7 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 
@@ -152,7 +152,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
     // 回首頁 (cursor 0) → Restart (back to title).
     SUBCASE("回首頁 → Restart") {
         World world("", /*loadSprites=*/false);
-        GameController controller{world};
+        GameController controller{world, EventBus::Instance()};
         TestInput in;
         nccu::gfx::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_A);
@@ -167,7 +167,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
     // 重新開始 (cursor 1) → Restart (fresh game via the title).
     SUBCASE("重新開始 → Restart") {
         World world("", /*loadSprites=*/false);
-        GameController controller{world};
+        GameController controller{world, EventBus::Instance()};
         TestInput in;
         nccu::gfx::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_B);
@@ -184,7 +184,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
     // 結束 (cursor 2) → Quit (the ONLY path that closes the window).
     SUBCASE("結束 → Quit") {
         World world("", /*loadSprites=*/false);
-        GameController controller{world};
+        GameController controller{world, EventBus::Instance()};
         TestInput in;
         nccu::gfx::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_C);
@@ -215,7 +215,7 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
     World world("", /*loadSprites=*/false);
-    GameController controller{world};
+    GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::gfx::Input::SetSource(&in);
 

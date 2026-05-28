@@ -131,7 +131,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     const GameObject* v = FindNpc(world, "victim");
     REQUIRE(v != nullptr);
@@ -180,7 +180,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
     const GameObject* v = FindNpc(world, "victim");
     REQUIRE(v != nullptr);
     const float vx = v->GetPosition().x;
@@ -228,7 +228,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
         [&](const Event& e) { ++pickupHits; lastPickup = e.text; });
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     // Drive the FSM to Ch4; GameController respawns the roster (which
     // includes the 集英樓 Vendor) on the next Update().
@@ -311,7 +311,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
-    nccu::GameController controller{world};
+    nccu::GameController controller{world, EventBus::Instance()};
 
     world.Semester().Transition(SemesterState::Chapter2_Midterms);
     TestInput in;

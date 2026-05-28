@@ -10,8 +10,9 @@
 #include <string>
 #include <vector>
 
-class Player;  // global-namespace model object
-class Vendor;  // shop NPC; pending-purchase target across the dialog frame
+class Player;     // global-namespace model object
+class Vendor;     // shop NPC; pending-purchase target across the dialog frame
+class EventBus;   // Plan P2: bus is ctor-injected, member-stored
 
 namespace nccu {
 
@@ -32,7 +33,12 @@ struct DialogChoice;
 // shape, with one concrete responsibility per helper class.
 class GameController {
 public:
-    explicit GameController(World& world);
+    // Plan P2 — targeted EventBus DI: the bus is injected so every
+    // publish site reachable from the controller (HandleDialog gates,
+    // SceneRouter, the SubscribeDefaultSubscribers wiring) routes through
+    // the SAME instance and tests can substitute their own. In production
+    // main.cpp passes EventBus::Instance(); tests can pass a local bus.
+    GameController(World& world, EventBus& bus);
     ~GameController();
 
     GameController(const GameController&)            = delete;
@@ -59,6 +65,7 @@ private:
     void DispatchInteract();
 
     World&                                               world_;
+    EventBus&                                            bus_;  // Plan P2: injected
     std::vector<nccu::gfx::Rect>                         frameColliders_;
     nccu::gfx::Vec2                                       worldSize_;
     nccu::gfx::Vec2                                       playerSize_;
