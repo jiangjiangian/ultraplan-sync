@@ -6,7 +6,7 @@
 #include "entities/Player.h"
 #include "dialog/DialogState.h"
 #include "state/SemesterStateMachine.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/events/EventBus.h"
 #include "engine/input/Input.h"
 #include "engine/platform/Time.h"

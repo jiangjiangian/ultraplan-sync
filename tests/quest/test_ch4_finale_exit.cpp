@@ -25,7 +25,7 @@
 #include "controller/GameController.h"
 #include "world/World.h"
 #include "entities/Player.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
 #include "engine/events/EventBus.h"

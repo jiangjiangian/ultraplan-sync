@@ -1,6 +1,6 @@
 #ifndef DLC_SIGN_H_
 #define DLC_SIGN_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/math/Vec2.h"
 #include <string>
 

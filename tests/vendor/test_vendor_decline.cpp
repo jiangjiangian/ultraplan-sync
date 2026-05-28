@@ -29,7 +29,7 @@
 #include "dialog/DialogSource.h"
 #include "quest/ChapterVendors.h"
 #include "engine/events/EventBus.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "state/SemesterState.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"

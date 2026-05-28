@@ -1,6 +1,6 @@
 #ifndef ITEM_H_
 #define ITEM_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include <string>
 
 class Item : public GameObject {

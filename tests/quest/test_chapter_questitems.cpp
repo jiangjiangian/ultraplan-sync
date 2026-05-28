@@ -5,7 +5,7 @@
 #include "entities/QuestFlagPickup.h"
 #include "world/World.h"
 #include "entities/Player.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/events/EventBus.h"
 #include "engine/math/Vec2.h"
 

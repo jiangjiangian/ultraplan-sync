@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "entities/DlcSign.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/events/EventBus.h"
 #include "entities/Player.h"
 #include "world/World.h"

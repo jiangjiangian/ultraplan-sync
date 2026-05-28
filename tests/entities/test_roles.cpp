@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "entities/GameObject.h"
-#include "entities/Roles.h"
+#include "engine/core/GameObject.h"
+#include "engine/core/Roles.h"
 #include "entities/Player.h"
 #include "entities/NPC.h"
 #include "entities/HotPack.h"

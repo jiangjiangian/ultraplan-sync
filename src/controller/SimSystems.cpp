@@ -1,7 +1,7 @@
 #include "controller/SimSystem.h"
 #include "world/World.h"
 #include "entities/Player.h"
-#include "entities/Roles.h"
+#include "engine/core/Roles.h"
 #include "controller/GameObjectQueries.h"
 #include "world/Physics.h"
 #include "gfx/Bounds.h"

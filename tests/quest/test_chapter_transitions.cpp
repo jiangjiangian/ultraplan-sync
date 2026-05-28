@@ -7,7 +7,7 @@
 #include "state/EndingGate.h"
 #include "engine/events/EventBus.h"
 #include "controller/EventWiring.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "ui/HudSlot.h"
 #include "entities/Player.h"
 #include "controller/SceneRouter.h"

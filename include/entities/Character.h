@@ -1,6 +1,6 @@
 #ifndef CHARACTER_H_
 #define CHARACTER_H_
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "engine/math/Vec2.h"
 
 class Character : public GameObject {

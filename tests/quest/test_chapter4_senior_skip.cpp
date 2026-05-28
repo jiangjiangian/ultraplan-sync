@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "quest/Flags.h"
 #include "quest/ChapterSpawns.h"
-#include "entities/GameObject.h"
+#include "engine/core/GameObject.h"
 #include "entities/NPC.h"
 #include "entities/Player.h"
 #include "state/SemesterState.h"
