@@ -12,9 +12,9 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
                              SemesterState state) {
     if (state != SemesterState::Chapter1_AddDrop) return;
     if (npcId != "victim") return;
-    if (player.HasFlag("Flag_HasTrueUmbrella")) return;   // already granted
+    if (player.HasFlag(kFlagHasTrueUmbrella)) return;   // already granted
 
-    if (!player.HasFlag("Flag_PromisedVictim")) {
+    if (!player.HasFlag(kFlagPromisedVictim)) {
         // The (a) plea / (b) 承諾 DialogChoice owns the promise beat; there
         // is nothing to return before the player has even agreed to help.
         // No-op so the opener routes to (a)/(b) untouched.
@@ -56,15 +56,15 @@ void TryReturnVictimUmbrella(Player& player, std::string_view npcId,
     // bag swaps the 苦主's-umbrella row for the 真傘 row (SetHeldUmbrella
     // also sets HasUmbrella). Flag_HasTrueUmbrella stays the Ending A marker.
     player.SetHeldUmbrella(HeldUmbrella::True);
-    player.SetFlag("Flag_HasTrueUmbrella");
+    player.SetFlag(kFlagHasTrueUmbrella);
 }
 
 void LiftChapter1Clear(Player& player, SemesterState state,
                        const DialogState& dialog) {
     if (state != SemesterState::Chapter1_AddDrop) return;
-    if (!player.HasFlag("Flag_HasTrueUmbrella")) return;  // grant not done
+    if (!player.HasFlag(kFlagHasTrueUmbrella)) return;  // grant not done
     if (dialog.Active()) return;                          // (d) still on screen
-    if (player.HasFlag(kFlagCh1ClearFired)) return;       // once
+    if (player.HasFlag(kFlagClearChapter1)) return;       // once
     // The (d) 重逢致謝 exchange has played and closed — NOW clear Ch1.
     // Publish in TrueUmbrella::beClaimed's exact pair order — ShowMessage
     // FIRST, UmbrellaClaimed SECOND — so the EventWiring chapter-clear toast
@@ -74,7 +74,7 @@ void LiftChapter1Clear(Player& player, SemesterState state,
     // "TrueUmbrella") drives Ch1→Interlude (returnTo Ch2) via the
     // EventWiring Ch1 sibling-if. The once-key makes this fire exactly once
     // even though it is polled every non-dialog frame.
-    player.SetFlag(kFlagCh1ClearFired);
+    player.SetFlag(kFlagClearChapter1);
     EventBus::Instance().Publish(Event{
         EventType::ShowMessage,
         std::string("傘找回來了。雨還沒停，但你的心安定了一點。")});
@@ -136,9 +136,9 @@ bool Ch1IndicatorVisible(std::string_view npcId, bool isQuestGiver,
     // G3: 苦主 → 西裝學長 → 苦主 sequence. Each spine NPC lights ONLY on its
     // own step so exactly one main `!` is visible at a time (out-of-order
     // contact is redirected by the E-interact hooks, not here).
-    const bool grantDone   = player.HasFlag("Flag_HasTrueUmbrella");
-    const bool promised    = player.HasFlag("Flag_PromisedVictim");
-    const bool seniorChoice = player.HasFlag("Flag_SuitSeniorChoiceMade");
+    const bool grantDone   = player.HasFlag(kFlagHasTrueUmbrella);
+    const bool promised    = player.HasFlag(kFlagPromisedVictim);
+    const bool seniorChoice = player.HasFlag(kFlagSuitSeniorChoiceMade);
 
     if (npcId == "victim") {
         // Lit at step 1 (before the promise — give the lead) and again at

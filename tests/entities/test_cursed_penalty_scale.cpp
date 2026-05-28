@@ -1,4 +1,5 @@
 // Regression guard for BUGLEDGER F2 — CursedUmbrella's karma penalty
+#include "quest/Flags.h"
 // exceeded the locked big-event scale. The GDD / SCRIPT_HANDOFF lock
 // large karma swings at −15 / −30; CursedUmbrella applied −50, 67% over
 // the ceiling. Cycle 3 retunes karmaPenalty_ 50 → 30 so the heaviest
@@ -32,13 +33,13 @@ TEST_CASE("F2: CursedUmbrella applies exactly -30 karma (locked scale), idempote
     Player p{Vec2{0.0f, 0.0f}};
     const int k0 = p.GetKarma();
     CHECK(k0 == 50);                                  // GDD start
-    CHECK_FALSE(p.HasFlag("Flag_TookCursedUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagTookCursedUmbrella));
 
     CursedUmbrella cursed{Vec2{0.0f, 0.0f}};
     CHECK(cursed.GetKarmaPenalty() == 30);            // locked scale, not 50
 
     cursed.beClaimed(&p);
-    CHECK(p.HasFlag("Flag_TookCursedUmbrella"));      // Ending B key set
+    CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));      // Ending B key set
     CHECK(p.HasUmbrella());
     CHECK(p.GetKarma() == k0 - 30);                   // exactly -30 (==20)
     CHECK(p.GetKarma() == 20);

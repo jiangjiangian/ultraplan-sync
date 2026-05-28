@@ -1,5 +1,6 @@
 #ifndef CHAPTER3_QUEST_H_
 #define CHAPTER3_QUEST_H_
+#include "quest/Flags.h"
 #include "state/SemesterState.h"
 #include "gfx/Vec2.h"
 #include <string_view>
@@ -8,18 +9,16 @@ class Player;                       // mutated by the trade hooks
 
 namespace nccu {
 
-// Ch3 校慶運動會 物物交換鏈 flags — single source of truth, shared by
-// the trade hooks and DialogOpener's Ch3 subState routing so the names
-// never drift. Single-use quest items are FLAGS, not the count-only
-// consumable inventory (that model is for buyables / the Tab UI;
-// 香腸/大聲公 mirror Flag_FoundNote / Flag_FoundForm precedent).
-inline constexpr const char* kFlagHasSausage    = "Flag_HasSausage";
-inline constexpr const char* kFlagHasLoudspeaker = "Flag_HasLoudspeaker";
-inline constexpr const char* kFlagKnowsUmbrellaLoc =
-    "Flag_KnowsUmbrellaLoc";
-// Set once the player completes a lap of the 操場 (校慶 participation),
-// which unlocks the A→B→C 物物交換鏈 (走完操場 → 觸發找 ABC).
-inline constexpr const char* kFlagLapDone = "Flag_SportsLapDone";
+// Ch3 校慶運動會 物物交換鏈 quest flag USAGE notes. The `kFlag*` constants
+// live in `quest/Flags.h`. Single-use quest items (香腸/大聲公) are FLAGS
+// (kFlagHasSausage / kFlagHasLoudspeaker / kFlagKnowsUmbrellaLoc), not the
+// count-only consumable inventory — mirrors Flag_FoundNote / Flag_FoundForm
+// precedent. kFlagSportsLapDone is set once the player completes a lap of
+// the 操場 (校慶 participation), unlocking the A→B→C 物物交換鏈 (走完操場
+// → 觸發找 ABC). kFlagCh3RippledProfTrap is a SEPARATE key from
+// kFlagCh2RippledTA so the Ch3 -10 lands once even if Ch2 already applied
+// its own (chapter3.md L329 「助教旗標若已在 Ch2 扣過，本次 -10 獨立計算，
+// 不重複」).
 
 // T5: where the Ch3 TrueUmbrella appears once Flag_KnowsUmbrellaLoc is set
 // (World::MaybeSpawnChapter3Umbrella). LEFT of the 體育館 (gym rect
@@ -41,13 +40,6 @@ inline constexpr float kSportsTrackCx      = 1694.0f;   // 操場 centre
 inline constexpr float kSportsTrackCy      = 740.0f;
 inline constexpr float kSportsTrackHalfLen = 150.0f;    // straight half-length (a)
 inline constexpr float kSportsTrackR       = 130.0f;    // end-cap radius (r)
-
-// S5d-3 once-key: the Ch3 ProfessorTrap ripple already landed.
-// chapter3.md 章節結尾分支二 L329 「助教旗標若已在 Ch2 扣過，本次 -10
-// 獨立計算，不重複」— a SEPARATE key from Flag_Ch2Rippled_TA, so the
-// Ch3 -10 lands once even if Ch2 already applied its own.
-inline constexpr const char* kFlagCh3RippledProfTrap =
-    "Flag_Ch3Rippled_ProfTrap";
 
 // E-interact hook, sibling of TryRescueBookworm / TryApplyCh2Ripple:
 // advances the chapter3.md 物物交換鏈 one link per talk, in order.

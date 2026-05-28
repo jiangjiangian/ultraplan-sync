@@ -261,7 +261,7 @@ void GameController::Update() {
             // SceneRouter::Settle(), so the GameController only needs
             // to forward the mutable reference here.
             MaybeAnnounceInterludeExit(sceneRouter_.InterludeExitLatchMut());
-            player->SetFlag("Flag_LeaveInterlude");
+            player->SetFlag(kFlagLeaveInterlude);
         }
     }
     if (player) {
@@ -598,7 +598,7 @@ bool GameController::HandleDialog() {
                     // exclusive ripple flags. DialogOpener reads this
                     // flag and recaps line-only thereafter.
                     if (!exitChoice && npc == "suit_senior")
-                        p->SetFlag("Flag_SuitSeniorChoiceMade");
+                        p->SetFlag(kFlagSuitSeniorChoiceMade);
                     // S5e-2d: a confirmed 助教 (d) 結算 choice in Ch4
                     // locks the menu (one-shot, like C.3(b)) so the
                     // moral choice (體諒 → Flag_ConsoledTA, +15) can't
@@ -611,7 +611,7 @@ bool GameController::HandleDialog() {
                     if (!exitChoice && npc == "ta" &&
                         world_.Semester().Current() ==
                             SemesterState::Chapter4_Finals) {
-                        p->SetFlag("Flag_TaFinaleChoiceMade");
+                        p->SetFlag(kFlagTaFinaleChoiceMade);
                         // T4: the gentle finale returns YOUR umbrella. When
                         // the player chose 體諒 (ApplyDialogChoice just set
                         // Flag_ConsoledTA), the 助教 presses the true

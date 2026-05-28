@@ -1,4 +1,5 @@
 #include "quest/ChapterGate.h"
+#include "quest/Flags.h"
 #include "ui/ChapterToast.h"
 #include "entities/Player.h"
 #include "state/SemesterStateMachine.h"
@@ -14,7 +15,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
     // real Chapter 2 quest in S5c. Wiring the transition now makes the
     // full progression traversable / testable before that content exists.
     if (semester.Current() == SemesterState::Chapter2_Midterms &&
-        player.HasFlag("Flag_Ch2Cleared")) {
+        player.HasFlag(kFlagCh2Cleared)) {
         semester.SetInterludeReturnTo(SemesterState::Chapter3_SportsDay);
         semester.Transition(SemesterState::Interlude_Market);
         // H2: announce the destination so the player sees the FSM move.
@@ -27,7 +28,7 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
     // Chapter 3 cleared -> back to the market, which then returns to Ch4.
     // Flag_Ch3Cleared is the matching spine stub for S5d's Chapter 3 quest.
     if (semester.Current() == SemesterState::Chapter3_SportsDay &&
-        player.HasFlag("Flag_Ch3Cleared")) {
+        player.HasFlag(kFlagCh3Cleared)) {
         semester.SetInterludeReturnTo(SemesterState::Chapter4_Finals);
         semester.Transition(SemesterState::Interlude_Market);
         PublishChapterTransitionToast(SemesterState::Interlude_Market);
@@ -40,8 +41,8 @@ void CheckChapterGates(Player& player, SemesterStateMachine& semester,
     // sets it directly. Consume (clear) it before transitioning so a later
     // re-entry into the Interlude doesn't instantly exit again.
     if (semester.Current() == SemesterState::Interlude_Market &&
-        player.HasFlag("Flag_LeaveInterlude")) {
-        player.ClearFlag("Flag_LeaveInterlude");
+        player.HasFlag(kFlagLeaveInterlude)) {
+        player.ClearFlag(kFlagLeaveInterlude);
         const SemesterState target = semester.InterludeReturnTo();
         semester.Transition(target);
         PublishChapterTransitionToast(target);

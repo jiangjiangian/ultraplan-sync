@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogState.h"
 #include "dialog/DialogSource.h"
@@ -50,7 +51,7 @@ TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問
     REQUIRE(c != nullptr);
     CHECK(c->label == "體諒助教的辛勞");
     CHECK(c->karmaDelta == 15);
-    CHECK(c->setsFlag == "Flag_ConsoledTA");
+    CHECK(c->setsFlag == nccu::kFlagConsoledTA);
     CHECK(c->flagValue == true);
 }
 
@@ -72,7 +73,7 @@ TEST_CASE("S5e-2d: 質問 branch is the -5 / no-flag path") {
 TEST_CASE("S5e-2d: Flag_TaFinaleChoiceMade -> line-only recap (one-shot)") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
-    p.SetFlag("Flag_TaFinaleChoiceMade");          // choice already made
+    p.SetFlag(nccu::kFlagTaFinaleChoiceMade);          // choice already made
     nccu::DialogState d;
     nccu::OpenNpcDialog(d, p, "ta", kCh4);
     REQUIRE(d.Active());
@@ -90,7 +91,7 @@ TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     p.AddKarma(40);                                // ~90, pre-體諒
-    p.SetFlag("Flag_HasTrueUmbrella");             // re-claimed Ch4 True
+    p.SetFlag(nccu::kFlagHasTrueUmbrella);             // re-claimed Ch4 True
 
     nccu::DialogState d;
     nccu::OpenNpcDialog(d, p, "ta", kCh4);
@@ -102,7 +103,7 @@ TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
     p.AddKarma(c->karmaDelta);
     if (!c->setsFlag.empty() && c->flagValue) p.SetFlag(c->setsFlag);
     CHECK(p.GetKarma() > 80);
-    CHECK(p.HasFlag("Flag_ConsoledTA"));
+    CHECK(p.HasFlag(nccu::kFlagConsoledTA));
 
     nccu::SemesterStateMachine m;
     m.Transition(kCh4);

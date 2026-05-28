@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "entities/Player.h"
 #include "controller/EventBus.h"
 
@@ -14,7 +15,7 @@ TEST_CASE("Player: fresh defaults — karma 50, money 100, dry, umbrella-less, n
     CHECK(p.GetMoney() == 100);
     CHECK(p.GetRainMeter() == doctest::Approx(0.0f));
     CHECK_FALSE(p.HasUmbrella());
-    CHECK_FALSE(p.HasFlag("Flag_HelpedSenior"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedSenior));
     CHECK_FALSE(p.HasFlag(""));
 }
 
@@ -70,13 +71,13 @@ TEST_CASE("Player money: AddMoney accrues, DeductMoney guards against overdraft"
 
 TEST_CASE("Player flags: Set / Has / Clear round-trip; unset names return false") {
     Player p({0, 0});
-    CHECK_FALSE(p.HasFlag("Flag_HelpedTA_Ch1"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedTACh1));
 
-    p.SetFlag("Flag_HelpedTA_Ch1");
-    CHECK(p.HasFlag("Flag_HelpedTA_Ch1"));
+    p.SetFlag(nccu::kFlagHelpedTACh1);
+    CHECK(p.HasFlag(nccu::kFlagHelpedTACh1));
 
-    p.ClearFlag("Flag_HelpedTA_Ch1");
-    CHECK_FALSE(p.HasFlag("Flag_HelpedTA_Ch1"));
+    p.ClearFlag(nccu::kFlagHelpedTACh1);
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedTACh1));
 
     // ClearFlag on an unset name is a no-op (no throw, still false).
     p.ClearFlag("Flag_Never_Set");

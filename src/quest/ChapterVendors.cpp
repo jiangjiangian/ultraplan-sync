@@ -1,4 +1,5 @@
 #include "quest/ChapterVendors.h"
+#include "quest/Flags.h"
 #include "vendor/VendorLoader.h"
 #include "gfx/Vec2.h"
 
@@ -121,7 +122,7 @@ const std::vector<VendorPlacement>& Chapter4Vendors() {
             VendorConfig{.name = "集英樓便利商店",
                          .greeting = "（貨架最下層，一把螢光綠到刺眼的傘）",
                          .stock = {VendorItem{"UglyUmbrella", 100, -1,
-                                              "Flag_BoughtUglyUmbrella"}},
+                                              kFlagBoughtUglyUmbrella}},
                          .spriteOverride = "resources/assets/Pixel Art "
                              "Vending Machines Pack/Machine 3/"
                              "Vending Machine 3.1.png"},

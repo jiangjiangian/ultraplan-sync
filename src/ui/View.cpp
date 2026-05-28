@@ -146,11 +146,11 @@ void View::Draw(const World& world) {
         es.state = st;
         if (const Player* ep = world.GetPlayer()) {
             es.karma            = ep->GetKarma();
-            es.hasTrueUmbrella  = ep->HasFlag("Flag_HasTrueUmbrella");
-            es.consoledTA       = ep->HasFlag("Flag_ConsoledTA");
-            es.tookCursed       = ep->HasFlag("Flag_TookCursedUmbrella");
-            es.boughtUgly       = ep->HasFlag("Flag_BoughtUglyUmbrella");
-            es.finaleChoiceMade = ep->HasFlag("Flag_TaFinaleChoiceMade");
+            es.hasTrueUmbrella  = ep->HasFlag(kFlagHasTrueUmbrella);
+            es.consoledTA       = ep->HasFlag(kFlagConsoledTA);
+            es.tookCursed       = ep->HasFlag(kFlagTookCursedUmbrella);
+            es.boughtUgly       = ep->HasFlag(kFlagBoughtUglyUmbrella);
+            es.finaleChoiceMade = ep->HasFlag(kFlagTaFinaleChoiceMade);
         }
         // A-T3: the ending screen is now an INTERACTIVE, STEADY screen with a
         // bottom 3-option menu (回首頁 / 重新開始 / 結束). The View only

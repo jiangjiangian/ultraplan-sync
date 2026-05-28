@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogSource.h"
 #include "state/SemesterState.h"
 
@@ -57,14 +58,14 @@ TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
     // neutral; the cost is the later ProfTrap recognition / ripples),
     // Flag_ScoldedSenior = false.
     CHECK(s2->karmaDelta == 0);
-    CHECK(s2->setsFlag == "Flag_ScoldedSenior");
+    CHECK(s2->setsFlag == nccu::kFlagScoldedSenior);
     CHECK(s2->flagValue == false);
     CHECK(s2->choiceLabel == "接受，取傘後交給學長");
 
     // subState 3 (d) 點破疑點: T1 reframe — the best rational option,
     // karma +5, Flag_HelpedSenior = true (first Flag_ line wins).
     CHECK(s3->karmaDelta == 5);
-    CHECK(s3->setsFlag == "Flag_HelpedSenior");
+    CHECK(s3->setsFlag == nccu::kFlagHelpedSenior);
     CHECK(s3->flagValue == true);
     CHECK(s3->choiceLabel == "點破傘的疑點，轉而提供正規協助");
 }
@@ -80,7 +81,7 @@ TEST_CASE("DialogSource: Ch1 ta reward substate parity") {
     REQUIRE(t1 != nullptr);
     // subState 1: karma +5, Flag_HelpedTA_Ch1 = true.
     CHECK(t1->karmaDelta == 5);
-    CHECK(t1->setsFlag == "Flag_HelpedTA_Ch1");
+    CHECK(t1->setsFlag == nccu::kFlagHelpedTACh1);
     CHECK(t1->flagValue == true);
     CHECK(t1->choiceLabel == "玩家完成助教的跑腿請求後");
 }
@@ -125,5 +126,5 @@ TEST_CASE("DialogSource: Reload() rebuilds the cache, data unchanged") {
     CHECK(a0->choiceLabel == "初次接觸");
     CHECK(a2->karmaDelta == karmaBefore);
     CHECK(a2->karmaDelta == 0);                  // T1 reframe: (c) is now 0
-    CHECK(a2->setsFlag == "Flag_ScoldedSenior");
+    CHECK(a2->setsFlag == nccu::kFlagScoldedSenior);
 }

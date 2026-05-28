@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "controller/GameController.h"
 #include "quest/Chapter4Quest.h"
 #include "state/EndingGate.h"
@@ -85,7 +86,7 @@ TEST_CASE("G2: buy-ugly ending DEFERS behind the 自白, then resolves to C on c
     REQUIRE_FALSE(fx.world.Dialog().Active());
 
     // Arm the Ending-C trigger (what Vendor::TryBuy sets on the 集英樓 醜傘).
-    p.SetFlag("Flag_BoughtUglyUmbrella");
+    p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
 
     // Next frame: the non-dialog poll opens the 務實 自白 and the ending
     // gate DEFERS behind it — the player must read the monologue first.
@@ -109,7 +110,7 @@ TEST_CASE("G2: cursed ending DEFERS behind the 自白, then resolves to B on clo
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);
-    p.SetFlag("Flag_TookCursedUmbrella");         // carried from Ch1 -> Ending B
+    p.SetFlag(nccu::kFlagTookCursedUmbrella);         // carried from Ch1 -> Ending B
 
     Frame(fx.controller, fx.in);
     CHECK(fx.world.Dialog().Active());                                  // curse 自白
@@ -124,7 +125,7 @@ TEST_CASE("G2: the 自白 is one-shot (once-key) — it never re-opens after rea
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);
-    p.SetFlag("Flag_BoughtUglyUmbrella");
+    p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
 
     Frame(fx.controller, fx.in);
     REQUIRE(fx.world.Dialog().Active());
@@ -146,15 +147,15 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
 
     SUBCASE("outside Ch4 -> no-op") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK_FALSE(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter1_AddDrop));
         CHECK_FALSE(d.Active());
     }
     SUBCASE("cursed outranks ugly (matches the B-over-C gate)") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
-        p.SetFlag("Flag_TookCursedUmbrella");
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagTookCursedUmbrella);
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter4_Finals));
         CHECK(d.Active());
@@ -163,7 +164,7 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
     }
     SUBCASE("never interrupts an open dialog; once-key blocks a re-open") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         d.Open({"some other conversation"});
         CHECK_FALSE(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter4_Finals));        // box up -> no-op
@@ -176,12 +177,12 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
     }
     SUBCASE("reclaimed-true 自白 only BEFORE the finale (no double beat)") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
-        p.SetFlag("Flag_HasTrueUmbrella");
-        p.SetFlag("Flag_TaFinaleChoiceMade");              // gentle finale path
+        p.SetFlag(nccu::kFlagHasTrueUmbrella);
+        p.SetFlag(nccu::kFlagTaFinaleChoiceMade);              // gentle finale path
         CHECK_FALSE(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter4_Finals));        // suppressed
         Player q{Vec2{0, 0}}; nccu::DialogState d2;
-        q.SetFlag("Flag_HasTrueUmbrella");                 // ground reclaim, no finale
+        q.SetFlag(nccu::kFlagHasTrueUmbrella);                 // ground reclaim, no finale
         CHECK(nccu::TryOpenEndingConfession(
             q, d2, SemesterState::Chapter4_Finals));
         CHECK(q.HasFlag(nccu::kFlagCh4ConfessedTrue));

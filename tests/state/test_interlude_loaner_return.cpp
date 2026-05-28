@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/Chapter2Quest.h"
 #include "controller/EventBus.h"
 #include "entities/NPC.h"
@@ -27,7 +28,7 @@ Player MakePlayer() { return Player{nccu::gfx::Vec2{0.0f, 0.0f}}; }
 // Put the player in the "holding the Ch2 loaner" state.
 void GiveLoaner(Player& p) {
     p.SetHeldUmbrella(HeldUmbrella::Loaner);
-    p.SetFlag(nccu::kFlagLibrarianUmbrellaLent);
+    p.SetFlag(nccu::kFlagLibrarianUmbrella);
 }
 
 bool HasReturnMarker(const World& w) {
@@ -53,10 +54,10 @@ TEST_CASE("G-3: returning 管理員的傘 grants +10 ONCE, clears the loaner") {
     CHECK(p.GetKarma() == k0 + 10);
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);   // loaner surrendered
     CHECK_FALSE(p.HasUmbrella());
-    CHECK_FALSE(p.HasFlag(nccu::kFlagLibrarianUmbrellaLent));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagLibrarianUmbrella));
     CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrellaReturned));
     // Crucially NOT an ending flag — the loaner never unlocks Ending A.
-    CHECK_FALSE(p.HasFlag("Flag_HasTrueUmbrella"));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
 
     // Idempotent: a re-talk replays a closure line but grants NO second +10.
     nccu::TryReturnLibrarianUmbrella(

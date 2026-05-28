@@ -16,7 +16,7 @@ void TryAdvanceCh3Trade(Player& player, std::string_view npcId,
     if (npcId == "vendor_sausage_a") {
         // chapter3.md A 系 (b)「交易完成」`// karma +3`（物物交換鏈啟動）.
         if (sausage || loud || known) return;          // chain already past A
-        if (!player.HasFlag(kFlagLapDone)) {            // 校慶: run the lap first
+        if (!player.HasFlag(kFlagSportsLapDone)) {            // 校慶: run the lap first
             EventBus::Instance().Publish(Event{
                 EventType::ShowMessage,
                 std::string("A 系攤主：先去操場跑一圈參加校慶，"
@@ -98,7 +98,7 @@ bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
 void TryApplyCh3Ripple(Player& player, SemesterState state) {
     if (state != SemesterState::Chapter3_SportsDay) return;
     if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // once
-    if (!player.HasFlag("Flag_HasProfessorTrap")) return;
+    if (!player.HasFlag(kFlagHasProfessorTrap)) return;
     // chapter3.md 章節結尾分支二: 「後台某個同學看了你手上的傘一眼」
     // → `// karma -10`（Ch1 漣漪延伸至 Ch3）。獨立 once-key，與
     // Flag_Ch2Rippled_TA 分開，故 Ch2 已扣過本次仍照扣（L329）。

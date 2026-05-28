@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "entities/QuestFlagPickup.h"
 #include "entities/Player.h"
 #include "gfx/IRenderer.h"
@@ -44,7 +45,7 @@ bool HasColor(const CountingRenderer& s, nccu::gfx::Color want) {
 // a WHITE sheet; the 苦主 umbrella draws the shared BLUE umbrella glyph. Still
 // rect-only — an Item never draws a sprite or text (architecture rule).
 TEST_CASE("QuestFlagPickup::Render: a paper quest item draws a WHITE sheet") {
-    QuestFlagPickup form(nccu::gfx::Vec2{120.0f, 80.0f}, "Flag_FoundForm");
+    QuestFlagPickup form(nccu::gfx::Vec2{120.0f, 80.0f}, nccu::kFlagFoundForm);
     CountingRenderer spy;
     form.Render(spy);
 

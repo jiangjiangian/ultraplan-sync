@@ -1,4 +1,5 @@
 // B5 regression: the four Ch2 reactive beats that USED to be inline
+#include "quest/Flags.h"
 // `*（若 Flag_X = true）*` lines the DialogLoader silently dropped are
 // now re-authored as genuine flag-gated SEPARATE substates in
 // chapter2.md and routed by ResolveOpenerSubState. These cases prove
@@ -56,24 +57,24 @@ TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
     SUBCASE("學霸: cursed-umbrella -> (b), else (a)") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 0);  // (a)
-        p.SetFlag("Flag_TookCursedUmbrella");
+        p.SetFlag(nccu::kFlagTookCursedUmbrella);
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 1);  // (b)
         // Recovered still outranks the cursed variant.
-        p.SetFlag("Flag_BookwormRecovered");
+        p.SetFlag(nccu::kFlagBookwormRecovered);
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 3);  // (d)
     }
     SUBCASE("福利社阿姨: ugly-umbrella -> (b), else (a)") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh2, p) == 0);
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh2, p) == 1);
     }
     SUBCASE("苦主: promise -> (c); ugly-only -> (d); promise wins") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("victim", kCh2, p) == 0);    // (a)
-        p.SetFlag("Flag_BoughtUglyUmbrella");
+        p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK(nccu::ResolveOpenerSubState("victim", kCh2, p) == 3);    // (d)
-        p.SetFlag("Flag_PromisedVictim");
+        p.SetFlag(nccu::kFlagPromisedVictim);
         CHECK(nccu::ResolveOpenerSubState("victim", kCh2, p) == 2);    // (c)
     }
 }
@@ -90,7 +91,7 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
         // cursed (b) reaction (which is gated behind the chain head, not a
         // first-contact bypass).
         p.SetFlag(nccu::kFlagMetLibrarian);
-        p.SetFlag("Flag_TookCursedUmbrella");
+        p.SetFlag(nccu::kFlagTookCursedUmbrella);
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "bookworm", kCh2);
         REQUIRE(d.Active());
@@ -105,7 +106,7 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
     }
     SUBCASE("苦主 promise: (c) recap reaches the callback line") {
         Player p = MakePlayer();
-        p.SetFlag("Flag_PromisedVictim");
+        p.SetFlag(nccu::kFlagPromisedVictim);
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "victim", kCh2);
         REQUIRE(d.Active());

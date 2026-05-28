@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "quest/ChapterQuestItems.h"
 #include "quest/Chapter2Quest.h"
 #include "entities/QuestFlagPickup.h"
@@ -98,7 +99,7 @@ TEST_CASE("QuestFlagPickup: empty countMessages keeps the single message") {
         [&lastMsg](const Event& e) { lastMsg = e.text; });
 
     Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
-    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, "Flag_FoundForm", "撿到申請書");
+    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundForm, "撿到申請書");
     form.OnPickup(&p);
     CHECK(lastMsg == "撿到申請書");   // single-message path unchanged
     EventBus::Instance().Clear();
@@ -127,9 +128,9 @@ TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
     // The default (2-arg) ctor still works and grants no bonus.
     Player q{nccu::gfx::Vec2{0.0f, 0.0f}};
     const int qk = q.GetKarma();
-    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, "Flag_FoundForm");
+    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundForm);
     form.OnPickup(&q);
-    CHECK(q.HasFlag("Flag_FoundForm"));
+    CHECK(q.HasFlag(nccu::kFlagFoundForm));
     CHECK(q.GetKarma() == qk);
 }
 
@@ -165,7 +166,7 @@ TEST_CASE("World defers the 3 Ch2 notes until the 學霸 is woken; then sweeps")
 
     // Wake the 學霸 -> the deferred spawn fires ONCE, dropping the 3 notes.
     REQUIRE(w.GetPlayer() != nullptr);
-    w.GetPlayer()->SetFlag(nccu::kFlagBookwormWoken);
+    w.GetPlayer()->SetFlag(nccu::kFlagBookworm);
     CHECK(w.MaybeSpawnChapter2Notes());        // spawns this frame
     CHECK(countNotes() == 1 + 3);              // 申請書 + 3 notes
     CHECK_FALSE(w.MaybeSpawnChapter2Notes());  // one-shot: never re-spawns

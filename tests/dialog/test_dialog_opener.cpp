@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "dialog/DialogOpener.h"
 #include "dialog/DialogState.h"
 #include "controller/GameController.h"
@@ -51,7 +52,7 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "我去幫你追");
-    CHECK(c->setsFlag == "Flag_PromisedVictim");
+    CHECK(c->setsFlag == nccu::kFlagPromisedVictim);
     CHECK(c->flagValue == true);
     CHECK_FALSE(d.AtChoice());
     CHECK(d.Active());
@@ -105,7 +106,7 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     REQUIRE(d.Choices().size() == 3);
     const nccu::DialogChoice& coffee = d.Choices()[2];
     CHECK(coffee.label == "請阿姨喝一杯熱咖啡");
-    CHECK(coffee.setsFlag == "Flag_BoughtCoffeeForAuntie_Ch1");
+    CHECK(coffee.setsFlag == nccu::kFlagBoughtCoffeeForAuntie);
     CHECK(coffee.flagValue == true);
     CHECK(coffee.karmaDelta == 5);
     // Confirm the choice end-to-end through the GameController applier.
@@ -113,7 +114,7 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     nccu::ApplyDialogChoice(p, *c);
-    CHECK(p.HasFlag("Flag_BoughtCoffeeForAuntie_Ch1"));
+    CHECK(p.HasFlag(nccu::kFlagBoughtCoffeeForAuntie));
     CHECK(p.GetKarma() == k0 + 5);
 }
 
@@ -139,7 +140,7 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
         REQUIRE(c != nullptr);
         nccu::ApplyDialogChoice(p, *c);
     }
-    CHECK(p.HasFlag("Flag_BoughtCoffeeForAuntie_Ch1"));
+    CHECK(p.HasFlag(nccu::kFlagBoughtCoffeeForAuntie));
     CHECK(p.GetKarma() == k0 + 5);
 
     // Second visit: pick coffee AGAIN -> karma must NOT move (already done).
@@ -176,9 +177,9 @@ TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // fresh
-    p.SetFlag("Flag_FoundForm");
+    p.SetFlag(nccu::kFlagFoundForm);
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // reward
-    p.SetFlag("Flag_HelpedTA_Ch1");
+    p.SetFlag(nccu::kFlagHelpedTACh1);
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // stays 1
 }
 
@@ -186,11 +187,11 @@ TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") 
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) fresh
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // (b) promised
     // 善有善報: once the真傘 is granted (the返還 happened) the victim routes
     // to the (d) 重逢致謝 recap, outranking the promise recap.
-    p.SetFlag("Flag_HasTrueUmbrella");
+    p.SetFlag(nccu::kFlagHasTrueUmbrella);
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 3);  // (d) reunion
 }
 
@@ -198,22 +199,22 @@ TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
-    p.SetFlag("Flag_FoundForm");
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagFoundForm);
+    p.SetFlag(nccu::kFlagPromisedVictim);
     CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
 }
 
 TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
-    p.SetFlag("Flag_FoundForm");
+    p.SetFlag(nccu::kFlagFoundForm);
     const int k0 = p.GetKarma();
     DialogState d;
     nccu::OpenNpcDialog(d, p, "ta", Ch1);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
     CHECK(d.CurrentLine() == "謝謝你……那份表格要是不見我真的完了。");  // ta sub-1 line 0
-    CHECK(p.HasFlag("Flag_HelpedTA_Ch1"));
+    CHECK(p.HasFlag(nccu::kFlagHelpedTACh1));
     CHECK(p.GetKarma() == k0 + 5);
     // Re-open with the SAME player -> apply-once guard skips (no double).
     DialogState d2;
@@ -233,7 +234,7 @@ TEST_CASE("Player overload: ta with no flag is the line-only intro") {
     CHECK_FALSE(d2.AtChoice());
     CHECK(d2.CurrentLine() == "同學，加退選截止了，現在不受理。");  // ta sub-0 line 0
     CHECK(p2.GetKarma() == k0);
-    CHECK_FALSE(p2.HasFlag("Flag_HelpedTA_Ch1"));
+    CHECK_FALSE(p2.HasFlag(nccu::kFlagHelpedTACh1));
 }
 
 TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
@@ -251,7 +252,7 @@ TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
 TEST_CASE("Player overload: victim with promise flag is line-only recap") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::gfx::Vec2{0, 0}};
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
     const int k0 = p.GetKarma();
     DialogState d;
     nccu::OpenNpcDialog(d, p, "victim", Ch1);
@@ -287,7 +288,7 @@ TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     // (Flag_PromisedVictim). Without it he brushes the stranger off (a
     // line-only redirect, no menu). Set the promise so this test exercises
     // the genuine choice menu, as it always meant to.
-    p.SetFlag("Flag_PromisedVictim");
+    p.SetFlag(nccu::kFlagPromisedVictim);
 
     nccu::OpenNpcDialog(d, p, "suit_senior", Ch1);
     CHECK(d.Active());
@@ -307,7 +308,7 @@ TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     // HelpedSenior. State.jsonl byte-parity preserved.)
     const nccu::DialogChoice& scolded = d.Choices()[0];
     CHECK(scolded.label == "理性指出他品行不該，要回雨傘");
-    CHECK(scolded.setsFlag == "Flag_ScoldedSenior");
+    CHECK(scolded.setsFlag == nccu::kFlagScoldedSenior);
     CHECK(scolded.flagValue == true);
     CHECK(scolded.karmaDelta == 3);
 
@@ -316,8 +317,8 @@ TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     nccu::ApplyDialogChoice(p, *c);
-    CHECK(p.HasFlag("Flag_ScoldedSenior"));
-    CHECK_FALSE(p.HasFlag("Flag_HelpedSenior"));   // mirror, not set
+    CHECK(p.HasFlag(nccu::kFlagScoldedSenior));
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedSenior));   // mirror, not set
     CHECK(p.GetKarma() == k0 + 3);
 }
 
@@ -326,7 +327,7 @@ TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {
     // 斥責 path lands the flag and this branch fires.
     const auto Ch2 = SemesterState::Chapter2_Midterms;
     Player p{nccu::gfx::Vec2{0, 0}};
-    p.SetFlag("Flag_ScoldedSenior");
+    p.SetFlag(nccu::kFlagScoldedSenior);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, p) == 2);   // (c)
 
     Player q{nccu::gfx::Vec2{0, 0}};

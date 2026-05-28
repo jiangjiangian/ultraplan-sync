@@ -290,7 +290,7 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
         PushRow(rows, kItemVictimUmbrella, 0, /*usable=*/false);
 
     // Current-cycle quest papers the player has found (view-only).
-    if (player.HasFlag("Flag_FoundForm"))
+    if (player.HasFlag(kFlagFoundForm))
         PushRow(rows, kItemForm, 0, /*usable=*/false);
     {
         // The Ch2 三頁筆記 collapse into ONE "學霸的筆記 xN" row counting

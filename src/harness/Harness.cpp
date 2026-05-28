@@ -1,6 +1,7 @@
 #include "harness/Harness.h"
 
 #include "harness/ScriptInput.h"
+#include "quest/Flags.h"
 #include "world/World.h"
 #include "entities/Player.h"
 #include "dialog/DialogState.h"
@@ -28,36 +29,36 @@ namespace {
 // the subset currently true.
 const std::vector<std::string>& KnownFlags() {
     static const std::vector<std::string> kFlags = {
-        "Flag_FoundForm", "Flag_PromisedVictim", "Flag_HelpedTA_Ch1",
+        kFlagFoundForm, kFlagPromisedVictim, kFlagHelpedTACh1,
         // 善有善報: the findable 苦主's-umbrella pickup flag (set by the
         // Ch1 QuestFlagPickup, cleared by the grant in
         // TryReturnVictimUmbrella). Whitelisted so the Ch1 reciprocity
         // spine is observable in state.jsonl, like Flag_FoundForm.
-        "Flag_HasVictimUmbrella",
-        "Flag_TookCursedUmbrella", "Flag_HasTrueUmbrella",
+        kFlagHasVictimUmbrella,
+        kFlagTookCursedUmbrella, kFlagHasTrueUmbrella,
         // (Cycle-8 audit F1, B3 precedent: the inert KnowsUgly seed
         // formerly listed here was removed; the Ch1 阿姨 (c) buy is
         // now a pure narrative seed with no tracked flag — Ending-C
         // is driven entirely by Flag_BoughtUglyUmbrella set by the
         // Ch4 集英樓 Vendor, EndingGate.cpp.)
-        "Flag_BoughtUglyUmbrella",
-        "Flag_SuitSeniorChoiceMade", "Flag_ScoldedSenior",
-        "Flag_HelpedSenior", "Flag_FoundNote1", "Flag_FoundNote2",
-        "Flag_FoundNote3", "Flag_BookwormRecovered", "Flag_Ch2Cleared",
-        "Flag_Ch2Rippled_SuitSenior", "Flag_Ch2Rippled_TA",
-        "Flag_HasSausage", "Flag_HasLoudspeaker", "Flag_KnowsUmbrellaLoc",
+        kFlagBoughtUglyUmbrella,
+        kFlagSuitSeniorChoiceMade, kFlagScoldedSenior,
+        kFlagHelpedSenior, kFlagFoundNote1, kFlagFoundNote2,
+        kFlagFoundNote3, kFlagBookwormRecovered, kFlagCh2Cleared,
+        kFlagCh2RippledSuitSenior, kFlagCh2RippledTA,
+        kFlagHasSausage, kFlagHasLoudspeaker, kFlagKnowsUmbrellaLoc,
         // B2.3: the 圖書館管理員 loaner-umbrella latch, so the Ch2 loaner
         // grant is observable in state.jsonl like the other quest flags.
-        "Flag_LibrarianUmbrella",
-        "Flag_Ch3Rippled_ProfTrap", "Flag_Ch3Cleared", "Flag_ConsoledTA",
-        "Flag_TaFinaleChoiceMade", "Flag_Ch4Rippled_Senior",
-        "Flag_Ch4Rippled_Bookworm", "Flag_Ch4Rippled_TAHelped",
-        "Flag_Ch4Rippled_ProfTrap", "Flag_LeaveInterlude",
+        kFlagLibrarianUmbrella,
+        kFlagCh3RippledProfTrap, kFlagCh3Cleared, kFlagConsoledTA,
+        kFlagTaFinaleChoiceMade, kFlagCh4RippledSenior,
+        kFlagCh4RippledBookworm, kFlagCh4RippledTAHelped,
+        kFlagCh4RippledProfTrap, kFlagLeaveInterlude,
         // G2: the Ch4 ending-自白 once-keys (TryOpenEndingConfession). Listed
         // so the deferred-then-resolved ending sequence is observable in
         // state.jsonl when a playtest drives a Ch4 ending.
-        "Flag_Ch4Confessed_Cursed", "Flag_Ch4Confessed_Ugly",
-        "Flag_Ch4Confessed_True",
+        kFlagCh4ConfessedCursed, kFlagCh4ConfessedUgly,
+        kFlagCh4ConfessedTrue,
     };
     return kFlags;
 }

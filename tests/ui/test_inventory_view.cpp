@@ -1,4 +1,5 @@
 #include "doctest/doctest.h"
+#include "quest/Flags.h"
 #include "ui/InventoryView.h"
 #include "quest/ItemCatalog.h"
 #include "quest/Chapter1Quest.h"
@@ -152,8 +153,8 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.AddConsumable("EnergyDrink");
     p.SetHeldUmbrella(HeldUmbrella::True);
-    p.SetFlag("Flag_HasTrueUmbrella");
-    p.SetFlag("Flag_FoundForm");
+    p.SetFlag(nccu::kFlagHasTrueUmbrella);
+    p.SetFlag(nccu::kFlagFoundForm);
     p.SetFlag(nccu::kFlagFoundNote1);
     p.SetFlag(nccu::kFlagFoundNote3);
 
@@ -235,7 +236,7 @@ TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the endin
     Player p{nccu::gfx::Vec2{0, 0}};
     // Hold the cursed umbrella + the persistent Ending B marker (as
     // CursedUmbrella::beClaimed sets them together).
-    p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag("Flag_TookCursedUmbrella");
+    p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag(nccu::kFlagTookCursedUmbrella);
     REQUIRE(Find(nccu::BuildInventoryRows(p), nccu::kItemCursedUmbrella) != nullptr);
 
     // The umbrella is lost (Ch4 entry / per-chapter reset).
@@ -245,7 +246,7 @@ TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the endin
     CHECK(Find(rows, nccu::kItemCursedUmbrella) == nullptr);
     CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
     CHECK(Find(rows, nccu::kItemUglyUmbrella) == nullptr);
-    CHECK(p.HasFlag("Flag_TookCursedUmbrella"));   // ending flag untouched
+    CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));   // ending flag untouched
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
 }
 
