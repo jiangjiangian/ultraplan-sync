@@ -1,5 +1,6 @@
 #include "entities/DlcSign.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "engine/math/Color.h"
 #include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
@@ -58,6 +59,6 @@ void DlcSign::Interact(Player* /*initiator*/) {
     // Re-readable: publish the teaser, but do NOT deactivate — the sign
     // stays in the world so the player can read it again. No gameplay
     // effect (no flag / karma / money), so the initiator is unused.
-    EventBus::Instance().Publish(
+    nccu::events::Sink().Publish(
         Event{EventType::ShowMessage, message_});
 }

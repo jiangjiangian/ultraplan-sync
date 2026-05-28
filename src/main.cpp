@@ -12,6 +12,7 @@
 #include "engine/audio/AudioDevice.h"
 #include "engine/audio/AudioManager.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"  // Plan P2 step 3: entity publish seam
 #include <cstdlib>
 #include <cstring>
 
@@ -133,6 +134,14 @@ int main() {
             // the controller's frame goes through THIS bus (tests can
             // construct a local bus and inject it instead).
             EventBus&             bus = EventBus::Instance();
+            // Plan P2 step 3: bind the entity-layer publish seam to the
+            // SAME bus the controller threads. Entities (umbrella family /
+            // consumables / NPC / pickups / Vendor / BuildingTracker) call
+            // nccu::events::Sink().Publish(...); SetSink redirects that
+            // seam from EventBus::Instance() (the fallback) onto the bus
+            // the controller owns this run. Cleared after the controller
+            // dies — see the Restart/Quit loop reset below.
+            nccu::events::SetSink(&bus);
             nccu::GameController  controller{world, bus};
             // Per-run audio orchestrator. Declared AFTER the controller
             // so reverse-destruction tears down audio FIRST — once audio
@@ -172,6 +181,14 @@ int main() {
             }
             if (!restart) running = false;   // normal end / quit / window
         }   // world/view/controller dtors (RAII, GL still live)
+        // Plan P2 step 3: drop the entity-layer publish seam BEFORE the
+        // next iteration rebuilds World/Controller (which would re-SetSink
+        // anyway). Resetting to nullptr makes the seam fall through to
+        // EventBus::Instance() for any code that runs between iterations
+        // (asset cleanup, the title screen on the next loop) — byte-
+        // identical to the pre-P2 path. Matches the existing
+        // EventBus::Instance().Clear() lifecycle the controller dtor owns.
+        nccu::events::SetSink(nullptr);
 
         if (harness.Active()) break;         // harness runs exactly once
     }

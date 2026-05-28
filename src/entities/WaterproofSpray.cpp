@@ -1,6 +1,7 @@
 #include "entities/WaterproofSpray.h"
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 
 void WaterproofSpray::Consume(Player* player) {
     if (!player) return;
@@ -10,5 +11,5 @@ void WaterproofSpray::Consume(Player* player) {
     // in lockstep with ApplyConsumableEffect("WaterproofSpray").
     player->DrainRainBy(kRainRelief);
     isActive_ = false;
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "噴了防水噴霧，雨水大半都被彈開了。" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "噴了防水噴霧，雨水大半都被彈開了。" });
 }

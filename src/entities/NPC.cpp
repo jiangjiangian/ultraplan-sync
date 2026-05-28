@@ -1,6 +1,7 @@
 #include "entities/NPC.h"
 #include "dialog/DialogSource.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "world/Physics.h"
 #include "world/WorldConfig.h"
 #include "engine/render/IRenderer.h"
@@ -216,7 +217,7 @@ void NPC::Interact(Player* /*initiator*/) {
     // the already-advanced state rather than a stale index.
     const std::string line = dialogLines_[currentLineIndex_];
     currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, line });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, line });
 }
 
 std::string_view NPC::NpcId() const noexcept { return npcId_; }

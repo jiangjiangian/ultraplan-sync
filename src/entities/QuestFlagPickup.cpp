@@ -1,5 +1,6 @@
 #include "entities/QuestFlagPickup.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "entities/Player.h"
 #include "engine/math/Color.h"
 #include "engine/render/IRenderer.h"
@@ -97,7 +98,7 @@ void QuestFlagPickup::OnPickup(Player* player) {
                                              : countMessages_.size() - 1;
         toShow = countMessages_[idx];
     }
-    EventBus::Instance().Publish(
+    nccu::events::Sink().Publish(
         Event{ EventType::ShowMessage, toShow });
 
     // Set-completion reward (S5c-2): grant the bonus iff every sibling

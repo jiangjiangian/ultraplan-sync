@@ -1,5 +1,6 @@
 #include "vendor/Vendor.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "entities/Player.h"
 #include "vendor/VendorMessages.h"
 #include "quest/ItemCatalog.h"
@@ -61,14 +62,14 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     // Sold out (stockLeft hit 0; -1 = unlimited). Checked before the
     // charge so the purse is never touched for an item we can't deliver.
     if (item.stockLeft == 0) {
-        EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kSoldOut) });
+        nccu::events::Sink().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kSoldOut) });
         return false;
     }
 
     // DeductMoney is the gatekeeper: it returns false on insufficient funds
     // and performs NO side effect, so the player's purse is safe here.
     if (!player->DeductMoney(item.price)) {
-        EventBus::Instance().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kInsufficientFunds) });
+        nccu::events::Sink().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kInsufficientFunds) });
         return false;
     }
 
@@ -90,8 +91,8 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
         std::string(msg::kSpentMid)        + std::to_string(item.price) +
         std::string(msg::kSpentUnitOpen)   + std::to_string(player->GetMoney()) +
         std::string(msg::kSpentUnitClose);
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, toast });
-    EventBus::Instance().Publish(Event{ EventType::PickupAcquired, item.itemId });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, toast });
+    nccu::events::Sink().Publish(Event{ EventType::PickupAcquired, item.itemId });
 
     // S5b-3: the buy actually lands in the count inventory, the stall's
     // karma hook fires (e.g. 募款箱 +1; default 0 = no-op, so the pinned

@@ -1,6 +1,7 @@
 #include "entities/TrueUmbrella.h"
 #include "entities/Player.h"
 #include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
 #include "quest/Flags.h"
 
 void TrueUmbrella::beClaimed(Player* player) {
@@ -27,6 +28,6 @@ void TrueUmbrella::beClaimed(Player* player) {
     // chapter toast overwrites it. Reversing this pair re-introduces
     // the 9.A.2 regression where the umbrella string masked the chapter
     // toast. Pinned by tests/test_chapter_transitions.cpp.
-    EventBus::Instance().Publish(Event{ EventType::ShowMessage, "你撿到了 TrueUmbrella，雨停了。" });
-    EventBus::Instance().Publish(Event{ EventType::UmbrellaClaimed, "TrueUmbrella" });
+    nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "你撿到了 TrueUmbrella，雨停了。" });
+    nccu::events::Sink().Publish(Event{ EventType::UmbrellaClaimed, "TrueUmbrella" });
 }
