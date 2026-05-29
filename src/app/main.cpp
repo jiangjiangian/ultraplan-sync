@@ -7,8 +7,8 @@
 #include "app/scenes/GameplayScene.h"
 #include "app/scenes/TitleScene.h"
 #include "app/scenes/CharacterSelectScene.h"
+#include "app/scenes/LoadingScene.h"
 #include "ui/CharacterSelect.h"
-#include "ui/LoadingScreen.h"
 #include "engine/platform/Harness.h"
 #include "engine/render/Window.h"
 #include "engine/render/Font.h"
@@ -62,14 +62,13 @@ int main() {
     // deterministic run.
     auto harness = nccu::MaybeAttach();
 
-    // Human-only 載入畫面: warm the texture cache (gfx/Texture.h) behind a
-    // brief "載入中…" screen so the first World/View construct — and every
-    // Restart — hits the warm cache with no first-frame disk/GPU stutter.
-    // Skipped under the harness (like the title/select below) so the
-    // scripted frame timeline / state.jsonl stay byte-identical; the harness
-    // path lets World/View warm the cache lazily off the recorded loop.
-    if (!harness.Active())
-        nccu::RunLoadingScreen(win);
+    // Phase 3 step 3: LoadingScene replaces the pre-Phase-3
+    // RunLoadingScreen blocking call. It is now the FIRST scene the
+    // SceneManager pushes on the human path (its Enter() runs the
+    // PreloadGameTextures warm, then a kHoldFrames hold makes the
+    // 載入中… affordance perceptible) before chaining to TitleScene
+    // via SceneCommand::Replace. The harness path skips it exactly as
+    // the pre-Phase-3 main.cpp did — only GameplayScene gets pushed.
 
     // Outer screen-flow loop. One iteration == one prepared run. The
     // human path may revisit the title (back from select, or Restart
@@ -121,8 +120,24 @@ int main() {
                     nccu::app::CharacterSelectScene>(
                     gameplayFactory);
             };
-            sm.Push(std::make_unique<nccu::app::TitleScene>(
-                charSelectFactory));
+            auto titleFactory =
+                [charSelectFactory]()
+                -> std::unique_ptr<nccu::app::IScene> {
+                return std::make_unique<nccu::app::TitleScene>(
+                    charSelectFactory);
+            };
+            // Phase 3 step 3: LoadingScene -> TitleScene chain.
+            // Loading runs ONCE per Restart cycle (warm is idempotent
+            // — the texture cache no-ops on a second call), so the
+            // Restart-from-gameplay path gets the same "載入中…"
+            // affordance the first run got. Pre-Phase-3 main.cpp ran
+            // RunLoadingScreen exactly once before the outer loop;
+            // running it per cycle is a minor UX change that the
+            // blueprint phase-3 spec accepts (every Replace chain
+            // is logically a fresh load — the visible affordance is
+            // a feature, not a regression).
+            sm.Push(std::make_unique<nccu::app::LoadingScene>(
+                titleFactory));
         }
         const auto outcome = sm.Run(win, renderer, harness);
         if (outcome == nccu::app::SceneManager::RunOutcome::Quit)
