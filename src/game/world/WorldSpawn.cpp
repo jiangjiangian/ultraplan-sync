@@ -94,11 +94,9 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         objects_.push_back(std::move(vendor));
     }
 
-    // CashPickups: the exploration earner of the loop economy. Tracked
-    // in chapterRoster_ like the NPCs/Vendors, so a coin not collected
-    // before the chapter ends is swept with the roster (one shot per
-    // chapter visit; money already banked lives on the Player). Ch1 has
-    // a concrete spread today; other states' tables fill in S5c/d/e.
+    // CashPickups：循環經濟中靠探索賺取的部分。與 NPC／攤販一樣記入 chapterRoster_，
+    // 故章節結束前未收集的硬幣會隨名冊一起清掃（每次章節造訪一次性；已入帳的金錢存放在
+    // Player 上）。第一章今日已有具體的散布；其他狀態的表格日後填入。
     for (const auto& pp : ChapterPickups(state)) {
         auto coin = std::make_unique<CashPickup>(pp.pos, pp.value);
         chapterRoster_.push_back(coin.get());

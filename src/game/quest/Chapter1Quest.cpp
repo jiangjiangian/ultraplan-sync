@@ -12,18 +12,17 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
                              std::string_view npcId, SemesterState state) {
     if (state != SemesterState::Chapter1_AddDrop) return;
     if (npcId != "victim") return;
-    if (player.HasFlag(kFlagHasTrueUmbrella)) return;   // already granted
+    if (player.HasFlag(kFlagHasTrueUmbrella)) return;   // 已授予
 
     if (!player.HasFlag(kFlagPromisedVictim)) {
-        // The (a) plea / (b) 承諾 DialogChoice owns the promise beat; there
-        // is nothing to return before the player has even agreed to help.
-        // No-op so the opener routes to (a)/(b) untouched.
+        // 承諾這一節拍由 (a) 請求 / (b) 承諾 的 DialogChoice 掌管；玩家連答應幫忙都
+        // 還沒之前，沒有什麼可歸還。空操作，使開場原封不動路由到 (a)/(b)。
         return;
     }
 
     if (!player.HasFlag(kFlagHasVictimUmbrella)) {
-        // Promised but empty-handed — nudge toward the findable umbrella the
-        // 西裝學長 dropped near 集英樓 (the QuestFlagPickup). No state change.
+        // 承諾了卻兩手空空——提示玩家去找西裝學長掉在集英樓附近、可被尋獲的那把傘
+        //（QuestFlagPickup）。不改變狀態。
         bus.Publish(Event{
             EventType::ShowMessage,
             std::string("「找到我的傘了嗎？先幫他找回那把傘吧——"
