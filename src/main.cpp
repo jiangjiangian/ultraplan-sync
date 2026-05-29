@@ -105,7 +105,13 @@ int main() {
         // GL is still alive, then the next iteration builds a brand-new
         // set — a clean reset with no dangling EventBus handlers.
         {
-            nccu::World          world{selection.spritePath};
+            // Plan P2 step 4: resolve UMBRELLA_REDUCED_MOTION /
+            // UMBRELLA_LARGE_TARGETS in the composition root, NOT inside
+            // World — World is now pure relative to its arguments.
+            const nccu::WorldOptions worldOpts =
+                nccu::ReadWorldOptionsFromEnv();
+            nccu::World          world{selection.spritePath,
+                                       /*loadSprites=*/true, worldOpts};
             // Harness-only debug warp: UMBRELLA_START_STATE jumps the FSM at
             // startup so a screenshot can reach a later chapter without
             // scripting the whole spine. Off by default — guarded by

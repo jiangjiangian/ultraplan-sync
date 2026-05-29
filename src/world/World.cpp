@@ -18,40 +18,25 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <cstdlib>
-#include <cstring>
 #include <string_view>
 #include <unordered_set>
 
 namespace nccu {
 
-World::World(const std::string& playerSpritePath, bool loadSprites)
-    : loadSprites_(loadSprites) {
+World::World(const std::string& playerSpritePath, bool loadSprites,
+             WorldOptions opts)
+    : loadSprites_(loadSprites),
+      reducedMotion_(opts.reducedMotion),
+      largeTargets_(opts.largeTargets) {
     using nccu::gfx::Vec2;
 
-    // Cycle 9.E (audit D8 / SC 2.3.3): pick up the reduced-motion
-    // accessibility preference from the environment so the engine side
-    // works without a pause-menu UI yet. Accepts "1" (anything else,
-    // including unset or "0", leaves the default false). A future UI
-    // PR can flip this through SetReducedMotion(); the env-var path
-    // remains for headless / scripted contexts and the harness.
-    if (const char* env = std::getenv("UMBRELLA_REDUCED_MOTION");
-        env != nullptr && std::strcmp(env, "1") == 0) {
-        reducedMotion_ = true;
-    }
-
-    // Cycle 9.E (audit M2 / D7 / SC 2.5.8): pick up the "larger targets"
-    // accessibility profile from the environment, exactly the
-    // UMBRELLA_REDUCED_MOTION shape above. Accepts "1" only; anything
-    // else (unset/"0") leaves the default false. A future pause-menu UI
-    // can flip this via SetLargeTargets(); the env-var path serves
-    // headless / scripted contexts (the harness, an end-user's
-    // accessibility profile script). Read at construction so the choice
-    // is consistent for the whole session.
-    if (const char* env = std::getenv("UMBRELLA_LARGE_TARGETS");
-        env != nullptr && std::strcmp(env, "1") == 0) {
-        largeTargets_ = true;
-    }
+    // Plan P2 step 4: the two getenv reads that used to live here
+    // (UMBRELLA_REDUCED_MOTION / UMBRELLA_LARGE_TARGETS) moved into
+    // ReadWorldOptionsFromEnv() in world/WorldOptions.cpp. main.cpp
+    // (the composition root) calls that helper once and passes the
+    // resolved bools through `opts`. Tests that take the default
+    // WorldOptions{} get both flags false — exactly the pre-step
+    // "env unset" path. World is now pure relative to its arguments.
 
     // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
     // the AABB resolver never has to rescue them at frame 0. The 3 morality

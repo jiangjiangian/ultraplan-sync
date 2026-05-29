@@ -8,6 +8,7 @@
 #include "state/SemesterStateMachine.h"
 #include "world/BuildingTracker.h"
 #include "world/CollisionMask.h"
+#include "world/WorldOptions.h"  // Plan P2 step 4: ctor-injected accessibility flags
 #include "dialog/DialogState.h"
 #include <memory>
 #include <string>
@@ -29,8 +30,16 @@ public:
     // headless accommodation as LoadTerrainMask() degrading to an empty
     // mask without assets. The Player/umbrella loads are already safe
     // (their texture path file-not-found-early-outs before any GPU call).
+    // Plan P2 step 4: WorldOptions (reducedMotion / largeTargets) now
+    // INJECTED through the ctor instead of pulled from getenv inside
+    // World::World. main.cpp (the composition root) calls
+    // ReadWorldOptionsFromEnv() once and passes the struct here. The
+    // default arg ({}) preserves every existing test ctor call site
+    // (an empty options struct = both flags false = pre-step
+    // behaviour-when-env-unset).
     explicit World(const std::string& playerSpritePath,
-                   bool loadSprites = true);
+                   bool loadSprites = true,
+                   WorldOptions opts = {});
 
     World(const World&)            = delete;
     World& operator=(const World&) = delete;
