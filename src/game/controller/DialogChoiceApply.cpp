@@ -5,11 +5,10 @@
 namespace nccu {
 
 void ApplyDialogChoice(Player& player, const DialogChoice& choice) {
-    // Item 5a — see header comment. Skip both the karma and the flag
-    // write if the choice would re-grant a one-off reward.
+    // 詳見標頭註解。若此選項會「重新」給予一次性獎勵，則同時略過業力與旗標寫入。
     if (!choice.setsFlag.empty() && choice.flagValue &&
         player.HasFlag(choice.setsFlag)) {
-        return;   // reward already collected — no double-dip
+        return;   // 獎勵已領過——不重複領取
     }
     player.AddKarma(choice.karmaDelta);
     if (!choice.setsFlag.empty()) {

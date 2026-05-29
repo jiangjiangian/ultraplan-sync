@@ -22,8 +22,8 @@ std::unique_ptr<GameObject> GameObjectFactory::Create(ObjectType type, nccu::eng
         case ObjectType::WaterproofSpray:       return std::make_unique<WaterproofSpray>(position);
         case ObjectType::EnergyDrink:           return std::make_unique<EnergyDrink>(position);
         case ObjectType::Vendor:
-            // Placeholder stall — real market stalls in main.cpp build a
-            // VendorConfig with the full stock list and pass it directly.
+            // 佔位攤位——正式市集攤位於 main.cpp 建好含完整庫存清單的 VendorConfig
+            // 後直接傳入。
             return std::make_unique<Vendor>(position,
                 VendorConfig{"市集攤主", "歡迎光臨", {{"HotPack", 30}}});
         case ObjectType::CashPickup5:           return std::make_unique<CashPickup>(position, 5);

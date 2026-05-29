@@ -4,172 +4,195 @@
 #include "game/state/SemesterState.h"
 #include <string_view>
 
-class Player;                       // mutated by the rescue / lift
-class EventBus;                     // Plan P2 step 2: bus is injected
+class Player;                       // 由救援／結束流程改動其狀態
+class EventBus;                     // 事件匯流排由外部注入
 
 namespace nccu {
 
-class DialogState;                  // queried (Active) by the lift
+class DialogState;                  // 結束輪詢以 Active() 查詢
 
-// Ch2 圖書館期中考 quest flag USAGE notes. The `kFlag*` constants live in
-// `quest/Flags.h`; the per-flag semantics that follow describe how Ch2's
-// rescue/lift/ripple machinery wires them.
-//
-//   kFlagFoundNote1/2/3 — set by the note pickups (ChapterQuestItems).
-//   kFlagBookworm       — 學霸 has been woken with an EnergyDrink and asked
-//     the player to pick up his scattered notes — i.e. the note quest has
-//     STARTED. Gates the note spawn (World::MaybeSpawnChapter2Notes), the
-//     bookworm dialog routing and the rescue's second phase. Set ONLY by
-//     TryRescueBookworm's wake step, never by content.
-//   kFlagMetLibrarian   — A2 (hard-gate the Ch2 spine 管理員 → 學霸 → 撿筆記 →
-//     學霸): set the FIRST time the player talks to the 圖書館管理員 in Ch2
-//     (TryMeetLibrarian, run at the E-interact moment her clue line opens).
-//     Gates BOTH the 學霸 dialog (DialogOpener routes him to a "先去問櫃台的
-//     管理員" redirect until it is set) AND TryRescueBookworm's wake step.
-//     Idempotent (SetFlag is a no-op once held); set only by TryMeetLibrarian.
-//   kFlagLibrarianUmbrella — B2.3 once-key: the 圖書館管理員 has already lent
-//     the player her 折疊傘 (管理員的傘). Set by TryLendLibrarianUmbrella so
-//     a re-talk to the librarian does NOT re-grant / stack the loaner. NOT
-//     an ending flag.
-//   kFlagLibrarianUmbrellaReturned — G-3 once-key: the player has RETURNED
-//     管理員的傘 at the 中正圖書館 front in the Ch2→Ch3 Interlude (the
-//     optional 責任感 beat). Set by TryReturnLibrarianUmbrella so the +10
-//     karma grant + loaner clear fire EXACTLY ONCE; NOT an ending flag.
-//   kFlagCh2RippledSuitSenior / kFlagCh2RippledTA — S5c-3 per-NPC "the Ch2
-//     ripple karma already landed" once-keys. The ripple dialog itself may
-//     re-show on re-talks; only the karma adjustment is gated to fire
-//     exactly once per Ch2.
+/**
+ * @file Chapter2Quest.h
+ * @brief Ch2 圖書館期中考任務的旗標使用說明與互動鉤子宣告。
+ *
+ * kFlag* 常數住在 quest/Flags.h；以下描述 Ch2 的救援／結束／漣漪機制如何串接它
+ * 們：
+ *   - kFlagFoundNote1/2/3：由筆記 pickup（ChapterQuestItems）設置。
+ *   - kFlagBookworm：學霸已被能量飲料喚醒並請玩家撿回散落的筆記，即筆記任務「已
+ *     啟動」。它把守筆記生成（World::MaybeSpawnChapter2Notes）、學霸對話分流與救
+ *     援第二階段。「只」由 TryRescueBookworm 的喚醒步驟設置，絕不由內容設置。
+ *   - kFlagMetLibrarian：硬性把守 Ch2 主線（管理員 → 學霸 → 撿筆記 → 學霸）。在
+ *     Ch2 中玩家「第一次」與圖書館管理員對話時設置（TryMeetLibrarian，於她的線
+ *     索台詞開啟的 E 互動時刻執行）。它同時把守學霸對話（未設置前 DialogOpener
+ *     會把他導向「先去問櫃台的管理員」）與 TryRescueBookworm 的喚醒步驟。具冪等
+ *     性（已持有時 SetFlag 為 no-op）；只由 TryMeetLibrarian 設置。
+ *   - kFlagLibrarianUmbrella：一次性鎖鍵——圖書館管理員已把折疊傘（管理員的傘）
+ *     借給玩家。由 TryLendLibrarianUmbrella 設置，使再次對話「不會」重複授予／疊
+ *     加借傘。非結局旗標。
+ *   - kFlagLibrarianUmbrellaReturned：一次性鎖鍵——玩家已在 Ch2→Ch3 Interlude 的
+ *     中正圖書館前「歸還」管理員的傘（選做的責任感節拍）。由
+ *     TryReturnLibrarianUmbrella 設置，使 +10 業力與清除借傘恰好觸發一次；非結局
+ *     旗標。
+ *   - kFlagCh2RippledSuitSenior / kFlagCh2RippledTA：每 NPC 的「Ch2 漣漪業力已落
+ *     地」一次性鎖鍵。漣漪對話本身在再次對話時仍可能重現，但只有業力調整被鎖成
+ *     每個 Ch2 恰好觸發一次。
+ */
 
-// G-3: the Interlude return-point marker's npcId (a small NPC at the library
-// front the player presses E on to return the loaner). Single source so the
-// spawn, the hook and the dialog routing never drift.
+/// Interlude 歸還點標記 NPC 的 npcId（圖書館前一個小 NPC，玩家對它按 E 歸還借
+/// 傘）。單一來源，使生成、鉤子與對話分流不致漂移。
 inline constexpr const char* kNpcLibrarianReturn = "librarian_return";
 
-// All three 學霸 notes collected — gates 圖書館管理員 (b) and the exchange.
+/**
+ * @brief 三頁學霸筆記是否已全數收齊。
+ * @param player 玩家（讀取三個筆記旗標）。
+ * @return 三頁皆持有回傳 true。
+ *
+ * 把守圖書館管理員 (b) 與最終的交換。
+ */
 [[nodiscard]] bool Chapter2NotesComplete(const Player& player);
 
-// E-interact hook: talking to 學霸 (bookworm). A two-phase quest machine
-// keyed on kFlagBookworm. No-op unless state==Chapter2_Midterms,
-// npcId=="bookworm", and 學霸 is not yet recovered.
-//
-//   PHASE 1 — ASLEEP (no wake flag): the 學霸 is slumped at the 羅馬廣場
-//     statue. With an EnergyDrink in the count-inventory it is CONSUMED
-//     here -> Flag_Bookworm set + the 學霸 wakes and asks for his notes
-//     (this is the moment the note quest starts; World then spawns the 3
-//     notes). Without a drink, a hint to the 圖書館地下室自販機 fallback
-//     (35 元) is shown and nothing is consumed.
-//   PHASE 2 — WOKEN (wake flag set): if the 3 notes are NOT all in, a
-//     reminder line is shown. Once all 3 are in, the exchange fires
-//     (notes <-> the player's umbrella): Flag_BookwormRecovered + karma
-//     +5 (chapter2.md 學霸 (d) `// karma +5`; path-b — the (d) blockquote
-//     carries no flag annotation, so the opener's once-apply never fires
-//     it). The EnergyDrink is spent at the WAKE step, NOT here.
-//
-// Deliberately does NOT set Flag_Ch2Cleared — that is lifted later so the
-// (d) thanks dialog is readable first (see LiftChapter2Clear).
-// Plan P2 step 2: `bus` is injected; this hook publishes ShowMessage
-// for every wake / recovery / hint beat.
+/**
+ * @brief E 互動鉤子：與學霸對話的雙階段任務機器。
+ * @param bus    事件匯流排（每個喚醒／完成／提示節拍由此發布 ShowMessage）。
+ * @param player 玩家（喚醒時消耗能量飲料，完成時改動旗標與業力）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 以 kFlagBookworm 為鍵。除非 state==Chapter2_Midterms、npcId=="bookworm" 且學霸
+ * 尚未復原，否則為 no-op。
+ *
+ *   - 第一階段（沉睡，未設喚醒旗標）：學霸癱在羅馬廣場雕像下。計數背包中有能量
+ *     飲料時於此「消耗」之 → 設 Flag_Bookworm，學霸醒來並請玩家撿回筆記（此刻筆
+ *     記任務啟動，World 隨後生成三頁筆記）。沒有飲料則顯示圖書館地下室自販機
+ *     （35 元）的退路提示，不消耗任何東西。
+ *   - 第二階段（已喚醒，已設喚醒旗標）：三頁筆記若未齊，顯示提醒台詞；三頁齊備
+ *     後觸發交換（筆記 ↔ 玩家的傘）：Flag_BookwormRecovered ＋ 業力 +5（path-b：
+ *     (d) 區塊未帶旗標標註，故開場的一次性套用不會替它觸發）。能量飲料在「喚
+ *     醒」步驟花掉，不在此處。
+ *
+ * 刻意「不」設 Flag_Ch2Cleared——那由 LiftChapter2Clear 稍後抬升，好讓 (d) 致謝對
+ * 話先可被讀完。
+ */
 void TryRescueBookworm(EventBus& bus, Player& player,
                        std::string_view npcId, SemesterState state);
 
-// Deferred chapter-clear lift. Sets Flag_Ch2Cleared only once 學霸 is
-// recovered AND no dialog is open — i.e. after the player has finished
-// reading the (d) thanks. CheckChapterGates' existing Ch2 sibling-if
-// then transitions to the Interlude. Decoupling the clear from the
-// rescue interact stops the gate from closing the (d) dialog on the
-// same frame it opens (mirrors Flag_LeaveInterlude: trigger, then a
-// polled consume).
+/**
+ * @brief 延後執行的章節結束輪詢，設定 Flag_Ch2Cleared。
+ * @param player 玩家（讀取復原旗標與一次性鎖鍵）。
+ * @param state  目前章節狀態。
+ * @param dialog 對話狀態（以 Active() 確認 (d) 致謝已關閉）。
+ *
+ * 唯有學霸已復原「且」沒有對話開啟時才設 Flag_Ch2Cleared——即玩家讀完 (d) 致謝之
+ * 後，隨即由 CheckChapterGates 既有的 Ch2 條件式轉場至 Interlude。把結束與救援互
+ * 動解耦，避免閘門在 (d) 對話開啟的同一幀就把它關掉（與 Flag_LeaveInterlude 同模
+ * 式：先觸發，再以輪詢消費）。
+ */
 void LiftChapter2Clear(Player& player, SemesterState state,
                        const DialogState& dialog);
 
-// A2 — the 圖書館管理員 is the Ch2 chain head. E-interact hook, sibling of
-// TryRescueBookworm; called from GameController next to it, BEFORE the opener
-// runs. Sets kFlagMetLibrarian the first time the player talks to her in Ch2
-// (her (a) clue line points to 羅馬廣場 / the 學霸), which UNLOCKS the 學霸:
-// before it is set, DialogOpener routes the 學霸 to a "先去問櫃台的管理員"
-// redirect and TryRescueBookworm refuses to wake him. No-op unless
-// state==Chapter2_Midterms && npcId=="librarian". Idempotent (SetFlag is a
-// no-op once held), so a re-talk is harmless.
+/**
+ * @brief E 互動鉤子：與圖書館管理員（Ch2 鏈頭）相遇。
+ * @param player 玩家（第一次對話時設 kFlagMetLibrarian）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 為 TryRescueBookworm 的姊妹，由 GameController 緊鄰它、且在開場「之前」呼叫。
+ * 在 Ch2 中玩家第一次與她對話時設 kFlagMetLibrarian（她的 (a) 線索台詞指向羅馬廣
+ * 場／學霸），藉此「解鎖」學霸：未設置前 DialogOpener 會把學霸導向「先去問櫃台
+ * 的管理員」，且 TryRescueBookworm 拒絕喚醒他。除非 state==Chapter2_Midterms 且
+ * npcId=="librarian" 否則為 no-op。具冪等性（已持有時 SetFlag 為 no-op），再次對
+ * 話無害。
+ */
 void TryMeetLibrarian(Player& player, std::string_view npcId,
                       SemesterState state);
 
-// B2.3 — the 圖書館管理員 lends the player her 折疊傘 (管理員的傘). E-interact
-// hook, sibling of TryRescueBookworm; called from GameController next to it.
-// chapter2.md 管理員 (b) already speaks the hand-over ("（遞過一把折疊傘）這個
-// 先拿著，別在外面淋著。") and the 補設定 (L356/L397) specifies a loaner that
-// shelters but still accrues rain — this wires that beat in engine. No-op
-// unless state==Chapter2_Midterms && npcId=="librarian". Gated on
-// Flag_Bookworm (the (b) state: the player has woken the 學霸 and come back),
-// so the loaner arrives exactly when her (b) line plays. Idempotent via
-// kFlagLibrarianUmbrella so a re-talk never stacks umbrellas.
-//
-// Effect: SetHeldUmbrella(HeldUmbrella::Loaner) — the player now HOLDS
-// 管理員的傘 (a bag umbrella row whose description says it auto-reduces rain
-// while held) and HasUmbrella() becomes true so the existing
-// outdoors+umbrella ApplyRainSheltered drain kicks in. It does NOT set
-// Flag_HasTrueUmbrella — the loaner is explicitly NOT the true umbrella, so
-// it can never by itself satisfy Ending A's 持-TrueUmbrella condition.
+/**
+ * @brief E 互動鉤子：圖書館管理員把折疊傘（管理員的傘）借給玩家。
+ * @param player 玩家（授予手持借傘並設一次性鎖鍵）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 為 TryRescueBookworm 的姊妹，由 GameController 緊鄰它呼叫。chapter2.md 管理員
+ * (b) 已說出交付台詞、補設定指定一把「能擋雨但仍會累積雨量」的借傘——本函式在引
+ * 擎中串接該節拍。除非 state==Chapter2_Midterms 且 npcId=="librarian" 否則為
+ * no-op。以 Flag_Bookworm 把守（(b) 狀態：玩家已喚醒學霸並折返），使借傘恰在她的
+ * (b) 台詞播放時抵達。透過 kFlagLibrarianUmbrella 達成冪等，再次對話絕不疊加雨
+ * 傘。
+ *
+ * 效果：SetHeldUmbrella(HeldUmbrella::Loaner)——玩家現在「手持」管理員的傘（一列
+ * 背包傘列，其描述說明撐著時自動減緩雨量），且 HasUmbrella() 轉為 true，使既有的
+ * 「戶外＋持傘」ApplyRainSheltered 減緩生效。它「不」設 Flag_HasTrueUmbrella——借
+ * 傘明確不是真傘，故它本身永遠無法滿足 Ending A 的持傘條件。
+ */
 void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
                               SemesterState state);
 
-// G-3 — return 管理員的傘 in the Ch2→Ch3 Interlude (the optional 責任感
-// beat). E-interact hook, sibling of TryLendLibrarianUmbrella; called from
-// GameController next to the other hooks, BEFORE the opener runs. The
-// return-point marker (kNpcLibrarianReturn) is deferred-spawned by
-// World::MaybeSpawnInterludeLibrarianReturn at the 中正圖書館 front ONLY while
-// the player still holds the loaner in the market that returns to Ch3, so by
-// the time this hook can fire those preconditions already hold; the hook
-// re-checks them anyway (defensive + the one place state mutates).
-//
-// `returnTo` is World::Semester().InterludeReturnTo() — the gate that scopes
-// this to the Ch2→Ch3 market (== Chapter3_SportsDay) and NOTHING else.
-//
-//   WRONG CONTEXT — not the Interlude, not the Ch2→Ch3 market, or not the
-//                   return-point npcId: no-op.
-//   ALREADY DONE  — kFlagLibrarianUmbrellaReturned set: replay a short
-//                   closure ShowMessage (re-talk friendly), NO second karma.
-//   RETURN        — still holds the loaner (Flag_LibrarianUmbrella +
-//                   HeldUmbrella::Loaner): karma +10, clear the held umbrella
-//                   (SetHasUmbrella(false)) + Flag_LibrarianUmbrella, set the
-//                   returned once-key, ShowMessage a thank-you. Grants NO
-//                   ending-affecting umbrella flag (the loaner was never the
-//                   true umbrella). If the player skips this, the loaner still
-//                   auto-clears on Ch3 entry (no karma) — so this is purely a
-//                   positive optional choice, never a soft-lock.
-// Plan P2 step 2: `bus` is injected; publishes the 責任感 +10 thank-you
-// / replay ShowMessage.
+/**
+ * @brief E 互動鉤子：在 Ch2→Ch3 Interlude 歸還管理員的傘（選做的責任感節拍）。
+ * @param bus      事件匯流排（由此發布責任感 +10 致謝或重播 ShowMessage）。
+ * @param player   玩家（歸還時 +10 業力並清除借傘狀態與旗標）。
+ * @param npcId    互動對象識別字串。
+ * @param state    目前章節狀態。
+ * @param returnTo World::Semester().InterludeReturnTo()，把本鉤子範圍鎖到 Ch2→Ch3
+ *                 市集（== Chapter3_SportsDay）而非其他。
+ *
+ * 為 TryLendLibrarianUmbrella 的姊妹，由 GameController 緊鄰其他鉤子、且在開場
+ * 「之前」呼叫。歸還點標記（kNpcLibrarianReturn）由
+ * World::MaybeSpawnInterludeLibrarianReturn「僅」在玩家於回到 Ch3 的市集中仍持借
+ * 傘時延後生成於中正圖書館前，故本鉤子可觸發時那些前提已成立；鉤子仍會重新檢查
+ * （防禦性，也是唯一改動狀態之處）。
+ *
+ * 三個分支：
+ *   - 情境不符：不在 Interlude、不是 Ch2→Ch3 市集、或不是歸還點 npcId → no-op。
+ *   - 已歸還：已設 kFlagLibrarianUmbrellaReturned → 重播一句收尾 ShowMessage（再
+ *     次對話友善），不給第二次業力。
+ *   - 歸還：仍持借傘（Flag_LibrarianUmbrella ＋ HeldUmbrella::Loaner）→ 業力 +10、
+ *     清空手持傘（SetHasUmbrella(false)）與 Flag_LibrarianUmbrella、設已歸還鎖
+ *     鍵、發致謝 ShowMessage。「不」授予任何影響結局的傘旗標（借傘從來不是真
+ *     傘）。玩家若略過，借傘仍會在進入 Ch3 時自動清除（無業力）——故此為純粹正
+ *     向的選做選擇，絕非死鎖。
+ */
 void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
                                 std::string_view npcId, SemesterState state,
                                 SemesterState returnTo);
 
-// E-interact hook, sibling of TryRescueBookworm — lands the Ch1->Ch2
-// ripple karma the dialog opener cannot. chapter2.md routes 西裝學長 /
-// 助教 to a flag-gated subState whose `// karma` the opener's once-apply
-// will NOT grant (it is guarded behind a NOT-yet-set flag, but the
-// ripple flags are Ch1 flags already held — or the entry is karma-only
-// with no flag). So the documented "karma -10 在此落地" / ±3 must be
-// applied here, once per Ch2 (per-NPC once-key). No-op for any other
-// NPC / state / flag combination. Precedence (chapter2.md L211/L225):
-//   助教   HasProfessorTrap (c, 取代 a/b, -10)  >  HelpedTA_Ch1 (b, 0)
-//   西裝學長 HelpedSenior (b, +3)  xor  ScoldedSenior (c, -3)
+/**
+ * @brief E 互動鉤子：落地對話開場無法給予的 Ch1→Ch2 漣漪業力。
+ * @param player 玩家（依旗標施加 ±3／-10 業力，每 NPC 一次性）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 為 TryRescueBookworm 的姊妹。chapter2.md 把西裝學長／助教導向以旗標把守的子狀
+ * 態，其業力是開場的一次性套用「不會」給的（它被守在尚未設置的旗標之後，但漣漪
+ * 旗標是已持有的 Ch1 旗標——或該條目僅有業力而無旗標）。故文件所載的「-10 在此落
+ * 地」／±3 必須在此施加，每個 Ch2 每 NPC 一次（每 NPC 一次性鎖鍵）。對其他任何
+ * NPC／狀態／旗標組合皆為 no-op。優先序：
+ *   - 助教：HasProfessorTrap（(c)，取代 (a)/(b)，-10）優先於 HelpedTA_Ch1（(b)，
+ *     0）。
+ *   - 西裝學長：HelpedSenior（(b)，+3）與 ScoldedSenior（(c)，-3）互斥。
+ */
 void TryApplyCh2Ripple(Player& player, std::string_view npcId,
                        SemesterState state);
 
-// T3: sequential quest-giver `!` gate for the Ch2 MAIN spine — the sibling
-// of Ch3IndicatorVisible. Spine: 圖書館管理員(線索) → 學霸(喚醒) →
-// [find the 3 notes] → 學霸(換回). The `!` advances by main-quest order:
-//   • 圖書館管理員 (librarian): the chain head, lit from chapter entry until
-//     the 學霸 is woken (kFlagBookworm). She gives the clue pointing to
-//     羅馬廣場; once the 學霸 is up, her job is done and she goes dark.
-//   • 學霸 (bookworm): lit ONLY after he is woken, and stays lit through the
-//     note hunt + the 換回 return, until Flag_BookwormRecovered. Before he is
-//     woken he is DARK (the `!` guides the player to the librarian first),
-//     exactly like Ch3's B stays dark until A is traded.
-// Keyed purely on npcId (NOT the roster bit): the Ch2 roster ships 學霸 as
-// isQuestGiver=false, so QuestIndicatorVisible must consult this WITHOUT
-// AND-ing isQuestGiver (mirrors the Ch4 finale gate) — otherwise 學霸 could
-// never light. Every other npcId returns its isQuestGiver bit so non-spine
-// NPCs are unaffected. View calls this when state == Chapter2_Midterms.
+/**
+ * @brief Ch2 主線的循序任務給予者「!」指示燈閘門，為 Ch3IndicatorVisible 的姊妹。
+ * @param npcId        要查詢的 NPC 識別字串。
+ * @param isQuestGiver 該 NPC 名冊上的任務給予者旗標。
+ * @param player       玩家（讀取喚醒／復原旗標）。
+ * @return 該 NPC 此幀是否應顯示「!」。
+ *
+ * 主線為 圖書館管理員(線索) → 學霸(喚醒) → [撿三頁筆記] → 學霸(換回)。「!」依主
+ * 線順序推進：
+ *   - 圖書館管理員（librarian）：鏈頭，自進入章節起亮燈，直到學霸被喚醒
+ *     （kFlagBookworm）。她給出指向羅馬廣場的線索；學霸醒來後她任務完成、熄燈。
+ *   - 學霸（bookworm）：「僅」在他被喚醒後亮燈，並貫穿撿筆記與換回，直到
+ *     Flag_BookwormRecovered。喚醒前他是暗的（「!」先引導玩家去找管理員），正如
+ *     Ch3 的 B 在 A 完成交易前保持暗的。
+ * 純以 npcId 為鍵（「非」名冊位）：Ch2 名冊出貨學霸為 isQuestGiver=false，故
+ * QuestIndicatorVisible 必須在「不」AND isQuestGiver 的情況下查詢本函式（與 Ch4
+ * 終盤閘門相同），否則學霸永不亮燈。其他 npcId 一律回傳其 isQuestGiver 位，使非
+ * 主線 NPC 不受影響。View 在 state==Chapter2_Midterms 時呼叫它。
+ */
 [[nodiscard]] bool Ch2IndicatorVisible(std::string_view npcId,
                                        bool isQuestGiver,
                                        const Player& player);

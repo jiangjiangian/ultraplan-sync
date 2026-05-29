@@ -21,6 +21,12 @@
 #include <string_view>
 #include <unordered_set>
 
+/**
+ * @file World.cpp
+ * @brief World 的建構、章節名冊重生與幀末清除（Sweep）實作：維持 front 即玩家、
+ *        延遲刪除、避免迭代器失效等不變式。
+ */
+
 namespace nccu {
 
 World::World(const std::string& playerSpritePath, bool loadSprites,
@@ -30,59 +36,42 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
       largeTargets_(opts.largeTargets) {
     using nccu::engine::math::Vec2;
 
-    // Plan P2 step 4: the two getenv reads that used to live here
-    // (UMBRELLA_REDUCED_MOTION / UMBRELLA_LARGE_TARGETS) moved into
-    // ReadWorldOptionsFromEnv() in world/WorldOptions.cpp. main.cpp
-    // (the composition root) calls that helper once and passes the
-    // resolved bools through `opts`. Tests that take the default
-    // WorldOptions{} get both flags false — exactly the pre-step
-    // "env unset" path. World is now pure relative to its arguments.
+    // 無障礙旗標由 opts 注入（環境讀取集中在 ReadWorldOptionsFromEnv，由組裝根呼叫一
+    // 次），World 因此對其引數保持純粹；採預設 WorldOptions{} 的測試兩旗標皆 false。
 
-    // Player on Zhinan Rd east of 正門, clear of every wall/NPC hitbox so
-    // the AABB resolver never has to rescue them at frame 0. The 3 morality
-    // umbrellas sit on the central strip between plaza and Si Wei Blvd.
+    // 玩家置於正門以東的指南路上，避開所有牆與 NPC 碰撞盒，使 AABB 解算器不必在第 0
+    // 幀就要救援。三把象徵道德抉擇的雨傘排在廣場與四維道之間的中央帶。
     //
-    // 善有善報 redesign: the world TrueUmbrella is GONE. The player's真傘 is
-    // no longer claimable off the ground — the 苦主 grants it once the
-    // player carries HIS umbrella back (TryReturnVictimUmbrella). The
-    // Cursed / Fragile / ProfessorTrap umbrellas REMAIN as the morality /
-    // Ending-B-etc. paths and still clear Ch1 via their own BeClaimed (the
-    // three-ending architecture is untouched — CLAUDE.md §5).
+    // 善有善報設計：世界中不再放置可撿的真傘——玩家的真傘改由苦主在玩家把他的傘送回
+    // 後授予（TryReturnVictimUmbrella）。詛咒／易碎／教授陷阱三把傘保留為道德／結局 B
+    // 等路線，仍透過各自的 BeClaimed 清關第一章（三結局架構不變）。
     objects_.push_back(GameObjectFactory::Create(ObjectType::Player,                Vec2{500, 1860}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, Vec2{1200, 1256}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::CursedUmbrella,        Vec2{1560, 1280}));
 
-    // Ch1 跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起 ->
-    // Flag_FoundForm -> 助教給獎勵對白（集英樓 2 樓線索）。
+    // 第一章跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起後設立
+    // Flag_FoundForm，助教給出獎勵對白（集英樓二樓線索）。
     objects_.push_back(std::make_unique<QuestFlagPickup>(
         nccu::engine::math::Vec2{560.0f, 1725.0f}, kFlagFoundForm));
 
-    // Cache the Player BEFORE spawning chapter NPCs so the front-is-
-    // Player invariant is established up front and never disturbed:
-    // SpawnChapterNpcs only appends at the back. static_cast behind that
-    // documented invariant (front() is the Player pushed first above;
-    // RespawnChapterRoster asserts it stays element 0) — CONVENTIONS §9
-    // bans dynamic_cast and allows static_cast behind a documented
-    // invariant. Removes the last dynamic_cast from non-test src/.
+    // 在生成章節 NPC 之前先快取玩家，使「front 即玩家」的不變式一開始就建立且不被打
+    // 亂：SpawnChapterNpcs 只在尾端附加。此處的 static_cast 建立在已記錄的不變式上
+    // （front() 即上方最先 push 的玩家，RespawnChapterRoster 會以 assert 確認它仍為元
+    // 素 0），符合慣例對 static_cast 的允許。
     player_ = static_cast<Player*>(objects_.front().get());
     if (player_) player_->LoadSprite(playerSpritePath);
 
-    // Ch1 spawns through the same state-aware path the FSM later drives,
-    // so the initial roster is the identical 5 archetypes.
+    // 第一章透過狀態機之後也會驅動的同一條狀態感知路徑生成，使初始名冊與後續一致。
     RespawnChapterRoster(semester_.Current());
 
-    // Static collision is a pixel-accurate walkability mask now:
-    // tools/tiled_to_world.py bakes building wall bases + the river into
-    // collision_mask_base.png, the artist paints trees / planters / the
-    // perimeter wall on top into collision_mask.png. The sprite rect in
-    // buildings::kAll is a trigger zone only — BuildingTracker keys
-    // chapter events off it.
+    // 靜態碰撞現為像素精確的可走遮罩：工具把建築牆基與河流烘焙進 collision_mask_base
+    // .png，美術再把樹木／花圃／外牆畫到 collision_mask.png 之上。buildings::kAll 的
+    // sprite 矩形僅作為觸發區——BuildingTracker 以它為章節事件的鍵。
     terrainMask_ = LoadTerrainMask();
 
-    // Ambient pedestrians — wired AFTER the mask is loaded so the
-    // self-resolving wander stays out of buildings and the river. Each
-    // gets a distinct PRNG seed so the crowd doesn't move in lock-step.
+    // 環境路人——在遮罩載入「之後」才接上，使自我解算的漫遊不會走進建築與河流。各給一
+    // 個不同的亂數種子，避免整群人同步移動。
     unsigned seed = 0x1234567u;
     for (const auto& s : AmbientStudentSpawns()) {
         auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},

@@ -1,27 +1,25 @@
 #ifndef NCCU_QUEST_FLAGS_H_
 #define NCCU_QUEST_FLAGS_H_
 
-// =============================================================================
-// nccu::kFlag* — single source of truth for every Flag_* string the engine
-// reads/writes on Player. Replaces the per-chapter-header sprinkling and the
-// raw "Flag_*" literals that used to drift between chapter quests, dialog
-// openers, the SceneRouter and View.
-//
-// House rules
-//   • Every Player::HasFlag / SetFlag / ClearFlag and every Vendor
-//     `setFlagOnBuy` MUST pass one of these constants (no raw "Flag_*"
-//     literals in src/ or include/). `DialogLoader.cpp`'s "Flag_" prefix
-//     parser is the one allowed exception — it parses dialog Markdown.
-//   • The string value is the on-the-wire identifier (Player::flags_ key,
-//     state.jsonl key, dialog_lint --list-flags entry). Never rename the
-//     string after it ships — rename only the C++ identifier.
-//   • dialog_lint.engine_flags() scans src+include for `Flag_<word>` tokens
-//     and auto-whitelists them, so a new flag the engine reads is one line
-//     here + a content callsite.
-//   • Semantic narration of HOW a flag is used by a chapter stays in that
-//     chapter's quest header (Chapter{1,2,3,4}Quest.h) — this file is the
-//     bare registry, grouped by chapter for navigability.
-// =============================================================================
+/**
+ * @file Flags.h
+ * @brief nccu::kFlag* — 引擎在 Player 上讀寫的每一個 Flag_* 字串的單一事實來源。
+ *
+ * 集中管理旗標常數，取代過去散落在各章標頭、且容易在章節任務／對話開場／
+ * SceneRouter／View 之間漂移的裸 "Flag_*" 字面值。
+ *
+ * 規範：
+ *   - 每個 Player::HasFlag / SetFlag / ClearFlag 與每個 Vendor 的 setsFlag
+ *     都「必須」傳入此處的常數（src/ 與 include/ 內不得出現裸 "Flag_*"
+ *     字面值）。唯一例外是 DialogLoader 的 "Flag_" 前綴解析器——它解析的是
+ *     對話 Markdown。
+ *   - 字串值是對外（on-the-wire）識別碼（Player 旗標表的鍵、存檔鍵、
+ *     旗標檢查清單條目）。一旦上線就「不可」改字串，只改 C++ 識別字。
+ *   - 旗標檢查工具會掃描 src+include 內的 Flag_<word> token 自動加白名單，
+ *     故新增一個引擎讀取的旗標只需這裡一行加上一處內容呼叫點。
+ *   - 「某章如何使用」某旗標的語意敘述，留在該章的任務標頭
+ *     （Chapter{1,2,3,4}Quest.h）；本檔僅是依章節分組以利導覽的裸登錄表。
+ */
 
 namespace nccu {
 

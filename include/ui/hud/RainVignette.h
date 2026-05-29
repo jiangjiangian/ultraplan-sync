@@ -6,18 +6,20 @@ namespace nccu {
 class World;
 namespace engine::render { class IRenderer; }
 
-// Rain "pressure" vignette (P1 step 7e — extracted from View::RenderHud).
-// Screen-edge darkening in two tiers driven by the active player's
-// RainMeter — purely visual feedback (the rain is non-lethal this
-// cycle). Drawn as four border bands rather than a full-screen
-// texture: cheap, no per-frame alloc, deterministic and
-// spy-testable headlessly.
-//
-// Reactive: a pure function of `World::GetPlayer()->GetRainMeter()`
-// (≥60 subtle, ≥85 stronger). Early-returns when there is no Player or
-// the meter is below 60. Safe to call every frame.
-//
-// Render-only (MVC §5): reads World const, never mutates.
+/**
+ * @file RainVignette.h
+ * @brief 雨「壓力」暗角（自 View::RenderHud 抽出）。
+ */
+
+/**
+ * @brief 繪製雨壓暗角：由當前玩家 RainMeter 驅動、分兩段的螢幕邊緣變暗，純屬視
+ *        覺回饋。
+ *
+ * 以四條邊框帶繪製（而非整張全螢幕貼圖）：便宜、無逐幀配置、具決定性且可無頭
+ * spy 測試。反應式：為 `World::GetPlayer()->GetRainMeter()` 的純函式（≥60 微弱、
+ * ≥85 較強）；無 Player 或讀數低於 60 時提前返回，每幀呼叫皆安全。純渲染（MVC）：
+ * 以 const 讀取 World、絕不變更。
+ */
 void DrawRainVignette(nccu::engine::render::IRenderer& r,
                       const World& world,
                       float screenW,

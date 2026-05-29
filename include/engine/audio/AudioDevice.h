@@ -3,26 +3,27 @@
 
 namespace nccu::audio {
 
-// RAII handle for the engine's audio device. Today the body is a no-op
-// scaffold — the project ships no audio assets yet, so no raylib
-// InitAudioDevice() is called and no GPU/sound state is taken. The
-// class shape is real so that:
-//   1. main()'s teardown order already accommodates an audio resource
-//      (constructed alongside Window, destroyed before it), which
-//      mirrors the GPU-resource discipline (ShutdownTextureCache /
-//      ShutdownFont before Window::dtor → ::CloseWindow).
-//   2. When the first audio asset (sfx/music) lands, the ctor flips on
-//      InitAudioDevice() and the dtor calls CloseAudioDevice() under
-//      the same RAII guarantee — no main() restructure.
-//   3. Headless / harness runs stay deterministic: a no-op ctor takes
-//      no PRNG/timing side effects, so the playtest oracle remains
-//      byte-identical.
-//
-// Non-copyable / non-movable: a single device per process. Construct
-// once in main(), let RAII close it on stack unwind.
+/**
+ * @brief 引擎音訊裝置的 RAII 控制代碼。
+ *
+ * 目前函式體為空殼——專案尚未含任何音訊素材，故不呼叫 raylib InitAudioDevice()、
+ * 不佔用任何 GPU／音效狀態。保留完整類別形狀的理由：
+ *   1. main() 的解構順序已預留一個音訊資源（與 Window 一同建構、在其之前解構），
+ *      與 GPU 資源的紀律一致（ShutdownTextureCache／ShutdownFont 須早於
+ *      Window 解構→::CloseWindow）。
+ *   2. 當第一個音訊素材（音效／音樂）加入時，建構子改為呼叫 InitAudioDevice()、
+ *      解構子在同一 RAII 保證下呼叫 CloseAudioDevice()——無須重整 main()。
+ *   3. 無視窗／測試執行保持可決定性：空殼建構子沒有任何 PRNG／計時副作用，故
+ *      自動遊玩的對照輸出維持逐位元一致。
+ *
+ * 不可複製、不可移動：每個程序只有單一裝置。於 main() 建構一次，由 RAII 在堆疊
+ * 展開時關閉它。
+ */
 class AudioDevice {
 public:
+    /** @brief 建構音訊裝置控制代碼（目前為空殼，不啟用裝置）。 */
     AudioDevice() noexcept;
+    /** @brief 解構；裝置真正啟用後將於此呼叫 CloseAudioDevice()。 */
     ~AudioDevice() noexcept;
 
     AudioDevice(const AudioDevice&) = delete;
@@ -30,13 +31,16 @@ public:
     AudioDevice(AudioDevice&&) = delete;
     AudioDevice& operator=(AudioDevice&&) = delete;
 
-    // True once InitAudioDevice() has actually been called and the device
-    // is live. The no-op scaffold returns false; future activation flips
-    // this on without touching call-sites that only branch on Ready().
+    /**
+     * @brief 裝置是否已啟用。
+     * @return InitAudioDevice() 確實被呼叫後回傳 true；目前空殼恆回傳 false。
+     *
+     * 日後啟用時翻為 true，不影響只判斷 Ready() 的呼叫點。
+     */
     bool Ready() const noexcept { return ready_; }
 
 private:
-    bool ready_ = false;
+    bool ready_ = false;   ///< 裝置是否已啟用
 };
 
 }  // namespace nccu::audio

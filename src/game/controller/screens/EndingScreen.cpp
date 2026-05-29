@@ -5,7 +5,7 @@
 #include "engine/input/Key.h"
 
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出，以此引入
 
 bool HandleEndingMenu(World& world) {
     using nccu::engine::input::Input;
@@ -16,22 +16,21 @@ bool HandleEndingMenu(World& world) {
     if (Input::IsPressed(Key::E) || Input::IsPressed(Key::Enter)) {
         switch (EndingMenuChoiceAt(world.EndingMenuCursor())) {
             case EndingMenuChoice::BackToTitle:
-                // Back to the title screen (full teardown → title).
+                // 回到標題畫面（完整拆解 -> 標題）。
                 world.RequestAppAction(World::AppAction::Restart);
                 break;
             case EndingMenuChoice::RestartGame:
-                // A fresh new game: same Restart teardown → title, from
-                // which the player starts Ch1 anew (state fully reset by
-                // the World rebuild; CLAUDE.md "must fully reset state").
+                // 全新一局：同樣的 Restart 拆解 -> 標題，再由標題重新開始 Ch1
+                // （狀態由 World 重建而完全重置）。
                 world.RequestAppAction(World::AppAction::Restart);
                 break;
             case EndingMenuChoice::Quit:
-                // True quit — the only path that closes the canvas.
+                // 真正離開——唯一關閉畫布的路徑。
                 world.RequestAppAction(World::AppAction::Quit);
                 break;
         }
     }
-    return true;   // frozen on the ending screen until an option is chosen
+    return true;   // 停在結局畫面凍結，直到玩家選擇一個選項
 }
 
 } // namespace nccu

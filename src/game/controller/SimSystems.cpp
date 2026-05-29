@@ -9,20 +9,14 @@
 namespace nccu {
 
 // ── SurvivalSystem ───────────────────────────────────────────────────
-// Verbatim extraction of GameController::Update's rain block. BUGLEDGER
-// I8 / Cycle 4 / REQUIREMENT #5: the GDD rain-survival loop, live & lethal
-// in EVERY chapter, ticked once per frame. THREE states:
-//   INSIDE A BUILDING             -> DrainRain          (-10 u/s, full
-//                                    recovery, the true haven)
-//   OUTDOORS, HOLDING AN UMBRELLA -> ApplyRainSheltered (+1.5 u/s, lethal-
-//                                    armed — an umbrella SLOWS the soak)
-//   OUTDOORS, NO UMBRELLA         -> ApplyRain          (+5 u/s, lethal —
-//                                    UNCHANGED; Ch1 is umbrella-less so Ch1
-//                                    rain is byte-identical to before)
-// Skipped only in the market interlude and endings (safe, non-gameplay
-// states). CurrentBuildingName() is non-empty when the player center is in
-// a building trigger zone (refreshed at the end of the previous frame; the
-// one-frame latency on a <=10 u/s rate is imperceptible and deterministic).
+// 企劃的降雨生存迴圈，每章皆生效且可致命，每幀 tick 一次。三種狀態：
+//   在建築內         -> DrainRain          （每秒 -10，完全回復，真正的避雨所）
+//   室外、持傘       -> ApplyRainSheltered （每秒 +1.5，仍可致命——傘只是減緩淋濕）
+//   室外、無傘       -> ApplyRain          （每秒 +5，致命；Ch1 無傘可用，故 Ch1
+//                                            降雨與先前逐位元相同）
+// 只有在市集過場與各結局（安全、非遊戲性的狀態）下略過。當玩家中心位於建築觸發區內
+// 時 CurrentBuildingName() 非空（於前一幀結尾刷新；在每秒 <=10 的速率下，這一幀的
+// 延遲難以察覺且具確定性）。
 void SurvivalSystem::Run(SimContext& ctx, float dt) {
     World& world = ctx.world;
     Player* player = world.GetPlayer();
@@ -33,21 +27,19 @@ void SurvivalSystem::Run(SimContext& ctx, float dt) {
                           ss == SemesterState::Ending_C;
     if (ss != SemesterState::Interlude_Market && !inEnding) {
         if (!world.CurrentBuildingName().empty())
-            player->DrainRain(dt);                  // full recovery
+            player->DrainRain(dt);                  // 完全回復
         else if (player->HasUmbrella())
             player->ApplyRainSheltered(dt, /*lethal=*/true);
         else
-            player->ApplyRain(dt, /*lethal=*/true); // full exposure
+            player->ApplyRain(dt, /*lethal=*/true); // 完全曝露
     }
 }
 
 // ── MovementSystem ───────────────────────────────────────────────────
-// Capture the player's pre-tick top-left, then tick every IUpdatable.
-// ForEachRole maps the role to AsUpdatable() at compile time and skips the
-// rest (an umbrella / pickup that no longer carries an Update is simply not
-// visited — identical to the old empty-no-op call). The captured position
-// is handed to CollisionSystem via the context for the axis-separated
-// resolve below.
+// 先存下玩家 tick 前的左上角座標，再 tick 每個 IUpdatable。ForEachRole 於編譯期把
+// 角色對應到 AsUpdatable() 並略過其餘（不再帶 Update 的傘／拾取物根本不會被造訪
+// ——與舊的空 no-op 呼叫等價）。存下的座標透過情境交給 CollisionSystem 做下方的
+// 分軸解算。
 void MovementSystem::Run(SimContext& ctx, float dt) {
     World& world = ctx.world;
     Player* player = world.GetPlayer();
@@ -58,13 +50,10 @@ void MovementSystem::Run(SimContext& ctx, float dt) {
 }
 
 // ── CollisionSystem ──────────────────────────────────────────────────
-// Phase B: clamp the player to the world AABB right after Update(). Phase
-// B2: axis-separated collision resolution — the terrain mask plus every
-// BlocksMovement()-true object's hitbox push the player back on the blocked
-// axis only (diagonal slides along walls). Items are deliberately not
-// colliders. Verbatim extraction; the float-equality position writes are
-// preserved exactly (a write happens iff the resolved value differs, which
-// keeps the deterministic state.jsonl byte-identical).
+// 先在 Update() 之後把玩家夾限至世界 AABB；再做分軸碰撞解算——地形遮罩加上每個
+// BlocksMovement() 為真的物件碰撞盒，只在受阻的那一軸把玩家推回（讓玩家能沿牆斜滑）。
+// 道具刻意不視為碰撞體。座標的浮點相等比較寫入精確保留（唯有解算值不同時才寫入，
+// 以維持確定性輸出逐位元相同）。
 void CollisionSystem::Run(SimContext& ctx, float /*dt*/) {
     using nccu::queries::ForEachActiveExcept;
     World& world = ctx.world;
@@ -96,15 +85,14 @@ void CollisionSystem::Run(SimContext& ctx, float /*dt*/) {
 }
 
 // ── SpawnSystem ──────────────────────────────────────────────────────
-// The 操場 校慶 lap progress tick (Ch3 only; a cheap no-op every other
-// state) THEN the four deferred-spawn passes, in the original order:
-//   A1: Ch1 苦主's-umbrella reveal-after-choice (Flag_SuitSeniorChoiceMade)
-//   Ch2 散落筆記 reveal-after-wake (Flag_Bookworm)
-//   T5: Ch3 TrueUmbrella reveal-after-clue (Flag_KnowsUmbrellaLoc)
-//   G-3: Interlude 管理員的傘 return-point (Ch2->Ch3 market + holds loaner)
-// Each self-gates + one-shots inside World and is a cheap no-op outside its
-// chapter, so this stage is safe to run unconditionally every frame. World
-// stays pure data; the system owns the per-frame tick (MVC).
+// 先 tick 操場校慶的繞圈進度（僅 Ch3；其餘狀態為廉價 no-op），再依原順序跑四個
+// 延遲生成：
+//   Ch1 苦主之傘的「選擇後揭示」（Flag_SuitSeniorChoiceMade）
+//   Ch2 散落筆記的「喚醒後揭示」（Flag_Bookworm）
+//   Ch3 TrueUmbrella 的「線索後揭示」（Flag_KnowsUmbrellaLoc）
+//   市集管理員之傘的歸還點（Ch2->Ch3 市集，持有借出的傘）
+// 每個都在 World 內自我守門且只觸發一次，在其章節之外是廉價 no-op，故此階段每幀
+// 無條件執行是安全的。World 維持純資料；由 system 負責每幀的 tick（MVC）。
 void SpawnSystem::Run(SimContext& ctx, float /*dt*/) {
     World& world = ctx.world;
     world.UpdateSportsLap();
@@ -115,8 +103,7 @@ void SpawnSystem::Run(SimContext& ctx, float /*dt*/) {
 }
 
 // ── SweepSystem ──────────────────────────────────────────────────────
-// End-of-frame deferred deletion. The mark-then-sweep + the dangling-
-// player-pointer guard live on World::Sweep().
+// 幀末延遲刪除。標記後清除與「玩家懸空指標」防護皆位於 World::Sweep()。
 void SweepSystem::Run(SimContext& ctx, float /*dt*/) {
     ctx.world.Sweep();
 }

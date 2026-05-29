@@ -6,27 +6,26 @@
 
 namespace nccu::app {
 
-// Blueprint Phase 3 step 3 — UI-C-2 載入中… screen, ported from the
-// blocking RunLoadingScreen free function (see src/ui/LoadingScreen.cpp)
-// into the IScene contract. Sits at the front of the human path's
-// scene chain: SceneManager pushes this first, it warms the texture
-// cache in Enter() and holds the label for a perceptible number of
-// frames, then returns SceneCommand{Replace, nextFactory_()} so the
-// next scene (TitleScene) takes over.
-//
-// `nextFactory` is the factory closure the composition root hands
-// over — TitleScene's factory, capturing the gameplay/CharacterSelect
-// chain. Keeps LoadingScene unaware of TitleScene's surface, so a
-// test can swap any IScene in.
+/**
+ * @brief 「載入中…」畫面，位於人類遊玩場景鏈的最前端。
+ *
+ * SceneManager 最先推入此場景；它在 Enter() 暖機紋理快取，並把標題停留可被察覺的
+ * 數幀後，回傳 SceneCommand{Replace, nextFactory_()} 將控制權交給下一個場景
+ * （TitleScene）。
+ *
+ * next 是 composition root 交付的工廠 closure（即 TitleScene 的工廠，內部又捕獲
+ * gameplay／CharacterSelect 鏈）。如此 LoadingScene 無須得知 TitleScene 的對外
+ * 形貌，測試也能換入任意 IScene。
+ */
 class LoadingScene final : public IScene {
 public:
     using NextSceneFactory = std::function<std::unique_ptr<IScene>()>;
 
     explicit LoadingScene(NextSceneFactory next);
 
-    // Enter() runs the synchronous PreloadGameTextures warm so the
-    // first gameplay frame doesn't stutter. The pre-Phase-3 free
-    // function did the same warm, just inside its own loop.
+    /**
+     * @brief 掛載時同步暖機紋理快取，使首個遊玩幀不致卡頓。
+     */
     void Enter() override;
 
     [[nodiscard]] SceneCommand Update(float dt) override;

@@ -8,95 +8,105 @@ class Player;
 
 namespace nccu {
 
-class DialogState;   // mutated by TryOpenEndingConfession (opens the 自白)
+class DialogState;   // 由 TryOpenEndingConfession 改動（開啟自白）
 
-// Ch4 期末考終焉 peak-ripple usage notes. The `kFlag*` constants live in
-// `quest/Flags.h`. chapter4.md karma is `- ` bullet-doc (not `>`
-// blockquote) → NOTHING is parser-applied; every Ch4 karma is path-b. The
-// kFlagCh4Rippled* once-keys land the reactive ripple karma the (a)/(b)/(c)
-// routing (S5e-2a, line-only) cannot, once per Ch4 per effect, so the
-// virtuous path can actually clear karma>80 for Ending A and the
-// ProfessorTrap arc cashes in its final -15.
-//
-// kFlagBoughtCoffeeForAuntie — Ch1 漣漪種子: the player bought 福利社阿姨
-// a hot coffee in Chapter 1 (chapter1.md 福利社阿姨 (d), a non-trivial
-// generous choice — same GDD §2.2 model as Flag_HelpedSenior's "請學長喝
-// 熱咖啡"). Set via the Ch1 DialogChoice path; consumed in Ch4 by
-// ResolveOpenerSubState (阿姨 (a) direct-info vs (d) indirect-info routing)
-// and TryApplyCh4Ripple (the +3 情分 callback). Named by the GDD's own
-// LLM input-schema example (遊戲企劃與敘事架構.md "Flag_BoughtCoffeeForAuntie_Ch1").
+/**
+ * @file Chapter4Quest.h
+ * @brief Ch4 期末考終焉巔峰漣漪的旗標使用說明與終盤鉤子宣告。
+ *
+ * kFlag* 常數住在 quest/Flags.h。chapter4.md 的業力以項目符號記錄（非區塊引
+ * 用），故「沒有」任何業力是解析器套用的——每筆 Ch4 業力皆 path-b。kFlagCh4Rippled*
+ * 一次性鎖鍵落地 (a)/(b)/(c) 分流（僅台詞）無法給予的反應式漣漪業力，每 Ch4 每效
+ * 果一次，使善行路徑能真正達到 karma>80 而走 Ending A、並讓 ProfessorTrap 線兌現
+ * 它最後的 -15。
+ *
+ * kFlagBoughtCoffeeForAuntie 是 Ch1 漣漪種子：玩家在 Chapter 1 請福利社阿姨喝了
+ * 熱咖啡（chapter1.md 福利社阿姨 (d)，一個不平凡的慷慨選擇——與 Flag_HelpedSenior
+ * 的「請學長喝熱咖啡」同一 GDD 模型）。經 Ch1 DialogChoice 路徑設置；在 Ch4 由
+ * ResolveOpenerSubState（阿姨 (a) 直接情報 vs (d) 間接情報分流）與 TryApplyCh4Ripple
+ * （+3 情分回呼）消費。命名取自 GDD 自身的 LLM 輸入結構範例。
+ */
 
-// Item 1b — Ch4 finale `!` target hint. The Ch4 roster is gate-driven so
-// every NPC ships isQuestGiver=false (ChapterSpawns.h kChapter4), which
-// meant the finale chapter painted NO `!` at all and the player had no
-// visual cue WHERE the ending is decided. This predicate is the Ch4
-// counterpart of Ch3IndicatorVisible: it returns true for 助教 (the NPC
-// whose (d) 結算 choice gates Ending A/B/C) until the choice is locked in
-// (Flag_TaFinaleChoiceMade), and false for every other npcId — so the
-// finale `!` marks exactly the one NPC that advances the spine, and clears
-// once the decision is made. View consults it (via QuestIndicatorVisible)
-// when state == Chapter4_Finals; because it is keyed on npcId (not on the
-// roster's isQuestGiver bit) the gate-driven roster stays byte-unchanged.
+/**
+ * @brief Ch4 終盤的「!」目標提示。
+ * @param npcId  要查詢的 NPC 識別字串。
+ * @param player 玩家（讀取結算抉擇鎖鍵）。
+ * @return 助教在 (d) 結算抉擇定案（Flag_TaFinaleChoiceMade）之前回傳 true；其他
+ *         npcId 一律回傳 false。
+ *
+ * Ch4 名冊是閘門驅動，每個 NPC 皆出貨 isQuestGiver=false，原本導致終盤章節完全不
+ * 畫「!」、玩家沒有視覺線索知道結局在哪裡決定。本斷言是 Ch3IndicatorVisible 的
+ * Ch4 對應：使終盤「!」恰好標記唯一推進主線的 NPC，並在抉擇做出後熄滅。View 在
+ * state==Chapter4_Finals 時透過 QuestIndicatorVisible 查詢它；因以 npcId 為鍵（非
+ * 名冊的 isQuestGiver 位），閘門驅動的名冊維持 byte 不變。
+ */
 [[nodiscard]] bool Ch4IndicatorVisible(std::string_view npcId,
                                        const Player& player);
 
-// T4: the gentle-finale umbrella grant. When the player chose 體諒 with
-// the 助教 (Flag_ConsoledTA, set by the S5e-2d choice's ApplyDialogChoice),
-// the 助教 presses the player's true umbrella back into their hands — so
-// the gentle path sets Flag_HasTrueUmbrella + HasUmbrella (the spoken
-// "拿回你的傘" beat is in the choice's nextLines). This is Ending A's 持傘
-// condition: with karma>80, 體諒 alone now reaches Ending A, parallel to
-// (and not requiring) the hidden Ch4 umbrella. The harsh 質問 branch never
-// sets Flag_ConsoledTA, so it never reaches here and resolves to Ending B
-// (coldFinale). Idempotent (HasFlag guard). No-op outside Ch4 / wrong npc /
-// before 體諒. Called by GameController on a confirmed 助教 finale choice,
-// AFTER ApplyDialogChoice has landed Flag_ConsoledTA.
+/**
+ * @brief 溫柔終盤的授傘：當玩家對助教選擇「體諒」時把真傘還給玩家。
+ * @param player 玩家（設 Flag_HasTrueUmbrella ＋ HasUmbrella）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 玩家選擇體諒（Flag_ConsoledTA，由該選項的 ApplyDialogChoice 設置）時，助教把玩
+ * 家的真傘塞回手中——故溫柔路徑設 Flag_HasTrueUmbrella ＋ HasUmbrella（口白「拿回
+ * 你的傘」節拍在選項的 nextLines 內）。此即 Ending A 的持傘條件：在 karma>80 下，
+ * 單憑「體諒」即可達 Ending A，與隱藏的 Ch4 傘平行（且不需要它）。強硬的「質問」
+ * 分支永不設 Flag_ConsoledTA，故永不抵達此處，會解析為 Ending B（冷淡終盤）。具
+ * 冪等性（HasFlag 守衛）。在 Ch4 之外／NPC 不符／體諒之前皆為 no-op。由
+ * GameController 在助教終盤抉擇被確認、且 ApplyDialogChoice 已落地 Flag_ConsoledTA
+ * 「之後」呼叫。
+ */
 void TryGrantTaFinaleUmbrella(Player& player, std::string_view npcId,
                               SemesterState state);
 
-// E-interact hook, sibling of TryApplyCh2Ripple / TryApplyCh3Ripple.
-// Per-NPC, once each (independent keys):
-//   西裝學長  HelpedSenior && karma>70 → +10  (chapter4.md L109 (b))
-//   學霸      BookwormRecovered        → +5   (L168 (b))
-//   助教      HelpedTA_Ch1             → +10  (L228 (b) 坦白)
-//   助教      HasProfessorTrap         → -15  (L242 (c) 對峙) — lands
-//             INDEPENDENTLY even when (b) is shown (L235「(b) 優先，
-//             但 (c) 的 karma 扣點仍計算」), separate key.
-//   福利社阿姨 BoughtCoffeeForAuntie_Ch1 → +3  (chapter4.md 阿姨 (a)
-//             直接情報 callback：Ch1 情分兌現), once. B3 fix — the
-//             Ch1→Ch4 阿姨 ripple the GDD names but engine never read.
-// The 助教 (d) 體諒/質問 ±15/-5 is the S5e-2d choice, not here. No-op
-// outside Ch4 / wrong npc / unmet flag.
+/**
+ * @brief E 互動鉤子，為 TryApplyCh2Ripple / TryApplyCh3Ripple 的姊妹。
+ * @param player 玩家（依旗標施加各筆漣漪業力）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 每 NPC 各自一次（鍵獨立）：
+ *   - 西裝學長：HelpedSenior && karma>70 → +10（(b) 崩潰坦白）。
+ *   - 學霸：BookwormRecovered → +5（(b) Ch2 救他回呼）。
+ *   - 助教：HelpedTA_Ch1 → +10（(b) 坦白）。
+ *   - 助教：HasProfessorTrap → -15（(c) 對峙）——即便 (b) 顯示仍「獨立」落地
+ *     （(b) 優先，但 (c) 的扣點仍計算），用分開的鍵。
+ *   - 福利社阿姨：BoughtCoffeeForAuntie_Ch1 → +3（(a) 直接情報回呼：Ch1 情分兌
+ *     現），一次。
+ * 助教 (d) 體諒/質問的 ±15/-5 是對話選項處理，不在此處。在 Ch4 之外／NPC 不符／
+ * 旗標未滿足時為 no-op。
+ */
 void TryApplyCh4Ripple(Player& player, std::string_view npcId,
                        SemesterState state);
 
-// kFlagCh4ConfessedCursed / kFlagCh4ConfessedUgly / kFlagCh4ConfessedTrue
-// — G2 once-keys for the Ch4 ending 自白 (inner monologue). Each ending
-// trigger plays its brief confession EXACTLY once before the gate resolves
-// (the gate is deferred behind any active dialog), so the ending emerges
-// coherently instead of snapping on the raw trigger frame. Code-only flags
-// (no content reference) — set by TryOpenEndingConfession.
-
-// G2 — defer each Ch4 ending behind a short inner-monologue (自白) so the
-// resolution is coherent, not abrupt. Polled by GameController every
-// NON-dialog frame, BEFORE CheckEndingGates (which itself early-returns
-// while a dialog is active). When an ending-deciding state is reached in
-// Ch4 and no confession for it has played yet, this opens a brief 自白
-// DialogState and sets that path's once-key; the now-active dialog makes
-// CheckEndingGates defer until the player closes it, then the gate fires.
-// Covers the three Ch4 ending TRIGGERS that lack their own closing beat:
-//   • Flag_TookCursedUmbrella (carried from Ch1) → the curse-caught-up 自白
-//     before Ending B. (Cold finale / 質問 already has its own nextLines.)
-//   • Flag_BoughtUglyUmbrella → the 務實 self-talk before Ending C.
-//   • Flag_HasTrueUmbrella reclaimed from the GROUND (the hidden gym
-//     umbrella) WITHOUT yet doing the 助教 finale → the relief 自白. The
-//     gentle 體諒 finale grants the same flag but plays its OWN beat (the
-//     choice's nextLines), so this is gated on !Flag_TaFinaleChoiceMade to
-//     avoid a double narration there.
-// Returns true if it opened a confession this call (a dialog is now up).
-// Idempotent (once-keys); no-op outside Ch4 / while a dialog is active /
-// after the matching confession has played. Precedence mirrors the gate
-// (cursed → B over the others) so the 自白 matches the ending that fires.
+/**
+ * @brief 在每個 Ch4 結局之前插入一段內心獨白（自白），使結局收束連貫而非突兀。
+ * @param player 玩家（讀寫各自白一次性鎖鍵）。
+ * @param dialog 對話狀態（開啟自白對話）。
+ * @param state  目前章節狀態。
+ * @return 本次呼叫若開啟了自白（現有對話開啟）則回傳 true。
+ *
+ * 一次性鎖鍵 kFlagCh4ConfessedCursed / kFlagCh4ConfessedUgly /
+ * kFlagCh4ConfessedTrue 是純程式旗標（無內容引用），由本函式設置：每個結局觸發
+ * 在閘門收束「之前」恰好播一次簡短自白。
+ *
+ * 由 GameController 在每個「非對話」幀、且在 CheckEndingGates「之前」輪詢（後者本
+ * 身在對話開啟時即早退）。當 Ch4 進入某個決定結局的狀態、且其自白尚未播放時，本
+ * 函式開啟一段簡短自白對話並設該路徑的一次性鎖鍵；如今開啟的對話使
+ * CheckEndingGates 延後到玩家關閉它後，閘門才觸發。涵蓋三個缺乏自有收尾節拍的 Ch4
+ * 結局觸發：
+ *   - Flag_TookCursedUmbrella（自 Ch1 帶來）→ Ending B 前的「詛咒纏上」自白。
+ *     （冷淡終盤／質問已有自己的 nextLines。）
+ *   - Flag_BoughtUglyUmbrella → Ending C 前的「務實」自言自語。
+ *   - 從「地上」撿回隱藏的體育館真傘（Flag_HasTrueUmbrella）卻尚未完成助教終盤 →
+ *     釋然自白。溫柔的體諒終盤授予同一旗標卻播自己的節拍（選項的 nextLines），故
+ *     此處以 !Flag_TaFinaleChoiceMade 把守，避免在那裡雙重旁白。
+ *
+ * 具冪等性（一次性鎖鍵）；在 Ch4 之外／對話開啟中／對應自白已播放後皆為 no-op。
+ * 優先序與閘門一致（詛咒 → B 優先於其他），使自白與真正觸發的結局相符。
+ */
 bool TryOpenEndingConfession(Player& player, DialogState& dialog,
                              SemesterState state);
 

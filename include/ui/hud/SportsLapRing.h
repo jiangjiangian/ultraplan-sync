@@ -6,18 +6,19 @@ namespace nccu {
 class World;
 namespace engine::render { class IRenderer; }
 
-// 操場 校慶 lap progress ring (P1 step 7e — extracted from
-// View::RenderHud). A 16-dot ring in the top-right that fills clockwise
-// as the lap progresses; the screen companion to the ground track that
-// LapTrack draws in world space.
-//
-// Reactive: a pure function of World::SportsLapActive +
-// SportsLapProgress. Safe to call every frame — early-returns when the
-// lap is inactive.
-//
-// Render-only (MVC §5): reads World const, never mutates. The ring is
-// drawn as 16 small filled squares (no DrawCircle dependency on the
-// renderer interface), keeping it spy-testable headlessly.
+/**
+ * @file SportsLapRing.h
+ * @brief 操場校慶圈速進度環（HUD；自 View::RenderHud 抽出）。
+ */
+
+/**
+ * @brief 繪製操場圈速進度環：右上角一個 16 點的環，隨圈速進度順時針填滿；它是
+ *        LapTrack 在世界座標繪製的地面跑道在螢幕上的對應物。
+ *
+ * 反應式：為 World::SportsLapActive 與 SportsLapProgress 的純函式，每幀呼叫皆安
+ * 全——未進行圈速時提前返回。純渲染（MVC）：以 const 讀取 World、絕不變更。環以
+ * 16 個小實心方塊繪製（不依賴 renderer 介面的 DrawCircle），維持可無頭 spy 測試。
+ */
 void DrawSportsLapRing(nccu::engine::render::IRenderer& r,
                        const World& world,
                        float screenW,

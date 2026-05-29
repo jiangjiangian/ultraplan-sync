@@ -9,6 +9,11 @@
 #include <cstdlib>
 #include <cstring>
 
+/**
+ * @file GameplayScene.cpp
+ * @brief 遊玩場景的實作：建構單次遊玩範圍與事件接線、每幀推進模型、處理重啟／離開意圖。
+ */
+
 namespace nccu::app {
 
 GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
@@ -17,13 +22,10 @@ GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
                              int windowWidth,
                              int windowHeight,
                              RestartFactory restartFactory)
-    // Order MATTERS — same as main.cpp's pre-Phase-3 inline block.
-    // World is the model; View is the presentation; GameController
-    // wires both with the EventBus. AudioManager comes AFTER so
-    // reverse-destruction tears down audio FIRST. The bus
-    // initializer-list reference resolves to EventBus::Instance() so
-    // the controller threads the SAME bus the entity-layer Sink
-    // routes to (Plan P2 step 1+3).
+    // 初始化順序具語意。World 是 model；View 是呈現；GameController 以 EventBus 接線
+    // 兩者。AudioManager 排在最後，使逆序解構最先拆除音訊。初始化列中的匯流排參考解析
+    // 為 EventBus::Instance()，讓 controller 串接的正是實體層 Sink 所導向的同一條
+    // 匯流排。
     : world_(selection.spritePath, /*loadSprites=*/true,
              nccu::ReadWorldOptionsFromEnv()),
       view_(windowWidth, windowHeight),
@@ -31,11 +33,9 @@ GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
       audioManager_(EventBus::Instance(), audioDevice),
       harness_(harness),
       restartFactory_(std::move(restartFactory)) {
-    // Harness-only debug warp: UMBRELLA_START_STATE jumps the FSM at
-    // startup so a screenshot can reach a later chapter without
-    // scripting the whole spine. Off by default — guarded by
-    // harness.Active() AND the env var, so normal play and the
-    // classic timed harness are byte-for-byte unchanged.
+    // 僅限錄製的除錯跳關：UMBRELLA_START_STATE 在啟動時直接跳轉狀態機，使截圖無須
+    // 腳本化整條主線即可抵達後段章節。預設關閉——同時受 harness.Active() 與該環境
+    // 變數雙重把關，故一般遊玩與傳統計時錄製皆逐位元不變。
     if (harness_.Active()) {
         if (const char* s = std::getenv("UMBRELLA_START_STATE"); s) {
             using S = nccu::SemesterState;
@@ -52,53 +52,40 @@ GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
             }
         }
     }
-    // Plan P2 step 3: bind the entity-layer publish seam to the SAME
-    // bus the controller threads through the chapter gates / quest
-    // hooks. SetSink redirects nccu::events::Sink() from
-    // EventBus::Instance() (the fallback) onto the bus the controller
-    // owns this run. Reset to nullptr on Exit() so a Restart cycle
-    // re-binds cleanly.
+    // 將實體層發布接縫綁到 controller 串接於章節關卡／任務鉤子的同一條匯流排。
+    // SetSink 把 nccu::events::Sink() 從後備的 EventBus::Instance() 改導向本次執行
+    // controller 所擁有的匯流排。於 Exit() 重置為 nullptr，使 Restart 循環能乾淨地
+    // 重新綁定。
     nccu::events::SetSink(&EventBus::Instance());
-    // Persona colour modulate — pure cosmetic, unchanged from main.cpp.
+    // 角色顏色調變——純外觀。
     if (Player* p = world_.GetPlayer())
         p->SetTint(selection.tint);
 }
 
 void GameplayScene::Enter() {
-    // Harness's WireEvents subscribes to the bus AFTER the controller
-    // owns it, so its subscribers tear down before the controller dtor
-    // clears the bus on Exit. Matches the pre-Phase-3 ordering: ctor
-    // owned the bus + sink wiring, then WireEvents joined.
+    // 錄製器的 WireEvents 必須在 controller 已擁有匯流排之後才訂閱，使其訂閱者於
+    // controller 解構（在 Exit 清空匯流排）之前先行拆除——維持「先接匯流排與 sink、
+    // 後加入 WireEvents」的順序。
     harness_.WireEvents();
 }
 
 SceneCommand GameplayScene::Update(float /*dt*/) {
-    // The model-advance tick — identical to the inline body that used
-    // to live in main.cpp's per-run while-loop, with one key change:
-    // BeginFrame/EndFrame are NOT here. SceneManager::Run wraps every
-    // Update + Draw pass with harness.BeginFrame() / harness.EndFrame(
-    // world_) so the harness seam stays bit-identical and a future
-    // Title/Select scene can share the same wrap without touching the
-    // gameplay tick.
+    // 模型推進 tick；關鍵在於此處「不」呼叫 BeginFrame／EndFrame。SceneManager::Run
+    // 以 harness.BeginFrame()／harness.EndFrame(world_) 包覆每一次 Update + Draw，
+    // 使錄製接縫維持逐位元一致，未來的 Title／Select 場景也能共用同一層包覆而無須
+    // 改動遊玩 tick。
     controller_.Update();
 
-    // In-game menu intent. The scripted harness input never opens the
-    // pause menu, so the harness path is byte-for-byte unaffected; the
-    // human path's Restart/Quit choices flow through here. Pop is not
-    // used: a single-scene Phase 3.1 stack has nothing to pop to —
-    // main.cpp owns the SceneManager teardown on RunOutcome::Restart
-    // by simply rebuilding it.
+    // 遊戲內選單意圖。腳本化錄製輸入永不開啟暫停選單，故錄製路徑逐位元不受影響；
+    // 人類路徑的 Restart／Quit 選擇由此流經。此處不使用 Pop：單一場景的堆疊無處可
+    // 退回——RunOutcome::Restart 時由 main.cpp 直接重建 SceneManager 來拆除。
     const auto act = world_.PendingAppAction();
     if (act == nccu::World::AppAction::Restart) {
-        // Phase 3 step 4: rebuild via the composition-root-supplied
-        // factory. main.cpp passes a closure that creates a fresh
-        // LoadingScene (-> TitleScene -> CharacterSelectScene ->
-        // GameplayScene), so the whole human path is re-enterable
-        // without an outer loop in main. Harness path receives an
-        // empty restartFactory_ and falls through to Quit, which
-        // matches the never-restart contract: a script that asks
-        // for Restart on a harness run ends the program rather than
-        // looping back to title.
+        // 透過 composition root 提供的工廠重建。main.cpp 傳入會建立全新 LoadingScene
+        // （-> TitleScene -> CharacterSelectScene -> GameplayScene）的 closure，故整條
+        // 人類路徑無須 main 的外層迴圈即可重新進入。錄製路徑收到空的 restartFactory_
+        // 而落入 Quit，恰好對應「永不重啟」契約：錄製執行若要求 Restart，將結束程式
+        // 而非折返標題。
         if (restartFactory_) {
             auto fact = restartFactory_;
             return SceneCommand{SceneCommand::Kind::Replace,
@@ -112,20 +99,16 @@ SceneCommand GameplayScene::Update(float /*dt*/) {
 }
 
 void GameplayScene::Draw(nccu::engine::render::IRenderer& /*renderer*/) {
-    // The View renders straight through raylib via its existing
-    // pipeline; Phase 3 step 1 keeps that intact — routing through
-    // the abstract IRenderer is a step 2 concern (it lets a doctest
-    // drive TitleScene without a real GL context). The DrawScope is
-    // entered by SceneManager::Run for every Update+Draw pair.
+    // View 仍透過其既有管線直接經由 raylib 渲染；此處刻意維持不變——改走抽象的
+    // IRenderer 是其他場景的考量（用以讓 doctest 在沒有真實 GL context 下驅動）。
+    // DrawScope 由 SceneManager::Run 在每個 Update+Draw 配對中進入。
     view_.Draw(world_);
 }
 
 void GameplayScene::Exit() {
-    // Drop the entity-layer publish seam before the next iteration
-    // rebuilds World/Controller (which would re-SetSink anyway).
-    // Resetting to nullptr makes the seam fall through to
-    // EventBus::Instance() for any code that runs between scenes
-    // (asset cleanup, the title screen on the next Restart cycle).
+    // 在下一次迭代重建 World／Controller（屆時本就會重新 SetSink）之前，先卸下實體層
+    // 發布接縫。重置為 nullptr 使接縫對「場景之間執行的程式碼」（資產清理、下次 Restart
+    // 循環的標題畫面）退回 EventBus::Instance()。
     nccu::events::SetSink(nullptr);
 }
 

@@ -6,20 +6,21 @@ namespace nccu {
 class World;
 namespace engine::render { class IRenderer; }
 
-// 操場 校慶 lap track ground decal (P1 step 7f — extracted from
-// View::RenderWorld). A dotted STADIUM outline (running-track shape:
-// top + bottom straights joined by left + right semicircles) on the
-// field the player laps; dots already passed disappear so the
-// outline shrinks as the lap completes (走完動態消除).
-//
-// Drawn INSIDE a `CameraScope` by the caller so this is world space.
-// Must be drawn BEFORE the painter's-order pass so 綜合院館 (which
-// overlaps the 操場's east edge) and the runners paint OVER it: the
-// layering request "地圖 → 線條 → 綜院". Reactive: a pure function of
-// `World::SportsLapActive()` + `SportsLapProgress()`. Early-returns
-// when the lap is inactive.
-//
-// Render-only (MVC §5). Read-only world.
+/**
+ * @file SportsLapTrack.h
+ * @brief 操場校慶跑道地面貼花（自 View::RenderWorld 抽出）。
+ */
+
+/**
+ * @brief 繪製操場跑道地貼：在玩家繞圈的場地上畫一個虛線「體育場」輪廓（跑道形
+ *        狀：上下直道由左右半圓相接）；已通過的點會消失，使輪廓隨圈速完成而縮小
+ *        （走完動態消除）。
+ *
+ * 由呼叫端在 CameraScope「之內」繪製，故為世界座標。必須在繪製順序掃描「之前」
+ * 畫，使綜合院館（覆蓋操場東緣）與跑者疊在其上：即「地圖 → 線條 → 綜院」的分層
+ * 需求。反應式：為 World::SportsLapActive() 與 SportsLapProgress() 的純函式；未
+ * 進行圈速時提前返回。純渲染（MVC）、唯讀 world。
+ */
 void DrawSportsLapTrack(nccu::engine::render::IRenderer& r, const World& world);
 
 }  // namespace nccu

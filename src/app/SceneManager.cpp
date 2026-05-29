@@ -6,6 +6,11 @@
 #include "engine/render/Window.h"
 #include "game/world/World.h"
 
+/**
+ * @file SceneManager.cpp
+ * @brief 場景管理器的實作：延後套用的場景切換語意，與整合錄製鉤子的唯一主迴圈。
+ */
+
 namespace nccu::app {
 
 void SceneManager::Push(std::unique_ptr<IScene> scene) {
@@ -19,10 +24,8 @@ SceneManager::StepResult SceneManager::ApplyCommand(SceneCommand cmd) {
         case SceneCommand::Kind::None:
             return StepResult::Continue;
         case SceneCommand::Kind::Push:
-            // Phase 3 step 1 has only GameplayScene on the stack so a
-            // Push never fires from production code; the branch is
-            // here so the doctest fake-scene path can exercise it
-            // before step 2 lands TitleScene + the real transitions.
+            // 正式遊玩流程目前不會發出 Push；此分支存在是為了讓 doctest 的假場景
+            // 路徑能驗證推入語意。
             if (cmd.make) {
                 auto next = cmd.make();
                 if (next) {
@@ -43,8 +46,7 @@ SceneManager::StepResult SceneManager::ApplyCommand(SceneCommand cmd) {
                     stack_.push_back(std::move(next));
                 }
             }
-            // An empty stack after Replace would dead-end the loop —
-            // treat that as Quit so the program never spins idle.
+            // Replace 後若堆疊為空會讓迴圈走入死路——視同 Quit，使程式不會空轉。
             return stack_.empty() ? StepResult::Quit
                                   : StepResult::Continue;
         case SceneCommand::Kind::Pop:
@@ -52,10 +54,8 @@ SceneManager::StepResult SceneManager::ApplyCommand(SceneCommand cmd) {
                 stack_.back()->Exit();
                 stack_.pop_back();
             }
-            // The composition root never has more than one scene live
-            // in step 1, so a Pop equals "stack empty" = end the run;
-            // step 2+ may push Title under Gameplay, in which case
-            // Pop returns to Title and the loop keeps going.
+            // Pop 後若堆疊清空即結束本次執行；若堆疊下方仍有場景（例如 Title 被壓在
+            // Gameplay 之下），則 Pop 回到該場景並讓迴圈續跑。
             return stack_.empty() ? StepResult::Quit
                                   : StepResult::Continue;
         case SceneCommand::Kind::Quit:
@@ -71,32 +71,24 @@ SceneManager::RunOutcome SceneManager::Run(nccu::engine::render::Window& window,
                                            nccu::Harness& harness) {
     while (!window.ShouldClose() && !harness.ShouldQuit() &&
            !stack_.empty()) {
-        // BeginFrame mirrors the pre-Phase-3 inline loop: the harness
-        // captures input edges + drives the scripted plan resolution
-        // for this tick BEFORE the active scene's Update reads input.
+        // BeginFrame 必須在現役場景的 Update 讀輸入之前：錄製器於此擷取輸入邊緣，
+        // 並推進本 tick 的腳本化計畫解析。
         harness.BeginFrame();
 
         const float dt = nccu::engine::platform::Time::DeltaSeconds();
         SceneCommand cmd = stack_.back()->Update(dt);
 
         {
-            // DrawScope owns the raylib Begin/EndDrawing pair; entering
-            // it here means every scene's Draw() runs INSIDE the same
-            // GL frame the inline pre-Phase-3 main.cpp used. Closed
-            // before EndFrame so the harness sees the post-EndDrawing
-            // pixel state.
+            // DrawScope 持有 raylib 的 Begin／EndDrawing 配對；在此進入即代表每個
+            // 場景的 Draw() 都跑在同一個 GL 幀內。於 EndFrame 前關閉，使錄製器看到
+            // EndDrawing 之後的像素狀態。
             nccu::engine::render::DrawScope frame;
             stack_.back()->Draw(renderer);
         }
 
-        // EndFrame mirrors the pre-Phase-3 inline call: pass the
-        // active scene's World so the harness can serialise
-        // {player.pos, karma, money, rain, flags, events, objects}
-        // for that tick. Title/Select/Loading scenes (step 2-4) will
-        // return nullptr, so EndFrame stays skipped for them — which
-        // mirrors pre-Phase-3 main.cpp's behaviour (those screens
-        // never called EndFrame either; the harness was inactive
-        // until the gameplay scope opened).
+        // EndFrame 傳入現役場景的 World，讓錄製器序列化本 tick 的
+        // {player.pos, karma, money, rain, flags, events, objects}。Title／Select／
+        // Loading 場景回傳 nullptr，故對它們略過 EndFrame——這些畫面本就不參與錄製。
         if (const nccu::World* world =
                 stack_.back()->WorldForHarnessOrNull()) {
             harness.EndFrame(*world);
@@ -106,8 +98,8 @@ SceneManager::RunOutcome SceneManager::Run(nccu::engine::render::Window& window,
         if (res == StepResult::Quit)    return RunOutcome::Quit;
         if (res == StepResult::Restart) return RunOutcome::Restart;
     }
-    // Window-close / harness ShouldQuit / empty stack all funnel into
-    // a clean Quit — main.cpp's outer teardown handles GL shutdown.
+    // 視窗關閉／錄製器 ShouldQuit／堆疊清空都收斂為乾淨的 Quit——GL 關閉由 main.cpp
+    // 的外層拆除負責。
     return RunOutcome::Quit;
 }
 

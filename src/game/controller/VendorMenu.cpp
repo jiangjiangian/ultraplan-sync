@@ -14,21 +14,18 @@ void OpenVendorMenu(DialogState& dlg, const Vendor& vendor) {
 
     std::vector<DialogChoice> choices;
     for (const auto& item : cfg.stock) {
-        // Sold-out lines are still shown (TryBuy answers "賣完了" on
-        // confirm) so the stock count stays visible; an unlimited or
-        // in-stock line is buyable. Label mirrors NPC::Interact's
-        // "<id> - <price> 元" preview.
+        // 售罄項目仍會顯示（TryBuy 於確認時回覆「賣完了」），使庫存數量維持可見；
+        // 無限量或仍有庫存的項目則可購買。標籤沿用 NPC::Interact 的「<id> - <價> 元」
+        // 預覽格式。
         choices.push_back(DialogChoice{
             item.itemId + std::string(" - ") +
                 std::to_string(item.price) + std::string(" 元"),
             0, std::string{}, false, {}});
     }
-    // REQUIREMENT #4: the always-present decline option. Appended LAST
-    // so a stock choice keeps its 0-based index == its stock slot (the
-    // pinned TryBuy(stockIdx) contract is unchanged); the decline index
-    // is exactly cfg.stock.size(). Present even when stock is empty so a
-    // greeting-only stall is still a real, exitable choice (no forced
-    // dead-end). karmaDelta 0 / setsFlag "" — it carries no side effect.
+    // 恆存在的放棄選項。附加在「最後」，使庫存選項保有其 0 起算索引 == 庫存槽位
+    // （TryBuy(stockIdx) 契約不變）；放棄選項的索引恰為 cfg.stock.size()。即使庫存
+    // 為空也存在，使僅有問候語的攤位仍是一個真正、可離開的選項（不強迫陷入死路）。
+    // karmaDelta 0／setsFlag 空——它不帶任何副作用。
     choices.push_back(DialogChoice{
         std::string(kVendorDeclineLabel), 0, std::string{}, false, {}});
     dlg.Open(std::move(greeting), std::move(choices));

@@ -4,58 +4,58 @@
 #include <string>
 #include <vector>
 
-// Pure presentation helper (no raylib, no input, no World). Wraps a
-// dialogue string to a fixed cell width and paginates the wrapped rows
-// into fixed-height pages, so the dialog box NEVER overflows or clips no
-// matter how long the authored line is (BUGLEDGER B4). Cell accounting
-// follows Unicode East Asian Width — exactly the rule .claude/tools/
-// dialog_lint.py:cell_width uses (full/wide/ambiguous = 2 cells, the
-// rest = 1) — so the renderer's wrap is the single source of truth for
-// "fits the box" and the linter can simply assert it produces no row
-// wider than the box instead of flagging raw authored length.
+/**
+ * @file DialogLayout.h
+ * @brief 對話框排版的純呈現工具（無 raylib、無輸入、無 World）：把一行對白依固定
+ *        格寬斷行，再把斷出的列分頁，使對話框無論台詞多長都絕不溢出或被裁切。
+ *
+ * 格寬計算遵循 Unicode East Asian Width（全形／寬／模糊 = 2 格，其餘 = 1 格），因此
+ * renderer 的斷行即為「是否塞得進框」的唯一真實來源——驗證工具只需斷言它不會產出比框
+ * 更寬的列，而不必去檢查作者原始字串的長度。
+ */
 namespace nccu::dialog {
 
-// Visual width of `s` in full-width cells. ASCII / narrow = 1, CJK
-// ideographs / full-width / ambiguous = 2, combining marks = 0. Mirrors
-// dialog_lint.py's cell_width over the codepoint set this game uses.
+/**
+ * @brief 計算字串 `s` 以全形格為單位的視覺寬度。
+ * @param s 受測的 UTF-8 字串。
+ * @return 視覺格數：ASCII／窄字 = 1，CJK 漢字／全形／模糊 = 2，組合附加符號 = 0。
+ */
 [[nodiscard]] int CellWidth(const std::string& s);
 
-// Greedy wrap of one logical line to `maxCells` visual cells per row.
-// Breaks at ASCII spaces where the run has them (word wrap); otherwise
-// breaks on UTF-8 codepoint boundaries (CJK has no spaces) — never
-// inside a multibyte sequence and never producing a row wider than
-// `maxCells` (a single glyph wider than the budget gets its own row).
-// A literal '\n' forces a hard break. Returns at least one row (which
-// may be empty for an empty input). Pure & directly unit-testable.
+/**
+ * @brief 把一段邏輯行貪婪斷行為每列至多 `maxCells` 格。
+ * @param s        待斷行的單行字串。
+ * @param maxCells 每列的視覺格數上限。
+ * @return 斷出的列向量；至少一列（空輸入則為單一空列）。
+ *
+ * 若該段含 ASCII 空白則在空白處斷（word wrap）；否則在 UTF-8 字元邊界斷（CJK 無空白）
+ * ——絕不切在多位元組序列中間，也絕不產出比 `maxCells` 寬的列（單一字元若本身超寬則
+ * 獨佔一列）。字面 '\n' 強制硬斷。純函式，可直接單元測試。
+ */
 [[nodiscard]] std::vector<std::string> WrapToCells(const std::string& s,
                                                    int maxCells);
 
-// Paginate `rows` into pages of at most `rowsPerPage` rows each. Always
-// returns at least one page (possibly empty) so callers can index [0].
+/**
+ * @brief 把 `rows` 分頁為每頁至多 `rowsPerPage` 列。
+ * @return 頁向量；永遠至少回傳一頁（可能為空），呼叫端才能安全索引 [0]。
+ */
 [[nodiscard]] std::vector<std::vector<std::string>>
 Paginate(const std::vector<std::string>& rows, int rowsPerPage);
 
-// Convenience: wrap then paginate in one call.
+/** @brief 便利函式：一次完成斷行再分頁。 */
 [[nodiscard]] std::vector<std::vector<std::string>>
 LayoutPages(const std::string& s, int maxCells, int rowsPerPage);
 
-// Dialog box geometry, in one place so View, DialogState pagination and
-// the regression tests agree. Values chosen for the existing panel
-// Rect{20,320,760,110} drawn at font size 16.
+// 對話框幾何尺寸集中於此一處，讓 View、DialogState 分頁與回歸測試三方一致；數值依
+// 既有面板 Rect{20,320,760,110}、字級 16 選定。
 //
-// kBoxCells = 80: a wrapped row should FILL the box to near its right
-// edge before wrapping, not stop a third of the way across (the V-wrap
-// bug — the old 28 wrapped at ~224px in a ~720px-wide text area). The
-// text runs from kBoxTextX (36px); the "▼ more" cue draws at
-// kBoxX+kBoxW-24 == 756px. Sizing from the rendered advance — a
-// full-width glyph at font size 16 advances ~size + size/10 spacing
-// ≈ 17.6px, i.e. ~8.8px per cell (the conservative end of the project's
-// ~8px/cell model used by EndingView::CenteredX) — a full 80-cell CJK
-// row ends at 36 + 80*8.8 ≈ 740px, ~16px clear of the ▼ at 756 and
-// inside the 768px inner-right edge. (Pixel-unverifiable here: the font
-// atlas is absent on a fresh clone, so the value is sized from the cell
-// model with a safety margin rather than measured on screen.) Keep in
-// sync with .claude/tools/dialog_lint.py MAX_CELLS and CLAUDE.md §6.
+// kBoxCells = 80：斷出的列應「填滿」到接近框右緣才換行，而非到三分之一處就停（過去設
+// 28 會在 ~720px 寬的文字區只排到 ~224px 就斷）。文字自 kBoxTextX（36px）起排，「▼ 更
+// 多」提示畫在 kBoxX+kBoxW-24 == 756px。尺寸由實際繪製步進反推：字級 16 的全形字元前進
+// 約 size + size/10 ≈ 17.6px，即每格約 8.8px（取 EndingView::CenteredX 所用 ~8px/格
+// 模型的保守端）——滿 80 格的 CJK 列止於 36 + 80*8.8 ≈ 740px，距 756px 的 ▼ 約 16px，
+// 且落在 768px 內右緣之內。此值依格寬模型加安全邊際估出（無字型圖集時無法以像素量測），
+// 而非螢幕實測。
 inline constexpr int   kBoxCells       = 80;
 inline constexpr int   kBoxRowsPerPage = 3;
 inline constexpr float kBoxX           = 20.0f;

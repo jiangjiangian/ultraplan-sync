@@ -6,7 +6,7 @@
 #include "app/scenes/TitleScene.h"
 #include "app/scenes/CharacterSelectScene.h"
 #include "app/scenes/LoadingScene.h"
-#include "ui/CharacterSelect.h"          // CharacterSelectResult
+#include "ui/CharacterSelect.h"          // 引入 CharacterSelectResult
 #include "engine/platform/Harness.h"
 #include "engine/audio/AudioDevice.h"
 
@@ -16,15 +16,13 @@
 namespace nccu::app {
 namespace {
 
-// Build a fresh human screen chain: Loading -> Title -> CharacterSelect ->
-// Gameplay. Each scene's ctor captures the next link by value, so the
-// returned LoadingScene owns a self-contained copy of the whole chain.
+// 建立一條全新的人類畫面鏈：Loading -> Title -> CharacterSelect -> Gameplay。
+// 每個場景的建構子以值捕獲下一段，故回傳的 LoadingScene 自帶整條鏈的獨立副本。
 //
-// The in-game 重新開始 routes through GameplayScene's restartFactory, which
-// here simply calls THIS function again — capturing only the borrowed
-// audio/harness refs (program-lifetime, owned by main). That deliberately
-// avoids the earlier forward-declared-std::function pattern: no dangling
-// reference once this returns, and no shared_ptr reference cycle.
+// 遊戲內的「重新開始」會走 GameplayScene 的 restartFactory，而此處的 restartFactory
+// 只是再次呼叫「本函式」——僅捕獲借用的 audio／harness 參考（程式級壽命、由 main
+// 擁有）。如此刻意避開先前「前向宣告的 std::function」寫法：函式回傳後不留懸空參考，
+// 也沒有 shared_ptr 的循環參考。
 std::unique_ptr<IScene> MakeHumanInitialScene(
     nccu::audio::AudioDevice& audio, nccu::Harness& harness,
     int winW, int winH) {
@@ -51,8 +49,8 @@ std::unique_ptr<IScene> MakeHumanInitialScene(
 void PushInitialScene(SceneManager& sm, nccu::Harness& harness,
                       nccu::audio::AudioDevice& audio, int winW, int winH) {
     if (harness.Active()) {
-        // Deterministic skip path: straight to one GameplayScene with an
-        // empty restart factory (a stray Restart resolves to Quit).
+        // 具決定性的略過路徑：直接進入單一 GameplayScene，restart 工廠留空（誤觸的
+        // Restart 會收斂為 Quit）。
         nccu::CharacterSelectResult harnessSel;
         harnessSel.spritePath = harness.SpritePath();
         sm.Push(std::make_unique<GameplayScene>(

@@ -5,15 +5,23 @@
 
 namespace nccu::engine::render {
 
-// RAII: BeginMode2D in the ctor, EndMode2D in the dtor. Must be created
-// INSIDE a DrawScope and destroyed BEFORE the DrawScope ends — calling
-// EndMode2D after EndDrawing is undefined behaviour in raylib. Stack
-// ordering with an inner `{}` block enforces this naturally.
-//
-// Non-copyable AND non-movable: a moved-from CameraScope would otherwise
-// double-EndMode2D in its destructor.
+/**
+ * @file CameraScope.h
+ * @brief 攝影機模式的 RAII 守衛：建構時 BeginMode2D、解構時 EndMode2D。
+ */
+
+/**
+ * @brief 以 RAII 包住 raylib 的 2D 攝影機模式。
+ *
+ * 建構子呼叫 BeginMode2D、解構子呼叫 EndMode2D。必須建立於 DrawScope「之內」並在
+ * DrawScope 結束「之前」解構——在 EndDrawing 之後才呼叫 EndMode2D 在 raylib 中為
+ * 未定義行為；以內層 `{}` 區塊的堆疊順序自然保證此點。
+ *
+ * 不可複製亦不可移動：被移走的 CameraScope 否則會在解構時重複呼叫 EndMode2D。
+ */
 class CameraScope {
 public:
+    /** @brief 進入 2D 攝影機模式。@param[in] cam 攝影機參數。 */
     explicit CameraScope(const Camera2D& cam) noexcept {
         ::BeginMode2D(::Camera2D{
             ::Vector2{cam.offset.x, cam.offset.y},

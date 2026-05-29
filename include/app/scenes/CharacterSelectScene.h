@@ -2,7 +2,7 @@
 #define APP_SCENES_CHARACTER_SELECT_SCENE_H_
 #include "app/IScene.h"
 #include "engine/render/Texture.h"
-#include "ui/CharacterSelect.h"          // CharacterSelectResult + kPersonas
+#include "ui/CharacterSelect.h"          // 引入 CharacterSelectResult 與 kPersonas
 #include "ui/PressLatch.h"
 #include <functional>
 #include <memory>
@@ -10,19 +10,17 @@
 
 namespace nccu::app {
 
-// Blueprint Phase 3 step 2 — the persona picker, ported from the
-// blocking RunCharacterSelect free function (src/ui/CharacterSelect.cpp)
-// into the IScene contract. Per-frame Update reads ← →/A D + Enter
-// to advance the cursor / confirm; Draw paints the five tiles + the
-// selection panel. On confirmed selection, the scene emits
-// SceneCommand{Replace, gameplayFactory_(selection)} so the next
-// scene (today: GameplayScene) materialises with the resolved
-// CharacterSelectResult.
-//
-// Like TitleScene's startGame factory, the gameplay factory is a
-// closure produced by the composition root: it captures the
-// audioDevice/harness/window refs GameplayScene needs without
-// flowing them through this scene. Tests can hand a stub.
+/**
+ * @brief 角色選擇畫面：在五位角色間挑選。
+ *
+ * 每幀 Update 讀 ← →／A D ＋ Enter 以移動游標／確認；Draw 畫出五格角色與選取面板。
+ * 確認選擇後，場景發出 SceneCommand{Replace, gameplayFactory_(selection)}，使下一個
+ * 場景（目前為 GameplayScene）帶著解析後的 CharacterSelectResult 實體化。
+ *
+ * 與 TitleScene 的 startGame 工廠一樣，gameplay 工廠也是 composition root 產生的
+ * closure：它捕獲 GameplayScene 所需的 audioDevice／harness／window 參考，而不必讓
+ * 這些參考流經本場景。測試可換入 stub。
+ */
 class CharacterSelectScene final : public IScene {
 public:
     using GameplayFactory = std::function<
@@ -36,9 +34,9 @@ public:
 
 private:
     GameplayFactory             gameplay_;
-    int                         cursor_ = 0;
-    std::vector<nccu::engine::render::Texture> previews_;
-    nccu::PressLatch            confirm_;          // gate held-Enter from TitleScene
+    int                         cursor_ = 0;        ///< 目前選取的角色索引
+    std::vector<nccu::engine::render::Texture> previews_;  ///< 各角色預覽紋理（隨場景 RAII 釋放）
+    nccu::PressLatch            confirm_;          ///< 攔下從 TitleScene 延續的 Enter 長按
 };
 
 } // namespace nccu::app

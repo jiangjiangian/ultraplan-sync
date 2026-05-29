@@ -8,34 +8,44 @@
 
 namespace nccu {
 
-// Per-state Vendor roster, the price-table sibling of ChapterNpcSpawns.
-// A Vendor is NOT an NpcSpawn (it needs a VendorConfig, not a sprite
-// path + npcId), so it gets its own placement table. World iterates this
-// alongside ChapterNpcSpawns inside RespawnChapterRoster.
-//
-// S5b-3: the Interlude lineup is no longer hand-written literals — it is
-// parsed at runtime from interlude_market.md §10 via LoadInterludeVendors
-// (the .md is the single source of truth, exactly like chapter dialog)
-// and zipped with a code-side position table (spatial layout is code's
-// job, like NpcSpawns). The result is cached (first call parses; the
-// reference stays valid until ReloadVendors()). Other states return an
-// empty static vector — chapters get incidental Vendors in S5c/d/e.
+/**
+ * @file ChapterVendors.h
+ * @brief 各章節的攤販名冊，ChapterNpcSpawns 的價目表姊妹。
+ *
+ * Vendor「不是」NpcSpawn（它需要 VendorConfig，而非 sprite 路徑＋npcId），故另設
+ * 自己的配置表。World 在 RespawnChapterRoster 內與 ChapterNpcSpawns 一併迭代它。
+ *
+ * Interlude 陣容不再是手寫字面值——它在執行期由 LoadInterludeVendors 從
+ * interlude_market.md 解析（.md 是單一事實來源，與章節對話完全相同），再與程式端
+ * 的位置表 zip 起來（空間排版是程式的工作，與 NpcSpawns 同）。結果有快取（首次呼
+ * 叫即解析；參考在 ReloadVendors() 前皆有效）。其他狀態回傳空的靜態向量——各章的
+ * 附帶攤販於後續加入。
+ */
 struct VendorPlacement {
-    VendorConfig    config;
-    nccu::engine::math::Vec2 pos;
+    VendorConfig    config;          ///< 攤位設定
+    nccu::engine::math::Vec2 pos;    ///< 攤位世界座標
 };
 
-// Cached per-state placements. Interlude is parser-backed; everything
-// else is empty for now.
+/**
+ * @brief 取得指定章節狀態的攤販配置（快取）。
+ * @param state 學期章節狀態。
+ * @return 該狀態的攤販配置向量；Interlude 由解析器供應，其餘目前多為空。
+ */
 const std::vector<VendorPlacement>& ChapterVendors(SemesterState state);
 
-// Where LoadInterludeVendors looks (default "docs/content", mirroring
-// dialog::SetContentDir). Tests point this at TEST_CONTENT_DIR. Changing
-// it invalidates the cache.
+/**
+ * @brief 設定 LoadInterludeVendors 讀取的內容目錄。
+ * @param dir 內容目錄（預設 "docs/content"，對應 dialog::SetContentDir）。
+ *
+ * 測試會把它指向測試內容目錄。變更它會使快取失效。
+ */
 void SetVendorContentDir(std::string dir);
 
-// Drops the parse cache so the next ChapterVendors() re-reads the .md
-// (hot-reload, sibling of dialog::Reload()).
+/**
+ * @brief 丟棄解析快取，使下次 ChapterVendors() 重新讀取 .md（熱重載）。
+ *
+ * 為 dialog::Reload() 的姊妹。
+ */
 void ReloadVendors();
 
 } // namespace nccu

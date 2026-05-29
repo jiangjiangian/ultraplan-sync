@@ -10,95 +10,93 @@
 #include <string>
 #include <vector>
 
-class Player;     // global-namespace model object
-class Vendor;     // shop NPC; pending-purchase target across the dialog frame
-class EventBus;   // Plan P2: bus is ctor-injected, member-stored
+class Player;     // 全域命名空間的模型物件——前向宣告
+class Vendor;     // 商店 NPC；跨對話幀的待購買目標——前向宣告
+class EventBus;   // 由建構子注入並存為成員的事件匯流排——前向宣告
 
 namespace nccu {
 
 class World;
 struct DialogChoice;
 
-// The input + simulation layer. One Update() advances the world by a
-// frame: ticks every object, resolves player collision, dispatches the
-// E-key interact, detects building entry, sweeps the dead. Owns the
-// EventBus wiring — installed in the ctor, torn down in the dtor so no
-// singleton-bound lambda outlives the World refs it captured. Mutates
-// the World; never renders, never reads input devices for the View.
-//
-// Cycle 10.P0a (awsome_cpp.md §6): the input edge timing has moved into
-// InputHandler and the FSM transition observer has moved into
-// SceneRouter. The Controller stays the orchestrator that wires them to
-// the World — exactly the §6 "Controller stays the orchestrator"
-// shape, with one concrete responsibility per helper class.
+/**
+ * @file GameController.h
+ * @brief MVC 中的「輸入＋模擬」協調者（orchestrator）。
+ */
+
+/**
+ * @brief 串起輸入層、ISystem 模擬管線與各觀察者，每幀推進一次世界的協調者。
+ *
+ * 一次 Update() 把世界推進一幀：tick 每個物件、解算玩家碰撞、派發 E 鍵互動、偵測
+ * 建築進入、清除死亡物件。它擁有 EventBus 的接線——於建構子安裝、於解構子拆除，使
+ * 任何綁定到 bus 的 lambda 都不會比它所捕捉的 World 參考更長壽。它只變動 World；
+ * 絕不渲染、也不為 View 讀取輸入裝置。
+ *
+ * 設計意圖：輸入的邊緣計時已移入 InputHandler，FSM 轉場觀察者已移入 SceneRouter，
+ * 模擬階段已拆成 ISystem。Controller 維持為把它們接到 World 的協調者——一個輔助
+ * 類別負責一項具體職責。
+ */
 class GameController {
 public:
-    // Plan P2 — targeted EventBus DI: the bus is injected so every
-    // publish site reachable from the controller (HandleDialog gates,
-    // SceneRouter, the SubscribeDefaultSubscribers wiring) routes through
-    // the SAME instance and tests can substitute their own. In production
-    // main.cpp passes EventBus::Instance(); tests can pass a local bus.
+    /**
+     * @brief 以世界與事件匯流排建構協調者，並安裝預設訂閱者。
+     * @param[in,out] world 要被本協調者推進的世界。
+     * @param[in,out] bus   注入的事件匯流排（依賴注入）。
+     *
+     * bus 以注入方式傳入，使 Controller 可達的每個發布點（HandleDialog 的各 gate、
+     * SceneRouter、預設訂閱者接線）都走「同一個」實例，測試也能替換成自己的匯流排。
+     * 正式版 main.cpp 傳入單例；測試可傳入區域匯流排。
+     */
     GameController(World& world, EventBus& bus);
     ~GameController();
 
     GameController(const GameController&)            = delete;
     GameController& operator=(const GameController&) = delete;
 
+    /** @brief 推進世界一幀：先處理畫面輸入，再跑模擬管線與各 gate。 */
     void Update();
 
 private:
-    // Per-screen INPUT sub-handlers (each reads nccu::engine::input::Input, so they stay
-    // in the controller layer — NOT systems). Each returns true when it
-    // consumed the frame and the world must stay frozen (the orchestrator
-    // then returns before the simulation pipeline runs), false to fall
-    // through to the next screen / the sim. Decomposed out of the former
-    // ~793-line Update() god-method (awsome_cpp.md §7 SRP) one-to-one with
-    // the original spatially-isolated blocks; input semantics unchanged.
-    bool HandleEndingMenu();   // A-T3: the ending screen's bottom menu.
-    bool HandlePauseMenu();    // M pause menu + the 說明 help overlay.
-    bool HandleDialog();       // dialog advance + vendor-purchase routing.
-    bool HandleInventory();    // Tab bag: ↑/↓ select, ←/→ page, E/Enter use.
-    // E-interact dispatch: the per-frame talk/pickup probe. Reads input
-    // (the E edge + the reach box), so it stays in the controller; it
-    // delegates the quest side-effects to the registered QuestHook table
-    // (RunInteractHooks) instead of inlining ~14 TryXxx calls.
+    /// @name 各畫面的輸入子處理器
+    /// 每個都讀取 Input，故留在 Controller 層（非 system）。各自在「吃掉本幀且世界
+    /// 須維持凍結」時回傳 true（協調者隨即在模擬管線之前回傳），否則回傳 false 以
+    /// 落到下一個畫面／模擬。
+    ///@{
+    bool HandleEndingMenu();   ///< 結局畫面的底部選單
+    bool HandlePauseMenu();    ///< M 暫停選單＋說明覆蓋層
+    bool HandleDialog();       ///< 對話推進＋攤主購買導向
+    bool HandleInventory();    ///< Tab 背包：↑/↓ 選取、←/→ 翻頁、E/Enter 使用
+    ///@}
+    /**
+     * @brief 每幀的 E 鍵對話／拾取探測派發。
+     *
+     * 讀取輸入（E 鍵邊緣＋觸及盒），故留在 Controller；它把任務副作用委派給已註冊
+     * 的 QuestHook 表（RunInteractHooks），而非內嵌一長串 TryXxx 呼叫。
+     */
     void DispatchInteract();
 
-    World&                                               world_;
-    EventBus&                                            bus_;  // Plan P2: injected
-    std::vector<nccu::engine::math::Rect>                         frameColliders_;
-    nccu::engine::math::Vec2                                       worldSize_;
-    nccu::engine::math::Vec2                                       playerSize_;
-    // Cycle 10.P0a: roster-respawn cursor + interlude-exit latch live
-    // on the SceneRouter now. lastRosterState_ and
-    // interludeExitZoneLatched_ used to be inline members here.
-    SceneRouter                                          sceneRouter_;
-    // Cycle 10.P0a: dialog hold-E auto-advance timer + cooldown live on
-    // the InputHandler now. eHoldMs_ and eAutoAdvanceCooldown_ used to
-    // be inline members here.
-    InputHandler                                         input_;
-    // I5: the Vendor whose buy menu is currently open. A shop interaction
-    // opens a choice dialog this frame and the purchase is confirmed in a
-    // LATER frame's dialog branch, so the target must survive across the
-    // freeze. A non-owning observer of a World-owned object; cleared the
-    // moment the menu closes (confirm / no-op) and whenever a non-vendor
-    // dialog opens, so it can never dangle past the roster sweep (a
-    // vendor dialog freezes the sim, so the swept-roster path cannot run
-    // while it is set). nullptr = no shop menu open.
+    World&                                               world_;          ///< 被推進的世界
+    EventBus&                                            bus_;            ///< 注入的事件匯流排
+    std::vector<nccu::engine::math::Rect>                         frameColliders_; ///< 重用的暫存碰撞盒清單（僅動態演員；地形走遮罩）
+    nccu::engine::math::Vec2                                       worldSize_;      ///< 世界邊界尺寸（像素）
+    nccu::engine::math::Vec2                                       playerSize_;     ///< 玩家碰撞盒尺寸（像素）
+    SceneRouter                                          sceneRouter_;    ///< FSM 轉場觀察者（名冊／側效游標、離開閂鎖）
+    InputHandler                                         input_;          ///< 輸入計時（按住 E 自動推進對話）
+    /// 目前開啟購買選單的攤主。商店互動於本幀開啟選項對話，購買則在「較晚一幀」的
+    /// 對話分支確認，故此目標須跨凍結存活。它是對 World 所擁有物件的非擁有觀察指標；
+    /// 選單關閉（確認／無動作）或開啟非攤主對話時即清空，故絕不可能在名冊清除之後
+    /// 懸空（攤主對話會凍結模擬，故其設定期間名冊清除路徑不會執行）。nullptr 表示
+    /// 沒有開啟任何商店選單。
     Vendor*                                              pendingVendor_ = nullptr;
 
-    // The ordered model-advance pipeline (awsome_cpp.md §6/§7). Run, in
-    // this exact order, every non-frozen frame BEFORE the E-interact /
-    // building-entry / gate-poll logic: Survival(rain) -> Movement(object
-    // tick) -> Collision(player AABB+terrain) -> Spawn(lap + deferred
-    // spawns). MovementSystem hands the pre-tick player position to
-    // CollisionSystem through the SimContext. SweepSystem is the TERMINAL
-    // stage (the end-of-frame deferred deletion), run AFTER the interact /
-    // gate logic — exactly where the inline sweep used to sit — so the
-    // full per-frame order is byte-preserved. Pure model: no system reads
-    // input or renders.
+    /// 有序的模型推進管線。每個非凍結幀，於 E 鍵互動／建築進入／gate 輪詢「之前」，
+    /// 以此精確順序執行：Survival（降雨）-> Movement（物件 tick）-> Collision
+    /// （玩家 AABB＋地形）-> Spawn（繞圈＋延遲生成）。MovementSystem 透過 SimContext
+    /// 把 tick 前的玩家座標交給 CollisionSystem。SweepSystem 是「終端」階段（幀末
+    /// 延遲刪除），於互動／gate 邏輯「之後」單獨執行，故每幀整體順序維持逐位元保存。
+    /// 純模型：沒有 system 讀輸入或渲染。
     std::vector<std::unique_ptr<ISystem>>                advanceSystems_;
-    SweepSystem                                          sweep_;
+    SweepSystem                                          sweep_;          ///< 終端清除階段（幀末延遲刪除）
 };
 
 } // namespace nccu

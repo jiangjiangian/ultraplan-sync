@@ -4,21 +4,23 @@
 #include "game/state/SemesterState.h"
 #include <string>
 
+/**
+ * @file ChapterToast.h
+ * @brief 章節／幕間／結局轉移的過場提示文字與發布輔助，外加幕間出口提示。
+ */
+
 namespace nccu {
 
-// H2 (Cycle 9): every chapter / interlude / ending transition publishes a
-// short ShowMessage so the player gets visible feedback the moment the
-// semester FSM advances. Before this, ChapterGate / EventWiring /
-// EndingGate ran Transition() silently and only the destination's
-// QuestObjective hinted at progress — the playtest log captured 5
-// consecutive `Transition()`s with `events=[]`, so the player saw nothing
-// but a snapped roster (BUGLEDGER cycle9 H2).
-//
-// Pure data: maps the destination SemesterState to its display text.
-// Returned by value (not const-ref) so a future caller could decorate it
-// without forcing a static lifetime on every variant. All strings stay
-// well within the dialog-box 28-cell budget (CLAUDE.md §6) so the HUD
-// banner and a future spill into the dialog system look identical.
+/**
+ * @brief 將轉移目標狀態對映為其過場提示顯示文字。
+ * @param target 轉移後的目標 SemesterState。
+ * @return 對應的繁中提示文字；列舉未涵蓋時回傳空字串。
+ *
+ * 純資料對映：每次章節／幕間／結局轉移都發布一則短訊息，讓玩家在學期狀態機推進的
+ * 當下即看到回饋（否則轉移是無聲的，只有目的地的任務目標暗示進度）。以值回傳而非
+ * const 參考，方便未來呼叫端裝飾文字而不必為每個變體強加靜態生命週期。所有字串都
+ * 控制在對話框單行字數預算內。
+ */
 [[nodiscard]] inline std::string ChapterTransitionToast(
     SemesterState target) {
     switch (target) {
@@ -41,55 +43,39 @@ namespace nccu {
     return std::string{};
 }
 
-// Publish the toast on the global EventBus. One call per Transition site
-// (EventWiring Ch1/Ch3 -> Interlude, ChapterGate Ch2/Ch3/Interlude exit,
-// EndingGate Ch4 -> Ending_A/B/C). Skip the publish on the rare branch
-// that calls this with the SAME destination as the current state — the
-// caller protects against a no-op transition. Empty toast text (should
-// never happen post-switch coverage) becomes a no-op so a future enum
-// addition cannot accidentally emit a blank banner.
-//
-// Cycle 9.G: chapter / ending transition toasts go on HudSlot::Top so
-// the same-frame Bottom-slot publishes (TrueUmbrella pickup line, IL
-// arrival hint, karma toasts) coexist with — instead of clobbering —
-// the chapter banner. Before the split, the arrival hint published one
-// frame after the chapter toast and overwrote the same single slot;
-// the chapter line was visible for 0.02 s (cycle9f-post-iteration-
-// diagnosis §B).
-//
-// Plan P2: `bus` is injected (was a header singleton call to
-// EventBus::Instance()). Callers thread the bus from main.cpp →
-// GameController member → the gate/router that decides the
-// transition, so this header no longer carries an implicit dependency
-// on the global Instance().
+/**
+ * @brief 在事件匯流排上發布章節／結局過場提示。
+ * @param bus    要發布訊息的事件匯流排（由呼叫端注入）。
+ * @param target 轉移後的目標狀態，用以查得提示文字。
+ *
+ * 每個轉移點呼叫一次。提示文字為空（switch 覆蓋完整時不應發生）即視為無操作，避免
+ * 未來新增列舉值時意外送出空白橫幅。章節／結局提示固定走 HudSlot::Top，使同一幀在
+ * Bottom 槽發布的其他訊息（真傘拾取、幕間抵達提示、業力提示）能與章節橫幅並存而不
+ * 互相覆蓋。
+ */
 inline void PublishChapterTransitionToast(EventBus& bus, SemesterState target) {
     const std::string msg = ChapterTransitionToast(target);
     if (msg.empty()) return;
     bus.Publish(Event{EventType::ShowMessage, msg, nccu::HudSlot::Top});
 }
 
-// H3 (Cycle 9): the Interlude's south-band exit zone is a silent trigger
-// (InterludeExit.h) — the player walked into it with zero feedback before
-// the chapter snapped. These two text constants give the position-trigger
-// the same visible heartbeat the new chapter toasts give the FSM events.
-// First arrival into the Interlude itself is the H2 toast; this extra
-// hint nudges the player toward the exit corridor without crowding the
-// chapter-clear banner. The exit-zone confirmation fires once per visit
-// (GameController latches it), so the toast log never spams.
+/// @brief 抵達幕間市集中央時的引導提示（提醒玩家逛完往南離開）。
 inline constexpr const char* kInterludeArrivalHint =
     "市集中央。逛完後往南離開";
+/// @brief 走進南側出口觸發區時的離場提示。
 inline constexpr const char* kInterludeExitPrep =
     "準備離開市集";
 
-// Once-per-visit latch helper for the south-band exit toast. Returns true
-// (and publishes) on the first call after the latch has been reset to
-// false; subsequent calls with `latched == true` are no-ops so the
-// player wobbling across the y=1900 line never spams the HUD. Pure logic
-// so the GameController integration and the regression test exercise the
-// same code path. GameController resets the latch on Interlude entry; the
-// caller is responsible for that lifecycle.
-//
-// Plan P2: `bus` is injected — see PublishChapterTransitionToast above.
+/**
+ * @brief 每次造訪只播一次的幕間出口提示閂鎖輔助。
+ * @param bus     要發布提示的事件匯流排（由呼叫端注入）。
+ * @param latched 進／出狀態閂鎖；首次呼叫（為 false 時）發布並設為 true。
+ * @return 本次實際發布回傳 true；latched 已為 true 時為無操作並回傳 false。
+ *
+ * 幕間南側出口區本身是無聲位置觸發；此閂鎖讓玩家在出口邊界來回抖動時不會洗版 HUD。
+ * 純邏輯，讓 GameController 整合與回歸測試走同一條程式路徑；閂鎖的重置（幕間進入時）
+ * 由呼叫端負責。
+ */
 inline bool MaybeAnnounceInterludeExit(EventBus& bus, bool& latched) {
     if (latched) return false;
     latched = true;

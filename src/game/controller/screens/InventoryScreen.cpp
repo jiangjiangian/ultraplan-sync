@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出，以此引入
 
 bool HandleInventory(EventBus& bus, World& world) {
     using nccu::engine::input::Input;
@@ -17,17 +17,13 @@ bool HandleInventory(EventBus& bus, World& world) {
     if (Input::IsPressed(Key::Tab))
         world.SetInventoryOpen(!world.InventoryOpen());
     if (world.InventoryOpen()) {
-        // Item 2(b): the bag is a hold-and-use list. ↑/↓ move the cursor;
-        // E/Enter on a CONSUMABLE row uses it (applies the SAME effect the
-        // pickup used to fire, then decrements the count); on a view-only
-        // row (金幣 / 雨傘 / 任務紙張) E/Enter is inert — the View already
-        // shows that row's description. The rows are rebuilt from the
-        // Player each frame the bag is open (BuildInventoryRows), so a row
-        // that hits 0 after use disappears next frame and the cursor is
-        // re-clamped. Normal movement / interact never run here (the early
-        // return below freezes the sim), so opening the bag can't move the
-        // player or re-trigger NPCs — only Tab (handled above) re-closes
-        // it. Build the rows ONCE; act on the captured snapshot.
+        // 背包是「持有並使用」清單。↑/↓ 移動游標；在消耗品列按 E/Enter 即使用它
+        // （套用與拾取相同的效果，再扣減數量）；在僅供檢視的列（金幣／雨傘／任務
+        // 紙張）按 E/Enter 無作用——View 已顯示該列說明。背包開啟期間每幀自玩家
+        // 重建各列（BuildInventoryRows），故某列使用後歸 0 即於下一幀消失並重新夾限
+        // 游標。一般移動／互動絕不在此執行（下方提早返回會凍結模擬），故開背包不會
+        // 移動玩家或重新觸發 NPC——只有 Tab（上方處理）能再關閉它。各列只建構一次；
+        // 對擷取下來的快照操作。
         if (Player* invP = world.GetPlayer()) {
             const std::vector<InventoryRow> rows = BuildInventoryRows(*invP);
             const int n = static_cast<int>(rows.size());

@@ -12,21 +12,23 @@ using nccu::SemesterState;
 using nccu::World;
 using nccu::engine::math::Vec2;
 
-// H3 (cycle9): the Interlude exit zone (InterludeExit.h) was a silent
-// position trigger — `InInterludeExitZone` returned true and the engine
-// armed Flag_LeaveInterlude with zero feedback. Cycle9 added:
-//   (a) an entry hint on Interlude arrival ("市集中央。逛完後往南離開"),
-//       published from GameController right after the position reset.
-//   (b) a once-per-visit "準備離開市集" toast the first frame the player
-//       crosses into the south band. Latching is GameController-owned;
-//       the helper MaybeAnnounceInterludeExit captures the lifecycle so
-//       the test does not need the full Input/Renderer stack.
+/**
+ * @file test_interlude_exit_feedback.cpp
+ * @brief 驗證幕間出口的玩家回饋：進入市集時的提示、首次跨入南側帶狀區時
+ *        「準備離開市集」的提示，以及這些訊息經事件匯流排送達 HUD。
+ */
+
+// 幕間出口原本只是個無聲的位置觸發；本檔測試新增的兩種回饋：
+//   (a) 抵達市集時發出的入口提示（從 GameController 重置位置後送出）。
+//   (b) 首次跨入南側帶狀區那一幀發出、每次造訪僅一次的離開提示。
+// 鎖存（latch）由 GameController 管理；輔助函式 MaybeAnnounceInterludeExit
+// 封裝了整個生命週期，使測試不需完整的 Input/Renderer 堆疊。
 
 namespace {
 
-// Subscribe a stack-stable std::vector<std::string> sink to the bus.
-// The Subscription token is movable; the captured ref is to the caller's
-// stack-local vector so the lambda stays valid for the whole test body.
+// 把一個位於呼叫端堆疊上、生命週期穩定的 std::vector<std::string> 接到匯流排。
+// Subscription token 可移動；lambda 捕捉的是呼叫端堆疊上的參考，故整個測試
+// 期間都有效。
 [[nodiscard]] EventBus::Subscription
 SubscribeToAll(std::vector<std::string>& texts) {
     return EventBus::Instance().ScopedSubscribe(
@@ -47,30 +49,29 @@ std::size_t Count(const std::vector<std::string>& v, const char* needle) {
 
 } // namespace
 
+// 固定南側帶狀區的判定，避免日後調整區域常數時悄悄讓整套測試失效。
 TEST_CASE("InInterludeExitZone: south band detection still pins") {
-    // Sanity pin so a future tweak to the zone constants can't quietly
-    // void this whole suite. y=1910 is the cycle9 "first frame in band"
-    // per the brief; the entry point (kInterludeEntry, y=1500) is NOT in
-    // the zone so the player does not auto-trigger on arrival.
+    // y=1910 是跨入帶狀區的第一幀；入口點（kInterludeEntry, y=1500）不在
+    // 區內，因此玩家抵達時不會自動觸發。
     CHECK(nccu::InInterludeExitZone(Vec2{500.0f, 1910.0f}));
     CHECK_FALSE(nccu::InInterludeExitZone(nccu::kInterludeEntry));
 }
 
+// 首次進入帶狀區會發佈一次提示，之後重複呼叫不再發佈（具冪等性）。
 TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
     EventBus::Instance().Clear();
     std::vector<std::string> texts;
     auto sub = SubscribeToAll(texts);
     bool latched = false;
 
-    // First entry into the zone: publish.
+    // 首次進入區域：發佈。
     CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(latched);
     CHECK(Contains(texts, nccu::kInterludeExitPrep));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
 
-    // Player straddles / re-enters the band before leaving the Interlude:
-    // no second publish. This is the "no spam" guarantee — the helper
-    // only fires once per latch cycle.
+    // 玩家在離開幕間前於邊界來回 / 重新進入：不再發佈第二次。這就是「不洗版」
+    // 保證 — 每個鎖存週期只觸發一次。
     CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
@@ -78,6 +79,7 @@ TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
     EventBus::Instance().Clear();
 }
 
+// 鎖存生命週期：每次進入幕間時重置，跨入帶狀區時再次觸發。
 TEST_CASE("Interlude-visit latch lifecycle: reset on entry, fire on cross") {
     EventBus::Instance().Clear();
     std::vector<std::string> texts;

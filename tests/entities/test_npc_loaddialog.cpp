@@ -5,8 +5,14 @@
 #include "engine/math/Vec2.h"
 #include <vector>
 
+/**
+ * @file test_npc_loaddialog.cpp
+ * @brief 驗證 NPC::LoadDialog 依 npcId 與章節載入對話，以及 DialogLines() 介面。
+ */
+
 using nccu::SemesterState;
 
+// LoadDialog 能載入 suit_senior 第一章 (a) 開場台詞。
 TEST_CASE("LoadDialog pulls suit_senior Ch1 (a) opening lines") {
     NPC npc(nccu::engine::math::Vec2{0, 0}, {"placeholder"}, true);
     npc.LoadDialog("suit_senior", SemesterState::Chapter1_AddDrop, 0);

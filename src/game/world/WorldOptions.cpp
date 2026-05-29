@@ -3,6 +3,11 @@
 #include <cstdlib>
 #include <cstring>
 
+/**
+ * @file WorldOptions.cpp
+ * @brief 無障礙選項的環境變數解析實作（嚴格比對 "1"，其餘維持預設關閉）。
+ */
+
 namespace nccu {
 
 WorldOptions ReadWorldOptionsFromEnv() {

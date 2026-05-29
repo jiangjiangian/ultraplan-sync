@@ -13,11 +13,11 @@
 #include "ui/MessageView.h"
 #include "game/quest/QuestObjective.h"
 #include "game/quest/QuestIndicator.h"
-#include "game/quest/Chapter3Quest.h"   // 操場 track-ring geometry (kSportsTrack*)
+#include "game/quest/Chapter3Quest.h"   // 操場跑道環幾何（kSportsTrack*）
 #include "ui/QuestGiverIndicator.h"
 #include "game/state/InterludeExitMarker.h"
 #include "ui/GameHelp.h"
-#include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
+#include "ui/HelpPageView.h"  // 共用的「遊戲說明」分頁渲染器（與 TitleScreen 去重）
 #include "ui/RainHud.h"
 #include "ui/hud/ObjectiveBar.h"
 #include "ui/hud/RainVignette.h"
@@ -32,7 +32,7 @@
 #include "engine/render/Renderer.h"
 #include "engine/platform/Time.h"
 #include "game/gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
-#include "game/gfx/Decorations.h"     // kDecorations — the placed ambient strips
+#include "game/gfx/Decorations.h"     // kDecorations —已擺放的環境裝飾條
 #include "engine/render/CameraScope.h"
 #include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
@@ -42,13 +42,12 @@
 #include <string>
 
 namespace nccu {
-using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
+using namespace nccu::game::gfx;  // game/gfx 輔助函式
 
-// Buildings are drawn as separate sprites over a terrain-only base so a
-// character standing above a building's ground line is occluded by it
-// (walk-behind). The base map carries the open-ground features (running
-// track, plaza), so the two named in kBuildingCollisionSkip get no
-// sprite — their pixels already live in worldmap_base.png.
+// 建築以「獨立 sprite」疊在純地形底圖上繪製，使站在某建築地面線「上方」的角色被
+// 它遮住（walk-behind）。底圖本身已含開放地面特徵（跑道、廣場），故
+// kBuildingCollisionSkip 中點名的兩者不配 sprite——它們的像素已在
+// worldmap_base.png 裡。
 View::View(int windowWidth, int windowHeight)
     : worldmap_(nccu::engine::render::Texture::Load("resources/assets/maps/worldmap_base.png")),
       screenCenter_{windowWidth / 2.0f, windowHeight / 2.0f},
@@ -64,7 +63,7 @@ View::View(int windowWidth, int windowHeight)
         path += std::string(b.name);
         path += ".png";
         auto tex = nccu::engine::render::Texture::Load(path);
-        if (!tex.IsValid()) continue;  // art not generated yet → no sprite
+        if (!tex.IsValid()) continue;  // 美術尚未產出 → 不配 sprite
         const std::size_t idx = buildingTextures_.size();
         buildingTextures_.push_back(std::move(tex));
         buildings_.push_back(BuildingSprite{
@@ -73,26 +72,22 @@ View::View(int windowWidth, int windowHeight)
             b.flipX, b.flipY});
     }
 
-    // Ambient decoration strips (cosmetic, no gameplay effect). Load each
-    // strip's texture ONCE here; a def whose PNG is missing (the empty-
-    // resources path) yields !IsValid() and is skipped — so the missing-
-    // asset case simply has no DecorationSprite to draw, no crash. Loaded
-    // after InitWindow (the View is built once the window/GL context is
-    // live) and torn down with the View, so the RAII-vs-GL order holds
-    // (raylib-core KB). These never enter World::Objects(), so the harness
-    // is unaffected.
+    // 環境裝飾條（純裝飾、無玩法效果）。每條的貼圖在此「只」載入一次；某定義的
+    // PNG 缺檔（空資源情形）會得到 !IsValid() 並被跳過——故缺資產時這條根本沒有
+    // DecorationSprite 可畫，也不會當機。在 InitWindow 之後載入（View 在視窗／GL
+    // 環境就緒後才建立），並隨 View 解構，故 RAII 與 GL 的順序成立。這些絕不進入
+    // World::Objects()，故不影響自動跑流程。
     decorations_.reserve(nccu::game::gfx::kDecorations.size());
     for (std::size_t i = 0; i < nccu::game::gfx::kDecorations.size(); ++i) {
         auto tex = nccu::engine::render::Texture::Load(nccu::game::gfx::kDecorations[i].stripPath);
-        if (!tex.IsValid()) continue;   // art not dropped in → no sprite
+        if (!tex.IsValid()) continue;   // 美術尚未放入 → 不配 sprite
         decorations_.push_back(DecorationSprite{i, std::move(tex)});
     }
 }
 
-// Draw() is the dispatcher — chapter card transition first (runs every
-// frame), then split: endings replace the world, otherwise the world is
-// drawn under the follow camera, then the screen-space HUD, then every
-// overlay. Each helper owns ONE concern; see the doc block in View.h.
+// Draw() 為分派器——先處理章節字卡轉場（每幀都跑），再分流：結局取代世界；否則
+// 在跟隨相機下畫世界、再畫螢幕座標的 HUD、最後畫每個疊層。每個 helper 只負責單一
+// 關注點；詳見 View.h 的說明區塊。
 void View::Draw(const World& world) {
     const SemesterState st = world.Semester().Current();
 
@@ -100,7 +95,7 @@ void View::Draw(const World& world) {
 
     if (IsEndingState(st)) {
         RenderEnding(world, st);
-        return;   // ending replaces the world; agency is the menu drawn there
+        return;   // 結局取代世界；玩家可操作之處是那裡繪製的選單
     }
 
     if (const Player* p = world.GetPlayer()) {
@@ -113,22 +108,17 @@ void View::Draw(const World& world) {
     RenderOverlays(world);
 }
 
-// U1-T2: detect a chapter-boundary FSM transition and arm the big bookend
-// card. Done BEFORE the ending early-return so lastSemester_ stays current
-// across every state (a Ch4 → Ending hop arms NOTHING —
-// ChapterCardForTransition returns None for an ending dest — so the
-// EndingView owns that beat). Pure render-side: the trigger reads the World
-// snapshot the View already has; no event, no publish, no model write, so
-// state.jsonl is byte-identical. The card rides the deferred-transition
-// gap for the 找到傘了 beat: a chapter only flips to the market once its
-// closing narration dialog has closed (LiftChapterXClear / the gate), so
-// the card naturally appears after the reclaim scene.
+// 偵測章節邊界的 FSM 轉場並武裝書檔大字卡。在結局提前返回「之前」做，使
+// lastSemester_ 在每個狀態都保持最新（第四章 → 結局的跳轉不武裝任何字卡——
+// ChapterCardForTransition 對結局目的地回傳 None——那一節拍由 EndingView 負責）。
+// 純渲染側：觸發只讀 View 本就持有的 World 快照；不發事件、不發布、不寫模型，故
+// 存檔逐位元不變。「找到傘了」節拍借用延後轉場的空檔：章節要等其收尾旁白對話關
+// 閉後（清關旗標／閘門）才翻往市集，故字卡自然出現在奪回場景之後。
 void View::UpdateChapterCardTransition(SemesterState st) {
     if (!lastSemester_.has_value()) {
-        // First paint of this run: treat the World's opening state as a
-        // fresh entry so the inciting 傘，不見了 card fires for Chapter 1
-        // (or a UMBRELLA_START_STATE warp's chapter). from == the same
-        // state would be a no-op, so seed `from` as a non-chapter sentinel.
+        // 本次首幀：把 World 的開場狀態視為一次新進入，使開場「傘，不見了」字卡為
+        // 第一章（或某起始狀態 warp 的章節）觸發。from == 同一狀態會是空操作，故把
+        // `from` 種為一個非章節哨兵。
         const ChapterCardKind k =
             ChapterCardForTransition(SemesterState::Ending_C, st);
         if (k != ChapterCardKind::None)
@@ -148,33 +138,23 @@ void View::RenderEnding(const World& world, SemesterState st) {
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
-    // to OPAQUE black FIRST, every frame, before drawing the card. This
-    // branch early-returns (no Renderer::Clear runs below), and
-    // DrawEndingCard's own backdrop is Color{0,0,0,a} with `a` ramping
-    // from 0 during the fade-in (endingAlpha_). raylib's BeginDrawing
-    // does NOT clear and EndDrawing swaps TWO buffers, so at low alpha
-    // the semi-transparent backdrop let the stale swap-chain content
-    // (the last world frame, or the OTHER buffer) bleed through and
-    // flicker — exactly the "像關閉畫布" the owner saw. An opaque clear
-    // here makes the fade a clean card-over-solid-black with no
-    // bleed-through and no per-buffer alternation. (Verified on harness
-    // shots: pre-fix the first ending frames showed the world map behind
-    // faint text; post-fix every ending frame is steady.)
+    // 每幀「先」把整張 framebuffer 清為「不透明」黑，再畫字卡，以消除結局畫面不斷
+    // 閃爍／「像關閉畫布」的現象。此分支會提前返回（下方不會跑 Renderer::Clear），
+    // 而 DrawEndingCard 自己的背景是 Color{0,0,0,a}，`a` 在淡入期間由 0 漸升
+    // （endingAlpha_）。raylib 的 BeginDrawing「不」清畫面、EndDrawing 交換「兩
+    // 個」緩衝，故在低 alpha 時半透明背景會讓殘留的 swap-chain 內容（上一幀世界，
+    // 或「另一個」緩衝）透出而閃爍。此處的不透明清除使淡入成為乾淨的「字卡疊在純黑
+    // 上」，無透出、無逐緩衝交替。
     Renderer{}.Clear(Colors::Black);
 
-    // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
-    // second luminance ramp and see the card opaque on first paint.
+    // 減少動畫的玩家略過約半秒的亮度漸變，首幀即看到不透明字卡。
     endingAlpha_ = EndingFadeAlphaStep(
         endingAlpha_, nccu::engine::platform::Time::DeltaSeconds(),
         world.ReducedMotion());
-    // Item 1: the ending .md (its narrative + the new 字卡 reason
-    // callbacks) is NEVER drawn because this branch early-returns —
-    // so the "why you reached this ending" must be surfaced IN CODE.
-    // Extract the render primitives (karma + the EndingGate flags)
-    // into a render-only DTO here, where the View still owns World/
-    // Player, and hand it to the EndingView. EndingView never touches
-    // World/Player itself (MVC purity) — it just renders the DTO.
+    // 結局 .md（其敘事與理由字卡）「絕不」被繪製，因為此分支提前返回——故「你為何抵
+    // 達此結局」必須「在程式碼中」呈現。在 View 仍持有 World／Player 的此處，把渲染
+    // 基本值（業力＋結局判定旗標）萃取進純渲染 DTO，交給 EndingView。EndingView 本
+    // 身絕不碰 World／Player（MVC 純度）——它只渲染這個 DTO。
     EndingSummary es;
     es.state = st;
     if (const Player* ep = world.GetPlayer()) {

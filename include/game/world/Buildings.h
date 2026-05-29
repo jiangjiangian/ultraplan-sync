@@ -4,25 +4,32 @@
 #include <array>
 #include <string_view>
 
+/**
+ * @file Buildings.h
+ * @brief 政大山下校園 26 棟建築的靜態資料表：名稱、觸發矩形與鏡像旗標，
+ *        由 Tiled 匯出工具自動產生。
+ */
+
 namespace nccu::buildings {
 
+/**
+ * @brief 單棟建築的純資料記錄：名稱、進入觸發矩形與貼圖鏡像旗標。
+ */
 struct Building {
-    std::string_view name;
-    nccu::engine::math::Rect  triggerRect;
-    // Mirror flags emitted by tools/tiled_to_world.py from the Tiled
-    // flip bits. Defaulted so any legacy 2-field initializer still
-    // compiles; the regenerated block carries the real flip state.
-    bool             flipX = false;
-    bool             flipY = false;
+    std::string_view name;            ///< 建築顯示名稱（繁中）
+    nccu::engine::math::Rect  triggerRect; ///< 進入觸發區（BuildingTracker 以此判定章節進入事件）
+    bool             flipX = false;   ///< 對應 Tiled 的水平翻轉位；預設 false 讓舊式兩欄初始化仍可編譯
+    bool             flipY = false;   ///< 對應 Tiled 的垂直翻轉位
 };
 
-// 26 NCCU 山下 buildings. Auto-emitted by tools/tiled_to_world.py:
-// width/height are the placed sprite rect, flipX/flipY the Tiled mirror
-// state. This rect is the trigger zone BuildingTracker keys on (chapter
-// entry events); the physical collision shape is authored separately in
-// Tiled and lives in Obstacles.h colliders::kAll. Re-run the tool after
-// re-positioning in Tiled and paste the printed block below. 羅馬廣場
-// has no entry — its open plaza is baked into the base map.
+/**
+ * @brief 政大山下 26 棟建築的觸發資料表，由 tiled_to_world.py 自動匯出。
+ *
+ * width/height 為實際擺放的 sprite 矩形，flipX/flipY 為 Tiled 鏡像狀態。此矩形
+ * 僅作為 BuildingTracker 的進入觸發區；實體碰撞形狀另由像素級可走遮罩
+ * (CollisionMask) 描述，與此表分離。於 Tiled 重新定位後重跑工具並貼回下方
+ * 區塊即可。羅馬廣場無進入項——其開放廣場直接烘焙進底圖。
+ */
 inline constexpr std::array<Building, 26> kAll = {{
     {"大勇樓", { 1776.0f,  1021.0f,  252.0f,  211.0f}, false, false},
     {"大仁樓", { 1808.0f,  1199.0f,  242.0f,  206.0f}, false, false},

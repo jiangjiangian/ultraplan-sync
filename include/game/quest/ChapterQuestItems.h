@@ -9,61 +9,57 @@
 
 namespace nccu {
 
-// Per-state quest-item placements — the narrative sibling of
-// ChapterPickups (cash) / ChapterVendors (stalls) / ChapterNpcSpawns.
-// World spawns these as QuestFlagPickup in SpawnChapterNpcs and tracks
-// them in the chapter roster, so an uncollected note is swept on the
-// next state change (notes never leak past their chapter). Ch1's 申請書
-// is NOT here — it stays ctor-spawned (a permanent Ch1 object, its own
-// precedent); this table is for chapter-scoped, roster-swept quest items.
-// Ch1 = the 苦主's transparent umbrella (the 善有善報 redesign): the
-// findable item the 西裝學長 dropped near 集英樓, picked up to set
-// Flag_HasVictimUmbrella, then carried BACK to the victim (the actual
-// chapter clear is TryReturnVictimUmbrella's grant, NOT this pickup —
-// grabbing it off the ground does not clear Ch1). It is spawned at chapter
-// entry through the shared SpawnChapterQuestItems helper (unlike the Ch2
-// notes, which are deferred until the 學霸 is woken). Ch2 = the 3 散落筆記;
-// whoever collects all three earns 學霸 (b)'s `// karma +3` (chapter2.md)
-// via QuestFlagPickup's completion hook, and 圖書館管理員 (b) then points
-// to 羅馬廣場.
+/**
+ * @file ChapterQuestItems.h
+ * @brief 各章節的任務物品配置——ChapterPickups（現金）／ChapterVendors（攤位）／
+ *        ChapterNpcSpawns 的敘事姊妹。
+ *
+ * World 在 SpawnChapterNpcs 把它們生成為 QuestFlagPickup 並納入章節名冊，故未拾取
+ * 的筆記會在下次狀態變更時清掃（筆記絕不漏出其所屬章節）。Ch1 的申請書「不」在此
+ * ——它仍由建構式生成（一個永久的 Ch1 物件，自有先例）；本表用於章節範圍、由名冊
+ * 清掃的任務物品。
+ *
+ * Ch1 = 苦主的透明傘（善有善報重新設計）：西裝學長掉在集英樓附近的可尋物品，撿起
+ * 設 Flag_HasVictimUmbrella，再「帶回」交給苦主（真正的章節結束是
+ * TryReturnVictimUmbrella 的授予，「非」此拾取——撿地上的傘不會結束 Ch1）。它在進
+ * 入章節時透過共用的 SpawnChapterQuestItems helper 生成（不同於 Ch2 筆記要等學霸被
+ * 喚醒才延後生成）。Ch2 = 三頁散落筆記；收齊三頁者透過 QuestFlagPickup 的完成鉤子
+ * 賺得學霸 (b) 的業力 +3，圖書館管理員 (b) 隨後指向羅馬廣場。
+ */
 struct QuestItemPlacement {
-    nccu::engine::math::Vec2          pos;
-    std::string              flag;
-    std::string              message;          // ShowMessage on pickup
-    std::vector<std::string> completionFlags;  // all set => grant karma
-    int                      completionKarma;
-    // Optional COUNT-BASED lines: when non-empty, the on-pickup message is
-    // chosen by HOW MANY completionFlags the player now holds (1st/2nd/3rd
-    // collected), NOT by which item. Lets the 3 notes read "1st / 2nd /
-    // last" in ANY pickup order. Empty -> the single `message` is used.
+    nccu::engine::math::Vec2          pos;     ///< 任務物品世界座標
+    std::string              flag;             ///< 拾取後設置的旗標
+    std::string              message;          ///< 拾取時的 ShowMessage
+    std::vector<std::string> completionFlags;  ///< 全部設置即授予業力
+    int                      completionKarma;  ///< 完成時授予的業力
+    /// 選用的「依數量」台詞：非空時，拾取訊息依玩家此刻持有的 completionFlags
+    /// 「數量」（第 1／2／3 個收到）挑選，而非依物品本身。讓三頁筆記在「任何」拾
+    /// 取順序下都讀作「第一／第二／最後」。為空時改用單一 message。
     std::vector<std::string> countMessages = {};
 };
 
+/**
+ * @brief 取得指定章節狀態的任務物品配置。
+ * @param state 學期章節狀態。
+ * @return 該狀態的任務物品向量（無任務物品的狀態回傳空向量）。
+ */
 inline const std::vector<QuestItemPlacement>&
 ChapterQuestItems(SemesterState state) {
-    // The 3 notes share the same completion set + karma; whichever is
-    // collected LAST sees every flag set and grants 學霸 (b) +3 exactly
-    // once (QuestFlagPickup::OnPickup — the earlier siblings see a
-    // missing flag and skip, and a collected sibling has deactivated).
+    // 三頁筆記共用同一組完成集合與業力；「最後」被撿到的那頁會看見每個旗標皆已設
+    // 置，恰好授予學霸 (b) +3 一次（QuestFlagPickup::OnPickup——較早的同伴會看見缺
+    // 少的旗標而跳過，已撿的同伴則已停用）。
     //
-    // They are DEFERRED-spawned (World::MaybeSpawnChapter2Notes), so they
-    // only appear AFTER the player wakes the 學霸 and he asks for them —
-    // never at chapter entry. Coordinates are now scattered across THREE
-    // different campus areas so collecting them is roam-worthy (not a
-    // clustered library tour): note1 NW near 法學院 (450,850), note2 SE
-    // near 集英樓/新聞館 (1400,1250), note3 S-central near 校友服務中心/正門
-    // (1040,1640). All mask-verified STRICTLY walkable AND flood-REACHABLE
-    // from the plaza/學霸 (the full bookworm→note→note→note→bookworm loop
-    // checked via .claude/tools/map_registry.py --route; an earlier east
-    // pick at (1480,1120) was walkable but walled-off / unreachable, so it
-    // was moved here).
+    // 它們延後生成（World::MaybeSpawnChapter2Notes），故「僅」在玩家喚醒學霸並由他
+    // 提出請求「之後」才出現，絕不在進入章節時出現。座標散布於三個不同校園區域，
+    // 使收集值得到處走（而非聚在圖書館一帶）：note1 在西北法學院附近、note2 在東南
+    // 集英樓／新聞館附近、note3 在南側校友服務中心／正門附近。全部已遮罩驗證為嚴格
+    // 可走「且」能自廣場／學霸 flood 抵達（完整的學霸→筆記→筆記→筆記→學霸迴圈已驗
+    // 證；較早選在東側 (1480,1120) 的點雖可走卻被牆封住、不可達，故移至此處）。
     //
-    // Messages are COUNT-BASED (kNoteMsgs), chosen by how many notes the
-    // player now holds — 1st/2nd/last — NOT by which note. So picking
-    // note3 first correctly prints the "1st found" line, fixing the old
-    // identity-keyed bug where grabbing note3 first wrongly announced the
-    // "last page". `message` is kept as a sane fallback but is unused
-    // while kNoteMsgs is supplied.
+    // 訊息採「依數量」（kNoteMsgs），依玩家此刻持有幾頁挑選——第一／第二／最後——
+    // 而非依哪一頁。故先撿 note3 也會正確印出「第一張」台詞，修掉舊的以身分為鍵之
+    // 錯誤（先撿 note3 會錯誤宣告「最後一頁」）。message 仍保留為合理退路，但在提
+    // 供 kNoteMsgs 時不使用。
     static const std::vector<std::string> kNoteSet = {
         kFlagFoundNote1, kFlagFoundNote2, kFlagFoundNote3};
     static const std::vector<std::string> kNoteMsgs = {
@@ -79,17 +75,13 @@ ChapterQuestItems(SemesterState state) {
         {{1040.0f, 1640.0f}, kFlagFoundNote3,
          "撿到一頁學霸的筆記。", kNoteSet, 3, kNoteMsgs},
     };
-    // Ch1 = the 苦主's transparent umbrella. Single flag, no completion set
-    // (karma 0 — the +5 善行 lives on the (b) 承諾 choice and the grant is
-    // its own payoff, not this pickup). Placed at (1700,1610), just SOUTH of
-    // 集英樓 (rect 1524,1353,224x192) and ~94 px from the 西裝學長
-    // (1620,1560): the senior "拿著透明傘往集英樓方向跑" (chapter1.md 苦主
-    // (a)), so it reads as the umbrella he dropped there. Chosen for a wide
-    // walkable clearance (r≈96 open square) so the harness axis-driver
-    // routes to it robustly via the clear east corridor (x≈1744-1752),
-    // avoiding the thin diagonal slots west of 集英樓 that soft-lock a pure
-    // Manhattan goto (BUGLEDGER I7's routing model). Mask-verified STRICTLY
-    // walkable AND flood-reachable from the 苦主 @綜合院館.
+    // Ch1 = 苦主的透明傘。單一旗標、無完成集合（業力 0——+5 善行落在 (b) 承諾選項
+    // 上，而授予本身即回報，並非此拾取）。置於 (1700,1610)，恰在集英樓正南、距西裝
+    // 學長 (1620,1560) 約 94 px：學長「拿著透明傘往集英樓方向跑」，故它讀作他掉在
+    // 那裡的傘。選此點是因可走淨空很寬（約 96 px 的開闊方塊），使測試的軸向驅動器
+    // 能經東側淨空走廊（x≈1744-1752）穩健地走到，避開集英樓西側那些會讓純曼哈頓尋
+    // 路死鎖的狹窄斜向縫隙。已遮罩驗證為嚴格可走「且」能自綜合院館的苦主 flood 抵
+    // 達。
     static const std::vector<QuestItemPlacement> kChapter1 = {
         {{1700.0f, 1610.0f}, kFlagHasVictimUmbrella,
          "撿到一把眼熟的透明傘，傘柄上有 A 君的名字貼紙。", {}, 0, {}},
@@ -108,7 +100,7 @@ ChapterQuestItems(SemesterState state) {
         case SemesterState::Ending_C:
             return kNone;
     }
-    return kNone;  // unreachable; keeps non-void paths total
+    return kNone;  // 不可達；使非 void 路徑完整
 }
 
 } // namespace nccu

@@ -6,8 +6,15 @@
 
 #include <string>
 
+/**
+ * @file test_cashpickup.cpp
+ * @brief 驗證 CashPickup（金錢拾取物）：撿取後增加玩家金錢、自我停用、
+ *        發出 ShowMessage，並驗證 GameObjectFactory 產生各面額硬幣。
+ */
+
 namespace {
 
+// 訂閱 ShowMessage 事件並記錄命中次數與最後一段文字，供各案驗證。
 struct MessageCapture {
     int         hits = 0;
     std::string lastText;
@@ -20,6 +27,7 @@ struct MessageCapture {
 
 } // namespace
 
+// 撿取硬幣後玩家金錢增加其面額、物件停用、並發出一則撿錢訊息。
 TEST_CASE("CashPickup OnPickup: money grows by value, isActive flips, ShowMessage fired") {
     Player p({0, 0});
     const int before = p.GetMoney();
@@ -40,17 +48,19 @@ TEST_CASE("CashPickup OnPickup: money grows by value, isActive flips, ShowMessag
     CHECK(cap.lastText == "撿到 7 元");
 }
 
+// 對 null 玩家撿取是安全的空操作：物件維持啟用、不發事件。
 TEST_CASE("CashPickup OnPickup on null player is a safe no-op") {
     MessageCapture cap;
     cap.Attach();
 
     CashPickup coin({0, 0}, 5);
     coin.OnPickup(nullptr);
-    // Stays active, no event emitted.
+    // 維持啟用，不發出任何事件。
     CHECK(coin.IsActive());
     CHECK(cap.hits == 0);
 }
 
+// Factory 產生面額 5 的 CashPickup，撿取後玩家金錢加 5。
 TEST_CASE("Factory::Create(CashPickup5) yields a CashPickup that grants 5 on pickup") {
     Player p({0, 0});
     const int before = p.GetMoney();
@@ -65,6 +75,7 @@ TEST_CASE("Factory::Create(CashPickup5) yields a CashPickup that grants 5 on pic
     CHECK(p.GetMoney() == before + 5);
 }
 
+// Factory 產生面額 10 的 CashPickup，撿取後玩家金錢加 10。
 TEST_CASE("Factory::Create(CashPickup10) grants 10 on pickup") {
     Player p({0, 0});
     const int before = p.GetMoney();
@@ -79,6 +90,7 @@ TEST_CASE("Factory::Create(CashPickup10) grants 10 on pickup") {
     CHECK(p.GetMoney() == before + 10);
 }
 
+// Factory 產生面額 20 的 CashPickup，撿取後玩家金錢加 20。
 TEST_CASE("Factory::Create(CashPickup20) grants 20 on pickup") {
     Player p({0, 0});
     const int before = p.GetMoney();

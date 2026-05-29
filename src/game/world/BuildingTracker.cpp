@@ -5,6 +5,11 @@
 
 #include <string>
 
+/**
+ * @file BuildingTracker.cpp
+ * @brief 建築進入追蹤實作：僅在所在建築改變的那一幀發布進入事件（單邊觸發）。
+ */
+
 namespace nccu {
 
 const buildings::Building* BuildingTracker::Update(nccu::engine::math::Vec2 playerCenter) {

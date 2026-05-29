@@ -10,111 +10,83 @@
 namespace nccu {
 
 void SceneRouter::SettleRoster(World& world) {
-    // L8 fix (cycle9f §G.1): roster swap ONLY, no observable side
-    // effects. Runs at end-of-Update so the View paints — and
-    // state.jsonl records — npcs[] from the NEW chapter on the
-    // transition frame instead of one frame late. Pre-Cycle 10 the
-    // entire respawn + side-effect block lived at top-of-Update; the
-    // view-only-affected half (chapter NPC list) is hoisted forward
-    // here so the visible lag closes without touching the harness's
-    // {player.pos, consumables, flags, events} observation. The other
-    // half stays at top-of-Update (SettleSideEffects below), so the
-    // 3-ending state.jsonl stream is byte-identical to baseline
-    // EXCEPT for the npcs[] field on the 7 transition frames per
-    // ending run — the documented, intentional byte change.
+    // 僅做名冊抽換，無可觀察副作用。於 Update() 結尾執行，使 View 在轉場幀就畫出
+    // （並由序列化快照記錄）「新章節」的 npcs[]，而非晚一幀。早期整個重生＋副作用
+    // 區塊都在 Update() 開頭；此處把僅影響檢視的那半（章節 NPC 清單）前移，以關閉
+    // 可見的延遲，而不動到唯讀世界快照觀察到的 {player.pos, consumables, flags,
+    // events}。另一半留在 Update() 開頭（下方 SettleSideEffects），故各結局的
+    // 可觀察序列除了每局 7 個轉場幀上的 npcs[] 欄位（已記載、刻意為之的位元差異）
+    // 外與基準逐位元相同。
     const SemesterState cur = world.Semester().Current();
     if (cur == lastRosterRespawnState_) return;
 
-    // World owns the actual remove/spawn pass via a single deferred
-    // sweep — never mid-iteration, never reorders element 0 (Player).
-    // Pure data mutation, no event publish, no input dependency.
+    // 實際的移除／生成由 World 透過單次延遲清除完成——絕不在迭代途中、也絕不重排
+    // 元素 0（Player）。純資料變動，不發事件、不依賴輸入。
     world.RespawnChapterRoster(cur);
 
     lastRosterRespawnState_ = cur;
 }
 
 void SceneRouter::SettleSideEffects(World& world) {
-    // Side-effect half of the transition observer. Runs at TOP of
-    // Update — exactly when the pre-Cycle 10 inline block fired — so
-    // the harness sees the same observable {player.pos, consumables,
-    // flags, events} timeline as before. The L8 fix above already
-    // closed the npcs[] visible lag; this entry point keeps the rest
-    // of the timeline byte-identical.
+    // 轉場觀察者的副作用半部。於 Update() 開頭執行——正是早期內嵌區塊觸發之處——使
+    // 可觀察的 {player.pos, consumables, flags, events} 時間軸與先前一致。上方的名冊
+    // 修正已關閉 npcs[] 的可見延遲；此入口點使其餘時間軸維持逐位元相同。
     const SemesterState cur = world.Semester().Current();
     if (cur == lastRosterState_) return;
 
-    // Idempotency belt-and-braces: if the roster wasn't already
-    // respawned for this state (the end-of-Update SettleRoster was
-    // skipped for any reason), do it now so SpawnChapterNpcs is not
-    // duplicated. RespawnChapterRoster is itself idempotent, but
-    // calling it twice does redundant work — the cursor avoids that.
+    // 冪等的雙重保險：若此狀態的名冊尚未重生（Update() 結尾的 SettleRoster 因故被
+    // 略過），就在此補做，避免 SpawnChapterNpcs 被重複呼叫。RespawnChapterRoster
+    // 本身冪等，但呼叫兩次會做白工——以游標避免之。
     if (cur != lastRosterRespawnState_) {
         world.RespawnChapterRoster(cur);
         lastRosterRespawnState_ = cur;
     }
 
-    // ----- Per-destination side effects (the harness-observable half) -----
+    // ----- 各目的地的副作用（可觀察的半部）-----
 
-    // Arriving at the market: place the player at its entrance, well
-    // north of the south exit band. Without this a chapter that ended
-    // in the south would leave the player already inside the exit
-    // zone, instantly bouncing them straight back out (a skipped
-    // market). Chapter entry points are an S5c/d/e concern; the
-    // Interlude is the only state S5b-2 owns.
+    // 抵達市集：把玩家放在其入口，遠在南側離開帶狀區之北。若無此步，在南側結束的
+    // 章節會讓玩家一進場就已在離開區內，立刻被彈回（等於跳過市集）。章節進入點屬
+    // 各章自身的範疇；市集是本類別唯一掌管的狀態。
     if (cur == SemesterState::Interlude_Market) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetPosition(nccu::kInterludeEntry);
-            // S5b-4 "消耗品當章用完": re-entering the market wipes the
-            // consumable inventory, so what was bought for one chapter
-            // can't be hoarded across the market boundary into the next
-            // — every market visit is a fresh "buy for the chapter
-            // ahead" decision (the loop's tension).
+            // 「消耗品當章用完」：重新進入市集會清空消耗品背包，使為某章購買的物品
+            // 無法越過市集邊界囤積到下一章——每次市集到訪都是一次全新的「為接下來的
+            // 章節採買」決策（迴圈的張力來源）。
             ip->ClearConsumables();
         }
-        // H3 (cycle9): the previous chapter's clear toast lands the same
-        // frame as the FSM hop; this hint overwrites it ~1 frame later
-        // so the player sees BOTH (the snap, then the direction) on the
-        // same arrival. Reset the south-band latch so the exit toast
-        // fires once per visit (and again on re-entry, never twice in
-        // a row).
+        // 前一章的清關提示與 FSM 跳轉同幀落地；此抵達提示約晚一幀覆蓋它，使玩家在
+        // 同一次抵達同時看到兩者（先瞬間切換、再方向指引）。重置南側帶狀區閂鎖，
+        // 使離開提示每次到訪觸發一次（重新進入時再觸發一次，但絕不連續兩次）。
         EventBus::Instance().Publish(
             Event{EventType::ShowMessage, kInterludeArrivalHint});
         interludeExitZoneLatched_ = false;
     }
 
-    // B4 — the per-chapter「傘又掉了」card is now MECHANICALLY TRUE. The
-    // held umbrella was previously cleared ONLY on Ch4 entry, so a傘 claimed
-    // in Ch1 (or borrowed in Ch2) persisted into Ch2/Ch3 — the View showed
-    // the「傘又掉了」card while the bag still listed the umbrella (the bug:
-    // 真傘 still in the Ch2 bag). Each new chapter starts fresh: the player
-    // walks in umbrella-less and that chapter re-provides one (Ch2 the 管理員
-    // loaner, Ch3 the reclaimed真傘, Ch4 the finale/reclaim), so arriving
-    // empty-handed is by design (re-confirmed: every chapter has its own
-    // umbrella path — winnable).
+    // 讓每章的「傘又掉了」字卡在機制上成真。所持的傘先前僅在 Ch4 進入時清除，故在
+    // Ch1 取得（或 Ch2 借得）的傘會殘留到 Ch2/Ch3——View 顯示「傘又掉了」字卡，
+    // 背包卻仍列著那把傘（即「真傘仍在 Ch2 背包」的 bug）。改為每章重新開始：玩家
+    // 空手進場，該章再重新提供一把（Ch2 是管理員借出的、Ch3 是取回的真傘、Ch4 是
+    // 結局／取回）——故空手抵達是刻意設計（已再次確認：每章皆有自己的傘路徑，可通關）。
     //
-    // SetHasUmbrella(false) ALSO empties the held-umbrella slot (Player.h),
-    // so the bag's umbrella row disappears — the card and the bag finally
-    // agree. Clearing Flag_HasTrueUmbrella keeps Ending A's 持-TrueUmbrella
-    // condition meaning exactly "re-claimed THIS run's Ch4 TrueUmbrella"
-    // (EndingGate.cpp): Ch3's BeClaimed re-sets it, Ch4 entry clears it
-    // again, the Ch4 reclaim/finale re-sets it — and it is consequential
-    // ONLY in Chapter4_Finals (CheckEndingGates early-returns elsewhere), so
-    // clearing it on Ch2/Ch3 entry is safe. Entry-only (the cur !=
-    // lastRosterState_ guard at the top of SettleSideEffects fires this once
-    // per chapter entry). Money + Flag_FoundForm + this chapter's freshly-
-    // acquired items are the only survivors across the Interlude.
+    // SetHasUmbrella(false) 同時清空所持傘槽位（見 Player.h），使背包的雨傘列消失
+    // ——字卡與背包終於一致。清除 Flag_HasTrueUmbrella 使 Ending A 的「持有 TrueUmbrella」
+    // 條件精確地只表示「重新取得本局 Ch4 的 TrueUmbrella」（見 EndingGate.cpp）：
+    // Ch3 取得時重設它、Ch4 進入時再清除、Ch4 取回／結局時再重設——而它只在
+    // Chapter4_Finals 有後果（CheckEndingGates 在其他狀態提早返回），故在 Ch2/Ch3
+    // 進入時清除它是安全的。僅進入時觸發（SettleSideEffects 開頭的游標守門使其每章
+    // 進入觸發一次）。跨市集的倖存者只有金錢、Flag_FoundForm 與本章剛取得的物品。
     if (cur == SemesterState::Chapter2_Midterms ||
         cur == SemesterState::Chapter3_SportsDay ||
         cur == SemesterState::Chapter4_Finals) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetHasUmbrella(false);
             ip->ClearFlag(kFlagHasTrueUmbrella);
-            // P2 cursed-taint decay: at every numbered-chapter entry, bleed
-            // -5 * cursedTaint_ from karma. A taint-0 run skips the AddKarma
-            // call entirely (no KarmaChanged published) so non-cursed playtests
-            // stay byte-identical to the oracle; a taint=1 run loses -5 here on
-            // each of Ch2/Ch3/Ch4 entry (= -15 total over a clean Ch1 cursed
-            // pickup); a taint=2 run doubles that to -10/transition, etc.
+            // 受詛咒污染的衰減：每進入一個編號章節，從業力扣除 -5 * cursedTaint_。
+            // 污染為 0 的局完全略過 AddKarma 呼叫（不發 KarmaChanged），使非詛咒
+            // 的試玩與標準答案逐位元相同；污染 = 1 的局在 Ch2/Ch3/Ch4 進入時各扣
+            // -5（乾淨地在 Ch1 撿了詛咒傘者共 -15）；污染 = 2 則加倍為每次轉場 -10，
+            // 以此類推。
             ip->ApplyCursedTaintDecay();
         }
     }

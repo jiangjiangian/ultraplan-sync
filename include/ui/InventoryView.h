@@ -7,37 +7,45 @@
 namespace nccu {
 namespace engine::render { class IRenderer; }
 
-// kInventoryRowsPerPage is defined in game/quest/InventoryPaging.h
-// (single source of truth, included above) so the game-layer
-// inventory scene can read it without pulling this ui header.
-// The View's paging math (InventoryPageCount / InventoryPageOf below)
-// resolves against the same constant.
+/**
+ * @file InventoryView.h
+ * @brief 物品欄疊層的渲染與分頁視窗運算。
+ */
 
-// U2-T1: which page (0-based) the cursor sits on, and how many pages a bag
-// of `rowCount` rows has, for `kInventoryRowsPerPage` rows/page. Pure
-// integer math, exposed so the paging window is unit-testable without a
-// renderer. Always >=1 page (an empty bag is "1 of 1"). The cursor is
-// clamped into [0,rowCount) first so an out-of-range cursor still yields a
-// valid page (mirrors the View's own clamp).
+// kInventoryRowsPerPage 定義於 game/quest/InventoryPaging.h（單一真實來源，上方
+// 已 include），使遊戲層的物品欄場景不必拉進此 ui 標頭即可讀取。View 的分頁運算
+// （下方 InventoryPageCount／InventoryPageOf）對齊同一常數。
+
+/**
+ * @brief 計算 `rowCount` 列的背包共有幾頁（每頁 kInventoryRowsPerPage 列）。
+ * @return 頁數，恆 >=1（空背包為「1／1」）。
+ *
+ * 純整數運算，公開以便分頁視窗不需 renderer 即可單元測試。
+ */
 [[nodiscard]] int InventoryPageCount(int rowCount) noexcept;
+
+/**
+ * @brief 計算游標所在的頁（0 起算）。
+ * @return 游標頁碼。
+ *
+ * 會先把游標夾限進 [0,rowCount)，使越界游標仍得出有效頁（與 View 自身的夾限一
+ * 致）。
+ */
 [[nodiscard]] int InventoryPageOf(int cursor, int rowCount) noexcept;
 
-// Tab inventory overlay (Item 2): a centred panel listing every bag row —
-// 金幣, each held consumable (with count + description), the carried
-// umbrella, and the current-cycle quest papers — with a movable cursor and
-// a description panel for the selected row. Render-ONLY: it draws the
-// supplied InventoryRow DTO + cursor index and nothing else (MVC purity,
-// mirroring DrawEndingCard taking an EndingSummary). The DTO is built in
-// the quest/controller layer (BuildInventoryRows) from World/Player; this
-// function never touches World/Player and holds no gameplay logic. No
-// raylib here — all drawing goes through the injected IRenderer, so it
-// stays deterministic and headless-spy-testable. An empty `rows` paints a
-// single "（空）" line.
-//
-// U2-T1/T2: when rows exceed kInventoryRowsPerPage the panel shows only the
-// cursor's page (selected row always visible) + a 「第 N／M 頁」 indicator;
-// the enlarged box + per-row description area WRAP the (post-G4, longer)
-// effect text inside the border (nccu::dialog::WrapToCells), never spilling.
+/**
+ * @brief 繪製 Tab 物品欄疊層：一個置中面板，列出每一筆背包列——金幣、每樣持有
+ *        消耗品（含數量與描述）、攜帶的雨傘，以及當前回合的任務紙張——並帶有可
+ *        移動游標與選取列的描述面板。空的 `rows` 會畫一行「（空）」。
+ *
+ * 「純渲染」：只畫傳入的 InventoryRow DTO 與游標索引，別無其他（MVC 純度，與
+ * DrawEndingCard 接收 EndingSummary 同理）。DTO 由 quest／controller 層
+ * （BuildInventoryRows）從 World／Player 建出；本函式絕不碰 World／Player、不含
+ * 遊戲邏輯。此處不碰 raylib——所有繪製皆經注入的 IRenderer，故具決定性且可無頭
+ * spy 測試。當列數超過 kInventoryRowsPerPage 時，面板只顯示游標所在頁（選取列恆
+ * 可見）並附「第 N／M 頁」指示；放大後的框與各列描述區會把（較長的）效果文字以
+ * nccu::dialog::WrapToCells 折在邊框內，絕不溢出。
+ */
 void DrawInventory(nccu::engine::render::IRenderer& r,
                    const std::vector<InventoryRow>& rows,
                    int cursor,

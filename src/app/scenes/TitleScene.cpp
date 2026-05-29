@@ -15,8 +15,13 @@
 #include <string_view>
 #include <utility>
 
+/**
+ * @file TitleScene.cpp
+ * @brief 標題場景的實作：主選單游標與確認、以及標題內部「遊戲說明」分頁的輸入與繪製。
+ */
+
 namespace nccu::app {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別位於 nccu::engine::input 命名空間
 namespace {
 
 constexpr int kWinW = 800;
@@ -26,9 +31,7 @@ constexpr nccu::engine::math::Color kHighlight{255, 153,   0, 255};
 constexpr nccu::engine::math::Color kPanel    { 18,  20,  28, 200};
 constexpr nccu::engine::math::Color kDim      {170, 170, 170, 255};
 
-// REQUIREMENT #9: 「遊戲說明」 is a title-internal page (mirrors the
-// pre-Phase-3 free-function MenuAction): Help loops back to the menu;
-// only Start / Quit reach the scene boundary.
+// 「遊戲說明」是標題內部頁面：Help 折返回選單；唯有 Start／Quit 會抵達場景邊界。
 enum class MenuAction { Start, Help, Quit };
 
 struct MenuItem {
@@ -52,8 +55,7 @@ SceneCommand TitleScene::Update(float /*dt*/) {
     using nccu::engine::input::Input;
     using nccu::engine::input::Key;
 
-    // 遊戲說明 page is a title-internal sub-state — input + draw both
-    // route here, the menu input is muted.
+    // 「遊戲說明」是標題內部子狀態——輸入與繪製都導向此處，選單輸入被靜音。
     if (showingHelp_) {
         if (Input::IsPressed(Key::E)) {
             showingHelp_ = false;
@@ -90,11 +92,9 @@ SceneCommand TitleScene::Update(float /*dt*/) {
                 return SceneCommand{SceneCommand::Kind::Quit, {}};
             case MenuAction::Help:
                 showingHelp_ = true;
-                // helpBack_ is freshly constructed (or reset by a prior
-                // return-to-menu); its IsHeld latch will wait for the
-                // current Enter press to be released before it can fire,
-                // so the dismiss-Enter never re-opens the menu on the
-                // same press that opened Help.
+                // helpBack_ 為全新建構（或由前次返回選單時重置）；其長按閂會等待目前
+                // 這次 Enter 放開後才能觸發，故「關閉說明的 Enter」不會在開啟 Help 的
+                // 同一次按壓上重新開啟選單。
                 return {};
         }
     }

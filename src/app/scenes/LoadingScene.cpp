@@ -8,6 +8,11 @@
 
 #include <utility>
 
+/**
+ * @file LoadingScene.cpp
+ * @brief 載入場景的實作：在 Enter() 暖機紋理快取，停留固定幀數後切換至下一場景。
+ */
+
 namespace nccu::app {
 namespace {
 
@@ -21,14 +26,10 @@ constexpr nccu::engine::math::Color kHint    {150, 150, 160, 255};
 constexpr int kLabelSize = 34;
 constexpr int kHintSize  = 16;
 
-// How many frames to hold the loading screen AFTER the (synchronous)
-// warm — pre-Phase-3's kHoldFrames. At 60 fps this is a short
-// fraction of a second: enough to register "loading", short enough
-// not to feel like a stall on a clean clone where the warm is
-// instant. The TOTAL on-screen time is one frame longer because
-// LoadingScene::Enter()'s warm happens BEFORE the manager's first
-// Update/Draw pair (the screen already shows "載入中…" while
-// PreloadGameTextures runs).
+// 同步暖機之後，載入畫面要再停留的幀數。於 60 fps 下約為零點幾秒：足以讓人意識到
+// 「正在載入」，又短到在乾淨 clone（暖機瞬間完成）上不致感覺卡住。實際在畫面上的
+// 總時間會多一幀，因為 LoadingScene::Enter() 的暖機發生在管理器第一個 Update／Draw
+// 配對之前（PreloadGameTextures 執行時畫面已顯示「載入中…」）。
 constexpr int kHoldFrames = 18;
 
 } // namespace
@@ -37,14 +38,9 @@ LoadingScene::LoadingScene(NextSceneFactory next)
     : next_(std::move(next)) {}
 
 void LoadingScene::Enter() {
-    // Warm the texture cache: the one-time disk read + GPU upload of
-    // the worldmap / buildings / sprites happens HERE, behind the
-    // label, instead of stuttering the first gameplay frame. Cheap
-    // no-op on a clean clone (every path is a missing-file cache
-    // miss). The pre-Phase-3 free function called this between the
-    // first DrawFrame and the kHoldFrames loop; doing it in Enter
-    // keeps the same intent — the warm runs ONCE, before any
-    // Update/Draw pair fires.
+    // 暖機紋理快取：世界地圖／建築／角色的一次性磁碟讀取與 GPU 上傳在此（標題後方）
+    // 完成，而非卡頓在首個遊玩幀。乾淨 clone 上為廉價的 no-op（每條路徑都是缺檔的
+    // 快取未命中）。放在 Enter 確保暖機只跑「一次」，且早於任何 Update／Draw 配對。
     nccu::game::world::PreloadGameTextures();
 }
 

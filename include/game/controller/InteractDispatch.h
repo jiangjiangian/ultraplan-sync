@@ -2,26 +2,33 @@
 #define CONTROLLER_INTERACT_DISPATCH_H_
 
 class Vendor;
-class EventBus;        // Plan P2 step 2: bus is threaded to RunInteractHooks
+class EventBus;        // 前向宣告——bus 一路傳遞到 RunInteractHooks，毋須拉入完整定義
 
 namespace nccu {
 
 class World;
 
-// E-interact dispatch (talk / pick up / open a shop). Reads the E edge
-// and the player's reach box, so it stays in the controller layer. For a
-// non-flavor NPC it runs the registered QuestHook table (RunInteractHooks)
-// — the ~14 inline TryXxx calls are now DATA (quest/QuestHookTable.cpp),
-// in the SAME order and with the SAME self-gating semantics — then opens
-// the per-(npcId, state) dialog. A flavor NPC short-circuits to its own
-// line-cycling Interact; a non-NPC (pickup / Vendor) routes through its
-// IInteractable role. Same operations, same order as the inline block.
-//
-// pendingVendor is a non-owning observer of a World-owned Vendor whose
-// buy menu opened this frame; HandleDialog reads it on confirm to route
-// to Vendor::TryBuy. Captured by reference so this function can set it
-// when an E tap opens a shop. Cleared the moment a non-vendor dialog
-// opens, OR on a vendor decline/buy.
+/**
+ * @file InteractDispatch.h
+ * @brief 每幀 E 鍵互動的派發（對話／拾取／開啟商店），屬 Controller 輸入層。
+ */
+
+/**
+ * @brief 處理一次 E 鍵互動：對話、拾取，或開啟商店選單。
+ * @param[in,out] bus           發布互動衍生事件（對話、拾取、購買）的 EventBus。
+ * @param[in,out] world         當前世界；讀取玩家觸及範圍並可開啟對話／選單。
+ * @param[out]    pendingVendor 以參考傳入；當 E 開啟商店時被設為該攤主，否則清空。
+ *
+ * 讀取 E 鍵邊緣與玩家的觸及盒，故留在 Controller 層（非 ISystem）。對非閒談型
+ * NPC 會先依序跑過已註冊的 QuestHook 表（RunInteractHooks，原本約 14 個內嵌
+ * TryXxx 呼叫現已成為 quest/QuestHookTable.cpp 的資料，順序與自我守門語意不變），
+ * 再開啟對應 (npcId, state) 的對話。閒談型 NPC 短路到自身的逐行循環 Interact；
+ * 非 NPC（拾取物／Vendor）則走其 IInteractable 角色。
+ *
+ * pendingVendor 是對 World 所擁有之 Vendor 的非擁有觀察指標：本幀開啟其購買選單後，
+ * HandleDialog 於確認時讀它以導向 Vendor::TryBuy。以參考傳入，讓本函式能在 E 開啟
+ * 商店時設定它；一旦開啟非攤主對話、或攤主放棄／購買時即清空。
+ */
 void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor);
 
 } // namespace nccu

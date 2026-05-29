@@ -12,9 +12,8 @@
 #include <cmath>
 
 namespace {
-// Pipoya walk-sheet cell maths now live in the shared, unit-tested
-// gfx/WalkCycle.h (the same source the Player follows), so a 校慶 crowd
-// runner AND an ambient wanderer animate exactly the way the Player does.
+// Pipoya 行走圖集的 cell 數學現集中於共用且有單元測試的 gfx/WalkCycle.h（與 Player 相同的
+// 來源），故校慶繞圈跑者與環境漫步者的動畫方式與 Player 完全一致。
 constexpr int   kCell     = nccu::game::gfx::kPipoyaCell;
 constexpr float kFrameDur = nccu::game::gfx::kWalkFrameDuration;
 }  // namespace
@@ -23,11 +22,11 @@ NPC::NPC(nccu::engine::math::Vec2 position,
          std::vector<std::string> dialogLines,
          bool isQuestGiver,
          std::string_view npcId)
-    // Direct base is WithRoles<NPC, Character>; its `using Base::Base`
-    // inherits Character's ctor so this 3-arg form still resolves.
+    // 直接基底為 WithRoles<NPC, Character>，其 `using Base::Base` 繼承 Character 的建構子，
+    // 故此 3 參數形式仍可解析。
     : WithRoles(position,
                 nccu::engine::math::Rect{position.x, position.y, 24.0f, 24.0f},
-                0.0f /* archetype NPCs are stationary; EnableWander() opts in */),
+                0.0f /* 原型 NPC 為定點；由 EnableWander() 主動開啟漫步 */),
       dialogLines_(std::move(dialogLines)),
       currentLineIndex_(0),
       isQuestGiver_(isQuestGiver),
@@ -40,9 +39,9 @@ NPC::NPC(nccu::engine::math::Vec2 position,
 
 NPC& NPC::EnableWander(float speed, unsigned seed) noexcept {
     wander_        = true;
-    speed_         = speed;                       // protected in Character
-    rng_           = seed ? seed : 0x9E3779B9u;   // never seed an all-zero state
-    retargetTimer_ = 0.0f;                        // pick a heading on frame 1
+    speed_         = speed;                       // 於 Character 中為 protected
+    rng_           = seed ? seed : 0x9E3779B9u;   // 切勿以全零狀態作為種子
+    retargetTimer_ = 0.0f;                        // 第 1 幀即挑選朝向
     return *this;
 }
 
@@ -57,7 +56,7 @@ NPC& NPC::EnableCircularRun(nccu::engine::math::Vec2 center, float radius,
 }
 
 void NPC::Update(float deltaTime) {
-    if (circular_) {  // 校慶 crowd runner: glide the fixed track + animate
+    if (circular_) {  // 校慶繞圈跑者：沿固定跑道滑行並播放動畫
         const nccu::engine::math::Vec2 prev = position_;
         circleAngle_ += circleSpeed_ * deltaTime;
         SetPosition(nccu::engine::math::Vec2{
@@ -72,11 +71,11 @@ void NPC::Update(float deltaTime) {
         }
         return;
     }
-    if (!wander_) return;  // archetype NPCs stand at their post
+    if (!wander_) return;  // 原型 NPC 駐守原地
 
     retargetTimer_ -= deltaTime;
     if (retargetTimer_ <= 0.0f) {
-        // xorshift32 — one of 8 compass headings, or idx 8 = pause.
+        // xorshift32——八個羅盤方位之一，或索引 8 = 暫停。
         rng_ ^= rng_ << 13; rng_ ^= rng_ >> 17; rng_ ^= rng_ << 5;
         static constexpr nccu::engine::math::Vec2 kDirs[9] = {
             {0, -1}, {0, 1}, {-1, 0}, {1, 0},
@@ -87,7 +86,7 @@ void NPC::Update(float deltaTime) {
     }
 
     const nccu::engine::math::Vec2 prev = position_;
-    Move(wanderDir_, deltaTime);  // Character::Move integrates + syncs hitBox_
+    Move(wanderDir_, deltaTime);  // Character::Move 積分位移並同步 hitBox_
 
     const float kMaxXY = ::world::kSize - ::world::kPlayerWidth;
     nccu::engine::math::Vec2 p = position_;
@@ -102,41 +101,30 @@ void NPC::Update(float deltaTime) {
             nccu::engine::math::Vec2{::world::kPlayerWidth, ::world::kPlayerHeight},
             kNoDynamic, wanderMask_);
         if (resolved.x != position_.x || resolved.y != position_.y) {
-            // Bumped a wall — turn away within a beat instead of grinding.
+            // 撞到牆——在一拍之內轉向，而非原地磨蹭。
             retargetTimer_ = std::min(retargetTimer_, 0.2f);
         }
         SetPosition(resolved);
     }
 
-    // U1-T3: animate the wanderer like the Player. TWO independent
-    // signals, deliberately kept on different sources (A-T1 詭異抖動 fix):
+    // 讓漫步者像 Player 一樣播放動畫。刻意取自不同來源的兩個獨立訊號（修正詭異抖動）：
     //
-    //   moving_  = did the NPC actually DISPLACE this frame (post-clamp,
-    //              post-mask-resolve)? It gates the walk cycle, so a paused
-    //              (wanderDir_ == {0,0}) or fully wall-blocked wanderer
-    //              holds its idle pose instead of moon-walking.
+    //   moving_  = 此幀 NPC 是否實際位移（已過夾制與遮罩解算）？它閘控行走循環，使暫停
+    //              （wanderDir_ == {0,0}）或完全撞牆的漫步者維持待機姿勢而非滑步。
     //
-    //   facing_  = the STABLE intended heading (wanderDir_), NOT the noisy
-    //              per-frame net displacement. WalkRowForFacing picks the
-    //              Pipoya row by dominant axis; on a near-diagonal walk the
-    //              per-frame `step` jitters left↔down/up as sub-pixel
-    //              rounding flips which axis is momentarily larger, flipping
-    //              the facing row EVERY frame — the reported jitter. The
-    //              retarget heading is constant for a whole 1–3 s leg, so
-    //              keying facing_ to it yields ONE row per leg (a perfect
-    //              diagonal resolves to up/down via the WalkRowForFacing
-    //              tie-break, also stable). A wall-blocked NPC keeps facing
-    //              its intended heading (it's still trying to go that way),
-    //              which reads correctly and never flickers.
+    //   facing_  = 「穩定的」預定朝向（wanderDir_），而非逐幀有雜訊的淨位移。WalkRowForFacing
+    //              依主導軸挑選 Pipoya 列；在近對角線行走時，逐幀的 step 會因次像素捨入使哪
+    //              一軸暫時較大而抖動，導致朝向列「每幀」翻動——即回報的抖動。重選的朝向在
+    //              整段 1–3 秒的行程中恆定，故以 facing_ 為鍵每行程只得一列（完美對角線經
+    //              WalkRowForFacing 的平手規則解析為上／下，同樣穩定）。撞牆的 NPC 仍朝向其
+    //              預定方向（它仍試圖往那走），讀來正確且絕不閃爍。
     //
-    // Render reads moving_/facing_/animStep_ — none of which is serialised
-    // (state.jsonl stays byte-identical; verified vs baseline md5).
+    // Render 讀取 moving_／facing_／animStep_——皆不進入序列化輸出（純渲染選擇）。
     const nccu::engine::math::Vec2 step{position_.x - prev.x, position_.y - prev.y};
     moving_ = (step.x != 0.0f || step.y != 0.0f);
     if (moving_) {
-        // Stable facing from the constant retarget heading. Guard the
-        // {0,0} case (can't happen while moving_ is true, but keeps the
-        // last good facing if a future caller drives a zero wanderDir_).
+        // 取自恆定重選朝向的穩定朝向。守衛 {0,0} 情形（moving_ 為 true 時不會發生，但若未來
+        // 呼叫者傳入零 wanderDir_，可保留上一個有效朝向）。
         if (wanderDir_.x != 0.0f || wanderDir_.y != 0.0f)
             facing_ = wanderDir_;
         animTimer_ += deltaTime;
@@ -146,7 +134,7 @@ void NPC::Update(float deltaTime) {
         }
     } else {
         animTimer_ = 0.0f;
-        animStep_  = 0;   // WalkColumn(0) == idle column
+        animStep_  = 0;   // WalkColumn(0) 即待機欄
     }
 }
 
@@ -156,9 +144,8 @@ void NPC::Render(nccu::engine::render::IRenderer& renderer) const {
         renderer.DrawRect(hitBox_, nccu::engine::math::Colors::Green);
         return;
     }
-    // Static full-image sprite (e.g. a 自動販賣機): draw the WHOLE texture
-    // scaled to ~48 px tall, bottom-centred on the hitbox — machine art is
-    // a single 45×94 image, not a Pipoya 32×32 walk sheet.
+    // 靜態整張貼圖（例如自動販賣機）：繪製「整張」貼圖、縮放至約 48 px 高、底部置中於碰撞盒
+    // ——機器美術是單張 45×94 圖，而非 Pipoya 32×32 行走圖集。
     if (staticSprite_) {
         const float tw = static_cast<float>(sprite_->Width());
         const float th = static_cast<float>(sprite_->Height());
@@ -169,15 +156,11 @@ void NPC::Render(nccu::engine::render::IRenderer& renderer) const {
         renderer.DrawSprite(*sprite_, Rect{0.0f, 0.0f, tw, th}, dest);
         return;
     }
-    // A 校慶 crowd runner (circular_) AND an ambient wanderer (wander_)
-    // walk-animate and face their motion (U1-T3, owner's request); a
-    // stationary dialogue / quest archetype NPC shows the idle column at
-    // row 0 (facing the camera) — unchanged. A wanderer that's momentarily
-    // still (paused or wall-blocked: moving_ == false) snapped animStep_
-    // back to 0 in Update, so WalkColumn(0) keeps it on the idle pose.
-    // CurrentRenderCell() is the SINGLE place the cell is chosen (the
-    // headless test pins it there). Bottom-centre the 32x32 sprite on the
-    // 24x24 hitbox so feet sit at the base — same convention as Player.
+    // 校慶繞圈跑者（circular_）與環境漫步者（wander_）皆會播放行走動畫並面向其運動方向；
+    // 定點的對話／任務原型 NPC 則顯示第 0 列（面向鏡頭）的待機欄——不變。暫時靜止（暫停或撞
+    // 牆：moving_ == false）的漫步者已在 Update 將 animStep_ 歸 0，故 WalkColumn(0) 使其停在
+    // 待機姿勢。CurrentRenderCell() 是挑選 cell 的「唯一」處（無頭測試在此固定）。將 32×32
+    // sprite 底部置中於 24×24 碰撞盒，使腳部落在底邊——與 Player 相同的慣例。
     const RenderCell cell = CurrentRenderCell();
     const Rect src{
         static_cast<float>(cell.col * kCell),
@@ -193,10 +176,8 @@ void NPC::Render(nccu::engine::render::IRenderer& renderer) const {
 }
 
 NPC::RenderCell NPC::CurrentRenderCell() const noexcept {
-    // A wanderer or 校慶 runner plays the walk cycle keyed to its heading;
-    // a stationary archetype NPC holds idle column 1 / row 0. moving_==false
-    // already pinned animStep_ to 0 in Update, so WalkColumn handles the
-    // at-rest case without a special branch.
+    // 漫步者或校慶跑者播放以朝向為鍵的行走循環；定點原型 NPC 停在待機的欄 1／列 0。
+    // moving_ == false 已在 Update 將 animStep_ 釘為 0，故 WalkColumn 無須特例即可處理靜止情形。
     if (circular_ || wander_) {
         return RenderCell{nccu::game::gfx::WalkColumn(animStep_),
                           nccu::game::gfx::WalkRowForFacing(facing_)};
@@ -210,11 +191,8 @@ void NPC::LoadSprite(const std::string& path) {
 
 void NPC::Interact(Player* /*initiator*/) {
     if (dialogLines_.empty()) return;
-    // Snapshot the current line text and advance the index BEFORE
-    // dispatching the event. EventBus::Publish is synchronous and
-    // supports recursive dispatch (see test_eventbus reentrancy case),
-    // so any subscriber that calls back into Interact() must observe
-    // the already-advanced state rather than a stale index.
+    // 在派發事件「之前」先快照當前台詞文字並推進索引。EventBus::Publish 為同步且支援遞迴
+    // 派發，故任何回呼進 Interact() 的訂閱者都必須觀察到已推進後的狀態，而非陳舊索引。
     const std::string line = dialogLines_[currentLineIndex_];
     currentLineIndex_ = (currentLineIndex_ + 1) % dialogLines_.size();
     nccu::events::Sink().Publish(Event{ EventType::ShowMessage, line });

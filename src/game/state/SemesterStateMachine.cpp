@@ -6,6 +6,11 @@
 #include "game/state/Chapter4Finals.h"
 #include "game/state/InterludeMarket.h"
 
+/**
+ * @file SemesterStateMachine.cpp
+ * @brief 學期狀態機的轉移實作：建立／替換具體狀態並維持結局以哨兵表示的不變式。
+ */
+
 namespace nccu {
 
 SemesterStateMachine::SemesterStateMachine()
@@ -34,6 +39,10 @@ std::string_view SemesterStateMachine::CurrentName() const {
 }
 
 void SemesterStateMachine::Transition(SemesterState next) {
+    // 先讓舊狀態收尾（Exit），再依目標建立新狀態。章節／幕間各對應一個具體
+    // IChapterState；四種結局不另建類別，而是釋放 state_、改以 ending_ 哨兵 +
+    // inEnding_ 旗標表示——這也是 Current()／CurrentName() 須先檢查 inEnding_
+    // 的原因。
     if (state_) {
         state_->Exit();
     }

@@ -2,8 +2,19 @@
 #define GFX_KEY_H_
 #include "raylib.h"
 
+/**
+ * @file Key.h
+ * @brief 型別安全的按鍵列舉：把引擎用到的按鍵對映到 raylib 的 KEY_* 整數值。
+ */
+
 namespace nccu::engine::input {
 
+/**
+ * @brief 引擎使用的按鍵列舉，列舉值即對應的 raylib KEY_* 整數。
+ *
+ * 以底層為 int 的 enum class 包住 raylib 鍵碼，讓上層以具名常數操作，避免裸整數
+ * 鍵碼散落各處；透過 ToRaylibKey() 還原為 raylib 期望的整數。
+ */
 enum class Key : int {
     A = KEY_A, B = KEY_B, C = KEY_C, D = KEY_D, E = KEY_E,
     F = KEY_F, G = KEY_G, H = KEY_H, I = KEY_I, J = KEY_J,
@@ -22,6 +33,7 @@ enum class Key : int {
     Right     = KEY_RIGHT,
 };
 
+/** @brief 將 Key 轉回 raylib 期望的整數鍵碼。@param[in] k 按鍵列舉值。@return 對應的 raylib 鍵碼。 */
 constexpr int ToRaylibKey(Key k) noexcept { return static_cast<int>(k); }
 
 } // namespace nccu::engine::input

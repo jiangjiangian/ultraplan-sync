@@ -6,28 +6,21 @@
 
 void CursedUmbrella::BeClaimed(Player* player) {
     if (player == nullptr) return;
-    if (!isActive_) return;        // idempotent: a second call is a no-op
-    // P2 cursed-taint policy. Pickup no longer takes karma in one shot;
-    // instead IncCursedTaint() bumps the counter and the per-chapter
-    // ApplyCursedTaintDecay (SceneRouter Ch2/3/4 entry) bleeds -5 * taint
-    // each transition. So the FIRST cursed pickup costs -5 per remaining
-    // chapter transition (≤ -15 over Ch2/3/4 entries); a second pickup
-    // raises the rate to -10/transition; a third to -15/transition — the
-    // moral stain compounds with re-offending. Flag_TookCursedUmbrella is
-    // still set unconditionally (Ending B precondition is unchanged), but
-    // because A→B precedence holds in EndingGate, a player who later
-    // earns karma > 80 + the gentle finale still REACHES Ending A — the
-    // taint never hard-locks B, it just makes redemption mathematically
-    // harder. SetHeldUmbrella records the kind for the bag row (B2.1).
+    if (!isActive_) return;        // 冪等：第二次呼叫為無動作
+    // 詛咒污點機制。拾取不再一次性扣業力；改由 IncCursedTaint() 累加計數，再交給每章的
+    // ApplyCursedTaintDecay（SceneRouter Ch2/3/4 進場）每次過場扣 -5 × 污點。故第一次
+    // 拾取在每次剩餘的章節過場各扣 -5（橫跨 Ch2/3/4 進場至多 -15）；第二次拾取使速率升至
+    // 每場 -10、第三次升至 -15——道德污點隨再犯而累乘。Flag_TookCursedUmbrella 仍無條件
+    // 設立（Ending B 前提不變），但因 EndingGate 中 A→B 優先序成立，後續若 karma > 80
+    // 加上溫和的結局，玩家仍能抵達 Ending A——污點從不硬鎖 B，只是讓救贖在數學上更難。
+    // SetHeldUmbrella 為背包列記錄握傘種類。
     player->SetHeldUmbrella(HeldUmbrella::Cursed)
            .IncCursedTaint()
            .SetFlag(nccu::kFlagTookCursedUmbrella);
     isActive_ = false;
-    // No KarmaChanged publish on this frame (taint decay handles karma at
-    // chapter boundaries via AddKarma, which fires its own signed-delta
-    // KarmaChanged). The pickup-time narrative cue stays as the same
-    // ShowMessage line — the player still hears "成為了你最討厭的人" the
-    // instant the deed is done.
+    // 本幀不發 KarmaChanged（業力由污點衰減在章節邊界經 AddKarma 處理，後者會自行發出帶
+    // 正負號 delta 的 KarmaChanged）。拾取當下的敘事提示維持同一行 ShowMessage——玩家在
+    // 下手的瞬間仍會聽到「成為了你最討厭的人」。
     nccu::events::Sink().Publish(Event{ EventType::UmbrellaClaimed, "CursedUmbrella" });
     nccu::events::Sink().Publish(Event{ EventType::ShowMessage, "你順手牽羊了！成為了你最討厭的人。" });
 }

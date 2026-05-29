@@ -7,65 +7,51 @@
 #include "game/state/SemesterState.h"
 #include "game/dialog/DialogState.h"
 
+/**
+ * @file EndingGate.cpp
+ * @brief 結局閘門判定實作：四種結局的優先序、對話延後與卡死防護的不變式。
+ */
+
 namespace nccu {
 
-// S5e-2b: the three endings resolve here, ALL state-guarded to
-// Chapter4_Finals (the old Ch1+Flag_BoughtUglyUmbrella→Ending_C
-// sibling-if is removed — the Ch1 阿姨 buy in chapter1.md (c) is now a
-// pure narrative seed with NO tracked flag; the real Ending-C trigger
-// is the Ch4 集英樓 Vendor purchase, which sets Flag_BoughtUglyUmbrella.
-// (Cycle-8 audit F1 — see BUGLEDGER — removed the previous inert
-// KnowsUgly seed annotation per the B3 precedent.)
-// Precedence A → B → D → C (G1): the honest high-karma path wins, then
-// the cursed/fallen path, then the bittersweet 風雨同行 (體諒 without the
-// full A), then the buy-out / 平穩 default. Each closes any stale dialog
-// and returns so only one fires per poll.
+// 四種結局在此解析，全程僅在 Chapter4_Finals 生效。判定優先序 A→B→D→C：誠實高
+// 業力的真結局優先，其次詛咒／墮落路線，再者選擇體諒但未達 A 的苦甜「風雨同行」，
+// 最後是破財消災／平穩的預設。每個分支命中後都會關閉殘留對話並 return，確保單次
+// 輪詢只觸發一個結局。第一章向阿姨買傘僅是純敘事鋪陳、不設旗標；真正觸發結局 C
+// 的是第四章集英樓攤販的購買（設立 Flag_BoughtUglyUmbrella）。
 void CheckEndingGates(EventBus& bus, Player& player,
                       SemesterStateMachine& semester, DialogState& dialog) {
     if (semester.Current() != SemesterState::Chapter4_Finals) return;
 
-    // G2 — endings stop being abrupt. The gate must NOT resolve while a
-    // conversation / inner-monologue narration is on screen: a closing
-    // beat shown the same frame the deciding flag is set (the 助教 finale
-    // nextLines, or the buy/grab/claim 自白 opened by
-    // TryOpenEndingConfession) is READ FIRST, then the ending transitions
-    // on a later poll once the box has CLOSED. Without this, the choice
-    // confirm set the flag and CheckEndingGates fired Transition()+Close()
-    // the SAME frame, discarding the nextLines the player never got to see
-    // (the owner's 「不要突然按下選項後跳結局」). The deciding flags are all
-    // persistent, so deferring only delays — never drops — the resolution;
-    // GameController re-polls this every non-dialog frame (sibling of the
-    // CheckChapterGates poll), so it fires the instant the narration closes.
+    // 不變式：對話／內心獨白仍在畫面上時不得解析結局。當決定性旗標設立的同一幀
+    // 還顯示著收尾台詞（助教終局的後續台詞，或購買／拾取／認領時開啟的自白）時，
+    // 須先讓玩家讀完，等對話框關閉後的後續輪詢才轉移結局。否則選項確認的同一幀就
+    // Transition()+Close()，會吞掉玩家還沒看到的後續台詞。決定性旗標都是持久的，
+    // 因此延後只會推遲、絕不會漏掉判定；GameController 每個非對話幀都重新輪詢，
+    // 旁白一關閉即觸發。
     if (dialog.Active()) return;
 
-    // Ending A — karma > 80 AND holding the (Ch4-reclaimed) TrueUmbrella
-    // AND chose 體諒 with 助教 (Flag_ConsoledTA, set by the S5e-2d
-    // choice). Flag_HasTrueUmbrella is TrueUmbrella-specific and was
-    // cleared on Ch4 entry, so it means exactly "re-claimed in Ch4".
+    // 結局 A：業力 > 80、且持有第四章重新尋回的真傘、且對助教選擇了體諒
+    // （Flag_ConsoledTA）。Flag_HasTrueUmbrella 專屬於真傘且已於進入第四章時清除，
+    // 故此處成立即代表「在第四章重新取得」。
     if (player.GetKarma() > 80 &&
         player.HasFlag(kFlagHasTrueUmbrella) &&
         player.HasFlag(kFlagConsoledTA)) {
         semester.Transition(SemesterState::Ending_A);
-        // H2: even the terminal screen flashes a toast first — without it
-        // the FSM hop into Ending_A was indistinguishable in state.jsonl
-        // from a frame where nothing happened (cycle9 H2 evidence).
+        // 連終局畫面也先閃一則過場提示：否則進入 Ending_A 的這次轉移在外部紀錄上
+        // 與「什麼都沒發生的一幀」難以區分。
         PublishChapterTransitionToast(bus, SemesterState::Ending_A);
         dialog.Close();
         return;
     }
 
-    // Ending B — the cursed-umbrella path (Ch1 seed persists), karma
-    // fallen below zero, OR the cold finale: the player reached the 助教
-    // (d) 結算 and chose 「質問／強硬索回」 instead of 體諒
-    // (Flag_TaFinaleChoiceMade set without Flag_ConsoledTA). Refusing
-    // compassion at the climax — after a sleep-deprived, apologetic 助教
-    // tried to make amends — IS thematically 「你成為了你曾經最討厭的那
-    // 種人」 (GDD §陸 B 字卡). The GDD's literal B trigger
-    // (Flag_TookCursedUmbrella || karma<0) is extended here per the
-    // design-governance clause (CLAUDE.md §3); without this the cold
-    // choice fell through ALL gates and, because the finale menu
-    // self-locks via Flag_TaFinaleChoiceMade, soft-locked the game in
-    // Ch4 forever (no ending reachable — a §5 red-line violation).
+    // 結局 B：詛咒傘路線（第一章鋪陳的旗標延續至此）、業力跌破零，或冷淡終局——
+    // 玩家走到助教的結算並選擇「質問／強硬索回」而非體諒（設立
+    // Flag_TaFinaleChoiceMade 但未設 Flag_ConsoledTA）。在高潮處、面對睡眠不足且
+    // 主動致歉的助教仍拒絕體諒，正是「你成為了你曾經最討厭的那種人」的主題。原始
+    // 設計的 B 觸發條件（詛咒傘或業力<0）在此擴充出冷淡終局這一支：否則冷淡選擇會
+    // 漏出所有閘門，而終局選單又會以 Flag_TaFinaleChoiceMade 自我鎖定，導致遊戲在
+    // 第四章永久卡死（無結局可達）。
     const bool coldFinale = player.HasFlag(kFlagTaFinaleChoiceMade) &&
                             !player.HasFlag(kFlagConsoledTA);
     if (player.HasFlag(kFlagTookCursedUmbrella) ||
@@ -76,19 +62,12 @@ void CheckEndingGates(EventBus& bus, Player& player,
         return;
     }
 
-    // Ending D (G1) — 風雨同行. Reaching this branch means the player chose
-    // 體諒 (Flag_ConsoledTA) but did NOT clear Ending A (precedence A above
-    // already consumed karma>80 + 持真傘 + 體諒) and did NOT fall to Ending
-    // B (cursed / karma<0 / cold finale all rejected above — and 體諒
-    // implies !coldFinale). So Flag_ConsoledTA alone here ⇒ a kind heart
-    // with karma in [0,80]: a bittersweet, NOT-bad ending. This is the
-    // owner's resolution of the open karma question — 體諒+karma≤80 now
-    // lands D (the 破傘 / FragileBroken outcome), no longer the C 破財消災
-    // default. Placed BEFORE C so 體諒-but-not-perfect prefers the warmer
-    // D over the buy-out C; a 體諒 player who ALSO bought the ugly umbrella
-    // still gets the more meaningful D (the moral choice outranks a
-    // shopping decision). EndingSummary feeds the UI the 破傘 glyph
-    // (EndingView endingUmbrellaLook D → FragileBroken).
+    // 結局 D：風雨同行。走到此分支代表玩家選擇了體諒（Flag_ConsoledTA），卻未達成
+    // 結局 A（前面的 A 已吃掉業力>80 + 持真傘 + 體諒），也未落入結局 B（詛咒／業力<0
+    // ／冷淡終局皆已在上面排除，而體諒本身即蘊含非冷淡終局）。因此此處單憑
+    // Flag_ConsoledTA ⇒ 一顆善心搭配業力落在 [0,80]：苦甜但非壞的結局。刻意排在 C
+    // 之前，讓「體諒但不完美」偏向溫暖的 D 而非破財消災的 C；即使玩家同時買了醜傘，
+    // 道德選擇仍勝過購物決定而得到更有份量的 D。結局摘要會據此向 UI 提供破傘外觀。
     if (player.HasFlag(kFlagConsoledTA)) {
         semester.Transition(SemesterState::Ending_D);
         PublishChapterTransitionToast(bus, SemesterState::Ending_D);
@@ -96,18 +75,14 @@ void CheckEndingGates(EventBus& bus, Player& player,
         return;
     }
 
-    // Ending C — bought the 超醜螢光綠雨傘 at the Ch4 集英樓便利商店
-    // (Vendor sets Flag_BoughtUglyUmbrella, S5e-2b): the GDD-designated
-    // 破財消災 "Normal Ending". The Flag_TaFinaleChoiceMade disjunct is
-    // retained as the belt-and-braces TOTAL default (it is now logically
-    // pre-empted by the branches above — 質問 → coldFinale → B, 體諒 →
-    // A/D — but kept so the gate provably resolves for ANY post-finale
-    // flag combination, present or future, and can NEVER dead-end in Ch4;
-    // CLAUDE.md §5 winnability). With the 4-ending tree the gate is TOTAL
-    // once Flag_TaFinaleChoiceMade is set: exactly one of A/B/D fires for
-    // a finale path, and C catches the buy-out / any residual. Strictly
-    // gated so pre-finale Ch4 free-roam (explore, take cursed, buy the
-    // ugly umbrella) is byte-unchanged.
+    // 結局 C：在第四章集英樓便利商店買下超醜螢光綠雨傘（攤販設立
+    // Flag_BoughtUglyUmbrella）——即設計指定的破財消災「普通結局」。其中
+    // Flag_TaFinaleChoiceMade 這一支作為保險的「完全」預設而保留：邏輯上它已被前
+    // 面的分支搶先（質問→冷淡終局→B，體諒→A／D），但保留它可確保閘門對任何終局後
+    // 的旗標組合（現在或未來）都必能解析、永不在第四章卡死。四結局樹下，一旦
+    // Flag_TaFinaleChoiceMade 設立，閘門即為完全：終局路線必有 A／B／D 其一觸發，C
+    // 則接住買傘或任何殘餘情形。嚴格設限，使終局前的第四章自由探索（漫遊、拿詛咒
+    // 傘、買醜傘）行為完全不變。
     if (player.HasFlag(kFlagBoughtUglyUmbrella) ||
         player.HasFlag(kFlagTaFinaleChoiceMade)) {
         semester.Transition(SemesterState::Ending_C);

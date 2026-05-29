@@ -4,7 +4,7 @@
 #include "game/controller/GameController.h"
 #include "engine/audio/AudioDevice.h"
 #include "engine/audio/AudioManager.h"
-#include "ui/CharacterSelect.h"          // PersonaSelection
+#include "ui/CharacterSelect.h"          // 引入角色選擇結果型別
 #include "ui/View.h"
 #include "game/world/World.h"
 #include <functional>
@@ -15,40 +15,36 @@ namespace nccu { class Harness; }
 
 namespace nccu::app {
 
-// Blueprint Phase 3 step 1 — encapsulates the per-run gameplay scope
-// that used to live inline in main.cpp (the World/View/GameController/
-// AudioManager block + the while(!ShouldClose) loop body). Relocated
-// verbatim so the harness-observable {state.jsonl, screenshots, event
-// stream} is byte-identical to the pre-relocation path.
-//
-// Ownership / lifetime:
-//   - World/View/GameController/AudioManager are scene-owned and torn
-//     down in reverse-declaration order at scene destruction (same
-//     RAII chain the inline block had).
-//   - Harness is BORROWED via reference — its lifetime spans the
-//     program, not the scene, so WireEvents() (now inside Enter())
-//     can safely register subscribers and the BeginFrame/EndFrame
-//     hooks in SceneManager::Run keep the per-frame harness seam
-//     intact.
-//   - AudioDevice is also BORROWED — owned by main.cpp so the GL
-//     teardown order survives a scene transition (R3 invariant).
-//
-// Restart vs Quit semantics (matches today's main.cpp):
-//   World::PendingAppAction() == Restart -> Update returns
-//     SceneCommand{Restart} (main.cpp rebuilds the scene stack).
-//   World::PendingAppAction() == Quit    -> Update returns
-//     SceneCommand{Quit}    (main.cpp ends the program).
-//   Harness::ShouldQuit() or Window-close also resolve to Quit at
-//     the SceneManager::Run level (no per-scene check needed —
-//     Run loop owns the Window/Harness exits).
+/**
+ * @brief 遊玩場景：封裝單次遊玩所需的 World／View／GameController／AudioManager 範圍
+ *        及其每幀推進。
+ *
+ * 所有權與生命週期：
+ *   - World／View／GameController／AudioManager 由場景擁有，於場景解構時依「宣告順序
+ *     的逆序」拆除（成員宣告順序即為 RAII 鏈，順序具語意，見下方私有區）。
+ *   - Harness 以參考方式借用——其壽命橫跨整個程式而非單一場景，故 WireEvents()
+ *     （現位於 Enter()）可安全註冊訂閱者，SceneManager::Run 中的 BeginFrame／EndFrame
+ *     鉤子也得以維持每幀的錄製接縫完整。
+ *   - AudioDevice 同樣為借用——由 main.cpp 擁有，使 GL 拆除順序能跨越場景切換仍然
+ *     正確（音訊裝置須晚於場景銷毀）。
+ *
+ * Restart 與 Quit 語意：
+ *   World::PendingAppAction() == Restart -> Update 回傳 SceneCommand{Restart}
+ *     （main.cpp 重建場景堆疊）。
+ *   World::PendingAppAction() == Quit    -> Update 回傳 SceneCommand{Quit}
+ *     （main.cpp 結束程式）。
+ *   Harness::ShouldQuit() 或視窗關閉亦在 SceneManager::Run 層級收斂為 Quit（無須
+ *     逐場景檢查——Run 迴圈本身掌管視窗／錄製器的離開）。
+ */
 class GameplayScene final : public IScene {
 public:
-    // restartFactory: produced by the composition root to build the
-    // scene that should take over when the player picks 重新開始 from
-    // the in-game menu — typically a fresh LoadingScene. Empty (or
-    // nullptr-returning) closure means "no restart path available";
-    // GameplayScene then routes Restart to Quit, which matches the
-    // harness's never-restart contract today.
+    /**
+     * @brief 玩家於遊戲內選單選擇「重新開始」時，用以建立接手場景的工廠。
+     *
+     * 由 composition root 產生，通常建立一個全新的 LoadingScene。留空（或回傳
+     * nullptr）的 closure 表示「無重啟路徑」；此時 GameplayScene 會將 Restart 導向
+     * Quit，恰好對應自動錄製的「永不重啟」契約。
+     */
     using RestartFactory = std::function<std::unique_ptr<IScene>()>;
 
     GameplayScene(nccu::CharacterSelectResult selection,
@@ -66,17 +62,15 @@ public:
     WorldForHarnessOrNull() const noexcept override { return &world_; }
 
 private:
-    // Per-run state, declaration order MATTERS — reverse-destruction
-    // runs the controller dtor (EventBus::Clear) BEFORE the World it
-    // captured into subscribers dies. AudioManager declared AFTER the
-    // controller so reverse-destruction tears down audio FIRST (R3 +
-    // the H1/B2 EventBus discipline).
+    // 單次遊玩狀態；宣告順序具語意——逆序解構會在「被訂閱者捕獲的 World」死亡之前，
+    // 先跑 controller 的解構（EventBus::Clear）。AudioManager 宣告於 controller
+    // 之後，使逆序解構最先拆除音訊（維持 EventBus 訂閱者不致懸空的紀律）。
     nccu::World          world_;
     nccu::View           view_;
     nccu::GameController controller_;
     nccu::audio::AudioManager audioManager_;
-    nccu::Harness&       harness_;          // borrowed; lives in main.cpp
-    RestartFactory       restartFactory_;    // Phase 3 step 4: rebuild path
+    nccu::Harness&       harness_;          ///< 借用；實體存活於 main.cpp
+    RestartFactory       restartFactory_;   ///< 重啟時用以重建場景鏈的工廠
 };
 
 } // namespace nccu::app

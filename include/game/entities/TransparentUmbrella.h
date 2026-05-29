@@ -4,23 +4,34 @@
 #include "engine/math/Color.h"
 #include "game/gfx/UmbrellaGlyph.h"
 
-// REQUIREMENT #9: the umbrellas a player chooses between in Ch1 must
-// look CLEARLY different, not four near-identical pale-blue glyphs.
-// Render() switches on this per-subclass silhouette so each reads at a
-// glance even before the colour is parsed (and on displays where the
-// tints are subtle). Pure data on the object — MVC stays clean (the
-// View reads it in Render(); World/Item carry no raylib).
+/**
+ * @file TransparentUmbrella.h
+ * @brief 雨傘繼承樹的抽象中介（Template Method）：定稿拾取／繪製流程，BeClaimed
+ *        為各葉類別覆寫的多型認領鉤子。
+ */
+
+/**
+ * @brief 各子類別雨傘的外形輪廓，供 Render 在每個葉類別間切換剪影。
+ *
+ * Ch1 玩家要在四把傘之間做抉擇，它們必須一眼可辨，而非四個幾近相同的淡藍色字符。
+ * Render 依此繪出每個剪影，即使在色調細微的螢幕上、未及辨色之前也能分辨。此為物
+ * 件上的純資料，MVC 保持乾淨（View 於 Render 讀取；World／Item 不含 raylib）。
+ */
 enum class UmbrellaStyle {
-    Domed,    // True — wide rounded canopy: the "clean / correct" read
-    Broken,   // Fragile — only the handle / bare ribs remain (broken)
-    Spiked,   // ProfessorTrap — angular stepped canopy (danger / trap)
-    Drooping  // Cursed — sagging dark canopy + black handle (wrong)
+    Domed,    ///< True——寬圓頂傘面：「乾淨／正確」的視覺印象
+    Broken,   ///< Fragile——僅剩手柄／裸露傘骨（破損）
+    Spiked,   ///< ProfessorTrap——尖角階梯狀傘面（危險／陷阱）
+    Drooping  ///< Cursed——下垂暗色傘面＋黑色手柄（錯誤）
 };
 
-// Map a subclass's UmbrellaStyle to the shared nccu::game::gfx::UmbrellaLook (the single
-// source of truth for the silhouette + signature colour). One mapping used by
-// BOTH the in-world Render here AND any other surface that wants the same
-// look (kept inline next to the styles so the two never drift).
+/**
+ * @brief 將子類別的 UmbrellaStyle 映射到共用的 nccu::game::gfx::UmbrellaLook。
+ * @param[in] style 子類別的傘面外形列舉。
+ * @return 對應的共用外觀列舉（剪影＋識別色的唯一真實來源）。
+ *
+ * 同一份映射同時供此處的地圖內 Render 與任何想要相同外觀的其他表面使用；刻意與列舉
+ * 內聯放在一起，使兩者永不漂移。
+ */
 [[nodiscard]] constexpr nccu::game::gfx::UmbrellaLook
 LookForStyle(UmbrellaStyle style) noexcept {
     switch (style) {
@@ -32,39 +43,65 @@ LookForStyle(UmbrellaStyle style) noexcept {
     return nccu::game::gfx::UmbrellaLook::TrueBlue;
 }
 
-// ISP roles: IDrawable + IInteractable. The old Update body was an empty
-// no-op (umbrellas don't tick), so that role is dropped; Render (the
-// per-style glyph) and Interact (the quest-gated claim) are real and kept.
-// All four leaves (True/Fragile/ProfessorTrap/Cursed) only override
-// BeClaimed() — they share this exact role set — so WithRoles is keyed on
-// this intermediate (Derived = TransparentUmbrella); static_cast to it is
-// valid for every leaf.
+/**
+ * @brief Item 與各具體雨傘之間的抽象中介，承載雨傘繼承樹的 Template Method 骨架。
+ *
+ * 拾取與繪製流程在本層定稿，可變的多型動詞 BeClaimed()（認領效果）延後到各葉類別。
+ * 四個葉類別（True／Fragile／ProfessorTrap／Cursed）僅覆寫 BeClaimed()。
+ *
+ * ISP 角色：IDrawable + IInteractable。原本的 Update 為空殼（雨傘不需逐幀更新），
+ * 故捨棄該角色；Render（依外形繪字符）與 Interact（受任務閘控的認領）皆為實作而保留。
+ * 四個葉類別共用此角色集，故 WithRoles 以本中介層為鍵（Derived = TransparentUmbrella），
+ * static_cast 至此對每個葉類別皆合法。
+ */
 class TransparentUmbrella : public WithRoles<TransparentUmbrella, Item>,
                             public IDrawable, public IInteractable {
 public:
+    /**
+     * @brief 以世界座標、名稱、色調與外形建構雨傘（碰撞盒固定 20×20）。
+     * @param[in] position 世界座標位置（像素）。
+     * @param[in] name     雨傘名稱（兼作背包 itemId）。
+     * @param[in] tint     雨傘色調。
+     * @param[in] style    外形輪廓，預設為 Domed。
+     */
     TransparentUmbrella(nccu::engine::math::Vec2 position, std::string name,
                         nccu::engine::math::Color tint,
                         UmbrellaStyle style = UmbrellaStyle::Domed)
         : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
           umbrellaTint_(tint), style_(style) {}
 
-    void Render(nccu::engine::render::IRenderer& renderer) const override; // per-style glyph via IRenderer (Template Method)
+    /**
+     * @brief 經由 IRenderer 依外形繪出雨傘字符（Template Method 中的固定步驟）。
+     * @param[in,out] renderer 注入的渲染介面。
+     */
+    void Render(nccu::engine::render::IRenderer& renderer) const override;
 
+    /** @brief 取得外形輪廓。@return 此傘的 UmbrellaStyle。 */
     [[nodiscard]] UmbrellaStyle Style() const noexcept { return style_; }
-    // Both pick-up paths route through the same quest gate (defined in
-    // the .cpp so it can see Player/EventBus): an umbrella may only be
-    // claimed once the player has taken the 苦主's request
-    // (Flag_PromisedVictim) — before that it fires a guidance cue
-    // instead of a silent no-op. By Ch3/Ch4 the flag is long set, so the
-    // TrueUmbrella re-claim there is unaffected.
+    /**
+     * @brief 互動即認領（與 OnPickup 共用同一道任務閘）。
+     * @param[in] initiator 互動發起者（玩家）。
+     *
+     * 兩條拾取路徑都經過同一道任務閘（定義於 .cpp 以便看見 Player／EventBus）：
+     * 唯有玩家已接下苦主的請求（Flag_PromisedVictim）後才能認領，否則發出引導提示而
+     * 非無聲略過。到 Ch3／Ch4 該旗標早已設立，故該處 TrueUmbrella 的再認領不受影響。
+     */
     void Interact(Player* initiator) override;
+    /**
+     * @brief 拾取即認領（與 Interact 共用同一道任務閘）。
+     * @param[in] player 拾取者。
+     */
     void OnPickup(Player* player) override;
 
+    /**
+     * @brief 多型認領鉤子：玩家取得此傘時施放各自的結果效果。
+     * @param[in] player 認領者。
+     */
     virtual void BeClaimed(Player* player) = 0;
 
 protected:
-    nccu::engine::math::Color umbrellaTint_;
-    UmbrellaStyle    style_{UmbrellaStyle::Domed};
+    nccu::engine::math::Color umbrellaTint_;        ///< 雨傘色調
+    UmbrellaStyle    style_{UmbrellaStyle::Domed};  ///< 外形輪廓
 };
 
 #endif // TRANSPARENT_UMBRELLA_H_

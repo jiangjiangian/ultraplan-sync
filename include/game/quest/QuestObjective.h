@@ -8,23 +8,21 @@
 #include <string_view>
 #include <vector>
 
-// One short line of "what to do next", shown at the top of the screen so
-// the player is never lost (the playtest's "沒有指引" / "任務指引在最上
-// 方"). Deliberately a FINITE map of (state, the one gating flag that
-// matters in that state) → text — not a reactive read of every flag
-// combination. Chapter 1 has three 善有善報 beats: meet the 苦主 (who
-// also lost his umbrella) and promise to help, then find HIS umbrella out
-// in the world, then carry it BACK to him — he then returns YOUR真傘 and
-// the chapter clears (TryReturnVictimUmbrella). The chapter does NOT clear
-// on grabbing an umbrella off the ground. Endings show nothing (the View
-// replaces the world with the ending card anyway).
-//
-// 5c/T5: the objective LINES are pulled out as named string_view constants
-// so (a) CurrentObjective stitches them and (b) QuestObjectiveStrings()
-// enumerates EVERY one for the glyph-coverage scan — the owner reported `?`
-// (tofu) in objective text (綜合院館 / 集英樓 / 羅馬廣場 / 操場 / 校慶 /
-// 期末考終焉…). The scan FAILS the build on any glyph here not baked into
-// nccu::engine::render::Font.h, so a future objective edit can't silently reintroduce tofu.
+/**
+ * @file QuestObjective.h
+ * @brief 螢幕最上方那一行「接下來該做什麼」的任務指引，確保玩家不會迷失方向。
+ *
+ * 刻意設計成「(章節狀態, 該狀態下唯一關鍵的擋路旗標) → 文字」的有限對照，而
+ * 非對所有旗標組合做反應式判讀。Chapter 1 有三段善有善報節拍：先遇見同樣丟了
+ * 傘的苦主並答應幫忙，再到場景中找回「他的」傘，最後把傘帶「回去」交給他——他
+ * 才把「你的」真傘還你、章節結束（TryReturnVictimUmbrella）。撿地上的傘並不會
+ * 結束章節。結局狀態不顯示指引（View 此時已用結局卡片取代整個世界）。
+ *
+ * 每行指引被抽成具名 string_view 常數，目的有二：(a) CurrentObjective 據以
+ * 拼接、(b) QuestObjectiveStrings() 列舉「每一行」供字形覆蓋掃描使用——指引文
+ * 字曾出現缺字（豆腐方塊）。任何此處用到、卻未烘進字型的字形都會「使編譯失
+ * 敗」，避免未來改指引時悄悄重新引入缺字。
+ */
 namespace nccu {
 
 namespace objective {
@@ -54,6 +52,12 @@ inline constexpr std::string_view kCh4Finals =
     "目標：期末考終焉——自由探索校園，尋找屬於你的結局";
 }  // namespace objective
 
+/**
+ * @brief 取得目前章節狀態下該顯示的單行任務指引。
+ * @param state  目前的學期章節狀態。
+ * @param player 玩家（用於判讀關鍵擋路旗標決定走到第幾段）。
+ * @return 對應的指引文字；結局狀態回傳空字串。
+ */
 inline std::string CurrentObjective(SemesterState state,
                                     const Player& player) {
     using namespace nccu::objective;
@@ -85,8 +89,12 @@ inline std::string CurrentObjective(SemesterState state,
     return std::string{};
 }
 
-// 5c/T5 — every objective LINE the HUD can show, for the glyph-coverage
-// scan. Pure data; no Player needed (enumerates the constants directly).
+/**
+ * @brief 列出 HUD 可能顯示的每一行任務指引，供字形覆蓋掃描使用。
+ * @return 全部指引文字字串的向量。
+ *
+ * 純資料，不需 Player（直接列舉上面那些常數）。
+ */
 [[nodiscard]] inline std::vector<std::string> QuestObjectiveStrings() {
     using namespace nccu::objective;
     return {

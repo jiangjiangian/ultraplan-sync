@@ -8,65 +8,62 @@
 
 namespace nccu::dialog {
 
-class DialogRepository;     // Phase 2.5 — see DialogRepository.h
+class DialogRepository;     // 前向宣告——詳見 DialogRepository.h
 
-// Runtime dialog provider. Maps an English NPC id + the current
-// SemesterState to that NPC's parsed sub-blocks for the matching
-// chapter, loading the chapter markdown on demand through LoadChapter
-// and caching one LoadedChapter per state.
-//
-// Why this exists: the dialog content used to be frozen into a
-// generated header at build time, so any text tweak meant
-// regenerating and recompiling. This provider reads the authored
-// docs/content/*.md straight at runtime and exposes Reload() so
-// writers can edit a chapter file and see the change on the next
-// dialog without a rebuild.
-//
-// English npcId -> Chinese section name and SemesterState -> chapter
-// filename are fixed lookups kept in the .cpp. Unknown id / name /
-// file never throws — it returns an empty vector, mirroring
-// LoadChapter's no-throw contract.
-//
-// Reference lifetime: Entries() hands back a reference into the
-// per-state cache. It stays valid until the next Reload() (which
-// clears the cache); a later Entries() call for a not-yet-loaded
-// state only appends and does not invalidate earlier references.
-//
-// Blueprint Phase 2.5 — the cache + content dir are now scoped to
-// DialogRepository INSTANCES (see DialogRepository.h). These free
-// functions delegate to the process-current repository via the
-// SetRepository / Repository() seam below — same shape as
-// nccu::events::Sink. The default falls through to a process-wide
-// repository so every existing caller keeps working unchanged.
+/**
+ * @file DialogSource.h
+ * @brief 執行期對話供給的自由函式介面：把 (NPC id, SemesterState) 對映到對應章節
+ *        中該 NPC 的解析子段。
+ *
+ * 依需求透過 LoadChapter 載入章節 Markdown，每狀態快取一份 LoadedChapter。
+ *
+ * 為何存在：對白內容過去在建置期凍結進生成的標頭，任何文字微調都得重新生成並重編。
+ * 本供給層改為在執行期直接讀取作者撰寫的 docs/content/*.md，並提供 Reload()，讓作者
+ * 編輯章節檔後於下一次對話即見效、無需重建。
+ *
+ * 「英文 npcId → 中文 section 名」與「SemesterState → 章節檔名」是固定查表，置於 .cpp。
+ * 未知 id／名／檔皆不丟例外——回傳空向量，與 LoadChapter 的 no-throw 契約一致。
+ *
+ * 參考生命週期：Entries() 回傳指向每狀態快取的參考，於下次 Reload()（清空快取）前有效；
+ * 之後針對尚未載入狀態的 Entries() 只追加、不使既有參考失效。
+ *
+ * 快取與內容目錄現已收斂到 DialogRepository「實例」（見 DialogRepository.h）。以下自由
+ * 函式透過下方 SetRepository / Repository() 接縫委派給進程當前倉儲；預設落到進程層級的
+ * 倉儲，故所有既有呼叫端維持原狀不變。
+ */
 
-// Returns NPC `npcId`'s sub-blocks for the chapter tied to `state`,
-// in ascending subState order. Empty vector if the npcId, the mapped
-// section name, or the chapter file is unknown / missing / absent.
+/**
+ * @brief 取 NPC `npcId` 在 `state` 對應章節的子段，依 subState 遞增排序。
+ * @return 子段向量；npcId、對映 section 名或章節檔任一未知／遺失時為空。
+ */
 const std::vector<SubEntry>& Entries(std::string_view npcId,
                                      SemesterState state);
 
-// Drops every cached chapter so the next Entries() call re-reads the
-// markdown from disk. This is the hot-reload hook: edit a
-// docs/content/*.md, call Reload(), and the new text is served.
+/**
+ * @brief 清掉所有已快取章節，使下次 Entries() 重新自磁碟讀取 Markdown。
+ *
+ * 熱重載鉤子：編輯 docs/content/*.md 後呼叫 Reload()，即供給新文字。
+ */
 void Reload();
 
-// Overrides the directory the chapter files are read from (default
-// "docs/content", resolved relative to the process working
-// directory). Lets a unit test point at a fixed content dir without
-// depending on cwd. Takes effect on the next (re)load of a state.
+/**
+ * @brief 覆寫讀取章節檔的目錄（預設 "docs/content"，相對進程工作目錄解析）。
+ * @param dir 新的內容目錄。
+ *
+ * 讓單元測試指向固定內容目錄而不依賴 cwd；於下次（重新）載入狀態時生效。
+ */
 void SetContentDir(std::string dir);
 
-// ── Phase 2.5 repository seam ────────────────────────────────────
-// Override the current repository. Pass nullptr to fall back to the
-// process default (the Meyers-singleton DialogRepository instance
-// the free functions above delegate to). A test that wants full
-// isolation constructs its own DialogRepository, calls
-// SetRepository(&myRepo), runs the case, and either restores
-// (SetRepository(nullptr)) or leaves it for the next subcase.
+/**
+ * @brief 覆寫當前倉儲（測試替換接縫）。
+ * @param repo 要使用的倉儲；傳 nullptr 則回退到進程預設倉儲。
+ *
+ * 欲完全隔離的測試自建一個 DialogRepository，呼叫 SetRepository(&myRepo) 跑完案例後，
+ * 還原（SetRepository(nullptr)）或留給下一個 subcase。
+ */
 void SetRepository(DialogRepository* repo) noexcept;
 
-// Returns the current repository — either the SetRepository override
-// or the process default.
+/// @brief 取當前倉儲——SetRepository 的覆寫值或進程預設。
 [[nodiscard]] DialogRepository& Repository() noexcept;
 
 }  // namespace nccu::dialog

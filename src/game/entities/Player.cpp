@@ -15,13 +15,13 @@
 
 namespace {
 
-// Pipoya 32x32 walk-strip cycle: idle column (1), left foot (0), idle (1),
-// right foot (2). Stepping every kFrameDuration seconds while moving.
+// Pipoya 32×32 行走條循環：待機欄（1）、左腳（0）、待機（1）、右腳（2）。移動時每隔
+// kFrameDuration 秒步進一次。
 constexpr int kSpriteCell = 32;
 constexpr std::array<int, 4> kWalkColumns = {1, 0, 1, 2};
 constexpr float kFrameDuration = 0.15f;
 
-// Pipoya row order: 0=down, 1=left, 2=right, 3=up.
+// Pipoya 列序：0=下、1=左、2=右、3=上。
 int RowForFacing(nccu::engine::math::Vec2 facing) {
     const float ax = std::fabs(facing.x);
     const float ay = std::fabs(facing.y);
@@ -32,9 +32,9 @@ int RowForFacing(nccu::engine::math::Vec2 facing) {
 } // namespace
 
 Player::Player(nccu::engine::math::Vec2 position)
-    // 180 px/sec ≈ original 3 px/frame at 60 FPS, frame-rate independent.
-    // Direct base is WithRoles<Player, Character>; its `using Base::Base`
-    // inherits Character's ctor so this 3-arg form still resolves.
+    // 180 px/秒 ≈ 60 FPS 下原本的每幀 3 px，且與幀率無關。直接基底為
+    // WithRoles<Player, Character>，其 `using Base::Base` 繼承 Character 的建構子，故此 3
+    // 參數形式仍可解析。
     : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
       rainMeter_(0.0f), karma_(50), hasUmbrella_(false), money_(100) {}
 
@@ -45,8 +45,7 @@ void Player::LoadSprite(const std::string& path) {
 void Player::Update(float deltaTime) {
     HandleInput(deltaTime);
 
-    // Animation: advance only while actually moving so idle pose holds the
-    // middle column. Save lastFacing_ so we keep the correct row at rest.
+    // 動畫：僅在實際移動時推進，使待機姿勢停在中間欄。保存 lastFacing_，以在靜止時維持正確的列。
     const bool moving = direction_.x != 0.0f || direction_.y != 0.0f;
     if (moving) {
         lastFacing_ = direction_;
@@ -57,7 +56,7 @@ void Player::Update(float deltaTime) {
         }
     } else {
         animTimer_ = 0.0f;
-        animStep_ = 0;  // kWalkColumns[0] = 1 = idle column
+        animStep_ = 0;  // kWalkColumns[0] = 1 = 待機欄
     }
 }
 
@@ -74,8 +73,7 @@ void Player::Render(nccu::engine::render::IRenderer& renderer) const {
         static_cast<float>(row * kSpriteCell),
         static_cast<float>(kSpriteCell),
         static_cast<float>(kSpriteCell)};
-    // Bottom-centre the 32x32 sprite on the 24x24 hitbox so feet sit at the
-    // hitbox base — matches the JRPG convention of collision-at-feet.
+    // 將 32×32 sprite 底部置中於 24×24 碰撞盒，使腳部落在碰撞盒底邊——契合 JRPG「碰撞在腳下」的慣例。
     const Rect dest{
         hitBox_.x + (hitBox_.width  - kSpriteCell) * 0.5f,
         hitBox_.y +  hitBox_.height - kSpriteCell,
@@ -97,17 +95,10 @@ void Player::HandleInput(float deltaTime) {
 
 Player& Player::AddKarma(int delta) {
     karma_ = std::clamp(karma_ + delta, -100, 100);
-    // Cycle 9.B H5: publish KarmaChanged so the bus' karma-toast
-    // subscriber can mirror a transient "業力 ±N" banner into the HUD.
-    // Before this hook every karma mutation flowed through AddKarma but
-    // never reached the EventBus, leaving EventType::KarmaChanged a
-    // dead channel (1 publisher in CursedUmbrella, 0 subscribers). The
-    // payload text is the signed integer literal exactly so the
-    // subscriber can prefix it ("業力 +5"). A delta of 0 still
-    // publishes (the clamp may have ignored it, but a caller of
-    // AddKarma(0) is so rare it isn't worth special-casing — emitting
-    // 0 is harmless: subscribers can filter, and "業力 +0" is a no-op
-    // toast that fades the same as any other).
+    // 發布 KarmaChanged，使事件匯流排的業力提示訂閱者能在 HUD 鏡像一則短暫的「業力 ±N」橫幅。
+    // 訊息內容正是帶正負號的整數字面，使訂閱者能加上前綴（「業力 +5」）。delta 為 0 時仍會發布
+    // （夾制可能忽略了它，但呼叫 AddKarma(0) 極罕見而不值得特例——發出 0 無害：訂閱者可自行過濾，
+    // 「業力 +0」是與其他無異會淡出的無動作提示）。
     char buf[16];
     std::snprintf(buf, sizeof(buf), "%+d", delta);
     nccu::events::Sink().Publish(
@@ -119,12 +110,9 @@ Player& Player::decreaseKarma(int amount) {
     return AddKarma(-amount);
 }
 
-// P2: per-chapter karma drain proportional to cursed-pickup count. Routed
-// through AddKarma so the [-100,100] clamp + KarmaChanged toast (signed delta)
-// continue to fire — the visible "業力 -5" banner is intentional: the player
-// SHOULD see the cumulative stain bite each chapter. A 0-taint run skips the
-// AddKarma call entirely so the KarmaChanged event stays unpublished and
-// non-cursed playtests remain byte-identical to baseline.
+// 與詛咒拾取數成正比的每章業力衰減。透過 AddKarma 走，使 [-100,100] 夾制與 KarmaChanged 提示
+// （帶正負號 delta）持續觸發——可見的「業力 -5」橫幅是刻意的：玩家「應」每章感受到累積污點的咬噬。
+// 0 污點的流程會完全略過 AddKarma 呼叫，故 KarmaChanged 事件不被發布，非詛咒試玩與基準維持一致。
 Player& Player::ApplyCursedTaintDecay() {
     if (cursedTaint_ > 0) AddKarma(-5 * cursedTaint_);
     return *this;
@@ -145,7 +133,7 @@ bool Player::DeductMoney(int amount) noexcept {
 
 Player& Player::ApplyRain(float dt, bool lethal) {
     if (hasUmbrella_) {
-        return *this;  // umbrella nullifies exposure
+        return *this;  // 持傘抵消曝露
     }
     rainMeter_ = std::clamp(rainMeter_ + 5.0f * dt, 0.0f, 100.0f);
     if (lethal && rainMeter_ >= 100.0f) {
@@ -160,26 +148,20 @@ Player& Player::DrainRain(float dt) noexcept {
 }
 
 Player& Player::DrainRainBy(float amount) noexcept {
-    // G4: a FIXED rain reduction (not rate-based) for a consumable used
-    // from the bag — distinct from DrainRain's -10 u/s sheltered recovery.
-    // Clamped to [0,100]; never teleports. A negative `amount` would add
-    // rain, which no caller wants, but the clamp keeps it bounded either
-    // way. Used by ApplyConsumableEffect / the entity Consume bodies so a
-    // 暖暖包 / 噴霧 / 飲料 / 小吃 buys back a chunk of the meter on use.
+    // 為背包使用的消耗品而設的「固定量」雨量減免（非速率）——有別於 DrainRain 的每秒 -10 遮蔽
+    // 回復。夾制於 [0,100]，從不傳送。負的 amount 會增加雨量（無呼叫者想要），但夾制無論如何皆
+    // 使其有界。由 ApplyConsumableEffect 與各實體 Consume 本體呼叫，使暖暖包／噴霧／飲料／小吃
+    // 在使用時買回一塊雨量。
     rainMeter_ = std::clamp(rainMeter_ - amount, 0.0f, 100.0f);
     return *this;
 }
 
 Player& Player::ApplyRainSheltered(float dt, bool lethal) {
-    // REQUIREMENT #5: an umbrella in heavy 山下 rain SLOWS the soak, it
-    // does not stop it (chapter2.md: still accrues, reduced rate). 1.5
-    // u/s ≈ 30 % of the exposed 5 u/s — felt over a chapter but, given
-    // the spine's long in-building dialog stretches drain at -10 u/s, a
-    // competent run never reaches 100 (the ending scripts stay winnable
-    // & deterministic — regression-pinned). Deliberately does NOT honour
-    // hasUmbrella_ (this IS the umbrella-but-still-exposed case); the
-    // exposed-rate ApplyRain keeps its own umbrella no-op untouched so
-    // every pinned ApplyRain/DrainRain unit contract is byte-unchanged.
+    // 山下大雨中的傘「減緩」浸濕而非阻止（chapter2.md：仍以較低速率累積）。每秒 1.5 點 ≈ 曝露
+    // 5 點的 30%——跨越一章可感受到；但因主線冗長的建築內對話會以每秒 -10 拉長消減，稱職的流程
+    // 永不抵達 100（結局腳本維持可通關且具決定性，由回歸測試固定）。刻意「不」理會 hasUmbrella_
+    // （此正是持傘卻仍曝露的情形）；曝露速率的 ApplyRain 維持其自身的持傘無動作不變，故每一條
+    // ApplyRain/DrainRain 的單元契約皆不改變。
     rainMeter_ = std::clamp(rainMeter_ + 1.5f * dt, 0.0f, 100.0f);
     if (lethal && rainMeter_ >= 100.0f) {
         RespawnAtGate();
@@ -188,7 +170,7 @@ Player& Player::ApplyRainSheltered(float dt, bool lethal) {
 }
 
 void Player::RespawnAtGate() {
-    // 正門 gate spawn — half-day passes, no karma penalty per design doc.
+    // 在正門重生——依設計文件，半天流逝，且無業力懲罰。
     position_ = nccu::engine::math::Vec2{500.0f, 1860.0f};
     hitBox_.x = position_.x;
     hitBox_.y = position_.y;

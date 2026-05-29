@@ -1,23 +1,30 @@
 #ifndef ENDING_GATE_H_
 #define ENDING_GATE_H_
-class Player;                 // global-namespace model object
-class EventBus;               // Plan P2: bus is injected, not pulled from Instance()
+
+/**
+ * @file EndingGate.h
+ * @brief 結局閘門：以旗標／業力／持有物決定四種結局並驅動學期狀態機轉移。
+ */
+
+class Player;                 // 全域命名空間的模型物件
+class EventBus;               // 事件匯流排由外部注入，不在本層取用全域 Instance()
 namespace nccu {
 class SemesterStateMachine;
 class DialogState;
-// Flag-driven ending resolution, polled each non-dialog frame. ALL gated to
-// Chapter4_Finals; precedence A -> B -> D -> C (first match wins), and the
-// gate is TOTAL once Flag_TaFinaleChoiceMade is set (exactly one of the four
-// fires — no soft-lock). Endings come from EITHER touching an umbrella
-// (TookCursed -> B / BoughtUgly -> C) OR the 助教 finale (體諒 -> A or the
-// 風雨同行 D / 質問 cold-finale -> B). Resolution is DEFERRED while a dialog
-// is Active() so the closing 自白/finale narration is read first; on the
-// transition it Close()s the conversation. (The old Ch1 ugly-buy -> C
-// sibling-if is gone — the real Ending-C trigger is the Ch4 集英樓 Vendor.)
-//
-// Plan P2: `bus` is injected so the transition toast it publishes uses the
-// caller's bus instance, NOT EventBus::Instance() at this layer. In
-// production main.cpp owns the single bus; tests pass their own.
+
+/**
+ * @brief 依旗標解析結局並轉移到對應的結局狀態，每個非對話幀輪詢一次。
+ * @param bus      轉移時用來發布過場提示的事件匯流排（由呼叫端注入）。
+ * @param player   讀取業力與旗標的玩家模型。
+ * @param semester 達成條件時對其呼叫 Transition() 的學期狀態機。
+ * @param dialog   仍在播放時延後判定、轉移時關閉的對話狀態。
+ *
+ * 全程僅在 Chapter4_Finals 生效；判定優先序 A→B→D→C，先命中者勝。一旦
+ * Flag_TaFinaleChoiceMade 設立，閘門即為「完全」——四者必有其一觸發，不會卡死。
+ * 結局來源有二：碰觸雨傘（詛咒傘→B／醜傘→C），或助教終局選擇（體諒→A，風雨同行
+ * →D，質問冷淡終局→B）。當對話仍 Active() 時延後判定，讓收尾的自白／終局旁白先
+ * 被讀完；轉移當下會關閉該對話。
+ */
 void CheckEndingGates(EventBus& bus, Player& player,
                       SemesterStateMachine& semester, DialogState& dialog);
 }

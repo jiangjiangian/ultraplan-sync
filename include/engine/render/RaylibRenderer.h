@@ -8,9 +8,17 @@
 
 namespace nccu::engine::render {
 
-// Concrete IRenderer adapter. The only place IRenderer calls cross into
-// raylib — delegates straight to the existing nccu::gfx wrappers, which
-// own every ::Draw* call. Stateless and cheap to construct per draw.
+/**
+ * @file RaylibRenderer.h
+ * @brief IRenderer 的具體 raylib 實作：IRenderer 呼叫越界進入 raylib 的唯一處。
+ */
+
+/**
+ * @brief 將 IRenderer 介面轉接到 raylib 繪圖的具體實作。
+ *
+ * 為 IRenderer 呼叫進入 raylib 的唯一位置——直接委派給既有的渲染包裝（Renderer／
+ * TextBuilder，由它們擁有每個 ::Draw* 呼叫）。無狀態，可在每次繪製時廉價建構。
+ */
 class RaylibRenderer final : public IRenderer {
 public:
     void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {

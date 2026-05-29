@@ -6,22 +6,22 @@ namespace nccu {
 class World;
 namespace engine::render { class IRenderer; }
 
-// In-game pause menu overlay (P1 step 7b — extracted from
-// View::RenderOverlays).
-//
-// Full-screen dim + centred panel + 6 rows (繼續 / 說明 / 減少動畫 /
-// 擴大目標 / 重新開始 / 離開) + a keyboard-help band along the bottom.
-// Reactive: a pure function of World::MenuOpen + MenuCursor +
-// ReducedMotion + LargeTargets (the two toggle rows). No retained UI
-// state in the View — the function is a no-op while MenuOpen is false,
-// so it is safe to call every frame.
-//
-// Render-only (MVC §5): reads World const, never mutates. All draws
-// route through the injected IRenderer + the gfx TextBuilder, so it is
-// deterministic and headless-spy-testable.
-//
-// `screenW` / `screenH` are the framebuffer dimensions; the dim and
-// the panel centre on them.
+/**
+ * @file PauseMenu.h
+ * @brief 遊戲內暫停選單疊層（自 View::RenderOverlays 抽出）。
+ */
+
+/**
+ * @brief 繪製暫停選單疊層：全螢幕變暗＋置中面板＋6 列（繼續／說明／減少動畫／
+ *        擴大目標／重新開始／離開）＋底部一條鍵盤說明帶。
+ * @param screenW framebuffer 寬。
+ * @param screenH framebuffer 高（變暗與面板皆據此置中）。
+ *
+ * 反應式：為 World::MenuOpen＋MenuCursor＋ReducedMotion＋LargeTargets（後二者為
+ * 兩個切換列）的純函式。View 不保留 UI 狀態——MenuOpen 為 false 時為空操作，故每
+ * 幀呼叫皆安全。純渲染（MVC）：以 const 讀取 World、絕不變更。所有繪製皆經注入的
+ * IRenderer 與 TextBuilder，故具決定性、可無頭 spy 測試。
+ */
 void DrawPauseMenu(nccu::engine::render::IRenderer& r,
                    const World& world,
                    float screenW,

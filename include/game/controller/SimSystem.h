@@ -8,81 +8,101 @@ namespace nccu {
 
 class World;
 
-// The per-frame simulation pipeline (awsome_cpp.md §6/§7 — the Controller
-// "容易膨脹成 God Class，內部仍須職責分離"; §7 SRP). GameController::Update
-// used to inline every simulation stage as one ~793-line god-method. Each
-// SPATIALLY-isolated, reusable stage is now an ISystem with ONE
-// responsibility, run by the controller in the EXACT same order as before
-// (so the harness state.jsonl stays byte-identical). These are exactly the
-// reusable model-side stages an Assignment-#6 survival game also needs (a
-// CollisionSystem + a Spawner), now first-class types rather than buried in
-// the controller.
-//
-// MVC purity: a system operates ONLY on the model (World& / Player&). It
-// reads no input devices, makes no raylib calls, renders nothing — those
-// stay in the controller (input) and View (render). The per-screen input
-// blocks (ending menu / pause / dialog-advance / inventory) and the
-// E-interact dispatch are NOT systems; they remain in the controller layer
-// because they read input.
+/**
+ * @file SimSystem.h
+ * @brief 每幀模擬管線：ISystem 介面、其共用的 SimContext，以及依管線順序排列
+ *        的各具體階段（Survival/Movement/Collision/Spawn/Sweep）。
+ *
+ * GameController::Update 原本把每個模擬階段內嵌成一個龐大的 god-method。現把每個
+ * 空間上獨立、可重用的階段拆成單一職責的 ISystem，由 Controller 以「完全相同」的
+ * 順序執行（故確定性的序列化輸出維持逐位元相同）。
+ *
+ * MVC 純度：system 只操作模型（World&／Player&），不讀輸入裝置、不呼叫 raylib、
+ * 不渲染——那些分別留在 Controller（輸入）與 View（渲染）。各畫面的輸入區塊
+ * （結局選單／暫停／對話推進／背包）與 E 鍵互動派發「不是」system，因其讀取輸入，
+ * 故留在 Controller 層。
+ */
 
-// Model-only context threaded through the pipeline for one frame. Bundles
-// the World, the two geometry constants the collision stage needs, a reused
-// scratch collider list (so the per-frame vector isn't reallocated), and
-// the previous-frame player position handed from MovementSystem to
-// CollisionSystem. No raylib, no input — pure data.
+/**
+ * @brief 串接整條管線、僅供一幀使用的「純模型」情境物件。
+ *
+ * 打包了 World、碰撞階段所需的兩個幾何常數、一個重用的暫存碰撞盒清單（使每幀的
+ * vector 不必重新配置），以及由 MovementSystem 交給 CollisionSystem 的前一幀玩家
+ * 座標。不含 raylib、不含輸入——純資料。
+ */
 struct SimContext {
-    World&                          world;
-    nccu::engine::math::Vec2                 worldSize;
-    nccu::engine::math::Vec2                 playerSize;
-    std::vector<nccu::engine::math::Rect>&   frameColliders;  // reused scratch
-    // Set by MovementSystem (the player's top-left BEFORE this frame's
-    // object Update tick), read by CollisionSystem for the axis-separated
-    // resolve. Lives in the context so the two stages stay decoupled types
-    // yet preserve the exact prev→resolve handoff the inline code had.
+    World&                          world;        ///< 本幀操作的世界
+    nccu::engine::math::Vec2                 worldSize;    ///< 世界邊界尺寸（像素）
+    nccu::engine::math::Vec2                 playerSize;   ///< 玩家碰撞盒尺寸（像素）
+    std::vector<nccu::engine::math::Rect>&   frameColliders;  ///< 重用的暫存碰撞盒清單
+    /// 由 MovementSystem 設定（本幀物件 Update tick 之前的玩家左上角），由
+    /// CollisionSystem 讀取以做分軸解算。放在情境中使兩階段保持解耦型別，又能保留
+    /// 原內嵌碼「前一位置 -> 解算」的精確交接。
     nccu::engine::math::Vec2                 prevPlayerPos{0.0f, 0.0f};
 };
 
-// One ordered simulation stage. Run() advances the model by `dt` seconds.
+/**
+ * @brief 一個有序的模擬階段（管線元素）。
+ *
+ * Run() 將模型推進 dt 秒。具體階段以 final 實作此介面。
+ */
 struct ISystem {
     virtual ~ISystem() = default;
+    /**
+     * @brief 將模型推進一個時間步。
+     * @param[in,out] ctx 本幀共用的模擬情境。
+     * @param[in]     dt  幀間隔（秒）。
+     */
     virtual void Run(SimContext& ctx, float dt) = 0;
 };
 
-// ── Concrete stages, in pipeline order ───────────────────────────────
+// ── 各具體階段，依管線順序排列 ────────────────────────────────────────
 
-// Rain-survival accrual/drain (BUGLEDGER I8 / Cycle 4 / REQUIREMENT #5).
-// Three states: inside a building → DrainRain (-10 u/s); outdoors with an
-// umbrella → ApplyRainSheltered (+1.5 u/s); outdoors umbrella-less →
-// ApplyRain (+5 u/s, lethal). Skipped in the market interlude and endings.
+/**
+ * @brief 降雨生存的累積／回復階段。
+ *
+ * 三種狀態：在建築內 -> DrainRain（每秒 -10，完全回復）；室外持傘 ->
+ * ApplyRainSheltered（每秒 +1.5，仍可致命）；室外無傘 -> ApplyRain（每秒 +5，
+ * 致命）。在市集過場與各結局狀態下略過。
+ */
 struct SurvivalSystem final : ISystem {
     void Run(SimContext& ctx, float dt) override;
 };
 
-// Captures the player's pre-tick position into ctx.prevPlayerPos, then
-// ticks every IUpdatable object (ForEachRole<IUpdatable>). The ISP role
-// dispatch is unchanged — only objects that play the IUpdatable role move.
+/**
+ * @brief 移動階段：先把玩家 tick 前座標存入 ctx.prevPlayerPos，再 tick 每個
+ *        IUpdatable 物件（ForEachRole<IUpdatable>）。
+ *
+ * ISP 角色派發不變——只有扮演 IUpdatable 角色的物件會移動。
+ */
 struct MovementSystem final : ISystem {
     void Run(SimContext& ctx, float dt) override;
 };
 
-// Player AABB resolution: clamp to the world box, then axis-separated
-// resolve against every BlocksMovement() object's hitbox plus the terrain
-// mask (the #6 CollisionSystem). Items are deliberately not colliders.
+/**
+ * @brief 碰撞階段：玩家 AABB 解算——先夾限至世界邊界，再對每個 BlocksMovement()
+ *        物件的碰撞盒與地形遮罩做分軸解算。道具刻意不視為碰撞體。
+ */
 struct CollisionSystem final : ISystem {
     void Run(SimContext& ctx, float dt) override;
 };
 
-// Deferred per-frame world spawns (the #6 Spawner): the 操場 lap tick then
-// the four self-gating MaybeSpawn passes (Ch1 victim umbrella / Ch2 notes /
-// Ch3 umbrella / Interlude librarian return). Each self-gates + is a cheap
-// no-op outside its chapter, exactly as the inline calls were.
+/**
+ * @brief 生成階段：每幀的延遲生成——先 tick 操場繞圈進度，再依序跑四個自我守門的
+ *        MaybeSpawn（Ch1 苦主之傘／Ch2 筆記／Ch3 雨傘／市集管理員歸還）。
+ *
+ * 每個都自我守門，在其章節之外是廉價的 no-op，故可每幀無條件執行。
+ */
 struct SpawnSystem final : ISystem {
     void Run(SimContext& ctx, float dt) override;
 };
 
-// End-of-frame mark-then-sweep (deferred deletion). Delegates to
-// World::Sweep() — kept as a stage so the pipeline owns the full ordered
-// frame and a future system can be inserted before/after the sweep.
+/**
+ * @brief 清除階段（終端）：幀末的標記後清除（延遲刪除）。
+ *
+ * 委派給 World::Sweep()——保留為獨立階段，使管線擁有完整有序的一幀，且未來可在
+ * 清除前後插入新 system。
+ */
 struct SweepSystem final : ISystem {
     void Run(SimContext& ctx, float dt) override;
 };

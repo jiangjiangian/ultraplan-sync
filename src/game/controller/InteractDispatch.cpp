@@ -6,7 +6,7 @@
 #include "game/vendor/Vendor.h"
 #include "game/controller/VendorMenu.h"
 #include "game/controller/GameObjectQueries.h"
-#include "game/quest/NpcSpawns.h"     // G-2: IsChapter1FlavorNpc routing
+#include "game/quest/NpcSpawns.h"     // 提供 IsChapter1FlavorNpc 路由判斷
 #include "game/quest/QuestHookTable.h"
 #include "engine/core/GameObject.h"
 #include "engine/input/Input.h"
@@ -15,7 +15,7 @@
 #include <string_view>
 
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出，以此引入
 
 void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
     using nccu::engine::input::Input;
@@ -24,29 +24,18 @@ void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
     using nccu::queries::ForEachActiveExcept;
     Player* player = world.GetPlayer();
     if (Input::IsPressed(Key::E) && player) {
-        // I3 fix: the movement collider for a BlocksMovement() NPC is a
-        // player-sized box at the NPC origin, and Rect::Intersects is
-        // strict, so physics::ResolveMove halts the player EXACTLY flush
-        // against a static NPC (touching, never strictly overlapping). A
-        // 24x24 E-probe at the player origin therefore never collides —
-        // dialog could never open for a walked-up player (harness OR
-        // human). Give the E-probe an explicit interaction reach: inflate
-        // it by kInteractReach on every side so a flush-blocked player
-        // still overlaps the NPC's hitbox. The MOVEMENT collider is left
-        // exactly as-is (frameColliders_ above, unchanged) — the player
-        // still cannot walk through an NPC; only the talk reach grows.
-        // The margin (8 px, a third of the 24 px box) is far smaller than
-        // the world spacing between NPCs/items, so it can only reach an
-        // object the player is already standing flush against.
-        // Cycle 9.E (audit M2 / D7 / SC 2.5.8): a "larger targets"
-        // accessibility profile (World::LargeTargets(),
-        // UMBRELLA_LARGE_TARGETS=1) widens the reach to 16 px on each
-        // side — effective talk box 56x56 instead of 40x40 — so a
-        // tremor-affected player can still trigger NPC dialog without
-        // pixel-precise alignment. The MOVEMENT collider above is
-        // unchanged (the player still cannot walk through an NPC); ONLY
-        // the E-probe reach grows. Default off ⇒ byte-equivalent to
-        // pre-9.E behaviour and to the prior `kInteractReach = 8.0f`.
+        // BlocksMovement() NPC 的「移動」碰撞體是位於 NPC 原點、玩家大小的盒，且
+        // Rect::Intersects 為嚴格相交，故 physics::ResolveMove 會把玩家恰好停在靜態
+        // NPC 旁（貼齊，從不嚴格重疊）。因此位於玩家原點的 24x24 E 探測盒永遠不會
+        // 相交——走到 NPC 面前的玩家（自動或真人）將永遠無法開啟對話。故給 E 探測盒
+        // 一個明確的互動觸及距離：四邊各外擴 kInteractReach，使貼齊受阻的玩家仍能與
+        // NPC 碰撞盒重疊。「移動」碰撞體維持原樣（上方 frameColliders_ 不變）——玩家
+        // 仍無法穿過 NPC，只有對話觸及範圍變大。此邊距（8 px，盒寬 24 px 的三分之一）
+        // 遠小於 NPC／道具間的世界間距，故只可能觸及玩家本就貼齊站著的物件。
+        // 「擴大目標」無障礙設定（World::LargeTargets()）把觸及距離放寬到每邊 16 px
+        // ——有效對話盒由 40x40 變為 56x56——使手抖的玩家不必像素級對齊也能觸發 NPC
+        // 對話。上方「移動」碰撞體不變（玩家仍無法穿過 NPC），只有 E 探測觸及變大。
+        // 預設關閉，故與其開啟前的行為（kInteractReach = 8.0f）逐位元等價。
         const float kInteractReach = world.LargeTargets() ? 16.0f : 8.0f;
         const Rect pHit{player->GetPosition().x - kInteractReach,
                         player->GetPosition().y - kInteractReach,
@@ -55,15 +44,12 @@ void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
         ForEachActiveExcept(world.Objects(), player,
             [&bus, &world, player, pHit, &pendingVendor](GameObject& o) {
                 if (!o.CheckCollision(pHit)) return;
-                // I5: a Vendor's NpcId() is empty, so without this it
-                // would fall to o.Interact() (NPC line-cycling) and
-                // Vendor::TryBuy would have no runtime caller — Ending C
-                // / the Ch2 EnergyDrink were unreachable. Route a shop
-                // interaction to a buy-choice dialog instead; the purchase
-                // itself (money / inventory / EventBus events / soft-cap /
-                // setsFlag) stays entirely inside Vendor::TryBuy, invoked
-                // on confirm in the dialog branch above. One menu per E
-                // tap: skip if a dialog already opened this pass.
+                // Vendor 的 NpcId() 為空，故若無此分支它會落到 o.Interact()
+                // （NPC 逐行循環），而 Vendor::TryBuy 將無任何執行期呼叫者——Ending C
+                // 與 Ch2 的 EnergyDrink 將無法達成。改把商店互動導向購買選項對話；
+                // 購買本身（金錢／背包／EventBus 事件／軟上限／setsFlag）完全留在
+                // Vendor::TryBuy 內，於對話分支確認時呼叫。每次 E 一個選單：本輪若已
+                // 開啟對話則略過。
                 if (o.IsVendor()) {
                     if (world.Dialog().Active()) return;
                     auto* vendor = static_cast<Vendor*>(&o);
@@ -72,40 +58,34 @@ void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
                     return;
                 }
                 if (const std::string_view id = o.NpcId(); !id.empty()) {
-                    // G-2: a Ch1 stationary FLAVOR NPC (搶課同學 / 撐傘路人 /
-                    // 揹書包學生) cycles its own chapter1.md line pool one line
-                    // per talk via NPC::Interact() — a deterministic,
-                    // reproducible pick (no RNG on the state path). Route it
-                    // HERE, BEFORE any spine hook, and return: a flavor NPC
-                    // must never reach TryReturnVictimUmbrella / OpenNpcDialog
-                    // etc., so it provably sets NO quest flag and cannot
-                    // perturb the hard-gated 苦主→學長→苦主 spine. (The dialog
-                    // it shows is a one-line ShowMessage toast, same channel
-                    // as an ambient-pedestrian Interact, not the dialog box.)
+                    // Ch1 的固定閒談型 NPC（搶課同學／撐傘路人／揹書包學生）透過
+                    // NPC::Interact() 每次對話循環取出自己 chapter1.md 行池中的一行
+                    // ——確定性、可重現的選取（狀態路徑上無亂數）。在「任何主線 hook
+                    // 之前」於此處路由並 return：閒談型 NPC 絕不可到達
+                    // TryReturnVictimUmbrella／OpenNpcDialog 等，故可證明它不設任何
+                    // 任務旗標、也無法擾動硬性守門的「苦主→學長→苦主」主線。（它顯示
+                    // 的對話是單行 ShowMessage 提示，與環境路人 Interact 同通道，
+                    // 而非對話框。）
                     if (nccu::IsChapter1FlavorNpc(id)) {
                         if (auto* it = o.AsInteractable()) it->Interact(player);
                         return;
                     }
-                    // Run the registered Ch1-Ch4 quest hooks, IN ORDER,
-                    // BEFORE the dialog opener — exactly the inline TryXxx
-                    // sequence this replaces (TryReturnVictimUmbrella ->
+                    // 在對話開啟器「之前」，依序跑過已註冊的 Ch1-Ch4 任務 hook——正是
+                    // 此處所取代的內嵌 TryXxx 序列（TryReturnVictimUmbrella ->
                     // TryRescueBookworm -> TryMeetLibrarian ->
-                    // TryLendLibrarianUmbrella -> TryReturnLibrarianUmbrella
-                    // -> TryApplyCh2Ripple -> TryAdvanceCh3Trade ->
-                    // TryApplyCh3Ripple -> TryApplyCh4Ripple). Each hook
-                    // self-gates on (state, npcId) and is a cheap no-op
-                    // outside its chapter, so running the whole table per
-                    // interact is correct and order-stable. The 4th arg is
-                    // the Interlude return-target (only the librarian-return
-                    // hook scopes itself with it). Adding a chapter/NPC is
-                    // now a RegisterHook line, not an edit here (OCP).
+                    // TryLendLibrarianUmbrella -> TryReturnLibrarianUmbrella ->
+                    // TryApplyCh2Ripple -> TryAdvanceCh3Trade -> TryApplyCh3Ripple
+                    // -> TryApplyCh4Ripple）。每個 hook 以 (state, npcId) 自我守門，
+                    // 在其章節之外是廉價 no-op，故每次互動跑整張表是正確且順序穩定的。
+                    // 第 4 個引數是市集返回目標（只有管理員歸還 hook 用它界定範圍）。
+                    // 新增章節／NPC 現在只是一行 RegisterHook，而非在此處修改（OCP）。
                     RunInteractHooks(bus, *player, id,
                                      world.Semester().Current(),
                                      world.Semester().InterludeReturnTo());
                     OpenNpcDialog(world.Dialog(), *player, id,
-                                  world.Semester().Current());     // talk
+                                  world.Semester().Current());     // 對話
                 } else if (auto* it = o.AsInteractable()) {
-                    it->Interact(player);                            // pick up / Vendor
+                    it->Interact(player);                            // 拾取／Vendor
                 }
             });
     }

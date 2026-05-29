@@ -1,22 +1,22 @@
 #ifndef GAME_STATE_GAME_HELP_PAGES_H_
 #define GAME_STATE_GAME_HELP_PAGES_H_
 
+/**
+ * @file GameHelpPages.h
+ * @brief 遊戲說明覆蓋層的頁數常數（game 層用，與 ui 內容定義保持同步）。
+ */
+
 namespace nccu {
 
-// Blueprint Phase 4 — game-side page count for the 遊戲說明 overlay.
-// Extracted from ui/GameHelp.h so the game-layer scenes / controllers
-// (TitleScene, PauseScreen) that page through the help overlay can
-// read the count without pulling the ui render header — closes a
-// game→ui back-edge. ui/GameHelp.h still defines kGameHelpPages
-// (the actual content string_views), and the value here is the array
-// size; the two are statically consistent (the static_assert at the
-// bottom of ui/GameHelp.h pins them).
-//
-// The constant is duplicated here intentionally (2 is a small literal)
-// rather than transitively pulled in, so the game layer's compilation
-// stays independent of ui. A future content change that adds a third
-// page bumps this AND the ui side together — the static_assert keeps
-// them honest.
+/**
+ * @brief 遊戲說明覆蓋層的總頁數。
+ *
+ * 自 ui/GameHelp.h 抽出，讓需要翻頁的 game 層場景／控制器（標題場景、暫停畫面）能讀
+ * 取頁數而不必引入 ui 渲染標頭——斷開 game→ui 的反向相依。ui/GameHelp.h 仍定義實際
+ * 頁面內容，此值即其陣列大小，兩者由 ui 端的 static_assert 釘住一致。此處刻意重複此
+ * 小常數而非間接引入，使 game 層編譯不相依於 ui；未來新增頁面時須同時更新兩處，由該
+ * static_assert 把關。
+ */
 inline constexpr int kGameHelpPageCount = 2;
 
 } // namespace nccu

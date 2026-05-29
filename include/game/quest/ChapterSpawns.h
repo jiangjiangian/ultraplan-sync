@@ -6,45 +6,44 @@
 
 namespace nccu {
 
-// The chapter-NPC roster keyed by SemesterState. World::RespawnChapterRoster
-// reads this every time the semester FSM advances, so the NPCs the player
-// can talk to follow the current chapter instead of being frozen at the
-// Ch1 set the ctor spawned.
-//
-// Ch1 delegates to DefaultNpcSpawns() so the roster is byte-identical to
-// today (every existing Ch1 spawn/reachability test stays green with zero
-// duplicated literals). The later states return their own empty static
-// vector for now — the per-chapter rosters land in S5b..S5e; S5a-1 only
-// proves the state-driven respawn MECHANISM. Ambient pedestrians are NOT
-// per-chapter: AmbientStudentSpawns() stays global and the ctor keeps
-// wiring it once after the terrain mask loads.
-inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
-    static const std::vector<NpcSpawn> kInterlude;     // TODO(S5b): chapter roster
+/**
+ * @file ChapterSpawns.h
+ * @brief 以 SemesterState 為鍵的章節 NPC 名冊。
+ *
+ * World::RespawnChapterRoster 在每次學期狀態機推進時讀取它，使玩家可對話的 NPC
+ * 跟隨當前章節，而非凍結在建構式生成的 Ch1 那組。
+ */
 
-    // Ch2 圖書館期中考 (S5c-1). chapter2.md has 6 NPC sections; sprites
-    // reuse Ch1's (art polish later). Placement matches the narrative
-    // geography (the 場景 lines), not the Ch1 anchors:
-    //   • 圖書館管理員 (quest-giver) sits at the 中正圖書館 服務台 — just
-    //     south of the library rect (rect bottom y=509; desk at y=545) —
-    //     because chapter2.md routes the whole main line through her desk.
-    //     KEEP (the Ch2 quest depends on her position).
-    //   • 學霸 (bookworm) sits under the 羅馬廣場 statue (plaza centre
-    //     ≈1088,960; placed at the south rim 1088,1100) — the rescue beat
-    //     every direction (note3 / 管理員(b) / 旁白) points the player to.
-    //     KEEP (the Ch2 rescue beat depends on it).
-    //   • 西裝學長 → 行政大樓 front (1220,775): chapter2.md「場景：行政大樓
-    //     正門附近，靠著柱子滑手機」.
-    //   • 助教 → 中正圖書館 front (900,545): chapter2.md「場景：中正圖書館…
-    //     圖書館一樓走廊（背景 NPC 身份）」.
-    //   • 苦主 → 中正圖書館 front, WEST corner (720,560): chapter2.md「場景：
-    //     中正圖書館二樓閱覽區走廊角落」. Sits west of the 管理員 desk so it
-    //     stays >=80 px clear of the ta / librarian / 自動販賣機 (980,560)
-    //     cluster sharing the library apron.
-    //   • 福利社阿姨 → 樂活小舖 (1560,1560): chapter2.md「場景：樂活小舖內」.
-    // The 4 archetypes are optional / ripple (isQuestGiver=false). All
-    // coords mask-verified STRICTLY walkable + flood-reachable via
-    // .claude/tools/map_registry.py, whose Ch2 expectation checks pin
-    // librarian↔中正圖書館 and bookworm↔羅馬廣場.
+/**
+ * @brief 取得指定章節狀態的 NPC 名冊。
+ * @param state 學期章節狀態。
+ * @return 該狀態的 NPC 生成向量。
+ *
+ * Ch1 委派給 DefaultNpcSpawns()，使名冊與現況 byte 完全相同（既有 Ch1 生成／可達
+ * 性測試全綠，且不重複任何字面值）。環境路人「非」逐章：AmbientStudentSpawns() 維
+ * 持全域，由建構式在地形遮罩載入後串接一次。
+ */
+inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
+    static const std::vector<NpcSpawn> kInterlude;     // 尚未配置章節名冊
+
+    // Ch2 圖書館期中考。chapter2.md 有 6 個 NPC 段落；sprite 沿用 Ch1（美術之後再
+    // 修）。位置依敘事地理（場景台詞）而非 Ch1 錨點：
+    //   - 圖書館管理員（任務給予者）坐在中正圖書館服務台——恰在圖書館矩形正南（矩
+    //     形底 y=509；服務台在 y=545）——因 chapter2.md 把整條主線都經她的櫃台。保
+    //     留（Ch2 任務依賴她的位置）。
+    //   - 學霸（bookworm）坐在羅馬廣場雕像下（廣場中心 ≈1088,960；置於南緣
+    //     1088,1100）——各方向（note3／管理員(b)／旁白）都引導玩家去的救援節拍。保
+    //     留（Ch2 救援節拍依賴它）。
+    //   - 西裝學長 → 行政大樓正門前 (1220,775)：chapter2.md「場景：行政大樓正門附
+    //     近，靠著柱子滑手機」。
+    //   - 助教 → 中正圖書館前 (900,545)：chapter2.md「場景：中正圖書館…圖書館一樓
+    //     走廊（背景 NPC 身份）」。
+    //   - 苦主 → 中正圖書館前西側角 (720,560)：chapter2.md「場景：中正圖書館二樓閱
+    //     覽區走廊角落」。坐在管理員櫃台西側，與共用圖書館前埕的助教／管理員／自動
+    //     販賣機 (980,560) 群保持 >=80 px 淨空。
+    //   - 福利社阿姨 → 樂活小舖 (1560,1560)：chapter2.md「場景：樂活小舖內」。
+    // 4 個原型為選做／漣漪（isQuestGiver=false）。全部座標已遮罩驗證為嚴格可走＋
+    // flood 可達，其 Ch2 期望檢查釘住管理員↔中正圖書館與學霸↔羅馬廣場。
     static const std::vector<NpcSpawn> kChapter2 = {
         {nccu::engine::math::Vec2{ 720,  560}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
@@ -59,33 +58,27 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {nccu::engine::math::Vec2{ 820,  545}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "librarian", true},
     };
-    // Ch3 校慶運動會. The 5 archetypes (ripple / optional,
-    // isQuestGiver=false) now match their 場景 lines instead of their
-    // Ch1/Ch2 anchors:
-    //   • 西裝學長 → 操場 看台邊緣 (1430,910): chapter3.md「場景：操場看台
-    //     邊緣，啦啦隊加油區旁」.
-    //   • 助教 → 操場 邊緣 折疊桌 (1530,930): chapter3.md「場景：操場邊緣的
-    //     折疊桌…負責登記活動出席」.
-    //   • 苦主 → 操場 邊緣角落 (1620,920): chapter3.md「場景：操場邊緣，不在
-    //     人群裡…在角落擺了一個小販攤」.
-    //   • 福利社阿姨 → 四維道 (1100,860): chapter3.md「場景：四維道擺臨時攤」
-    //     (just south of 四維堂 rect 1048,727,146x126).
-    //   • 學霸 → 中正圖書館 (900,545): chapter3.md「場景：不在操場。在中正
-    //     圖書館…繼續讀書」 — he POINTEDLY skips the 校慶, so he is at the
-    //     library, NOT the 操場.
-    // The 3 操場 archetypes sit on the FIELD SOUTH RIM (y≈910-930), all
-    // outside the runner circle (track centre 1694,740, r150 — they are
-    // 195-314 px from centre) and ≥128 px from the nearest idler, so they
-    // never sit on the lap track or overlap the 校慶 crowd.
-    // The 3 物物交換鏈 quest-givers (A系香腸 / B系大聲公 / C系學姊,
-    // isQuestGiver=true) STAY scattered across 羅馬廣場 — off the central
-    // gate→圖書館 lane so they don't block it (player request, a deliberate
-    // override of their narrative 場景) — where the player heads after the
-    // 操場 lap. Their `!` indicators reveal SEQUENTIALLY (Ch3IndicatorVisible:
-    // A until traded, then B, then C) instead of all at once, and the chain
-    // must run A→B→C (TryAdvanceCh3Trade redirects an out-of-order talk).
-    // All coords mask-verified STRICTLY walkable + flood-reachable
-    // (map_registry.py; test_spawn_reachability).
+    // Ch3 校慶運動會。5 個原型（漣漪／選做，isQuestGiver=false）改依其場景台詞而
+    // 非 Ch1/Ch2 錨點：
+    //   - 西裝學長 → 操場看台邊緣 (1430,910)：chapter3.md「場景：操場看台邊緣，啦
+    //     啦隊加油區旁」。
+    //   - 助教 → 操場邊緣折疊桌 (1530,930)：chapter3.md「場景：操場邊緣的折疊桌…
+    //     負責登記活動出席」。
+    //   - 苦主 → 操場邊緣角落 (1620,920)：chapter3.md「場景：操場邊緣，不在人群裡
+    //     …在角落擺了一個小販攤」。
+    //   - 福利社阿姨 → 四維道 (1100,860)：chapter3.md「場景：四維道擺臨時攤」（恰
+    //     在四維堂矩形正南）。
+    //   - 學霸 → 中正圖書館 (900,545)：chapter3.md「場景：不在操場。在中正圖書館…
+    //     繼續讀書」——他刻意跳過校慶，故在圖書館而「非」操場。
+    // 3 個操場原型坐在場地南緣（y≈910-930），全在跑者圓圈外（跑道中心 1694,740、
+    // r150——距中心 195-314 px），並與最近的閒置者保持 ≥128 px，故絕不坐在跑圈跑道
+    // 上或與校慶人群重疊。
+    // 3 個物物交換鏈任務給予者（A 系香腸／B 系大聲公／C 系學姊，isQuestGiver=true）
+    // 仍散布於羅馬廣場——刻意避開中央校門→圖書館的通道以免擋路（玩家要求，刻意覆寫
+    // 其敘事場景）——亦即玩家跑完操場後前往之處。它們的「!」指示燈「依序」揭露
+    // （Ch3IndicatorVisible：A 完成交易前是 A，再 B、再 C）而非一次全亮，且鏈必須
+    // 走 A→B→C（TryAdvanceCh3Trade 重導越序的對話）。全部座標已遮罩驗證為嚴格可走
+    // ＋ flood 可達。
     static const std::vector<NpcSpawn> kChapter3 = {
         {nccu::engine::math::Vec2{1620,  920}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
@@ -104,34 +97,29 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {nccu::engine::math::Vec2{1060, 1120}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
-    // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —
-    // the 5 archetypes at peak intensity, no new NPCs. All
-    // isQuestGiver=false (the finale is gate-driven, not quest-giver
-    // driven — Ending A/B/C resolve in CheckEndingGates; 助教 is
-    // central but via the (d) 體諒 choice, not a quest-giver marker).
-    // Sprites reuse existing art; positions reuse the proven walkable
-    // coords (reachability is a manual-verify item, as everywhere).
-    // 西裝學長 still ships in this list because the table is pure data;
-    // the M7 (cycle9c) Ch4 「斥責後不出場」 ripple is enforced by a
-    // spawn-time filter inside World::SpawnChapterNpcs that skips
-    // pushing suit_senior into objects_ when the player carries
-    // Flag_ScoldedSenior without the mending Flag_HelpedSenior (the Ch2
-    // callback). Keeping the gate at the spawner — not the data table —
-    // mirrors how the librarian is only in Ch2: an NPC "not in this
-    // chapter" is identically modelled as "not in objects_", and the
-    // chapterRoster_ teardown / Chapter4Quest routing both Just Work.
+    // Ch4 期末考終焉。chapter4.md 有 5 個 ## NPC：段落——巔峰強度下的 5 個原型，無
+    // 新 NPC。全 isQuestGiver=false（終盤是閘門驅動而非任務給予者驅動——Ending
+    // A/B/C 在 CheckEndingGates 解析；助教雖居中，但經 (d) 體諒選項而非任務給予者標
+    // 記）。sprite 沿用既有美術；位置沿用已驗證可走的座標（可達性如各處一樣是人工
+    // 驗證項）。
+    // 西裝學長仍出現在此列表中，因為這張表是純資料；Ch4「斥責後不出場」漣漪改由
+    // World::SpawnChapterNpcs 內的生成期過濾器強制執行——當玩家持
+    // Flag_ScoldedSenior 而未持彌補的 Flag_HelpedSenior（Ch2 回呼）時，跳過把
+    // suit_senior 推入物件容器。把閘門放在生成器而非資料表，與「管理員只在 Ch2」的
+    // 作法一致：一個「不在本章」的 NPC 等同建模為「不在物件容器中」，章節名冊拆除
+    // 與 Chapter4Quest 分流兩者皆自然運作。
     //
-    // Placement now matches the chapter4.md 場景 lines:
-    //   • 西裝學長 → 行政大樓 門口 (1220,775): 「場景：行政大樓門口
-    //     (Flag_HelpedSenior = true 路徑)」.
-    //   • 助教 → 研究大樓 走廊 (980,1560): 「場景：研究大樓走廊中段」 (just
-    //     east of the 研究大樓 rect 590,1453,367x255).
-    //   • 苦主 → 正門 旁 (1010,1700): 「場景：正門旁的廊柱下」 (NE of the
-    //     正門 rect 887,1722,101x116; sits in the south-wall gap, reachable).
-    //   • 福利社阿姨 → 樂活小舖 (1560,1560): 「場景：樂活小舖，期末考週備品」.
-    //   • 學霸 → 中正圖書館 考場外 (900,545): 「場景：中正圖書館考場外走廊」.
-    // All isQuestGiver=false (the finale is gate-driven). All coords
-    // mask-verified STRICTLY walkable + flood-reachable.
+    // 位置依 chapter4.md 場景台詞：
+    //   - 西裝學長 → 行政大樓門口 (1220,775)：「場景：行政大樓門口
+    //     (Flag_HelpedSenior = true 路徑)」。
+    //   - 助教 → 研究大樓走廊 (980,1560)：「場景：研究大樓走廊中段」（恰在研究大樓
+    //     矩形正東）。
+    //   - 苦主 → 正門旁 (1010,1700)：「場景：正門旁的廊柱下」（正門矩形東北；坐在
+    //     南牆缺口、可達）。
+    //   - 福利社阿姨 → 樂活小舖 (1560,1560)：「場景：樂活小舖，期末考週備品」。
+    //   - 學霸 → 中正圖書館考場外 (900,545)：「場景：中正圖書館考場外走廊」。
+    // 全 isQuestGiver=false（終盤是閘門驅動）。全部座標已遮罩驗證為嚴格可走＋
+    // flood 可達。
     static const std::vector<NpcSpawn> kChapter4 = {
         {nccu::engine::math::Vec2{1010, 1700}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
@@ -144,9 +132,9 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         {nccu::engine::math::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
     };
-    static const std::vector<NpcSpawn> kEndingA;       // TODO(S5e): chapter roster
-    static const std::vector<NpcSpawn> kEndingB;       // TODO(S5e): chapter roster
-    static const std::vector<NpcSpawn> kEndingC;       // TODO(S5e): chapter roster
+    static const std::vector<NpcSpawn> kEndingA;       // 結局無名冊
+    static const std::vector<NpcSpawn> kEndingB;       // 結局無名冊
+    static const std::vector<NpcSpawn> kEndingC;       // 結局無名冊
 
     switch (state) {
         case SemesterState::Chapter1_AddDrop:   return DefaultNpcSpawns();
@@ -156,10 +144,10 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
         case SemesterState::Chapter4_Finals:    return kChapter4;
         case SemesterState::Ending_A:           return kEndingA;
         case SemesterState::Ending_B:           return kEndingB;
-        case SemesterState::Ending_D:           return kEndingA;  // no roster (G1)
+        case SemesterState::Ending_D:           return kEndingA;  // 無名冊
         case SemesterState::Ending_C:           return kEndingC;
     }
-    return kInterlude;  // unreachable; keeps non-void paths total
+    return kInterlude;  // 不可達；使非 void 路徑完整
 }
 
 } // namespace nccu

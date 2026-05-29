@@ -5,80 +5,68 @@
 
 namespace nccu {
 
-// Cycle 10.P0a (awsome_cpp.md §6): the per-frame input layer extracted
-// from GameController so the Controller stays the orchestrator and a
-// focused class owns the input edge timing.
-//
-// Today only the dialog hold-E auto-advance (audit H2 / D5 / SC 2.2.2)
-// carries cross-frame state — every other reader of nccu::engine::input::Input goes
-// through stateless edge predicates (IsPressed / IsDown / IsReleased)
-// and is fine left at its call site. Folding the dialog auto-advance
-// timer into a dedicated class:
-//   * pins the input contract (edge-E or held-E ≥ 300 ms with a 4-frame
-//     cooldown between auto-fires) in one place a regression test can
-//     drive without spinning up the entire Controller / World stack.
-//   * keeps the rest of the Update() loop free of mutable hold-state
-//     scattered across the controller.
-//   * lets future input refactors (rebinding, multi-source merging) live
-//     here rather than continuing to bloat the Controller.
-//
-// Pure input timing: NO World mutation, no event publishing — the
-// caller decides what to do with the boolean return. Stateless wrt the
-// rest of the simulation, so a doctest can drive it with a synthetic
-// InputSource (the harness's ScriptInput shape) and assert the exact
-// edge / cooldown semantics.
+/**
+ * @file InputHandler.h
+ * @brief 從 GameController 抽出的每幀輸入層，讓 Controller 維持 orchestrator
+ *        角色，而由一個聚焦的類別專責輸入的邊緣／按住計時。
+ */
+
+/**
+ * @brief 專責跨幀輸入計時的小類別（目前僅「按住 E 自動推進對話」）。
+ *
+ * 目前只有「按住 E 自動推進對話」帶有跨幀狀態；其餘對 Input 的讀取都走無狀態的
+ * 邊緣判斷式（IsPressed／IsDown／IsReleased），留在各自呼叫點即可。把此自動推進
+ * 計時器收進專屬類別的好處：
+ *   - 把輸入契約（E 邊緣，或按住 E ≥ 300 ms 且兩次自動觸發間有 4 幀冷卻）釘在
+ *     單一處，回歸測試無須啟動整個 Controller／World 即可驅動它。
+ *   - 讓 Update() 迴圈不再散落可變的按住狀態。
+ *   - 未來的輸入重構（重新綁定、多來源合併）可落在此處，而非繼續膨脹 Controller。
+ *
+ * 純輸入計時：不變動 World、不發布事件——由呼叫端決定如何處理布林回傳值。相對於
+ * 其餘模擬為無狀態，故 doctest 可餵入合成的 InputSource 並斷言精確的邊緣／冷卻語意。
+ */
 class InputHandler {
 public:
     InputHandler() = default;
 
-    // Did the player issue a dialog-advance request THIS frame?
-    //
-    // True on either:
-    //   * the raylib edge IsPressed(E) — i.e. the same one-frame tap that
-    //     used to drive the dialog branch, semantically unchanged.
-    //   * after holding E continuously for >= kHoldAdvanceMs and the
-    //     internal cooldown has ticked back to zero. Each auto-fire
-    //     re-arms the cooldown so the player can read each page rather
-    //     than blinking through 60 pages/sec.
-    //
-    // Idempotent within a single frame: a second call in the same tick
-    // returns the same boolean (no internal mutation outside of the
-    // hold-timer increment, which is driven by `dt` exactly once per
-    // call site — the controller calls this at most once per frame).
-    //
-    // dt: frame delta in seconds, sourced from nccu::engine::platform::Time::DeltaSeconds().
+    /**
+     * @brief 詢問玩家本幀是否發出了「推進對話」的請求。
+     * @param[in] dt 幀間隔（秒），來源為 nccu::engine::platform::Time::DeltaSeconds()。
+     * @return 本幀應推進對話時回傳 true。
+     *
+     * 下列任一情況為 true：邊緣 IsPressed(E)（與舊有單幀輕點語意相同）；或連續
+     * 按住 E 達 kHoldAdvanceMs 且內部冷卻已歸零（每次自動觸發都重新計冷卻，讓玩家
+     * 能逐頁閱讀而非以每秒 60 頁的速度閃過）。單幀內冪等：同一 tick 第二次呼叫回傳
+     * 相同布林（除按住計時器隨 dt 遞增外無內部變動，而 Controller 每幀至多呼叫一次）。
+     */
     bool TickDialogAdvance(float dt) noexcept;
 
-    // The dialog has just closed (or never opened this frame). Drop the
-    // hold timer so the next time a dialog opens, the player needs to
-    // hold E afresh — a stale 300 ms read from before the dialog box
-    // appeared must not auto-trigger on the very first frame of the new
-    // conversation. Cheap; idempotent.
+    /**
+     * @brief 對話剛關閉（或本幀從未開啟）時呼叫，丟棄按住計時。
+     *
+     * 使下次對話開啟時玩家須重新按住 E——對話框出現前累積的舊 300 ms 讀數不可在新
+     * 對話的第一幀就自動觸發。低成本且冪等。
+     */
     void ResetDialogAdvance() noexcept {
         eHoldMs_ = 0.0f;
         eAutoAdvanceCooldown_ = 0;
     }
 
-    // Test seam: how long (ms) the player must hold E continuously
-    // before auto-advance arms. Pinned by the regression test.
+    /// 測試接縫：玩家須連續按住 E 多久（毫秒）自動推進才會啟動；由回歸測試釘住。
     static constexpr float kHoldAdvanceMs = 300.0f;
-    // Test seam: how many frames the auto-advance is silenced after
-    // each fire, so the cadence stays readable.
+    /// 測試接縫：每次觸發後自動推進靜默幾幀，以維持可閱讀的節奏。
     static constexpr int   kAutoCooldownFrames = 4;
 
-    // Test-only inspection (no behavior dependency in production).
+    /** @brief 測試專用檢視：目前 E 已按住的毫秒數（正式邏輯不依賴）。 */
     [[nodiscard]] float HoldMs() const noexcept { return eHoldMs_; }
+    /** @brief 測試專用檢視：自動推進剩餘的冷卻幀數（正式邏輯不依賴）。 */
     [[nodiscard]] int   Cooldown() const noexcept {
         return eAutoAdvanceCooldown_;
     }
 
 private:
-    // ms E has been held; reset on release. Same shape as the previous
-    // GameController::eHoldMs_ — moved here verbatim.
-    float eHoldMs_ = 0.0f;
-    // Frames to skip after each auto-fire. Same shape as the previous
-    // GameController::eAutoAdvanceCooldown_.
-    int   eAutoAdvanceCooldown_ = 0;
+    float eHoldMs_ = 0.0f;             ///< E 已按住的毫秒數；放開時歸零
+    int   eAutoAdvanceCooldown_ = 0;   ///< 每次自動觸發後要略過的幀數
 };
 
 } // namespace nccu

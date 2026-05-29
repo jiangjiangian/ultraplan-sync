@@ -9,7 +9,7 @@ namespace nccu::dialog {
 
 namespace {
 
-// UTF-8 byte sequences we deal with explicitly.
+// 需顯式處理的 UTF-8 位元組序列（全形標點與 CJK 引號）。
 constexpr const char* kFullWidthColon = "\xEF\xBC\x9A";   // U+FF1A "："
 constexpr const char* kLeftCjkQuote   = "\xE2\x80\x9C";   // U+201C "“"
 constexpr const char* kRightCjkQuote  = "\xE2\x80\x9D";   // U+201D "”"
@@ -23,12 +23,12 @@ bool StartsWith(const std::string& s, const char* prefix) {
     return s.size() >= n && s.compare(0, n, prefix) == 0;
 }
 
-// Strip a trailing carriage return (CRLF line endings on Windows).
+// 去除尾端的歸位字元（Windows 的 CRLF 行尾）。
 void RStripCr(std::string& s) {
     if (!s.empty() && s.back() == '\r') s.pop_back();
 }
 
-// Trim leading and trailing ASCII whitespace.
+// 修剪前後的 ASCII 空白。
 std::string Trim(const std::string& s) {
     size_t b = 0, e = s.size();
     while (b < e && (s[b] == ' ' || s[b] == '\t')) ++b;
@@ -36,8 +36,7 @@ std::string Trim(const std::string& s) {
     return s.substr(b, e - b);
 }
 
-// "## NPC：<name>" -> <name> (trimmed). Returns empty string if the line is
-// not an NPC heading. Uses the full-width colon as the separator.
+// 「## NPC：<name>」→ <name>（已修剪）。非 NPC 標題的行回傳空字串。以全形冒號為分隔。
 std::string ParseNpcName(const std::string& line) {
     static const std::string kPrefix = "## NPC";
     if (line.size() < kPrefix.size() ||
@@ -47,14 +46,12 @@ std::string ParseNpcName(const std::string& line) {
     const std::string rest = line.substr(kPrefix.size());
     const size_t colon = rest.find(kFullWidthColon);
     if (colon == std::string::npos) return {};
-    std::string name = Trim(rest.substr(colon + 3 /* bytes in U+FF1A */));
+    std::string name = Trim(rest.substr(colon + 3 /* U+FF1A 的位元組數 */));
 
-    // Strip a trailing full-width （…） annotation so the section key is
-    // the bare name — e.g. chapter2.md「## NPC：圖書館管理員（新角色）」
-    // keys as "圖書館管理員". This mirrors CleanLabel's anchored-at-end
-    // （…）strip for choice headings; verified that no NPC name across
-    // chapter1-4 legitimately ends in （…）, so this only removes author
-    // scaffolding and Ch1 (bare headings) is a no-op.
+    // 剝除尾端的全形 （…） 註解，使 section key 為純名——例如 chapter2.md
+    //「## NPC：圖書館管理員（新角色）」鍵為 "圖書館管理員"。與 CleanLabel 對選項
+    // 標題的「錨定於結尾的 （…）」剝除一致；已核對 chapter1-4 無任何 NPC 名合法地
+    // 以 （…） 結尾，故此處只移除作者鷹架，Ch1（純標題）為 no-op。
     const size_t pr = name.rfind(kFullWidthParenR);
     if (pr != std::string::npos && pr + 3 == name.size()) {
         const size_t pl = name.find(kFullWidthParenL);
@@ -64,14 +61,12 @@ std::string ParseNpcName(const std::string& line) {
     return name;
 }
 
-// gen_dialog.py SUB = {"a":0,"b":1,"c":2,"d":3}.
+// 子段字母對映：a→0, b→1, c→2, d→3。
 int SubStateValue(char c) { return c - 'a'; }
 
-// Parses a "### (x) <heading>" substate header. On success returns true,
-// sets `letter` to the substate letter ('a'..'d') and `heading` to the raw
-// heading text after the "(x)" marker (caller passes it to CleanLabel).
-// Strict, mirroring gen_dialog SUBSEC_RE = ^###\s*\(([a-d])\)\s*(.*)$ as
-// used by LoadChapter's prior strict "### (" parser.
+// 解析「### (x) <heading>」子段標題。成功時回傳 true，並將 `letter` 設為子段字母
+//（'a'..'d'）、`heading` 設為 "(x)" 標記之後的原始標題文字（呼叫端再交給 CleanLabel）。
+// 嚴格對應 .md 文法 ^###\s*\(([a-d])\)\s*(.*)$。
 bool ParseSubStateHeader(const std::string& line, char& letter,
                          std::string& heading) {
     static const std::string kPrefix = "### (";
@@ -83,8 +78,7 @@ bool ParseSubStateHeader(const std::string& line, char& letter,
     if (c < 'a' || c > 'd') return false;
     if (line[kPrefix.size() + 1] != ')') return false;
     letter = c;
-    // Heading text = everything after the ")" marker, leading ASCII
-    // whitespace stripped (SUBSEC_RE's \s* after the group).
+    // 標題文字 = ")" 標記之後的全部內容，剝除前導 ASCII 空白（對應文法中分組後的 \s*）
     heading = line.substr(kPrefix.size() + 2);
     size_t b = 0;
     while (b < heading.size() &&
@@ -95,33 +89,30 @@ bool ParseSubStateHeader(const std::string& line, char& letter,
     return true;
 }
 
-// Mirrors gen_dialog.clean_label():
-//   - a 「…」 quoted span is the author's explicit label override and wins;
-//   - otherwise the heading minus any trailing （…） full-width
-//     parenthetical, trimmed.
+// 由子段標題導出選單標籤：
+//   - 「…」 引用段為作者明確指定的標籤覆寫，優先採用；
+//   - 否則取標題剝除尾端 （…） 全形註解後、修剪過的文字。
 std::string CleanLabel(const std::string& raw) {
     const std::string h = Trim(raw);
 
-    // 「…」 span wins. Find the first U+300C, then the next U+300D after it;
-    // the inner text is the label (re.search with a non-greedy .+?).
+    // 「…」 段優先。找第一個 U+300C，再找其後第一個 U+300D；內側文字即標籤
+    //（非貪婪比對）。
     const size_t lq = h.find(kLeftCornerQuote);
     if (lq != std::string::npos) {
-        const size_t inner = lq + 3;  // bytes in U+300C
+        const size_t inner = lq + 3;  // U+300C 的位元組數
         const size_t rq = h.find(kRightCornerQuote, inner);
         if (rq != std::string::npos && rq > inner) {
             return h.substr(inner, rq - inner);
         }
     }
 
-    // else drop a trailing （…）\s*$ full-width parenthetical. Scan for the
-    // last U+FF08 whose matching U+FF09 ends the string (ignoring trailing
-    // ASCII whitespace) — re.sub(r"（.*?）\s*$", "", h) anchors at end.
+    // 否則剝除尾端 （…）\s*$ 全形括註。找其 U+FF09 恰好結束字串（忽略尾端 ASCII
+    // 空白）的最後一段——對應錨定於結尾的 （.*?）\s*$。
     size_t end = h.size();
     while (end > 0 && (h[end - 1] == ' ' || h[end - 1] == '\t')) --end;
     if (end >= 3 && h.compare(end - 3, 3, kFullWidthParenR) == 0) {
-        // Greedy-from-left search for the FIRST （ that still closes at this
-        // final ）: re's （.*?）\s*$ is non-greedy but anchored at end, so
-        // the earliest （ before this final ） wins.
+        // 由左往右找仍能在這個結尾 ） 收尾的第一個 （：文法雖非貪婪但錨定於結尾，
+        // 故這個結尾 ） 之前最早的 （ 勝出。
         const size_t open = h.find(kFullWidthParenL);
         if (open != std::string::npos && open + 3 <= end - 3) {
             return Trim(h.substr(0, open));
@@ -130,7 +121,7 @@ std::string CleanLabel(const std::string& raw) {
     return h;
 }
 
-// Does s have the given suffix starting at byte index `start_of_suffix`?
+// s 是否在位元組索引 `start_of_suffix` 起恰好以 suffix 結尾？
 bool HasSuffixAt(const std::string& s, size_t start_of_suffix,
                  const char* suffix) {
     const size_t n = std::char_traits<char>::length(suffix);
@@ -138,39 +129,37 @@ bool HasSuffixAt(const std::string& s, size_t start_of_suffix,
     return s.compare(start_of_suffix, n, suffix) == 0;
 }
 
-// Parses a bullet dialog line of the form
-//   - "<text>"
-// where the quotes can be ASCII (0x22) or CJK (U+201C / U+201D). Returns
-// the inner text. On any mismatch (no leading dash, missing/mismatched
-// quotes, empty body, etc.) returns false; caller checks the returned bool.
+// 解析形如「- "<text>"」的對白項，引號可為 ASCII（0x22）或 CJK（U+201C / U+201D），
+// 回傳內側文字。任何不符（無前導破折號、引號缺失／不匹配、內文為空等）回傳 false，
+// 由呼叫端檢查回傳的 bool。
 bool ParseDialogLine(const std::string& line, std::string& out) {
-    // Must start with "- " (two bytes, ASCII).
+    // 必須以「- 」開頭（兩個 ASCII 位元組）
     if (line.size() < 4) return false;
     if (line[0] != '-' || line[1] != ' ') return false;
 
-    // The opening quote begins immediately after "- ".
+    // 開引號緊接在「- 」之後
     const size_t open_at = 2;
 
-    // Case A: ASCII double quote ".
+    // 情況 A：ASCII 雙引號 "
     if (line[open_at] == '"') {
         if (line.back() != '"') return false;
-        if (line.size() < open_at + 2 + 1) return false; // need closing "
+        if (line.size() < open_at + 2 + 1) return false; // 需要收尾的 "
         const size_t inner_begin = open_at + 1;
-        const size_t inner_end   = line.size() - 1; // exclusive
-        if (inner_end <= inner_begin) return false;  // empty body
+        const size_t inner_end   = line.size() - 1; // 不含
+        if (inner_end <= inner_begin) return false;  // 內文為空
         out.assign(line, inner_begin, inner_end - inner_begin);
         return true;
     }
 
-    // Case B: CJK left quote U+201C (e2 80 9c).
+    // 情況 B：CJK 左引號 U+201C（e2 80 9c）
     if (line.size() >= open_at + 3 &&
         line.compare(open_at, 3, kLeftCjkQuote) == 0) {
         const size_t inner_begin = open_at + 3;
-        // Must end with U+201D.
+        // 必須以 U+201D 結尾
         if (line.size() < inner_begin + 3) return false;
         const size_t inner_end = line.size() - 3;
         if (!HasSuffixAt(line, inner_end, kRightCjkQuote)) return false;
-        if (inner_end <= inner_begin) return false;  // empty body
+        if (inner_end <= inner_begin) return false;  // 內文為空
         out.assign(line, inner_begin, inner_end - inner_begin);
         return true;
     }

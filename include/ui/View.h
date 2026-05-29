@@ -11,17 +11,25 @@
 #include <optional>
 #include <vector>
 
-class GameObject; // global-namespace model object, drawn through IRenderer
+/**
+ * @file View.h
+ * @brief 渲染層（MVC 的 View）：持有具體 renderer、跟隨相機與世界地圖貼圖，
+ *        把唯讀的 World 模型轉成像素。
+ */
+
+class GameObject; // 全域命名空間的模型物件，僅透過 IRenderer 繪製
 
 namespace nccu {
 
-class World; // read-only model handed to Draw()
+class World; // 交給 Draw() 的唯讀模型
 
-// The rendering layer — owns the concrete renderer, the follow camera and
-// the worldmap texture. Draw() is the ONLY place game state becomes
-// pixels: it positions its own camera from the model, blits the map,
-// renders every active object through IRenderer, then the HUD. Reads the
-// World const; never mutates it.
+/**
+ * @brief 渲染層：持有具體 renderer、跟隨相機與世界地圖貼圖。
+ *
+ * Draw() 是「遊戲狀態唯一被轉成像素」的地方：依模型擺好自己的相機、貼上地圖、
+ * 透過 IRenderer 繪製每個存活物件，最後畫 HUD。全程以 const 讀取 World，絕不
+ * 變更它（MVC 紅線——View 只讀模型、只渲染，不查詢也不寫入）。
+ */
 class View {
 public:
     View(int windowWidth, int windowHeight);
@@ -29,8 +37,8 @@ public:
     void Draw(const World& world);
 
 private:
-    // One placed building: which loaded texture, where it lands in world
-    // pixels, and the ground line (sprite bottom) used for depth sorting.
+    /// @brief 一棟已擺放的建築：對應哪張已載入貼圖、落在世界座標何處，以及
+    ///        用於深度排序的地面線（sprite 底緣）。
     struct BuildingSprite {
         std::size_t     texIndex;
         nccu::engine::math::Rect dest;
@@ -38,52 +46,50 @@ private:
         bool            flipX;
         bool            flipY;
     };
-    // A single entry in the per-frame painter's-order list, depth-sorted
-    // by `y`. `kind` selects the payload: Object → `obj` is the
-    // GameObject; Building → `index` is into buildings_; Decoration →
-    // `index` is into decorations_. (Decorations join the SAME sort so an
-    // ambient "statue" walk-behinds correctly against NPCs/buildings.)
+    /// @brief 每幀繪製順序清單（依 `y` 做深度排序）中的一筆。`kind` 決定
+    ///        payload：Object 時 `obj` 是該 GameObject；Building／Decoration
+    ///        時 `index` 分別指向 buildings_／decorations_。裝飾物併入「同一
+    ///        次排序」，使環境裝飾（如石像）能對 NPC／建築正確 walk-behind。
     enum class DrawKind { Object, Building, Decoration };
     struct DrawRef {
         float               y;
         DrawKind            kind;
-        const ::GameObject* obj;     // valid iff kind == Object
-        std::size_t         index;   // buildings_/decorations_ index otherwise
+        const ::GameObject* obj;     ///< 僅 kind == Object 時有效
+        std::size_t         index;   ///< 其餘情況為 buildings_／decorations_ 索引
     };
-    // One LOADED ambient decoration strip: which kDecorations[] def it
-    // realises + its loaded texture. Built in the ctor; a def whose PNG
-    // is missing is simply skipped (no entry), so the missing-asset path
-    // draws nothing. These are View-side cosmetics — never GameObjects,
-    // never in World::Objects() — so the harness state.jsonl is unchanged.
+    /// @brief 一條已載入的環境裝飾條：對應哪個 kDecorations[] 定義，以及它
+    ///        載入的貼圖。在建構子建立；若某定義的 PNG 缺檔則直接跳過（不建
+    ///        條目），故缺資產時這條什麼都不畫。這些純屬 View 側裝飾——絕非
+    ///        GameObject、不進 World::Objects()，因此不影響自動跑流程的存檔。
     struct DecorationSprite {
-        std::size_t        defIndex;   // into nccu::game::gfx::kDecorations
-        nccu::engine::render::Texture texture;    // the loaded strip (move-only)
+        std::size_t        defIndex;   ///< 指向 nccu::game::gfx::kDecorations
+        nccu::engine::render::Texture texture;    ///< 已載入的條圖（move-only）
     };
 
-    // Per-frame render passes — Draw() is the dispatcher; each helper owns
-    // ONE concern so the 720-line god-method is split into reviewable chunks
-    // (P1 step 4). All access the View's member state directly (camera_,
-    // textures, decoration clock, chapter card, etc.) — no parameters added.
-    //
-    //   UpdateChapterCardTransition — detect a SemesterState boundary and arm
-    //     the 傘又掉了 / 找到傘了 bookend card; runs every frame (before the
-    //     ending early-return) so the chapter card state stays current.
-    //   RenderEnding — the ending screen branch: opaque black framebuffer,
-    //     EndingSummary DTO + DrawEndingCard. Called only when the FSM is in
-    //     an ending state; the caller returns immediately after.
-    //   RenderWorld — inside the CameraScope: worldmap base, the 操場 lap
-    //     track decal, the painter's-order pass (buildings + decorations +
-    //     active objects), quest-giver `!` overlays, Interlude exit marker.
-    //   RenderHud — screen-space: 操場 lap ring, top-left status panel
-    //     (karma/money/rain/chapter), rain vignette, objective panel.
-    //   RenderOverlays — hud messages, dialog box, inventory, M-menu hint,
-    //     pause menu, help overlay, chapter bookend card. Order matters: the
-    //     chapter card is drawn LAST so it sits above everything else.
+    /// @name 每幀渲染分段
+    /// Draw() 為分派器；每個 helper 只負責「單一關注點」，把原本龐大的單一
+    /// 方法拆成可審閱的片段。各 helper 直接存取 View 的成員狀態（camera_、
+    /// 貼圖、裝飾時鐘、章節字卡等），不額外傳參。
+    ///
+    ///   UpdateChapterCardTransition — 偵測 SemesterState 邊界並武裝「傘又掉了
+    ///     ／找到傘了」書檔字卡；每幀都跑（在結局提前返回之前），讓字卡狀態保
+    ///     持最新。
+    ///   RenderEnding — 結局畫面分支：把整張 framebuffer 清為不透明黑、組出
+    ///     EndingSummary DTO 並呼叫 DrawEndingCard。僅在 FSM 處於結局狀態時呼
+    ///     叫，呼叫端隨即返回。
+    ///   RenderWorld — 在 CameraScope 內：世界地圖底圖、操場跑道地貼、繪製順序
+    ///     掃描（建築＋裝飾＋存活物件）、任務給予者「!」浮標、過場出口標記。
+    ///   RenderHud — 螢幕座標：操場圈速環、左上狀態面板（業力／金幣／雨量／章
+    ///     節）、雨壓 vignette、任務目標面板。
+    ///   RenderOverlays — HUD 訊息、對話框、物品欄、M 選單提示、暫停選單、說明
+    ///     疊層、章節書檔字卡。順序很重要：章節字卡「最後」畫，使其疊在最上層。
+    ///@{
     void UpdateChapterCardTransition(SemesterState st);
     void RenderEnding(const World& world, SemesterState st);
     void RenderWorld(const World& world, SemesterState st);
     void RenderHud(const World& world, SemesterState st);
     void RenderOverlays(const World& world);
+    ///@}
 
     nccu::engine::render::RaylibRenderer        renderer_;
     nccu::engine::render::Camera2D              camera_;
@@ -93,27 +99,23 @@ private:
     nccu::engine::math::Vec2                  viewportSize_;
     std::vector<nccu::engine::render::Texture>  buildingTextures_;
     std::vector<BuildingSprite>      buildings_;
-    std::vector<DecorationSprite>    decorations_;  // ambient strips (cosmetic)
-    std::vector<DrawRef>             drawOrder_;  // per-frame scratch
-    float                            endingAlpha_ = 0.0f;  // card fade-in
-    // Render clock (seconds) for the ping-pong decoration animation —
-    // accumulates Time::DeltaSeconds() each frame the world is drawn. NOT
-    // simulation state (pure View flourish, mirrors interludeMarkerPhase_
-    // / endingAlpha_), so the harness timeline / state.jsonl is unchanged.
+    std::vector<DecorationSprite>    decorations_;  ///< 環境裝飾條（純裝飾）
+    std::vector<DrawRef>             drawOrder_;  ///< 每幀暫存的繪製順序
+    float                            endingAlpha_ = 0.0f;  ///< 結局字卡淡入進度
+    /// 乒乓裝飾動畫的渲染時鐘（秒）：每幀繪製世界時累加 Time::DeltaSeconds()。
+    /// 非模擬狀態（純 View 裝飾，與 interludeMarkerPhase_／endingAlpha_ 同性
+    /// 質），故不影響自動跑流程的時間軸與存檔。
     double                           decorationClock_ = 0.0;
-    // H3: animation phase (in world px) for the Interlude exit ground
-    // marker. Ticked by DeltaSeconds * speed each frame the player is in
-    // the Interlude, so the dashed line sweeps west-to-east. Not part of
-    // the simulation — pure View visual flourish.
+    /// 過場出口地面標記的動畫相位（世界像素）。玩家身處過場期間，每幀以
+    /// DeltaSeconds × 速度累加，使虛線由西向東掃動。非模擬一部分——純 View 視
+    /// 覺裝飾。
     float                            interludeMarkerPhase_ = 0.0f;
-    // U1-T2 chapter bookend big card. The View detects a SemesterState
-    // change (vs lastSemester_) each frame and arms chapterCard_ for the
-    // 傘又掉了 (chapter start) / 找到傘了 (chapter clear) beat — driven
-    // entirely off the FSM the View already reads, so NO new event/publish
-    // and state.jsonl stays byte-identical. The card's timer is ticked by
-    // Time::DeltaSeconds() (fixed step under the harness) => deterministic.
-    // lastSemester_ is std::nullopt until the first Draw so the opening
-    // Chapter1 entry fires its inciting card on frame 0.
+    /// 章節書檔大字卡。View 每幀比對 SemesterState（與 lastSemester_）的變化，
+    /// 為「傘又掉了」（章節開始）／「找到傘了」（章節清關）節拍武裝 chapterCard_
+    /// ——完全由 View 本就讀取的 FSM 驅動，故不新增事件／發布，存檔逐位元不變。
+    /// 字卡計時由 Time::DeltaSeconds()（自動跑流程下為固定步長）推進，故具決定
+    /// 性。lastSemester_ 在首次 Draw 前為 std::nullopt，使開場進入 Chapter1 時
+    /// 能在第 0 幀觸發其開場字卡。
     std::optional<nccu::SemesterState> lastSemester_;
     ChapterCardState                   chapterCard_;
 };

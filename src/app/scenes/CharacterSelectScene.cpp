@@ -12,15 +12,20 @@
 #include <string>
 #include <utility>
 
+/**
+ * @file CharacterSelectScene.cpp
+ * @brief 角色選擇場景的實作：載入預覽紋理、處理游標與確認、繪製角色格與選取面板。
+ */
+
 namespace nccu::app {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別位於 nccu::engine::input 命名空間
 namespace {
 
 constexpr int kWinW      = 800;
 constexpr int kWinH      = 450;
-constexpr int kFrameSize = 32;  // Pipoya cell
-constexpr int kIdleCol   = 1;   // middle column of the 3-frame walk strip
-constexpr int kDownRow   = 0;   // first row faces the camera
+constexpr int kFrameSize = 32;  // Pipoya 素材的單格尺寸
+constexpr int kIdleCol   = 1;   // 三幀行走條的中間欄（待機格）
+constexpr int kDownRow   = 0;   // 第一列為面向鏡頭的朝下方向
 
 constexpr nccu::engine::math::Color kHighlight{255, 153,   0, 255};
 constexpr nccu::engine::math::Color kPanel    { 20,  22,  30, 210};
@@ -47,13 +52,9 @@ CharacterSelectScene::CharacterSelectScene(GameplayFactory gameplay)
     : gameplay_(std::move(gameplay)) {}
 
 void CharacterSelectScene::Enter() {
-    // Load preview textures once on attach. Texture is move-only with
-    // no default ctor, so a vector built by push_back mirrors the
-    // pre-Phase-3 RunCharacterSelect implementation. The textures
-    // die with the scene (RAII) when the manager replaces this scene
-    // with GameplayScene on confirm — GL is still alive on that
-    // boundary (SceneManager runs INSIDE the Window scope), matching
-    // the pre-Phase-3 lifetime.
+    // 掛載時一次性載入預覽紋理。Texture 為 move-only 且無預設建構子，故以 push_back
+    // 建構 vector。紋理隨場景 RAII 釋放：確認後管理器以 GameplayScene 取代本場景時，
+    // 該切換邊界上 GL 仍存活（SceneManager 跑在 Window 範圍之內）。
     previews_.reserve(static_cast<std::size_t>(kCount));
     for (int i = 0; i < kCount; ++i)
         previews_.push_back(nccu::engine::render::Texture::Load(
@@ -77,11 +78,9 @@ SceneCommand CharacterSelectScene::Update(float /*dt*/) {
         result.spritePath = std::string{p.spritePath};
         result.tint       = p.tint;
         result.closed     = false;
-        // Replace ourselves with the factory's gameplay scene; the
-        // captured factory builds GameplayScene with the audioDevice/
-        // harness/window refs the composition root owns. The
-        // SceneCommand thunk is deferred-applied AFTER this frame's
-        // Draw so previews_ stays alive for the closing paint.
+        // 以工廠產生的遊玩場景取代自身；被捕獲的工廠會帶著 composition root 擁有的
+        // audioDevice／harness／window 參考建構 GameplayScene。此 SceneCommand thunk
+        // 於本幀 Draw 之後才延後套用，故 previews_ 在收尾繪製期間仍存活。
         auto fact = gameplay_;
         return SceneCommand{
             SceneCommand::Kind::Replace,
@@ -89,9 +88,7 @@ SceneCommand CharacterSelectScene::Update(float /*dt*/) {
                 return fact(std::move(result));
             }};
     }
-    // ESC is intentionally inert here (player request, mirrors
-    // pre-Phase-3 RunCharacterSelect): the player picks a persona
-    // with ← → + Enter; there is no ESC-to-title.
+    // ESC 在此刻意為惰性：玩家以 ← → ＋ Enter 選擇角色，沒有「ESC 返回標題」。
     return {};
 }
 

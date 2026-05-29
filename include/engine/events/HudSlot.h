@@ -3,31 +3,26 @@
 
 namespace nccu {
 
-// Cycle 9.G — two independent HUD message channels so a chapter-clear
-// toast and a regular ShowMessage (arrival hint / karma / pickup) can
-// coexist on the same frame without clobbering each other. Before this,
-// World held a single hudMessage_ slot; the 9.A.2 chapter toast lived
-// 0.02 s (1 frame) at every Ch->IL transition because the IL arrival
-// hint published the next frame and overwrote it (cycle9f-post-iteration-
-// diagnosis §B). Plan A (publish-order swap from 9.B) only solved the
-// TrueUmbrella vs chapter-clear race; the Ch->IL arrival hint clobber
-// stayed live until Plan B (this) split the channel in two.
-//
-// `Top`    -> chapter / ending major-progress toasts. Rendered above
-//             the bottom band (~25 px gap) so both lines are legible.
-// `Bottom` -> everything else (pickup messages, karma deltas, arrival
-//             hints, vendor purchase text, exit prep). The default for
-//             the Event::slot field so existing publishers stay
-//             behaviour-identical on the Bottom channel — only the
-//             three Top-priority sites (ChapterToast / EndingGate /
-//             future ending-screen toasts) opt in to Top.
-//
-// Pure data — no raylib, no rendering. Lives in its own tiny header so
-// World / Event / MessageView / ChapterToast / EventWiring can include
-// it without pulling in either the renderer surface or the EventBus.
+/**
+ * @brief HUD 訊息頻道：把章節／結局提示與一般訊息分到兩條獨立通道。
+ *
+ * 設兩條互不干擾的 HUD 訊息頻道，讓「章節通關提示」與一般 ShowMessage（抵達
+ * 提示／karma 變動／拾取）能在同一幀並存而不互相覆蓋。先前 World 只有單一訊息
+ * 槽，章節提示在每次切章時只活 0.02 秒（一幀）就被下一幀發布的抵達提示蓋掉。
+ * 單純調整發布順序只能解掉部分競爭；把頻道一分為二才徹底解決抵達提示的覆蓋。
+ *
+ * - Top：章節／結局等重大進度提示。畫在底部訊息帶上方（約 25 px 間距），讓兩行
+ *   皆清晰可讀。
+ * - Bottom：其餘一切（拾取訊息、karma 增減、抵達提示、攤販購買文字、離場準備）。
+ *   為 Event::slot 欄位的預設值，使既有發布者在 Bottom 頻道上行為不變；只有少數
+ *   高優先提示（章節提示／結局關卡）改用 Top。
+ *
+ * 純資料——不含 raylib、不做渲染。獨立成小標頭，讓 World / Event / MessageView
+ * / ChapterToast / EventWiring 可單獨引入，而不必拉進渲染層或 EventBus。
+ */
 enum class HudSlot {
-    Top,
-    Bottom,
+    Top,      ///< 章節／結局等重大進度提示
+    Bottom,   ///< 其餘一般訊息（預設頻道）
 };
 
 } // namespace nccu

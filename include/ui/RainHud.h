@@ -4,17 +4,20 @@
 
 namespace nccu {
 
-// Colour-blind redundancy for the rain HUD readout (audit D2, SC 1.4.1).
-// Returns a fixed 2-char prefix that mirrors the colour ramp's three
-// pressure tiers so deuteran/protan viewers — who cannot distinguish
-// white→gold→red reliably — still get the rising-risk signal:
-//   rm < 60       → "  "  (calm)
-//   60 ≤ rm < 85  → " !"  (warning)
-//   rm ≥ 85       → "!!"  (critical)
-// Pure: no raylib, no allocation; the returned view points at a static
-// literal so it is safe to hold for the lifetime of the program. The
-// View prepends this to "rain: NN%" so the text channel never carries
-// information by colour alone.
+/**
+ * @brief 為雨量 HUD 讀數提供「色弱備援」的固定前綴字串。
+ * @param rm 目前雨量計數值（0–100）。
+ * @return 對應三段壓力等級的 2 字元前綴（見下表）。
+ *
+ * 顏色斜坡（白→金→紅）對紅綠色弱（deuteran／protan）玩家而言難以分辨，因此
+ * 額外回傳一段純文字前綴，讓「風險上升」這個訊號不只靠顏色傳達：
+ *   rm < 60       → "  "（平靜）
+ *   60 ≤ rm < 85  → " !"（警告）
+ *   rm ≥ 85       → "!!"（危急）
+ * 純函式：不碰 raylib、不配置記憶體；回傳的 view 指向靜態字面值，整個程式
+ * 生命週期內持有皆安全。View 會把它接在 "rain: NN%" 前面，使文字通道永不
+ * 單靠顏色承載資訊。
+ */
 constexpr std::string_view RainTierPrefix(float rm) noexcept {
     if (rm >= 85.0f) return "!!";
     if (rm >= 60.0f) return " !";

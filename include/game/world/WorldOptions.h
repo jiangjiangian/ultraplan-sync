@@ -1,36 +1,36 @@
 #ifndef WORLD_OPTIONS_H_
 #define WORLD_OPTIONS_H_
 
+/**
+ * @file WorldOptions.h
+ * @brief World 建構時注入的無障礙選項 DTO，以及從環境變數解析它的工廠函式。
+ */
+
 namespace nccu {
 
-// Plan P2 step 4 — kill the getenv leak in World. Pre-step the World
-// ctor read UMBRELLA_REDUCED_MOTION + UMBRELLA_LARGE_TARGETS directly
-// (blueprint phase-2 "Misc — World.cpp:38,51 getenv: the one impurity
-// in World"). Routing those reads through this DTO keeps World pure:
-// the ctor accepts the already-resolved bools instead of calling
-// std::getenv itself, and main.cpp (the composition root) does the env
-// resolution exactly once. Tests can construct WorldOptions{} (both
-// false) so a doctest never depends on the host process's environment.
-//
-// Defaults match the prior behaviour-when-env-unset: both off.
+/**
+ * @brief 注入 World 建構子的無障礙偏好設定。
+ *
+ * 將環境變數的讀取移出 World，使 World 對其引數保持純粹：建構子接收已解析好的布林
+ * 值，而非自行呼叫 std::getenv；環境解析由 main.cpp（組裝根）執行一次。測試可直接
+ * 建構 WorldOptions{}（兩者皆 false），讓單元測試不相依於宿主行程的環境。預設值對
+ * 應環境變數未設時的舊行為：兩者皆關閉。
+ */
 struct WorldOptions {
-    // Cycle 9.E (audit D8 / SC 2.3.3): the reduced-motion accessibility
-    // preference. When set, View suppresses the chapter-card slide and
-    // the lap-ring kinetic shimmer.
+    /// @brief 減少動畫偏好：開啟時 View 抑制章節卡片滑動與跑道環的動態微光。
     bool reducedMotion = false;
-    // Cycle 9.E (audit M2 / D7 / SC 2.5.8): the larger-targets
-    // accessibility profile. When set, the E-probe reach grows from
-    // 8 → 16 px on each side so tremor-affected players can trigger
-    // NPC dialog without pixel-precise alignment.
+    /// @brief 擴大目標偏好：開啟時 E 互動探測範圍由每側 8 px 增為 16 px，
+    ///        讓手部顫抖的玩家不必像素級對齊即可觸發 NPC 對話。
     bool largeTargets = false;
 };
 
-// Resolve WorldOptions from the process environment. Used by main.cpp
-// (the composition root) — keeps the env-read in ONE explicit spot
-// instead of buried inside the World ctor. Accepts "1" only on each
-// variable; anything else (unset/"0") leaves the default false. The
-// function is pure relative to its arg list (std::getenv read), so
-// tests that don't call it get a deterministic options struct.
+/**
+ * @brief 從行程環境變數解析 WorldOptions。
+ * @return 解析後的選項；對應變數值為 "1" 才開啟，未設或 "0" 維持預設 false。
+ *
+ * 供 main.cpp（組裝根）使用，把環境讀取集中在這一個明確位置，而非散落於 World 建構
+ * 子內。不呼叫此函式的測試因而能取得確定性的選項結構。
+ */
 [[nodiscard]] WorldOptions ReadWorldOptionsFromEnv();
 
 } // namespace nccu
