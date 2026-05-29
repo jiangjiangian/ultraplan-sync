@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "world/Physics.h"
+#include "game/world/Physics.h"
 
 using nccu::gfx::Rect;
 using nccu::gfx::Vec2;

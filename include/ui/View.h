@@ -6,7 +6,7 @@
 #include "engine/math/Vec2.h"
 #include "engine/math/Rect.h"
 #include "ui/ChapterCard.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include <cstddef>
 #include <optional>
 #include <vector>

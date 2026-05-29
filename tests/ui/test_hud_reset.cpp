@@ -16,7 +16,7 @@
 
 #include "doctest/doctest.h"
 #include "ui/MessageView.h"     // kHudTtl
-#include "world/World.h"
+#include "game/world/World.h"
 
 #include <string>
 

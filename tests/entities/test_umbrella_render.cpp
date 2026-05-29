@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
-#include "entities/TrueUmbrella.h"
-#include "entities/FragileUmbrella.h"
-#include "entities/ProfessorTrapUmbrella.h"
-#include "entities/CursedUmbrella.h"
+#include "game/entities/TrueUmbrella.h"
+#include "game/entities/FragileUmbrella.h"
+#include "game/entities/ProfessorTrapUmbrella.h"
+#include "game/entities/CursedUmbrella.h"
 #include "engine/render/IRenderer.h"
 
 #include <set>

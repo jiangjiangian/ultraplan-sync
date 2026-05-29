@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
-#include "controller/SimSystem.h"
-#include "world/World.h"
-#include "entities/Player.h"
-#include "entities/NPC.h"
+#include "game/controller/SimSystem.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
+#include "game/entities/NPC.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Rect.h"
 

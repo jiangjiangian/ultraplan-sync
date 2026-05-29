@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
-#include "quest/ChapterSpawns.h"
-#include "quest/ChapterQuestItems.h"
-#include "entities/CashPickup.h"
-#include "world/World.h"
-#include "entities/Player.h"
+#include "game/quest/ChapterSpawns.h"
+#include "game/quest/ChapterQuestItems.h"
+#include "game/entities/CashPickup.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
 #include "engine/core/GameObject.h"
 #include <algorithm>
 #include <set>

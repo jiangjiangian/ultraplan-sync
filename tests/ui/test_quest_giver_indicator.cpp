@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
 #include "ui/QuestGiverIndicator.h"
-#include "entities/NPC.h"
+#include "game/entities/NPC.h"
 #include "engine/render/IRenderer.h"
 
 #include <vector>

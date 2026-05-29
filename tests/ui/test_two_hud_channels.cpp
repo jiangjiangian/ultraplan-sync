@@ -24,13 +24,13 @@
 #include "doctest/doctest.h"
 #include "ui/ChapterToast.h"
 #include "engine/events/EventBus.h"
-#include "controller/EventWiring.h"
+#include "game/controller/EventWiring.h"
 #include "ui/HudSlot.h"
 #include "ui/MessageView.h"   // kHudTtl
-#include "entities/Player.h"
-#include "state/SemesterState.h"
-#include "state/SemesterStateMachine.h"
-#include "world/World.h"
+#include "game/entities/Player.h"
+#include "game/state/SemesterState.h"
+#include "game/state/SemesterStateMachine.h"
+#include "game/world/World.h"
 #include "engine/math/Vec2.h"
 
 using nccu::HudSlot;

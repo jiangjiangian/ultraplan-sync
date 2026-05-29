@@ -1,8 +1,8 @@
 #include "ui/hud/ObjectiveBar.h"
 
-#include "entities/Player.h"
-#include "quest/QuestObjective.h"
-#include "world/World.h"
+#include "game/entities/Player.h"
+#include "game/quest/QuestObjective.h"
+#include "game/world/World.h"
 #include "engine/render/IRenderer.h"
 #include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"

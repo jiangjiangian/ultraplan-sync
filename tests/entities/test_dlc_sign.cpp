@@ -1,10 +1,10 @@
 #include "doctest/doctest.h"
-#include "entities/DlcSign.h"
+#include "game/entities/DlcSign.h"
 #include "engine/core/GameObject.h"
 #include "engine/events/EventBus.h"
-#include "entities/Player.h"
-#include "world/World.h"
-#include "state/SemesterState.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
+#include "game/state/SemesterState.h"
 #include "engine/math/Vec2.h"
 
 #include <string>

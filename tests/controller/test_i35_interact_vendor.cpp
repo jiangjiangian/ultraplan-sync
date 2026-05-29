@@ -1,5 +1,5 @@
 // Regression guards for BUGLEDGER I3 (interact-an-NPC is geometrically
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 // impossible — the whole A/B/C spine soft-locked in Ch1) and I5
 // (Vendor::TryBuy had no runtime caller — Ending C / the Ch2 EnergyDrink
 // were unreachable). Both drive the REAL GameController::Update() loop
@@ -15,17 +15,17 @@
 //     never called, Flag_BoughtUglyUmbrella / Flag_Ch2Cleared stay unset.
 
 #include "doctest/doctest.h"
-#include "controller/GameController.h"
-#include "world/World.h"
-#include "entities/Player.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogSource.h"
-#include "quest/ChapterVendors.h"
-#include "quest/ItemCatalog.h"
-#include "quest/Chapter2Quest.h"
+#include "game/controller/GameController.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogSource.h"
+#include "game/quest/ChapterVendors.h"
+#include "game/quest/ItemCatalog.h"
+#include "game/quest/Chapter2Quest.h"
 #include "engine/events/EventBus.h"
 #include "engine/core/GameObject.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include "engine/platform/Time.h"

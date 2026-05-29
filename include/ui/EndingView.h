@@ -1,6 +1,6 @@
 #ifndef ENDING_VIEW_H_
 #define ENDING_VIEW_H_
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include <string>
 #include <string_view>
 #include <vector>

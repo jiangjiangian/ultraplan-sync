@@ -1,6 +1,6 @@
 #include "ui/overlay/PauseMenu.h"
 
-#include "world/World.h"
+#include "game/world/World.h"
 #include "engine/render/IRenderer.h"
 #include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"

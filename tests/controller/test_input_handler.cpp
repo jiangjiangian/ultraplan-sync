@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "controller/InputHandler.h"
+#include "game/controller/InputHandler.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include <cstdint>

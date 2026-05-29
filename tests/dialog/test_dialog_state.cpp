@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "dialog/DialogState.h"
-#include "entities/Player.h"
-#include "controller/DialogChoiceApply.h"
+#include "game/quest/Flags.h"
+#include "game/dialog/DialogState.h"
+#include "game/entities/Player.h"
+#include "game/controller/DialogChoiceApply.h"
 
 using nccu::DialogState;
 using nccu::DialogChoice;

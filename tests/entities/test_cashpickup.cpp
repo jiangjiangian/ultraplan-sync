@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
-#include "entities/CashPickup.h"
+#include "game/entities/CashPickup.h"
 #include "engine/events/EventBus.h"
-#include "controller/GameObjectFactory.h"
-#include "entities/Player.h"
+#include "game/controller/GameObjectFactory.h"
+#include "game/entities/Player.h"
 
 #include <string>
 

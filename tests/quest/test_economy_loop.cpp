@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
-#include "quest/ChapterPickups.h"
-#include "entities/CashPickup.h"
-#include "entities/Player.h"
-#include "world/World.h"
-#include "state/SemesterState.h"
+#include "game/quest/ChapterPickups.h"
+#include "game/entities/CashPickup.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
+#include "game/state/SemesterState.h"
 #include "engine/math/Vec2.h"
 
 using nccu::SemesterState;

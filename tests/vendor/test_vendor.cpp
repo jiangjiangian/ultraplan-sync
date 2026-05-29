@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
-#include "controller/GameObjectFactory.h"
-#include "entities/Player.h"
-#include "vendor/Vendor.h"
-#include "vendor/VendorConfig.h"
+#include "game/controller/GameObjectFactory.h"
+#include "game/entities/Player.h"
+#include "game/vendor/Vendor.h"
+#include "game/vendor/VendorConfig.h"
 
 #include <string>
 #include <vector>

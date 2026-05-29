@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
-#include "quest/ChapterSpawns.h"
-#include "dialog/DialogSource.h"
-#include "state/SemesterState.h"
+#include "game/quest/ChapterSpawns.h"
+#include "game/dialog/DialogSource.h"
+#include "game/state/SemesterState.h"
 
 #include <set>
 #include <string>

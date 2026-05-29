@@ -3,8 +3,8 @@
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"
-#include "gfx/UmbrellaGlyph.h"
-#include "dialog/DialogLayout.h"   // CellWidth — the project text-measure helper
+#include "game/gfx/UmbrellaGlyph.h"
+#include "game/dialog/DialogLayout.h"   // CellWidth — the project text-measure helper
 #include <algorithm>
 #include <string>
 #include <string_view>

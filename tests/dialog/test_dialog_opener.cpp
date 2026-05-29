@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "dialog/DialogOpener.h"
-#include "dialog/DialogState.h"
-#include "controller/DialogChoiceApply.h"
-#include "entities/Player.h"
+#include "game/quest/Flags.h"
+#include "game/dialog/DialogOpener.h"
+#include "game/dialog/DialogState.h"
+#include "game/controller/DialogChoiceApply.h"
+#include "game/entities/Player.h"
 
 using nccu::DialogState;
 using nccu::SemesterState;

@@ -1,10 +1,10 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "dialog/DialogOpener.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogSource.h"
-#include "entities/Player.h"
-#include "state/SemesterState.h"
+#include "game/quest/Flags.h"
+#include "game/dialog/DialogOpener.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogSource.h"
+#include "game/entities/Player.h"
+#include "game/state/SemesterState.h"
 #include "engine/math/Vec2.h"
 
 #ifndef TEST_CONTENT_DIR

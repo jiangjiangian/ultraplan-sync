@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "entities/NPC.h"
+#include "game/entities/NPC.h"
 #include "engine/events/EventBus.h"
 
 #include <string>

@@ -24,7 +24,7 @@
 //     stays false even with UMBRELLA_LARGE_TARGETS=1 in the environment.
 
 #include "doctest/doctest.h"
-#include "world/World.h"
+#include "game/world/World.h"
 #include <cstdlib>
 
 using nccu::World;

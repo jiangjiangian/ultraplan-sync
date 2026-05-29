@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "controller/EventWiring.h"
-#include "state/SemesterStateMachine.h"
+#include "game/controller/EventWiring.h"
+#include "game/state/SemesterStateMachine.h"
 #include "engine/events/EventBus.h"
 #include <string>
 using nccu::SemesterStateMachine;

@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "dialog/DialogLoader.h"
+#include "game/quest/Flags.h"
+#include "game/dialog/DialogLoader.h"
 
 #include <string>
 #include <vector>

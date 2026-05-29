@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "state/SemesterStateMachine.h"
+#include "game/state/SemesterStateMachine.h"
 
 using nccu::SemesterState;
 using nccu::SemesterStateMachine;

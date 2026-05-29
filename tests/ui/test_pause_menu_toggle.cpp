@@ -31,9 +31,9 @@
 
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
-#include "controller/GameController.h"
-#include "entities/Player.h"
-#include "world/World.h"
+#include "game/controller/GameController.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include "engine/platform/Time.h"

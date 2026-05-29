@@ -1,7 +1,7 @@
 #include "ui/hud/RainVignette.h"
 
-#include "entities/Player.h"
-#include "world/World.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
 #include "engine/render/IRenderer.h"
 #include "engine/math/Color.h"
 #include "engine/math/Rect.h"

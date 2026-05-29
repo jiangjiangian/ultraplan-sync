@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "entities/NPC.h"
-#include "gfx/WalkCycle.h"
+#include "game/entities/NPC.h"
+#include "game/gfx/WalkCycle.h"
 
 #include <set>
 #include <vector>

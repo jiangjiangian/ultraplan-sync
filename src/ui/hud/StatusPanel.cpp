@@ -1,7 +1,7 @@
 #include "ui/hud/StatusPanel.h"
 
-#include "world/World.h"
-#include "entities/Player.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
 #include "ui/RainHud.h"                   // RainTierPrefix
 #include "engine/render/IRenderer.h"
 #include "engine/render/TextBuilder.h"

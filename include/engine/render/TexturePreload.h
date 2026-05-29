@@ -1,12 +1,12 @@
 #ifndef GFX_TEXTURE_PRELOAD_H_
 #define GFX_TEXTURE_PRELOAD_H_
 #include "engine/render/Texture.h"
-#include "gfx/Decorations.h"          // kDecorations — ambient strips
+#include "game/gfx/Decorations.h"          // kDecorations — ambient strips
 #include "ui/CharacterSelect.h"       // kPersonas — player + preview sheets
-#include "world/Buildings.h"          // kAll — building art
-#include "world/Obstacles.h"          // kBuildingCollisionSkip
-#include "vendor/VendorSprite.h"      // kVendorFallbackSprites
-#include "quest/PipoyaRoster.h"       // PipoyaRoster() — varied NPC art
+#include "game/world/Buildings.h"          // kAll — building art
+#include "game/world/Obstacles.h"          // kBuildingCollisionSkip
+#include "game/vendor/VendorSprite.h"      // kVendorFallbackSprites
+#include "game/quest/PipoyaRoster.h"       // PipoyaRoster() — varied NPC art
 #include <algorithm>
 #include <array>
 #include <string>

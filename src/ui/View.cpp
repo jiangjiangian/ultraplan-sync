@@ -1,21 +1,21 @@
 #include "ui/View.h"
-#include "world/World.h"
-#include "entities/Player.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
 #include "engine/core/GameObject.h"
-#include "controller/GameObjectQueries.h"
-#include "world/Buildings.h"
-#include "world/Obstacles.h"
-#include "world/WorldConfig.h"
-#include "dialog/DialogView.h"
+#include "game/controller/GameObjectQueries.h"
+#include "game/world/Buildings.h"
+#include "game/world/Obstacles.h"
+#include "game/world/WorldConfig.h"
+#include "game/dialog/DialogView.h"
 #include "ui/EndingView.h"
 #include "ui/ChapterCard.h"
 #include "ui/InventoryView.h"
 #include "ui/MessageView.h"
-#include "quest/QuestObjective.h"
-#include "quest/QuestIndicator.h"
-#include "quest/Chapter3Quest.h"   // 操場 track-ring geometry (kSportsTrack*)
+#include "game/quest/QuestObjective.h"
+#include "game/quest/QuestIndicator.h"
+#include "game/quest/Chapter3Quest.h"   // 操場 track-ring geometry (kSportsTrack*)
 #include "ui/QuestGiverIndicator.h"
-#include "state/InterludeExitMarker.h"
+#include "game/state/InterludeExitMarker.h"
 #include "ui/GameHelp.h"
 #include "ui/HelpPageView.h"  // shared 遊戲說明 page renderer (de-dup with TitleScreen)
 #include "ui/RainHud.h"
@@ -31,8 +31,8 @@
 #include "ui/ReducedMotion.h"
 #include "engine/render/Renderer.h"
 #include "engine/platform/Time.h"
-#include "gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
-#include "gfx/Decorations.h"     // kDecorations — the placed ambient strips
+#include "game/gfx/SpriteStrip.h"     // FrameAt / StripSourceRect / DecorationDestRect
+#include "game/gfx/Decorations.h"     // kDecorations — the placed ambient strips
 #include "engine/render/CameraScope.h"
 #include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"

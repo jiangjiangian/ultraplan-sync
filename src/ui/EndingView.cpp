@@ -1,10 +1,10 @@
 #include "ui/EndingView.h"
-#include "dialog/DialogLayout.h"
+#include "game/dialog/DialogLayout.h"
 #include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"
-#include "gfx/UmbrellaGlyph.h"
+#include "game/gfx/UmbrellaGlyph.h"
 #include <algorithm>
 #include <cstdio>
 #include <string>

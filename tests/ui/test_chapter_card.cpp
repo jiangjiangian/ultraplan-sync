@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
 #include "ui/ChapterCard.h"
-#include "state/SemesterState.h"
-#include "dialog/DialogLayout.h"
+#include "game/state/SemesterState.h"
+#include "game/dialog/DialogLayout.h"
 #include "engine/render/IRenderer.h"
-#include "gfx/UmbrellaGlyph.h"
+#include "game/gfx/UmbrellaGlyph.h"
 #include <string>
 #include <vector>
 

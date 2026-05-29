@@ -1,6 +1,6 @@
 #include "ui/MessageView.h"
 #include "ui/ReducedMotion.h"
-#include "dialog/DialogLayout.h"   // WrapToCells / CellWidth — the project's
+#include "game/dialog/DialogLayout.h"   // WrapToCells / CellWidth — the project's
                                    // EAW-aware wrap + measure (CJK = 2 cells)
 #include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"

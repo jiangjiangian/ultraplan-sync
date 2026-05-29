@@ -24,9 +24,9 @@
 //   * Remove World::DismissHud() → does not compile.
 
 #include "doctest/doctest.h"
-#include "world/World.h"
-#include "controller/GameController.h"
-#include "entities/Player.h"
+#include "game/world/World.h"
+#include "game/controller/GameController.h"
+#include "game/entities/Player.h"
 #include "engine/events/EventBus.h"
 #include "ui/MessageView.h"
 #include "engine/input/Input.h"

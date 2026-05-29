@@ -1,5 +1,5 @@
 // REQUIREMENT #4 regression: buying from a Vendor must NEVER be forced.
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 // Every vendor menu carries a trailing "不買" (decline) choice; picking
 // it closes the conversation with ZERO economy mutation — no money
 // deducted, no consumable added, no item.setsFlag set, no PickupAcquired
@@ -22,15 +22,15 @@
 //     revert signal is the appended-choice CHECK pair below.
 
 #include "doctest/doctest.h"
-#include "controller/GameController.h"
-#include "world/World.h"
-#include "entities/Player.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogSource.h"
-#include "quest/ChapterVendors.h"
+#include "game/controller/GameController.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogSource.h"
+#include "game/quest/ChapterVendors.h"
 #include "engine/events/EventBus.h"
 #include "engine/core/GameObject.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include "engine/platform/Time.h"

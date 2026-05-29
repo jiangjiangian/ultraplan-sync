@@ -1,5 +1,5 @@
 // Restart-safety regression (in-game menu 重新開始 + BUGLEDGER B2/H1).
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 //
 // The new in-game pause menu's "重新開始" routes main.cpp's outer loop
 // to tear down the per-run {World, View, GameController} scope and build
@@ -32,11 +32,11 @@
 // controller dtor and never depend on cross-test bus state.
 
 #include "doctest/doctest.h"
-#include "world/World.h"
-#include "controller/GameController.h"
-#include "entities/Player.h"
+#include "game/world/World.h"
+#include "game/controller/GameController.h"
+#include "game/entities/Player.h"
 #include "engine/events/EventBus.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include "engine/math/Vec2.h"
 
 #include <memory>

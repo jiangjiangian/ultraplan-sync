@@ -22,7 +22,7 @@
 
 #include "doctest/doctest.h"
 #include "ui/ReducedMotion.h"
-#include "world/World.h"
+#include "game/world/World.h"
 #include <cstdlib>
 
 using nccu::EndingFadeAlphaStep;

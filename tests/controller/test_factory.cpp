@@ -1,10 +1,10 @@
 #include "doctest/doctest.h"
-#include "controller/GameObjectFactory.h"
-#include "entities/Player.h"
-#include "entities/TrueUmbrella.h"
-#include "entities/FragileUmbrella.h"
-#include "entities/ProfessorTrapUmbrella.h"
-#include "entities/CursedUmbrella.h"
+#include "game/controller/GameObjectFactory.h"
+#include "game/entities/Player.h"
+#include "game/entities/TrueUmbrella.h"
+#include "game/entities/FragileUmbrella.h"
+#include "game/entities/ProfessorTrapUmbrella.h"
+#include "game/entities/CursedUmbrella.h"
 
 TEST_CASE("Factory creates Player with correct dynamic type") {
     auto obj = GameObjectFactory::Create(ObjectType::Player, {100, 100});

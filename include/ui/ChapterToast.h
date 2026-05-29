@@ -1,7 +1,7 @@
 #ifndef CHAPTER_TOAST_H_
 #define CHAPTER_TOAST_H_
 #include "engine/events/EventBus.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include <string>
 
 namespace nccu {

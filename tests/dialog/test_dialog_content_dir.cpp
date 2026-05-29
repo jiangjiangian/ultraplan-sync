@@ -1,4 +1,4 @@
-#include "dialog/DialogSource.h"
+#include "game/dialog/DialogSource.h"
 #ifndef TEST_CONTENT_DIR
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif

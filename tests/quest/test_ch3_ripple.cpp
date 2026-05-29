@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "quest/Chapter3Quest.h"
-#include "dialog/DialogOpener.h"
+#include "game/quest/Flags.h"
+#include "game/quest/Chapter3Quest.h"
+#include "game/dialog/DialogOpener.h"
 #include "engine/events/EventBus.h"
-#include "entities/Player.h"
+#include "game/entities/Player.h"
 #include "engine/math/Vec2.h"
 
 using nccu::SemesterState;

@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
-#include "quest/QuestHookTable.h"
-#include "entities/Player.h"
+#include "game/quest/QuestHookTable.h"
+#include "game/entities/Player.h"
 #include "engine/math/Vec2.h"
 
 #include <string_view>

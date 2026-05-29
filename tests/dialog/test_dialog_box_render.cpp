@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogView.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogView.h"
 #include "engine/render/IRenderer.h"
 #include <string>
 #include <vector>

@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
-#include "entities/ConsumableItem.h"
-#include "entities/HotPack.h"
-#include "entities/WaterproofSpray.h"
-#include "entities/EnergyDrink.h"
-#include "controller/GameObjectFactory.h"
-#include "quest/ItemCatalog.h"
-#include "entities/Player.h"
+#include "game/entities/ConsumableItem.h"
+#include "game/entities/HotPack.h"
+#include "game/entities/WaterproofSpray.h"
+#include "game/entities/EnergyDrink.h"
+#include "game/controller/GameObjectFactory.h"
+#include "game/quest/ItemCatalog.h"
+#include "game/entities/Player.h"
 #include "engine/events/EventBus.h"
 
 #include <string>
