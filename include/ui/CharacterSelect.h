@@ -1,6 +1,5 @@
 #ifndef CHARACTER_SELECT_H_
 #define CHARACTER_SELECT_H_
-#include "engine/render/Window.h"
 #include "engine/math/Color.h"
 #include <array>
 #include <string>
@@ -62,18 +61,10 @@ struct CharacterSelectResult {
     bool closed{false};
 };
 
-// Pre-gameplay screen: pick one of five non-gendered campus personas.
-// Keyboard-navigable (Up/Down/Left/Right + Enter; Esc backs out to the
-// title). Runs its own draw loop on `win` and blocks until the player
-// either confirms a persona or backs out / closes the window. Loads the
-// five persona preview sheets directly from resources/.
-//
-// HARNESS: this is NEVER called when the autoplay harness is active —
-// main.cpp bypasses it (and the title screen) exactly as the old
-// character-select was bypassed, honouring UMBRELLA_SPRITE — so every
-// .claude/scripts/* playtest still falls straight into gameplay with a
-// deterministic, byte-identical state.jsonl.
-CharacterSelectResult RunCharacterSelect(gfx::Window& win);
+// Phase 3 step 2 retired RunCharacterSelect — the persona picker is
+// now nccu::app::CharacterSelectScene, driven by SceneManager. The
+// Persona / kPersonas / CharacterSelectResult types stay here because
+// the scene + GameplayScene + the harness skip path all consume them.
 
 } // namespace nccu
 

@@ -1,9 +1,12 @@
-// Phase 3 step 1: main.cpp shrinks to compose + push the initial
-// scene. The per-run gameplay loop body moved into GameplayScene;
-// SceneManager owns the one app loop.
+// Phase 3 step 2: main.cpp pushes TitleScene (human) or GameplayScene
+// (harness) via SceneManager. The blocking RunTitleScreen /
+// RunCharacterSelect free functions are no longer called — replaced
+// by TitleScene + CharacterSelectScene chained through
+// SceneCommand::Replace.
 #include "app/SceneManager.h"
 #include "app/scenes/GameplayScene.h"
-#include "ui/TitleScreen.h"
+#include "app/scenes/TitleScene.h"
+#include "app/scenes/CharacterSelectScene.h"
 #include "ui/CharacterSelect.h"
 #include "ui/LoadingScreen.h"
 #include "engine/platform/Harness.h"
@@ -79,51 +82,54 @@ int main() {
     // screens no longer consume ESC at all.
     bool running = true;
     while (running && !win.ShouldClose()) {
-        nccu::CharacterSelectResult selection;
-
+        // Phase 3 step 2: SceneManager now owns BOTH the human path
+        // (Title -> CharacterSelect -> Gameplay) AND the harness skip
+        // path (push GameplayScene directly). The blocking
+        // RunTitleScreen / RunCharacterSelect free functions are
+        // retired in favour of TitleScene + CharacterSelectScene; the
+        // chain between them runs on SceneCommand::Replace with a
+        // factory closure produced here in the composition root, so
+        // the next-scene ctor refs (audioDevice / harness / window
+        // size) flow through the closure capture and don't pollute
+        // earlier scenes' surfaces.
+        nccu::app::SceneManager sm;
+        nccu::gfx::RaylibRenderer renderer;
         if (harness.Active()) {
-            // Deterministic bypass — identical to the pre-feature
-            // behaviour: fixed sprite, default (white) tint, no screens.
-            selection.spritePath = harness.SpritePath();
-        } else {
-            // Title screen first.
-            if (nccu::RunTitleScreen(win) == nccu::TitleChoice::Quit)
-                break;                       // 離開 / window closed
-            if (win.ShouldClose()) break;
-
-            // Character select. ESC is inert now; the player picks a
-            // persona with ← → + Enter. (selection.closed stays false.)
-            selection = nccu::RunCharacterSelect(win);
-            if (win.ShouldClose()) break;
-            if (selection.closed) continue;  // (defensive; unused now)
-        }
-
-        // Phase 3 step 1: the per-run scope (World/View/GameController/
-        // AudioManager + the gameplay while-loop) now lives entirely
-        // inside GameplayScene. SceneManager owns the scene stack +
-        // runs the one app loop (BeginFrame → Update → Draw →
-        // EndFrame → deferred-command apply), mirroring main.cpp's
-        // pre-Phase-3 shape one-for-one so the harness-observable
-        // {state.jsonl, screenshots, event stream} stays byte-identical.
-        //
-        // RAII order: SceneManager dtor runs the scene's dtor (which
-        // runs the controller → AudioManager → View → World chain in
-        // reverse-declaration order) BEFORE the surrounding renderer /
-        // window / GL resources die. The unique_ptr-managed scene gets
-        // teardown for free, exactly as the inline block did.
-        {
-            nccu::app::SceneManager sm;
-            nccu::gfx::RaylibRenderer renderer;
+            // Deterministic bypass — identical to the pre-Phase-3
+            // path: fixed sprite, default (white) tint, no screens.
+            // GameplayScene constructed with the harness-resolved
+            // selection.
+            nccu::CharacterSelectResult harnessSel;
+            harnessSel.spritePath = harness.SpritePath();
             sm.Push(std::make_unique<nccu::app::GameplayScene>(
-                selection, audioDevice, harness, kWinW, kWinH));
-            const auto outcome = sm.Run(win, renderer, harness);
-            if (outcome == nccu::app::SceneManager::RunOutcome::Quit)
-                running = false;
-            // outcome == Restart: outer loop iterates → new SceneManager
-            // + GameplayScene next round (after Title/Select rerun for
-            // the human path; harness never restarts so the harness
-            // branch never returns Restart).
+                harnessSel, audioDevice, harness, kWinW, kWinH));
+        } else {
+            // Human path: TitleScene -> CharacterSelectScene ->
+            // GameplayScene, every transition deferred via the
+            // factory closures captured here.
+            auto gameplayFactory =
+                [&](nccu::CharacterSelectResult sel)
+                -> std::unique_ptr<nccu::app::IScene> {
+                return std::make_unique<nccu::app::GameplayScene>(
+                    std::move(sel), audioDevice, harness,
+                    kWinW, kWinH);
+            };
+            auto charSelectFactory =
+                [gameplayFactory]()
+                -> std::unique_ptr<nccu::app::IScene> {
+                return std::make_unique<
+                    nccu::app::CharacterSelectScene>(
+                    gameplayFactory);
+            };
+            sm.Push(std::make_unique<nccu::app::TitleScene>(
+                charSelectFactory));
         }
+        const auto outcome = sm.Run(win, renderer, harness);
+        if (outcome == nccu::app::SceneManager::RunOutcome::Quit)
+            running = false;
+        // outcome == Restart: outer loop iterates → new SceneManager
+        // + initial scene next round. The harness path never
+        // restarts; the human Restart loops back to TitleScene.
         // Plan P2 step 3: drop the entity-layer publish seam BEFORE the
         // next iteration rebuilds World/Controller (which would re-SetSink
         // anyway). Resetting to nullptr makes the seam fall through to
