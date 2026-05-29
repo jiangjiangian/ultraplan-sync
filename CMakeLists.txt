@@ -41,7 +41,7 @@ if(NOT raylib_FOUND)
     FetchContent_MakeAvailable(raylib)
 endif()
 
-add_executable(${PROJECT_NAME} "${SRC_DIR}/main.cpp")
+add_executable(${PROJECT_NAME} "${SRC_DIR}/app/main.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
 
 # Ship the game binary as `umbrella` (per the assignment README naming) while
