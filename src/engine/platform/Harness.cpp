@@ -129,7 +129,7 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
     std::ostringstream o;
     o << '{';
     o << "\"frame\":" << st.frame;
-    o << ",\"dt\":" << gfx::Time::DeltaSeconds();
+    o << ",\"dt\":" << nccu::engine::platform::Time::DeltaSeconds();
 
     const std::string_view sem = world.Semester().CurrentName();
     o << ",\"semester\":\"" << EscapeJson(sem) << '"';
@@ -241,7 +241,7 @@ Harness::Harness() : s_(std::make_unique<HarnessState>()) {}
 Harness::~Harness() {
     if (s_ && s_->active) {
         gfx::Input::SetSource(nullptr);
-        gfx::Time::SetFixedStep(0.0f);
+        nccu::engine::platform::Time::SetFixedStep(0.0f);
     }
 }
 Harness::Harness(Harness&&) noexcept            = default;
@@ -346,7 +346,7 @@ Harness MaybeAttach() {
         st.stateOut.open(st.statePath, std::ios::out | std::ios::trunc);
 
     gfx::Input::SetSource(st.script.get());
-    gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     return h;
 }
 

@@ -105,7 +105,7 @@ TEST_CASE("A-T3: EndingMenuChoiceAt maps 0/1/2 to Title/Restart/Quit") {
 
 // ---- (2) live controller wiring ----------------------------------------
 TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -139,12 +139,12 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -200,7 +200,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         nccu::gfx::Input::SetSource(nullptr);
     }
 
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -209,7 +209,7 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     // NOT move, and an arbitrary number of frames must not advance the sim
     // (the early-return before the object tick / movement / sweep). This is
     // what makes the ending screen a steady, agency-only screen.
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -233,6 +233,6 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

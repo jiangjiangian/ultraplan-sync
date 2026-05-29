@@ -150,7 +150,7 @@ TEST_CASE("REQ#5 unit: ApplyRainSheltered slow-accrues (~1.5 u/s), lethal-armed"
 // emitted and the meter is reset (it does NOT pin at 100).
 TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fires") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     int soakMsgHits = 0;
@@ -202,7 +202,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
     CHECK(p->GetRainMeter() < 100.0f); // not stuck at the cap
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -221,7 +221,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
 // accrues" CHECK fail (it would drain instead).
 TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     int soakMsgHits = 0;
@@ -284,7 +284,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
     CHECK(soakMsgHits == 0);                              // never teleported
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -292,7 +292,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
 // the tick entirely, so an umbrella-less player's meter stays put.
 TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -311,6 +311,6 @@ TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
     CHECK(p->GetRainMeter() == doctest::Approx(0.0f));  // market => no tick
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

@@ -66,7 +66,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -163,7 +163,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK(sawPauseRainHint);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -216,7 +216,7 @@ TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
 // NOT serialized (the harness emits no cursor/page), so a paged help leaves
 // state.jsonl byte-identical — the sim is also frozen the whole time.
 TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim frozen") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -268,6 +268,6 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     CHECK(world.HelpPage() == 0);                      // reset on resume
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

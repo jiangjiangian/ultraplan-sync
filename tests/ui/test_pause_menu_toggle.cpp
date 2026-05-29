@@ -94,7 +94,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -130,12 +130,12 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     CHECK(world.MenuCursor() == 5);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -178,12 +178,12 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     CHECK_FALSE(world.LargeTargets());
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -225,7 +225,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     CHECK_FALSE(world.ReducedMotion());
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -236,7 +236,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
     // request AppAction::Quit. Pure intent — main.cpp's outer loop
     // is what acts on it; here we just verify the controller routes
     // the right enum from the right index.
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -289,7 +289,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         nccu::gfx::Input::SetSource(nullptr);
     }
 
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -300,7 +300,7 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     // window closed. The menu now lives on M; GameController never reads
     // ESC, so a frozen Update treats it as a no-op and ESC's only role
     // (in the real app) is the clean program exit owned by main.cpp.
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
@@ -332,6 +332,6 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     CHECK_FALSE(world.MenuOpen());
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

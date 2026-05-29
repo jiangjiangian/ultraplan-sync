@@ -88,7 +88,7 @@ void AdvanceToChoice(nccu::GameController& c, TestInput& in, World& w) {
 
 TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & re-opens") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -156,6 +156,6 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     CHECK(world.Dialog().Choices().size() == 3);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

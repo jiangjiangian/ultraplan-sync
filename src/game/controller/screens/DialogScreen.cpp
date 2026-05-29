@@ -27,7 +27,7 @@ bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
                   InputHandler& input, SceneRouter& sceneRouter) {
     using nccu::gfx::Input;
     using nccu::gfx::Key;
-    using nccu::gfx::Time;
+    using nccu::engine::platform::Time;
     DialogState& dlg = world.Dialog();
     // I5: drop the pending-vendor target the instant its menu is no
     // longer the open conversation (closed greeting-only, advanced
@@ -58,7 +58,7 @@ bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
         // ≥300 ms held + 4-frame cooldown contract, pinned by
         // test_input_handler. The Controller asks "should advance
         // this frame?" and acts.
-        const float ddt = Time::DeltaSeconds();
+        const float ddt = nccu::engine::platform::Time::DeltaSeconds();
         const bool advanceE = input.TickDialogAdvance(ddt);
         if (advanceE) {
             // Capture the npc BEFORE Advance() — confirming the last

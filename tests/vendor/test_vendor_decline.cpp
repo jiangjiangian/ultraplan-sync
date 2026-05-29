@@ -86,7 +86,7 @@ const GameObject* FindVendor(const World& w) {
 // "no forced purchase" guarantee for REQUIREMENT #4.
 TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     int pickupHits = 0;
@@ -170,6 +170,6 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     CHECK(pickupHits == 1);
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

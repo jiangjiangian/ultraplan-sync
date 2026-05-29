@@ -119,7 +119,7 @@ void GameController::Update() {
     if (HandleDialog())     return;
     if (HandleInventory())  return;
 
-    const float dt = Time::DeltaSeconds();
+    const float dt = nccu::engine::platform::Time::DeltaSeconds();
     // Cycle 9.E (audit H2 / D5 / SC 2.2.2): skip-toast key. While a
     // banner is on screen (HudMessage non-empty AND not yet expired),
     // Backspace force-expires it so a player who has read the line can
