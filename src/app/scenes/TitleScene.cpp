@@ -101,8 +101,8 @@ SceneCommand TitleScene::Update(float /*dt*/) {
     return {};
 }
 
-void TitleScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
-    using namespace nccu::gfx;
+void TitleScene::Draw(nccu::engine::render::IRenderer& /*renderer*/) {
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     if (showingHelp_) {

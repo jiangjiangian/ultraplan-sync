@@ -21,11 +21,11 @@ using nccu::dialog::kBoxRowsPerPage;
 namespace {
 
 // Same spy IRenderer pattern as test_dialog_box_render.cpp.
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     std::vector<std::string> texts;
     void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color) override { ++rects; }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {}
     void DrawText(std::string_view t, nccu::engine::math::Vec2, int,
                   nccu::engine::math::Color) override { texts.emplace_back(t); }

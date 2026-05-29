@@ -11,7 +11,7 @@ namespace nccu {
 // wall). One byte per world pixel: 1 = solid, 0 = walkable. The PNG is
 // authored in any image editor — see tools/tiled_to_world.py for the
 // solid = "anything that is not pure white and not fully transparent"
-// convention — and loaded through gfx::LoadCollisionMask so raylib
+// convention — and loaded through nccu::game::gfx::LoadCollisionMask so raylib
 // stays confined to include/gfx/. This type is raylib-free so the
 // AABB resolver in Physics.h can consume it directly.
 //
@@ -70,7 +70,7 @@ private:
 // resources/assets/maps/collision_mask.png, falling back to the
 // tool-generated collision_mask_base.png (buildings + river, no props)
 // when it is absent. Defined in src/TerrainMask.cpp — the one non-gfx
-// TU allowed to pull raylib via gfx::LoadCollisionMask — so the model
+// TU allowed to pull raylib via nccu::game::gfx::LoadCollisionMask — so the model
 // layer (World) stays raylib-free.
 CollisionMask LoadTerrainMask();
 

@@ -10,7 +10,7 @@
 // and the V3 ending-card captions at the font-atlas level.
 //
 // Why this matters / what reverting breaks:
-//   nccu::gfx::detail::CollectCodepoints() builds the glyph set baked
+//   nccu::engine::render::detail::CollectCodepoints() builds the glyph set baked
 //   into the CJK font atlas: ASCII 32..126, every codepoint in
 //   docs/content/*.md, then UiLiteralChars(). DialogView draws U+25BC
 //   (▼) as the "press advance for more" cue; it is NOT ASCII and does
@@ -31,7 +31,7 @@
 // codepoint decoder but needs no GL context, so this is headless-safe
 // like the other tests/*.cpp doctest units (see test_color.cpp).
 
-using nccu::gfx::detail::CollectCodepoints;
+using nccu::engine::render::detail::CollectCodepoints;
 
 namespace {
 

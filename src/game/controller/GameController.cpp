@@ -96,7 +96,7 @@ GameController::~GameController() {
 }
 
 void GameController::Update() {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // Roster + side effects follow the FSM. Any trigger (EndingGate,

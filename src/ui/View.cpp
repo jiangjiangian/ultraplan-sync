@@ -42,6 +42,7 @@
 #include <string>
 
 namespace nccu {
+using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
 
 // Buildings are drawn as separate sprites over a terrain-only base so a
 // character standing above a building's ground line is occluded by it
@@ -49,7 +50,7 @@ namespace nccu {
 // track, plaza), so the two named in kBuildingCollisionSkip get no
 // sprite — their pixels already live in worldmap_base.png.
 View::View(int windowWidth, int windowHeight)
-    : worldmap_(nccu::gfx::Texture::Load("resources/assets/maps/worldmap_base.png")),
+    : worldmap_(nccu::engine::render::Texture::Load("resources/assets/maps/worldmap_base.png")),
       screenCenter_{windowWidth / 2.0f, windowHeight / 2.0f},
       worldSize_{::world::kSize, ::world::kSize},
       viewportSize_{static_cast<float>(windowWidth),
@@ -62,7 +63,7 @@ View::View(int windowWidth, int windowHeight)
         std::string path = "resources/assets/buildings_3d_trimmed/";
         path += std::string(b.name);
         path += ".png";
-        auto tex = nccu::gfx::Texture::Load(path);
+        auto tex = nccu::engine::render::Texture::Load(path);
         if (!tex.IsValid()) continue;  // art not generated yet → no sprite
         const std::size_t idx = buildingTextures_.size();
         buildingTextures_.push_back(std::move(tex));
@@ -80,9 +81,9 @@ View::View(int windowWidth, int windowHeight)
     // live) and torn down with the View, so the RAII-vs-GL order holds
     // (raylib-core KB). These never enter World::Objects(), so the harness
     // is unaffected.
-    decorations_.reserve(nccu::gfx::kDecorations.size());
-    for (std::size_t i = 0; i < nccu::gfx::kDecorations.size(); ++i) {
-        auto tex = nccu::gfx::Texture::Load(nccu::gfx::kDecorations[i].stripPath);
+    decorations_.reserve(nccu::game::gfx::kDecorations.size());
+    for (std::size_t i = 0; i < nccu::game::gfx::kDecorations.size(); ++i) {
+        auto tex = nccu::engine::render::Texture::Load(nccu::game::gfx::kDecorations[i].stripPath);
         if (!tex.IsValid()) continue;   // art not dropped in → no sprite
         decorations_.push_back(DecorationSprite{i, std::move(tex)});
     }
@@ -144,7 +145,7 @@ void View::UpdateChapterCardTransition(SemesterState st) {
 }
 
 void View::RenderEnding(const World& world, SemesterState st) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
@@ -196,7 +197,7 @@ void View::RenderEnding(const World& world, SemesterState st) {
 }
 
 void View::RenderWorld(const World& world, SemesterState st) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
     using nccu::queries::ForEachActive;
 
@@ -234,10 +235,10 @@ void View::RenderWorld(const World& world, SemesterState st) {
         // both. Depth key is the sprite's bottom edge (its feet), so it
         // walk-behinds against NPCs exactly like a building does.
         for (std::size_t i = 0; i < decorations_.size(); ++i) {
-            const auto& def = nccu::gfx::kDecorations[decorations_[i].defIndex];
+            const auto& def = nccu::game::gfx::kDecorations[decorations_[i].defIndex];
             if (def.chapter != st) continue;
             const Texture& tex = decorations_[i].texture;
-            const Rect dest = nccu::gfx::DecorationDestRect(
+            const Rect dest = nccu::game::gfx::DecorationDestRect(
                 def, tex.Width(), tex.Height());
             drawOrder_.push_back(
                 DrawRef{dest.y + dest.height, DrawKind::Decoration, nullptr, i});
@@ -275,18 +276,18 @@ void View::RenderWorld(const World& world, SemesterState st) {
             }
             case DrawKind::Decoration: {
                 const DecorationSprite& ds  = decorations_[d.index];
-                const auto&             def = nccu::gfx::kDecorations[ds.defIndex];
+                const auto&             def = nccu::game::gfx::kDecorations[ds.defIndex];
                 const Texture&          tex = ds.texture;
                 // Ping-pong (triangle-wave) frame from the render clock, then
                 // the source sub-rect for that frame; centred dest = the
                 // breathing 放大縮小. All maths is the pure SpriteStrip
                 // helpers (headless-tested); the blit is the same DrawSprite
                 // path buildings use — no raylib in any Model/Item code.
-                const int frame = nccu::gfx::FrameAt(
+                const int frame = nccu::game::gfx::FrameAt(
                     decorationClock_, def.frameCount, def.fps);
-                const Rect src = nccu::gfx::StripSourceRect(
+                const Rect src = nccu::game::gfx::StripSourceRect(
                     frame, def.frameCount, tex.Width(), tex.Height());
-                const Rect dest = nccu::gfx::DecorationDestRect(
+                const Rect dest = nccu::game::gfx::DecorationDestRect(
                     def, tex.Width(), tex.Height());
                 renderer_.DrawSprite(tex, src, dest);
                 break;
@@ -321,7 +322,7 @@ void View::RenderWorld(const World& world, SemesterState st) {
 }
 
 void View::RenderHud(const World& world, SemesterState st) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // 操場 校慶 lap progress ring (HUD, screen space) — extracted to
@@ -346,7 +347,7 @@ void View::RenderHud(const World& world, SemesterState st) {
 }
 
 void View::RenderOverlays(const World& world) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // Transient ShowMessage toasts: above the world/HUD labels, BELOW the

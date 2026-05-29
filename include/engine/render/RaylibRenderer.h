@@ -6,7 +6,7 @@
 #include "engine/render/Texture.h"
 #include <string>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 // Concrete IRenderer adapter. The only place IRenderer calls cross into
 // raylib — delegates straight to the existing nccu::gfx wrappers, which
@@ -28,6 +28,6 @@ public:
     }
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_RAYLIB_RENDERER_H_

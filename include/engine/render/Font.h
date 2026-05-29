@@ -14,7 +14,7 @@
 // loads ONE font with the full set of codepoints the game actually
 // displays, and exposes it for DrawTextEx. raylib.h is confined here, in
 // keeping with the gfx-layer invariant.
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 namespace detail {
 
@@ -350,6 +350,6 @@ inline void ShutdownFont() {
     }
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_FONT_H_

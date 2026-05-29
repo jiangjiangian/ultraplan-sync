@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // Quest-giver "!" overlays (P1 step 7f — extracted from
 // View::RenderWorld). Iterates active NPCs and lifts the quest
@@ -24,7 +24,7 @@ namespace gfx { class IRenderer; }
 // owns that.
 //
 // No-op when there is no player; safe to call every frame.
-void DrawQuestGiverIndicators(nccu::gfx::IRenderer& r, const World& world);
+void DrawQuestGiverIndicators(nccu::engine::render::IRenderer& r, const World& world);
 
 }  // namespace nccu
 

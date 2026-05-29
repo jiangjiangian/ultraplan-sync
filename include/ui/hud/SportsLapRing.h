@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // 操場 校慶 lap progress ring (P1 step 7e — extracted from
 // View::RenderHud). A 16-dot ring in the top-right that fills clockwise
@@ -18,7 +18,7 @@ namespace gfx { class IRenderer; }
 // Render-only (MVC §5): reads World const, never mutates. The ring is
 // drawn as 16 small filled squares (no DrawCircle dependency on the
 // renderer interface), keeping it spy-testable headlessly.
-void DrawSportsLapRing(nccu::gfx::IRenderer& r,
+void DrawSportsLapRing(nccu::engine::render::IRenderer& r,
                        const World& world,
                        float screenW,
                        float screenH);

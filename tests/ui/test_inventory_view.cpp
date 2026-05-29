@@ -19,14 +19,14 @@
 
 namespace {
 
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     std::vector<nccu::engine::math::Color> rectColors;
     std::vector<std::string> texts;
     void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color c) override {
         ++rects; rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {}
     void DrawText(std::string_view t, nccu::engine::math::Vec2, int,
                   nccu::engine::math::Color) override { texts.emplace_back(t); }
@@ -284,7 +284,7 @@ TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
 // the SAME shared glyph (and its signature colour) the world / ending use,
 // keyed off the carried-umbrella sentinel.
 TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
-    using nccu::gfx::UmbrellaLook;
+    using nccu::game::gfx::UmbrellaLook;
     // Cursed umbrella row → the dark-purple swatch.
     {
         Spy r;
@@ -293,7 +293,7 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
              nccu::kItemCursedUmbrella}};
         nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
         CHECK(HasRectRGB(r,
-            nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+            nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
     }
     // Ugly umbrella row → the fluorescent-green swatch.
     {
@@ -303,7 +303,7 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
              nccu::kItemUglyUmbrella}};
         nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
         CHECK(HasRectRGB(r,
-            nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+            nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
     }
     // True umbrella row → the blue swatch.
     {
@@ -312,7 +312,7 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
             {"真傘", 0, "完美結局的關鍵", false, nccu::kItemTrueUmbrella}};
         nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
         CHECK(HasRectRGB(r,
-            nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+            nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
     }
 }
 
@@ -448,8 +448,8 @@ TEST_CASE("U2-T2: a long description is wrapped to fit the box width") {
 // previously fragile/proftrap fell through to the (wrong) intact blue. We
 // assert the swatch's signature colour appears in the drawn rects.
 TEST_CASE("U2-T3: fragile→破傘 and proftrap→陷阱傘 swatches are correct") {
-    using nccu::gfx::UmbrellaLook;
-    using nccu::gfx::UmbrellaLookColor;
+    using nccu::game::gfx::UmbrellaLook;
+    using nccu::game::gfx::UmbrellaLookColor;
 
     // 破傘 (Fragile) → the FragileBroken (handle/ribs, grey) signature.
     {

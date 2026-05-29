@@ -25,7 +25,7 @@
 //                            NOT one of the owner's four; given a distinct
 //                            danger-red look so it can never be confused with
 //                            the true (blue) or ugly (green) umbrella.
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 enum class UmbrellaLook {
     TrueBlue,       // 真傘 — blue
@@ -58,7 +58,7 @@ enum class UmbrellaLook {
 // ending card fades in via its own alpha) can draw the glyph at the matching
 // strength. Defaults to fully opaque for the in-world / pickup callers, which
 // never fade — so their behaviour is byte-unchanged.
-inline void DrawUmbrellaGlyph(IRenderer& r, UmbrellaLook look, nccu::engine::math::Rect bounds,
+inline void DrawUmbrellaGlyph(nccu::engine::render::IRenderer& r, UmbrellaLook look, nccu::engine::math::Rect bounds,
                               unsigned char alpha = 255) {
     namespace C = nccu::engine::math::Colors;
     const float x = bounds.x;
@@ -139,6 +139,6 @@ inline void DrawUmbrellaGlyph(IRenderer& r, UmbrellaLook look, nccu::engine::mat
     }
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_UMBRELLA_GLYPH_H_

@@ -45,7 +45,7 @@ void LoadingScene::Enter() {
     // first DrawFrame and the kHoldFrames loop; doing it in Enter
     // keeps the same intent — the warm runs ONCE, before any
     // Update/Draw pair fires.
-    nccu::gfx::PreloadGameTextures();
+    nccu::game::world::PreloadGameTextures();
 }
 
 SceneCommand LoadingScene::Update(float /*dt*/) {
@@ -57,8 +57,8 @@ SceneCommand LoadingScene::Update(float /*dt*/) {
     return {};
 }
 
-void LoadingScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
-    using namespace nccu::gfx;
+void LoadingScene::Draw(nccu::engine::render::IRenderer& /*renderer*/) {
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
     Renderer r;
     r.Clear(kBackdrop);

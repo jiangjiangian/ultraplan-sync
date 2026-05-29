@@ -13,7 +13,7 @@
 
 namespace nccu {
 
-using namespace nccu::gfx;
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 namespace {

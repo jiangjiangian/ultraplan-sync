@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // Top-left HUD status panel (P1 step 7a — extracted from View::RenderHud).
 //
@@ -21,7 +21,7 @@ namespace gfx { class IRenderer; }
 //
 // Anchored at the fixed (10, 10) screen offset that the original code
 // used; no caller adjustment needed.
-void DrawStatusPanel(nccu::gfx::IRenderer& r, const World& world);
+void DrawStatusPanel(nccu::engine::render::IRenderer& r, const World& world);
 
 }  // namespace nccu
 

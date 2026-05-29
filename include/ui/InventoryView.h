@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace nccu {
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // kInventoryRowsPerPage is defined in game/quest/InventoryPaging.h
 // (single source of truth, included above) so the game-layer
@@ -38,7 +38,7 @@ namespace gfx { class IRenderer; }
 // cursor's page (selected row always visible) + a 「第 N／M 頁」 indicator;
 // the enlarged box + per-row description area WRAP the (post-G4, longer)
 // effect text inside the border (nccu::dialog::WrapToCells), never spilling.
-void DrawInventory(nccu::gfx::IRenderer& r,
+void DrawInventory(nccu::engine::render::IRenderer& r,
                    const std::vector<InventoryRow>& rows,
                    int cursor,
                    float screenW, float screenH);

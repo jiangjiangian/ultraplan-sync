@@ -11,11 +11,11 @@
 
 namespace nccu {
 
-void DrawPauseMenu(nccu::gfx::IRenderer& r,
+void DrawPauseMenu(nccu::engine::render::IRenderer& r,
                    const World& world,
                    float screenW,
                    float screenH) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     if (!world.MenuOpen()) return;

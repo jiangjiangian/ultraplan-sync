@@ -13,8 +13,8 @@
 
 namespace nccu {
 
-void DrawQuestGiverIndicators(nccu::gfx::IRenderer& r, const World& world) {
-    using namespace nccu::gfx;
+void DrawQuestGiverIndicators(nccu::engine::render::IRenderer& r, const World& world) {
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
     using nccu::queries::ForEachActive;
 

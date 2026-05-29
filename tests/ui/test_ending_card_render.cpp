@@ -18,7 +18,7 @@ namespace {
 // the ending card's draw calls can be asserted without a GL context.
 // UI-B-3 also records each text's draw X + font size, so the within-screen
 // wrap (no card row spills the box) can be asserted.
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     int sprites = 0;
     std::vector<nccu::engine::math::Color> rectColors;
@@ -30,7 +30,7 @@ struct Spy final : nccu::gfx::IRenderer {
         ++rects;
         rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }
     void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
                   nccu::engine::math::Color) override {
@@ -175,10 +175,10 @@ TEST_CASE("T3: Ending A draws the 真傘 (blue) umbrella swatch") {
     g.karma = 90; g.hasTrueUmbrella = true; g.consoledTA = true;
     Spy r;
     nccu::DrawEndingCard(r, g, "結局 A", 1.0f, 800.0f, 450.0f);
-    using nccu::gfx::UmbrellaLook;
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+    using nccu::game::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
 }
 
 TEST_CASE("T3: Ending B draws the 詛咒傘 (dark purple) umbrella swatch") {
@@ -187,9 +187,9 @@ TEST_CASE("T3: Ending B draws the 詛咒傘 (dark purple) umbrella swatch") {
     g.karma = -5; g.tookCursed = true;
     Spy r;
     nccu::DrawEndingCard(r, g, "結局 B", 1.0f, 800.0f, 450.0f);
-    using nccu::gfx::UmbrellaLook;
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    using nccu::game::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
 }
 
 TEST_CASE("T3: Ending C draws the 醜傘 (green) umbrella swatch — even when 體諒") {
@@ -201,9 +201,9 @@ TEST_CASE("T3: Ending C draws the 醜傘 (green) umbrella swatch — even when �
     g.karma = 60; g.boughtUgly = true; g.consoledTA = true;
     Spy r;
     nccu::DrawEndingCard(r, g, "結局 C", 1.0f, 800.0f, 450.0f);
-    using nccu::gfx::UmbrellaLook;
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    using nccu::game::gfx::UmbrellaLook;
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
 }
 
 // G1 — the Ending D card DATA contract the UI phase consumes. IsEndingState
@@ -222,11 +222,11 @@ TEST_CASE("G1: Ending D card draws the 破傘 (FragileBroken) swatch + D copy") 
     g.finaleChoiceMade = true;
     Spy r;
     nccu::DrawEndingCard(r, g, "結局 D", 1.0f, 800.0f, 450.0f);
-    using nccu::gfx::UmbrellaLook;
+    using nccu::game::gfx::UmbrellaLook;
     // The破傘 glyph the UI phase maps D to — NOT the true/cursed/ugly looks.
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
     // D-specific card copy.
     CHECK(Has(r, "65"));                 // final karma number
     CHECK(Has(r, "風雨同行"));            // path label

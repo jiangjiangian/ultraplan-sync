@@ -12,8 +12,9 @@
 #include <vector>
 
 namespace nccu {
+using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
 
-using namespace nccu::gfx;
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 bool IsEndingState(SemesterState s) noexcept {
@@ -53,7 +54,7 @@ std::string_view caption(SemesterState s) {
 // ending_{a,b,c}.md (the .md stays the narrative bible; THIS table is
 // what actually renders, because View.cpp early-returns before the .md
 // is ever drawn). Each line is short enough for the screen width; every
-// glyph here is baked into gfx::Font.h UiLiteralChars() (5c) so the card
+// glyph here is baked into nccu::engine::render::Font.h UiLiteralChars() (5c) so the card
 // never tofus. 3 lines/ending keeps the card inside the 450px viewport.
 const std::vector<std::string>& reasonLines(SemesterState s) {
     static const std::vector<std::string> kA = {
@@ -207,15 +208,15 @@ Color endingTextColor(SemesterState s, unsigned char a) {
 // mismatch the verdict — the fix for "體諒卻顯示醜傘":
 //   A 完美結局 → 真傘 (blue)   B 墮落結局 → 詛咒傘 (dark purple)
 //   C 務實結局 → 醜傘 (green)
-[[nodiscard]] nccu::gfx::UmbrellaLook endingUmbrellaLook(SemesterState s) {
+[[nodiscard]] nccu::game::gfx::UmbrellaLook endingUmbrellaLook(SemesterState s) {
     switch (s) {
-        case SemesterState::Ending_A: return nccu::gfx::UmbrellaLook::TrueBlue;
-        case SemesterState::Ending_B: return nccu::gfx::UmbrellaLook::CursedPurple;
+        case SemesterState::Ending_A: return nccu::game::gfx::UmbrellaLook::TrueBlue;
+        case SemesterState::Ending_B: return nccu::game::gfx::UmbrellaLook::CursedPurple;
         // Ending_D (G1): the 破傘 — kind heart, but the canopy is gone and
         // only the bent ribs/handle remain (the owner's "風吹雨打把傘磨破了").
-        case SemesterState::Ending_D: return nccu::gfx::UmbrellaLook::FragileBroken;
-        case SemesterState::Ending_C: return nccu::gfx::UmbrellaLook::UglyGreen;
-        default:                      return nccu::gfx::UmbrellaLook::TrueBlue;
+        case SemesterState::Ending_D: return nccu::game::gfx::UmbrellaLook::FragileBroken;
+        case SemesterState::Ending_C: return nccu::game::gfx::UmbrellaLook::UglyGreen;
+        default:                      return nccu::game::gfx::UmbrellaLook::TrueBlue;
     }
 }
 
@@ -305,7 +306,7 @@ void DrawEndingCard(IRenderer& r, const EndingSummary& summary,
     // 暗紫 / C 醜傘綠). Centred at the top, alpha-scaled with the card fade.
     constexpr float kUmbW = 56.0f;
     constexpr float kUmbH = 50.0f;
-    nccu::gfx::DrawUmbrellaGlyph(
+    nccu::game::gfx::DrawUmbrellaGlyph(
         r, endingUmbrellaLook(state),
         Rect{screenW * 0.5f - kUmbW * 0.5f, 8.0f, kUmbW, kUmbH}, a);
 

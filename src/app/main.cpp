@@ -43,7 +43,7 @@ int main() {
     constexpr int kWinW = 800;
     constexpr int kWinH = 450;
 
-    auto win = nccu::gfx::Window::Builder()
+    auto win = nccu::engine::render::Window::Builder()
                    .Title("Lost Umbrella - MVP")
                    .Size(kWinW, kWinH)
                    .Fps(60)
@@ -51,7 +51,7 @@ int main() {
 
     // raylib's default font is ASCII-only; load the CJK font now that the
     // GL context exists, before any text (title / select / HUD) draws.
-    nccu::gfx::EnsureFont();
+    nccu::engine::render::EnsureFont();
 
     // Audio device — one-per-process RAII handle. Today no-op (project
     // ships no audio assets yet), but the scaffold lives in main()'s
@@ -70,7 +70,7 @@ int main() {
     // window close button, never on ESC. Quitting is the 離開 menu
     // item — on the title menu and the in-game pause menu (M).
     nccu::app::SceneManager sm;
-    nccu::gfx::RaylibRenderer renderer;
+    nccu::engine::render::RaylibRenderer renderer;
 
     if (harness.Active()) {
         // Harness skip path: deterministic, runs ONCE. GameplayScene
@@ -135,7 +135,7 @@ int main() {
     // GL → UB). `win` is still alive on this line, so GL is valid. Mirror of
     // the Font discipline; the cache owns each texture once, so this is the
     // single ::UnloadTexture point for the shared (cached) textures.
-    nccu::gfx::ShutdownTextureCache();
-    nccu::gfx::ShutdownFont();
+    nccu::engine::render::ShutdownTextureCache();
+    nccu::engine::render::ShutdownFont();
     return 0;
 }

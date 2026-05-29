@@ -5,8 +5,8 @@
 #include <limits>
 #include <vector>
 
-using namespace nccu::gfx;
 using namespace nccu::engine::math;
+using namespace nccu::game::gfx;
 using nccu::SemesterState;
 using nccu::kSportsTrackCx;
 using nccu::kSportsTrackCy;

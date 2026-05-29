@@ -20,7 +20,7 @@
 // user-managed and must not be committed (CLAUDE.md §5). Drop the
 // converted strips (see tools/gif_to_strip.py) at the stripPath below.
 
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 // 羅馬廣場 plaza. The Ch2 roster comment in include/quest/ChapterSpawns.h
 // pins it: "學霸 (bookworm) sits under the 羅馬廣場 statue (plaza centre
@@ -66,6 +66,6 @@ inline constexpr std::array<DecorationDef, 2> kDecorations{{
                   /*frameCount=*/24, /*drawScale=*/28.0f, /*fps=*/8.0},
 }};
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_DECORATIONS_H_

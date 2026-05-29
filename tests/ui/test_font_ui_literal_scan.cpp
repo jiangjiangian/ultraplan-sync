@@ -248,7 +248,7 @@ std::set<int> ScanContent() {
 // regardless of whether docs/content can be read.
 std::set<int> UiLiteralCodepoints() {
     std::set<int> cps;
-    DecodeUtf8Into(nccu::gfx::detail::UiLiteralChars(), cps);
+    DecodeUtf8Into(nccu::engine::render::detail::UiLiteralChars(), cps);
     return cps;
 }
 

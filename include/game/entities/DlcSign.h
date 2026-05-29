@@ -31,7 +31,7 @@ class DlcSign final : public WithRoles<DlcSign, GameObject>,
 public:
     explicit DlcSign(nccu::engine::math::Vec2 position);
 
-    void Render(nccu::gfx::IRenderer& renderer) const override;
+    void Render(nccu::engine::render::IRenderer& renderer) const override;
     // Re-readable: publishes the teaser ShowMessage but does NOT set
     // isActive_ = false, so the sign survives the interact and the player
     // can read it again. No null-initiator guard needed beyond the early

@@ -56,8 +56,8 @@ private:
     // draws nothing. These are View-side cosmetics — never GameObjects,
     // never in World::Objects() — so the harness state.jsonl is unchanged.
     struct DecorationSprite {
-        std::size_t        defIndex;   // into nccu::gfx::kDecorations
-        nccu::gfx::Texture texture;    // the loaded strip (move-only)
+        std::size_t        defIndex;   // into nccu::game::gfx::kDecorations
+        nccu::engine::render::Texture texture;    // the loaded strip (move-only)
     };
 
     // Per-frame render passes — Draw() is the dispatcher; each helper owns
@@ -85,13 +85,13 @@ private:
     void RenderHud(const World& world, SemesterState st);
     void RenderOverlays(const World& world);
 
-    nccu::gfx::RaylibRenderer        renderer_;
-    nccu::gfx::Camera2D              camera_;
-    nccu::gfx::Texture               worldmap_;
+    nccu::engine::render::RaylibRenderer        renderer_;
+    nccu::engine::render::Camera2D              camera_;
+    nccu::engine::render::Texture               worldmap_;
     nccu::engine::math::Vec2                  screenCenter_;
     nccu::engine::math::Vec2                  worldSize_;
     nccu::engine::math::Vec2                  viewportSize_;
-    std::vector<nccu::gfx::Texture>  buildingTextures_;
+    std::vector<nccu::engine::render::Texture>  buildingTextures_;
     std::vector<BuildingSprite>      buildings_;
     std::vector<DecorationSprite>    decorations_;  // ambient strips (cosmetic)
     std::vector<DrawRef>             drawOrder_;  // per-frame scratch

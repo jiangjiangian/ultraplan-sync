@@ -32,7 +32,7 @@
 // Headless-safe: CollectCodepoints() + raylib's codepoint decoder need
 // no GL context (same as the sibling font test).
 
-using nccu::gfx::detail::CollectCodepoints;
+using nccu::engine::render::detail::CollectCodepoints;
 
 namespace {
 

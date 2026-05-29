@@ -8,7 +8,7 @@
 
 #include <string>
 
-void CashPickup::Render(nccu::gfx::IRenderer& renderer) const {
+void CashPickup::Render(nccu::engine::render::IRenderer& renderer) const {
     // Visible ground marker so loose cash is spottable while exploring —
     // an invisible pickup is undiscoverable (the exact gap 1b-5 fixed for
     // QuestFlagPickup). The full-hitbox Green block read as anonymous

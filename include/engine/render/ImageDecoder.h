@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 // Blueprint Phase 4 R5 — confine raylib.h to engine/. A pure-data
 // decoded RGBA8 image, returned by LoadRgba8Image below. Game-domain
@@ -28,6 +28,6 @@ struct DecodedImage {
 // so this header pulls in zero raylib symbols (R5 invariant).
 [[nodiscard]] DecodedImage LoadRgba8Image(const std::string& path);
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // ENGINE_RENDER_IMAGE_DECODER_H_

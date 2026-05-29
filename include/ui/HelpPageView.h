@@ -18,8 +18,8 @@ namespace nccu::ui {
 //
 // Renderer-agnostic by design: the caller passes a `fillRect` callable so
 // the in-game overlay (an IRenderer&) and the title screen (the concrete
-// gfx::Renderer) both reuse this without coupling to one drawing class.
-// Text is drawn through gfx::TextBuilder directly (exactly as both call
+// nccu::engine::render::Renderer) both reuse this without coupling to one drawing class.
+// Text is drawn through nccu::engine::render::TextBuilder directly (exactly as both call
 // sites already did). Pure presentation — no World/Player, no input (MVC).
 
 // Parameters that differed between the two original call sites; everything
@@ -35,7 +35,7 @@ struct HelpPageStyle {
 };
 
 // Draw the panel, title, current help page body, page indicator and the
-// 返回 chip via `fillRect` (for the rects) + gfx::TextBuilder (for text).
+// 返回 chip via `fillRect` (for the rects) + nccu::engine::render::TextBuilder (for text).
 // The caller is responsible for any backdrop drawn BEFORE this (the
 // overlay's full-screen scrim / the title screen's Clear) — those differ
 // and stay at the call site.

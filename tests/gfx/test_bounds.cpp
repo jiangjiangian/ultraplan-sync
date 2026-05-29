@@ -2,8 +2,8 @@
 #include "game/gfx/Bounds.h"
 #include "engine/math/Vec2.h"
 
-using namespace nccu::gfx;
 using namespace nccu::engine::math;
+using namespace nccu::game::gfx;
 
 TEST_CASE("ClampToWorld: point inside world is unchanged") {
     auto v = ClampToWorld(Vec2{1000.0f, 1000.0f}, Vec2{24.0f, 24.0f}, Vec2{2048.0f, 2048.0f});

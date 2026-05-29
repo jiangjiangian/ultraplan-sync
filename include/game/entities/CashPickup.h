@@ -16,7 +16,7 @@ class CashPickup final : public WithRoles<CashPickup, Item>,
 public:
     CashPickup(nccu::engine::math::Vec2 position, int value);
 
-    void Render(nccu::gfx::IRenderer& renderer) const override;  // visible ground marker
+    void Render(nccu::engine::render::IRenderer& renderer) const override;  // visible ground marker
     void Interact(Player* initiator) override { OnPickup(initiator); }
 
     void OnPickup(Player* player) override;

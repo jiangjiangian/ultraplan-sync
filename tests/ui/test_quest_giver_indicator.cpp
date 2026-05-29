@@ -11,7 +11,7 @@ namespace {
 // test_quest_pickup_render.cpp / test_umbrella_render.cpp. Records every
 // primitive so the polymorphic Render() path is testable headless (no GL
 // context, no raylib draw call escapes into the world).
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
     struct TextCall { std::string s; nccu::engine::math::Vec2 pos; int size;
                       nccu::engine::math::Color c; };
@@ -22,7 +22,7 @@ struct Spy final : nccu::gfx::IRenderer {
     void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         rects.push_back({r, c});
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {
         ++sprites;
     }

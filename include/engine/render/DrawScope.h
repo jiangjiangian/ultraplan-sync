@@ -2,7 +2,7 @@
 #define GFX_DRAW_SCOPE_H_
 #include "raylib.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 class DrawScope {
 public:
@@ -15,6 +15,6 @@ public:
     DrawScope& operator=(DrawScope&&)      = delete;
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_DRAW_SCOPE_H_

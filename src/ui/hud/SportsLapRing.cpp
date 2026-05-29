@@ -9,11 +9,11 @@
 
 namespace nccu {
 
-void DrawSportsLapRing(nccu::gfx::IRenderer& r,
+void DrawSportsLapRing(nccu::engine::render::IRenderer& r,
                        const World& world,
                        float screenW,
                        float /*screenH*/) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // 操場 校慶 lap progress ring (HUD, screen space) — fills clockwise as

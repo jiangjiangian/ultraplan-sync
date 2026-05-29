@@ -3,7 +3,7 @@
 #include <functional>
 #include <memory>
 
-namespace nccu::gfx { class IRenderer; }
+namespace nccu::engine::render { class IRenderer; }
 namespace nccu { class World; }       // harness-snapshot accessor — see below
 
 namespace nccu::app {
@@ -56,12 +56,12 @@ public:
     // mid-frame. SceneCommand{Kind::None} keeps the scene active.
     [[nodiscard]] virtual SceneCommand Update(float dt) = 0;
 
-    // Per-frame render pass. Called between gfx::DrawScope's
+    // Per-frame render pass. Called between nccu::engine::render::DrawScope's
     // BeginDrawing/EndDrawing — the scene paints into the provided
     // renderer. Pure so a leaf must implement it (a scene without
     // visible output is non-sensical; LoadingScene's "warm-up"
     // still emits a clear).
-    virtual void Draw(nccu::gfx::IRenderer& renderer) = 0;
+    virtual void Draw(nccu::engine::render::IRenderer& renderer) = 0;
 
     // Counterpart to Enter — unsubscribe, drop refs. Default no-op.
     virtual void Exit() {}

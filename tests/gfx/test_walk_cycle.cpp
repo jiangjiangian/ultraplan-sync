@@ -2,9 +2,9 @@
 #include "game/gfx/WalkCycle.h"
 
 using nccu::engine::math::Vec2;
-using nccu::gfx::WalkColumn;
-using nccu::gfx::WalkRowForFacing;
-using nccu::gfx::kWalkColumns;
+using nccu::game::gfx::WalkColumn;
+using nccu::game::gfx::WalkRowForFacing;
+using nccu::game::gfx::kWalkColumns;
 
 // U1-T3: the shared Pipoya walk-sheet maths the Player and a wandering /
 // 校慶-runner NPC both use. Pure functions → headlessly testable; pins the

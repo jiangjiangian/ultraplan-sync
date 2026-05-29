@@ -10,11 +10,11 @@
 
 namespace nccu {
 
-void DrawRainVignette(nccu::gfx::IRenderer& r,
+void DrawRainVignette(nccu::engine::render::IRenderer& r,
                       const World& world,
                       float screenW,
                       float screenH) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // Rain "pressure" vignette — PURE render derived only from

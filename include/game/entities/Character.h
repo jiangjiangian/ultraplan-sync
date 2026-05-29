@@ -22,7 +22,7 @@ public:
     }
 
     // Sets world position and keeps hit-box in lock-step. Used by main.cpp
-    // to apply post-Update clamps from nccu::gfx::ClampToWorld.
+    // to apply post-Update clamps from nccu::game::gfx::ClampToWorld.
     void SetPosition(nccu::engine::math::Vec2 p) noexcept {
         position_ = p;
         hitBox_.x = p.x;

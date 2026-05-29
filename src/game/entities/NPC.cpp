@@ -15,8 +15,8 @@ namespace {
 // Pipoya walk-sheet cell maths now live in the shared, unit-tested
 // gfx/WalkCycle.h (the same source the Player follows), so a 校慶 crowd
 // runner AND an ambient wanderer animate exactly the way the Player does.
-constexpr int   kCell     = nccu::gfx::kPipoyaCell;
-constexpr float kFrameDur = nccu::gfx::kWalkFrameDuration;
+constexpr int   kCell     = nccu::game::gfx::kPipoyaCell;
+constexpr float kFrameDur = nccu::game::gfx::kWalkFrameDuration;
 }  // namespace
 
 NPC::NPC(nccu::engine::math::Vec2 position,
@@ -150,7 +150,7 @@ void NPC::Update(float deltaTime) {
     }
 }
 
-void NPC::Render(nccu::gfx::IRenderer& renderer) const {
+void NPC::Render(nccu::engine::render::IRenderer& renderer) const {
     using nccu::engine::math::Rect;
     if (!sprite_ || !sprite_->IsValid()) {
         renderer.DrawRect(hitBox_, nccu::engine::math::Colors::Green);
@@ -198,14 +198,14 @@ NPC::RenderCell NPC::CurrentRenderCell() const noexcept {
     // already pinned animStep_ to 0 in Update, so WalkColumn handles the
     // at-rest case without a special branch.
     if (circular_ || wander_) {
-        return RenderCell{nccu::gfx::WalkColumn(animStep_),
-                          nccu::gfx::WalkRowForFacing(facing_)};
+        return RenderCell{nccu::game::gfx::WalkColumn(animStep_),
+                          nccu::game::gfx::WalkRowForFacing(facing_)};
     }
     return RenderCell{1, 0};
 }
 
 void NPC::LoadSprite(const std::string& path) {
-    sprite_ = nccu::gfx::Texture::Load(path);
+    sprite_ = nccu::engine::render::Texture::Load(path);
 }
 
 void NPC::Interact(Player* /*initiator*/) {

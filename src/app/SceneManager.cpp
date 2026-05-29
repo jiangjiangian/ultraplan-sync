@@ -66,8 +66,8 @@ SceneManager::StepResult SceneManager::ApplyCommand(SceneCommand cmd) {
     return StepResult::Continue;
 }
 
-SceneManager::RunOutcome SceneManager::Run(nccu::gfx::Window& window,
-                                           nccu::gfx::IRenderer& renderer,
+SceneManager::RunOutcome SceneManager::Run(nccu::engine::render::Window& window,
+                                           nccu::engine::render::IRenderer& renderer,
                                            nccu::Harness& harness) {
     while (!window.ShouldClose() && !harness.ShouldQuit() &&
            !stack_.empty()) {
@@ -85,7 +85,7 @@ SceneManager::RunOutcome SceneManager::Run(nccu::gfx::Window& window,
             // GL frame the inline pre-Phase-3 main.cpp used. Closed
             // before EndFrame so the harness sees the post-EndDrawing
             // pixel state.
-            nccu::gfx::DrawScope frame;
+            nccu::engine::render::DrawScope frame;
             stack_.back()->Draw(renderer);
         }
 

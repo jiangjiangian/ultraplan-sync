@@ -31,18 +31,18 @@ void TransparentUmbrella::OnPickup(Player* player) {
     if (QuestGateOpen(player)) beClaimed(player);
 }
 
-void TransparentUmbrella::Render(nccu::gfx::IRenderer& renderer) const {
+void TransparentUmbrella::Render(nccu::engine::render::IRenderer& renderer) const {
     // The owner pinned each umbrella's look (真傘=藍 / 破傘=剩手柄 /
     // 詛咒傘=暗紫 / 醜傘=綠, ProfessorTrap a danger-red trap). All four
     // silhouettes + their signature colours live in ONE place,
-    // gfx::DrawUmbrellaGlyph, which is ALSO what the ground pickup and the
+    // nccu::game::gfx::DrawUmbrellaGlyph, which is ALSO what the ground pickup and the
     // ending card draw — so a given umbrella reads identically wherever it
     // appears. The per-subclass UmbrellaStyle just selects which look; the
     // colour now comes from the shared glyph (umbrellaTint_ is retained on
     // the object for any caller that wants the tint, but Render no longer
     // needs it). Rect-only, no sprite/text — MVC clean (the View renders
     // off the object's own data; no sim/state touched).
-    nccu::gfx::DrawUmbrellaGlyph(renderer, LookForStyle(style_),
+    nccu::game::gfx::DrawUmbrellaGlyph(renderer, LookForStyle(style_),
                                  nccu::engine::math::Rect{position_.x, position_.y,
                                                  20.0f, 20.0f});
 }

@@ -32,12 +32,12 @@ public:
 
     void Enter() override;
     [[nodiscard]] SceneCommand Update(float dt) override;
-    void Draw(nccu::gfx::IRenderer& renderer) override;
+    void Draw(nccu::engine::render::IRenderer& renderer) override;
 
 private:
     GameplayFactory             gameplay_;
     int                         cursor_ = 0;
-    std::vector<nccu::gfx::Texture> previews_;
+    std::vector<nccu::engine::render::Texture> previews_;
     nccu::PressLatch            confirm_;          // gate held-Enter from TitleScene
 };
 

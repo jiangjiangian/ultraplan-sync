@@ -11,11 +11,11 @@
 
 namespace nccu {
 
-void DrawHelpOverlay(nccu::gfx::IRenderer& r,
+void DrawHelpOverlay(nccu::engine::render::IRenderer& r,
                      const World& world,
                      float screenW,
                      float screenH) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // REQUIREMENT #9 + U2-T4: the in-game 說明 (how-to-play) overlay —

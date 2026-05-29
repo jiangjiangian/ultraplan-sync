@@ -2,7 +2,7 @@
 #include "engine/render/Camera2D.h"
 #include "engine/math/Vec2.h"
 
-using namespace nccu::gfx;
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 TEST_CASE("Camera2D defaults: zero offset/target/rotation, zoom 1.0") {

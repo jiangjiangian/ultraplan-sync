@@ -20,7 +20,7 @@ namespace {
 // colours so the big card's draw calls are assertable without a GL context.
 // UI-B-3 also records each text's draw X + font size, so the within-panel
 // wrap (no card row spills the box) is assertable.
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     std::vector<nccu::engine::math::Color> rectColors;
     std::vector<std::string> texts;
@@ -29,7 +29,7 @@ struct Spy final : nccu::gfx::IRenderer {
     void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color c) override {
         ++rects; rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {}
     void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
                   nccu::engine::math::Color) override {
@@ -175,10 +175,10 @@ TEST_CASE("DrawChapterCard: a Lost card draws headline + subtitle + 破傘 cue")
     CHECK(r.rects >= 3);                            // backdrop + panel + rules
     CHECK(Has(r, "傘又掉了"));
     CHECK(Has(r, "第二章 期中考"));
-    using nccu::gfx::UmbrellaLook;
+    using nccu::game::gfx::UmbrellaLook;
     // The Lost card cues the GONE umbrella (the 破傘 ribs), NOT a whole one.
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
 }
 
 TEST_CASE("DrawChapterCard: a Found card draws 找到傘了 + the 真傘 (blue) cue") {
@@ -188,10 +188,10 @@ TEST_CASE("DrawChapterCard: a Found card draws 找到傘了 + the 真傘 (blue) 
     Spy r;
     nccu::DrawChapterCard(r, c, 800.0f, 450.0f);
     CHECK(Has(r, "找到傘了"));
-    using nccu::gfx::UmbrellaLook;
+    using nccu::game::gfx::UmbrellaLook;
     // The Found card cues the recovered 真傘 (blue), NOT the broken ribs.
-    CHECK(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
-    CHECK_FALSE(HasRectRGB(r, nccu::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
+    CHECK(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::TrueBlue)));
+    CHECK_FALSE(HasRectRGB(r, nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::FragileBroken)));
 }
 
 // UI-B-3 — no chapter-card headline/subtitle row spills the panel. The card
