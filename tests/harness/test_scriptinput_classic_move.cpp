@@ -16,7 +16,7 @@
 
 using nccu::ScriptInput;
 using nccu::World;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 // BUGLEDGER I4 regression lock.
 //
@@ -92,7 +92,7 @@ TEST_CASE("ScriptInput: minimal plan verbs still resolve after the I4 fix") {
         "wait 2\n"
         "quit\n");
     in.Load(src);
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     REQUIRE(in.HasPlan());                // plan-bearing: verbs present
     CHECK_FALSE(in.PlanDone());
 
@@ -106,7 +106,7 @@ TEST_CASE("ScriptInput: minimal plan verbs still resolve after the I4 fix") {
         quitObserved = in.WantsQuit();
     }
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     // wait 2 then quit completed: the resolver ran end-to-end for a

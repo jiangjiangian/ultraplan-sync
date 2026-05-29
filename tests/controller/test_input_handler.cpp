@@ -13,26 +13,26 @@
 //
 // A minimal stub InputSource lets the tests inject deterministic key
 // state without spinning up the real raylib stack or the harness's
-// ScriptInput. Same interface as nccu::gfx::LiveInput / ScriptInput so
+// ScriptInput. Same interface as nccu::engine::input::LiveInput / ScriptInput so
 // behaviour stays byte-equivalent to the gameplay path.
 
 namespace {
 
-class StubInput final : public nccu::gfx::InputSource {
+class StubInput final : public nccu::engine::input::InputSource {
 public:
-    bool IsDown(nccu::gfx::Key k) const noexcept override {
+    bool IsDown(nccu::engine::input::Key k) const noexcept override {
         return down_ & Bit(k);
     }
-    bool IsPressed(nccu::gfx::Key k) const noexcept override {
+    bool IsPressed(nccu::engine::input::Key k) const noexcept override {
         return pressed_ & Bit(k);
     }
-    bool IsReleased(nccu::gfx::Key k) const noexcept override {
+    bool IsReleased(nccu::engine::input::Key k) const noexcept override {
         return released_ & Bit(k);
     }
 
-    void Hold(nccu::gfx::Key k)    { down_ |= Bit(k); }
-    void Release(nccu::gfx::Key k) { down_ &= ~Bit(k); released_ |= Bit(k); }
-    void Tap(nccu::gfx::Key k) {
+    void Hold(nccu::engine::input::Key k)    { down_ |= Bit(k); }
+    void Release(nccu::engine::input::Key k) { down_ &= ~Bit(k); released_ |= Bit(k); }
+    void Tap(nccu::engine::input::Key k) {
         down_ |= Bit(k);
         pressed_ |= Bit(k);
     }
@@ -44,7 +44,7 @@ public:
     }
 
 private:
-    static std::uint32_t Bit(nccu::gfx::Key k) {
+    static std::uint32_t Bit(nccu::engine::input::Key k) {
         // Pack relevant keys into bits. We only test E here; the
         // helper trivially extends to other keys if future tests add
         // them. Anything outside the [0, 31] hash range hits bucket 0
@@ -62,10 +62,10 @@ private:
 class ScopedInputSource {
 public:
     explicit ScopedInputSource(StubInput* src) {
-        nccu::gfx::Input::SetSource(src);
+        nccu::engine::input::Input::SetSource(src);
     }
     ~ScopedInputSource() {
-        nccu::gfx::Input::SetSource(nullptr);  // back to LiveInput
+        nccu::engine::input::Input::SetSource(nullptr);  // back to LiveInput
     }
     ScopedInputSource(const ScopedInputSource&)            = delete;
     ScopedInputSource& operator=(const ScopedInputSource&) = delete;
@@ -81,14 +81,14 @@ TEST_CASE("InputHandler: edge-E fires advance on a one-frame tap") {
     nccu::InputHandler ih;
 
     // Frame 1: E tapped (edge-press AND down for this frame). Tap.
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));      // edge fired
     CHECK(ih.HoldMs() > 0.0f);                  // ms accumulating
     CHECK(ih.Cooldown() == 0);                  // edge != auto
 
     // Frame 2: tap edge cleared, key released. No advance.
     stub.NextFrame();
-    stub.Release(nccu::gfx::Key::E);
+    stub.Release(nccu::engine::input::Key::E);
     CHECK_FALSE(ih.TickDialogAdvance(kFrameDt));
     CHECK(ih.HoldMs() == 0.0f);                 // reset on release
     CHECK(ih.Cooldown() == 0);
@@ -100,7 +100,7 @@ TEST_CASE("InputHandler: holding E under 300 ms does NOT auto-advance") {
     nccu::InputHandler ih;
 
     // Frame 1: tap E (edge fires advance). Now hold it.
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));      // edge advance
 
     // Hold continuously without re-tapping. Edge IsPressed clears next
@@ -119,7 +119,7 @@ TEST_CASE("InputHandler: holding E past 300 ms then cooldown-paced auto") {
     nccu::InputHandler ih;
 
     // Frame 1: tap E. Edge advance fires once.
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));
 
     // Tick frames while E stays held. Once HoldMs crosses 300 ms the
@@ -142,20 +142,20 @@ TEST_CASE("InputHandler: release between holds resets the timer") {
     nccu::InputHandler ih;
 
     // First hold: get HoldMs to non-zero, then release.
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));
     stub.NextFrame();
     CHECK_FALSE(ih.TickDialogAdvance(kFrameDt));
     CHECK(ih.HoldMs() > 0.0f);
 
     // Release.
-    stub.Release(nccu::gfx::Key::E);
+    stub.Release(nccu::engine::input::Key::E);
     stub.NextFrame();
     CHECK_FALSE(ih.TickDialogAdvance(kFrameDt));
     CHECK(ih.HoldMs() == 0.0f);                 // reset
 
     // New tap a moment later — edge fires fresh, not "stale-hold auto".
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));
 }
 
@@ -165,7 +165,7 @@ TEST_CASE("InputHandler: ResetDialogAdvance clears hold + cooldown") {
     nccu::InputHandler ih;
 
     // Accumulate hold time + arm cooldown.
-    stub.Tap(nccu::gfx::Key::E);
+    stub.Tap(nccu::engine::input::Key::E);
     CHECK(ih.TickDialogAdvance(kFrameDt));
     for (int f = 1; f < 30; ++f) {
         stub.NextFrame();
@@ -193,14 +193,14 @@ TEST_CASE("InputHandler: edge + hold on the SAME frame double-fires nothing") {
     // reset, even though normal release does — defensive check).
     // We poke HoldMs by ticking while down, then re-tap; the edge
     // path must dominate.
-    stub.Hold(nccu::gfx::Key::E);
+    stub.Hold(nccu::engine::input::Key::E);
     for (int f = 0; f < 30; ++f) {
         stub.NextFrame();
         ih.TickDialogAdvance(kFrameDt);
     }
     // Force an edge-press on top of the hold.
     stub.NextFrame();
-    stub.Tap(nccu::gfx::Key::E);                // tap == down + pressed
+    stub.Tap(nccu::engine::input::Key::E);                // tap == down + pressed
     const int cooldownBefore = ih.Cooldown();
     CHECK(ih.TickDialogAdvance(kFrameDt));      // returns true (edge)
     // The auto branch's cooldown stamp should NOT have re-armed: the

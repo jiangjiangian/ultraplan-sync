@@ -8,7 +8,7 @@
 // finale menu self-locks via Flag_TaFinaleChoiceMade, so an accidental
 // commit would foreclose Ending A forever.
 //
-// Driven through the REAL GameController::Update() loop via the gfx::Input
+// Driven through the REAL GameController::Update() loop via the nccu::engine::input::Input
 // choke point (the exact production confirm path), not a unit shim — the
 // decisive guard is `exitChoice` in GameController.cpp's choice-confirm
 // branch.
@@ -43,11 +43,11 @@
 
 using nccu::World;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
@@ -96,7 +96,7 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
 
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                              // settle Ch4 roster
 
     const GameObject* ta = FindNpc(world, "ta");
@@ -155,7 +155,7 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     REQUIRE(world.Dialog().AtChoice());
     CHECK(world.Dialog().Choices().size() == 3);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "engine/input/Key.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::input {
 
 // Polymorphic input provider. LiveInput (the default) reads the real
 // raylib devices, so normal play is bit-for-bit unchanged. The autoplay
@@ -45,6 +45,6 @@ private:
     inline static InputSource* current_ = nullptr;
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::input
 
 #endif // GFX_INPUT_H_

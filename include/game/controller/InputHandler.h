@@ -10,7 +10,7 @@ namespace nccu {
 // focused class owns the input edge timing.
 //
 // Today only the dialog hold-E auto-advance (audit H2 / D5 / SC 2.2.2)
-// carries cross-frame state — every other reader of gfx::Input goes
+// carries cross-frame state — every other reader of nccu::engine::input::Input goes
 // through stateless edge predicates (IsPressed / IsDown / IsReleased)
 // and is fine left at its call site. Folding the dialog auto-advance
 // timer into a dedicated class:

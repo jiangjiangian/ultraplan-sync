@@ -20,6 +20,7 @@
 // calls are byte-for-byte identical to the pre-P5 inline path.
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 namespace {
 
 // Movement constants — derived from gameplay, asserted-not-guessed:
@@ -41,7 +42,7 @@ constexpr int kAdvanceBudget  = 8;      // E taps to turn one page/line
 [[maybe_unused]] constexpr float kPxPerFrameRef = kPxPerFrame;  // documented; not currently consumed
 
 int AxisKeyToward(float px, float py, float tx, float ty) {
-    using nccu::gfx::Key;
+    using nccu::engine::input::Key;
     const float dx = tx - px;
     const float dy = ty - py;
     if (std::fabs(dx) >= kArriveEps)
@@ -62,7 +63,7 @@ const GameObject* FindNpc(const World& w, std::string_view id) {
 } // namespace
 
 void ScriptInput::ResolvePlan(const World* world) {
-    using nccu::gfx::Key;
+    using nccu::engine::input::Key;
 
     // A classic-only script has NO plan verbs (plan_ is empty). It governs
     // WASD purely via timed `down`/`up`/`press` directives that Advance()

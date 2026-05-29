@@ -2,7 +2,7 @@
 #define GFX_KEY_H_
 #include "raylib.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::input {
 
 enum class Key : int {
     A = KEY_A, B = KEY_B, C = KEY_C, D = KEY_D, E = KEY_E,
@@ -24,6 +24,6 @@ enum class Key : int {
 
 constexpr int ToRaylibKey(Key k) noexcept { return static_cast<int>(k); }
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::input
 
 #endif // GFX_KEY_H_

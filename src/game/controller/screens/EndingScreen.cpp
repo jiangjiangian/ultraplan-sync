@@ -5,10 +5,11 @@
 #include "engine/input/Key.h"
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 bool HandleEndingMenu(World& world) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     if (!IsEndingState(world.Semester().Current())) return false;
     if (Input::IsPressed(Key::Left))  world.MoveEndingMenuCursor(-1);
     if (Input::IsPressed(Key::Right)) world.MoveEndingMenuCursor(1);

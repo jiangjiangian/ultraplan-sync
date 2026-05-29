@@ -36,11 +36,11 @@
 using nccu::World;
 using nccu::GameController;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
@@ -72,7 +72,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);                       // settle (roster, etc.)
     Player* p = world.GetPlayer();
@@ -162,7 +162,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     }
     CHECK(sawPauseRainHint);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -222,7 +222,7 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);                       // settle
     Player* p = world.GetPlayer();
@@ -267,7 +267,7 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     CHECK_FALSE(world.MenuOpen());
     CHECK(world.HelpPage() == 0);                      // reset on resume
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

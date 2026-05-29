@@ -61,7 +61,7 @@ std::vector<Frame> RunPlan(const std::string& script, int maxFrames) {
     ScriptInput in;
     std::istringstream src(script);
     in.Load(src);
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     std::vector<Frame> trace;
     const World* snapshot = nullptr;   // null on frame 0, like the harness
@@ -82,7 +82,7 @@ std::vector<Frame> RunPlan(const std::string& script, int maxFrames) {
             break;
     }
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     return trace;
 }
@@ -218,7 +218,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
         "interact victimumb 1700 1610\n" // drive onto the Item + E => OnPickup
         "wait 20\n");
     in.Load(src);
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     const World* snap = nullptr;
     bool planDone = false;
@@ -229,7 +229,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
         snap = &world;
         if (in.HasPlan() && f >= 1 && in.PlanDone()) planDone = true;
     }
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     const Player* p = world.GetPlayer();
@@ -273,11 +273,11 @@ TEST_CASE("plan: classic timed directives still parse alongside verbs") {
     CHECK(in.HasPlan());
 
     in.Advance();                 // frame 0: classic D goes down
-    CHECK(in.IsDown(nccu::gfx::Key::D));
-    CHECK(in.IsPressed(nccu::gfx::Key::D));
+    CHECK(in.IsDown(nccu::engine::input::Key::D));
+    CHECK(in.IsPressed(nccu::engine::input::Key::D));
     in.Advance();                 // frame 1: still held, no edge
-    CHECK(in.IsDown(nccu::gfx::Key::D));
-    CHECK_FALSE(in.IsPressed(nccu::gfx::Key::D));
+    CHECK(in.IsDown(nccu::engine::input::Key::D));
+    CHECK_FALSE(in.IsPressed(nccu::engine::input::Key::D));
     in.Advance();                 // frame 2: classic quit fires
     CHECK(in.WantsQuit());
 }

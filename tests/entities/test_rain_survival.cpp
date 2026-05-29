@@ -14,7 +14,7 @@
 // the drain the existing ending scripts stay winnable & deterministic.
 //
 // The GC cases drive the REAL GameController::Update() loop through the
-// same gfx::Input choke point the harness uses (mirrors the seam in
+// same nccu::engine::input::Input choke point the harness uses (mirrors the seam in
 // tests/test_i35_interact_vendor.cpp), exercising the production path.
 //
 // Revert-verify (each must FAIL without the Cycle-4 fix):
@@ -47,7 +47,7 @@
 
 using nccu::World;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 using nccu::gfx::Vec2;
 
 namespace {
@@ -57,7 +57,7 @@ namespace {
 // test_i35_interact_vendor.cpp). We never press a key — the player
 // stands still and only the rain tick runs — but GameController still
 // needs a live InputSource to poll.
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void EndFrame() { pressed_.clear(); released_.clear(); }
     bool IsDown(Key)     const noexcept override { return false; }
@@ -168,7 +168,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
     REQUIRE(p->GetRainMeter() == doctest::Approx(0.0f));
 
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);
     CHECK(world.CurrentBuildingName().empty());      // confirmed outdoors
@@ -201,7 +201,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
     CHECK(sawHighThenDrop);            // and was RESET (lethal, not pinned)
     CHECK(p->GetRainMeter() < 100.0f); // not stuck at the cap
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -237,7 +237,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
     REQUIRE(world.Semester().Current() == SemesterState::Chapter1_AddDrop);
 
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     // (1) ~3 s OUTDOORS, no umbrella => fast accrual (+5 u/s ⇒ ~15).
     for (int f = 0; f < 180; ++f) Frame(controller, in);
@@ -283,7 +283,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
     CHECK(p->GetRainMeter() == doctest::Approx(0.0f));   // fully dried
     CHECK(soakMsgHits == 0);                              // never teleported
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -300,7 +300,7 @@ TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
     world.Semester().Transition(SemesterState::Interlude_Market);
 
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                       // roster -> Interlude
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
@@ -310,7 +310,7 @@ TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
     for (int f = 0; f < 600; ++f) Frame(controller, in);
     CHECK(p->GetRainMeter() == doctest::Approx(0.0f));  // market => no tick
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

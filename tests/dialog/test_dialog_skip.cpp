@@ -9,7 +9,7 @@
 //       banner immediately, so a player who has read the line is not
 //       forced to wait out the 4 s kHudTtl.
 //
-// The Backspace key was added to gfx::Key for this; the World gained a
+// The Backspace key was added to nccu::engine::input::Key for this; the World gained a
 // DismissHud() helper that snaps hudAge_ to kHudTtl (the same boundary
 // HudExpired() / MessageView early-return already gate on, so the
 // rendering contract is unchanged — the next View pass simply paints
@@ -40,7 +40,7 @@
 
 using nccu::GameController;
 using nccu::World;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
@@ -50,7 +50,7 @@ namespace {
 // first time it transitions); EndFrame() drops the per-frame pressed/
 // released sets but leaves IsDown intact. Tap(k) holds then auto-
 // releases on the next EndFrame for a single-frame press.
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
@@ -82,7 +82,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     // Open a multi-line dialog programmatically — the World owns the
     // DialogState directly, so we don't need to walk up to an NPC.
@@ -168,7 +168,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
         Frame(controller, in);
     }
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -180,7 +180,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     SUBCASE("Backspace on a fresh toast snaps HudAge to kHudTtl") {
         world.SetHudMessage("transient banner");
@@ -232,7 +232,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         CHECK(world.HudExpired());
     }
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

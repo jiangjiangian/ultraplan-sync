@@ -37,7 +37,7 @@ struct SceneCommand {
 // payoff the blueprint phase-3 audit promises.
 //
 // The InputSource type is intentionally erased here (every scene
-// reads input through the same process-wide gfx::Input seam the
+// reads input through the same process-wide nccu::engine::input::Input seam the
 // harness already manipulates with SetSource); a future evolution
 // can swap the singleton call for an `InputSource&` arg per the
 // blueprint's design without changing IScene's surface.

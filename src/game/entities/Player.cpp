@@ -85,8 +85,8 @@ void Player::Render(nccu::gfx::IRenderer& renderer) const {
 }
 
 void Player::HandleInput(float deltaTime) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     nccu::gfx::Vec2 dir{0.0f, 0.0f};
     if (Input::IsDown(Key::W)) dir.y -= 1.0f;
     if (Input::IsDown(Key::S)) dir.y += 1.0f;

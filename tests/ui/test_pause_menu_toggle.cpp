@@ -43,7 +43,7 @@
 
 using nccu::GameController;
 using nccu::World;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
@@ -51,7 +51,7 @@ namespace {
 // the GameController consults via the Input static facade. Tap()
 // queues an edge-triggered IsPressed for ONE frame; EndFrame() must
 // be called after each c.Update() so the auto-release runs.
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k) {
         if (down_.insert(static_cast<int>(k)).second)
@@ -102,7 +102,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);                         // settle
     CHECK(World::kMenuItemCount == 6);
@@ -129,7 +129,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     Frame(controller, in);
     CHECK(world.MenuCursor() == 5);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -143,7 +143,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);
     REQUIRE_FALSE(world.ReducedMotion());
@@ -177,7 +177,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     // LargeTargets must stay default throughout — toggles are orthogonal.
     CHECK_FALSE(world.LargeTargets());
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -191,7 +191,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Frame(controller, in);
     REQUIRE_FALSE(world.LargeTargets());
@@ -224,7 +224,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     // ReducedMotion must stay default throughout — toggles orthogonal.
     CHECK_FALSE(world.ReducedMotion());
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -245,7 +245,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         Frame(controller, in);
 
         in.Tap(Key::M);
@@ -264,14 +264,14 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         CHECK_FALSE(world.ReducedMotion());
         CHECK_FALSE(world.LargeTargets());
 
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
     }
 
     SUBCASE("row 5 → Quit") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         Frame(controller, in);
 
         in.Tap(Key::M);
@@ -286,7 +286,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Quit);
 
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
     }
 
     nccu::engine::platform::Time::SetFixedStep(0.0f);
@@ -308,7 +308,7 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                         // settle
 
     // ESC must NOT open the menu.
@@ -331,7 +331,7 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     Frame(controller, in);
     CHECK_FALSE(world.MenuOpen());
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

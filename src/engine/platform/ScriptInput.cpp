@@ -17,10 +17,11 @@
 #include <string_view>
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 namespace {
 
 int KeyCode(std::string_view tok) {
-    using nccu::gfx::Key;
+    using nccu::engine::input::Key;
     if (tok.size() == 1 && tok[0] >= 'A' && tok[0] <= 'Z')
         return KEY_A + (tok[0] - 'A');
     if (tok == "Enter")     return ToRaylibKey(Key::Enter);
@@ -170,13 +171,13 @@ void ScriptInput::SynthPress(int key) {
 
 
 
-bool ScriptInput::IsDown(gfx::Key k) const noexcept {
+bool ScriptInput::IsDown(nccu::engine::input::Key k) const noexcept {
     return down_.find(ToRaylibKey(k)) != down_.end();
 }
-bool ScriptInput::IsPressed(gfx::Key k) const noexcept {
+bool ScriptInput::IsPressed(nccu::engine::input::Key k) const noexcept {
     return pressed_.find(ToRaylibKey(k)) != pressed_.end();
 }
-bool ScriptInput::IsReleased(gfx::Key k) const noexcept {
+bool ScriptInput::IsReleased(nccu::engine::input::Key k) const noexcept {
     return released_.find(ToRaylibKey(k)) != released_.end();
 }
 

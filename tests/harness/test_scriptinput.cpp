@@ -5,7 +5,7 @@
 #include <sstream>
 
 using nccu::ScriptInput;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 // Locks the edge semantics the deterministic harness depends on: a single
 // wrong edge silently desyncs every scripted playthrough.

@@ -42,12 +42,12 @@
 using nccu::GameController;
 using nccu::World;
 using nccu::EndingMenuChoice;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
 // Same minimal InputSource shape as test_pause_menu_toggle / test_menu_help.
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k) {
         if (down_.insert(static_cast<int>(k)).second)
@@ -113,7 +113,7 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     EnterEnding(world, nccu::SemesterState::Ending_D);
     Frame(controller, in);                 // settle on the ending screen
@@ -138,7 +138,7 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     // No confirm pressed yet ⇒ no app action requested.
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -154,14 +154,14 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_A);
         Frame(controller, in);
         REQUIRE(world.EndingMenuCursor() == 0);
         in.Tap(Key::Enter);
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Restart);
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
     }
 
     // 重新開始 (cursor 1) → Restart (fresh game via the title).
@@ -169,7 +169,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_B);
         Frame(controller, in);
         in.Tap(Key::Right);
@@ -178,7 +178,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         in.Tap(Key::E);                    // E confirms too (not just Enter)
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Restart);
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
     }
 
     // 結束 (cursor 2) → Quit (the ONLY path that closes the window).
@@ -186,7 +186,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         EnterEnding(world, nccu::SemesterState::Ending_C);
         Frame(controller, in);
         in.Tap(Key::Right);
@@ -197,7 +197,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         in.Tap(Key::Enter);
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Quit);
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
     }
 
     nccu::engine::platform::Time::SetFixedStep(0.0f);
@@ -217,7 +217,7 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     World world("", /*loadSprites=*/false);
     GameController controller{world, EventBus::Instance()};
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
@@ -232,7 +232,7 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     // And no AppAction was requested by mere movement keys.
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

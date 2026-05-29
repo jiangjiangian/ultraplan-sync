@@ -3,7 +3,7 @@
 // impossible — the whole A/B/C spine soft-locked in Ch1) and I5
 // (Vendor::TryBuy had no runtime caller — Ending C / the Ch2 EnergyDrink
 // were unreachable). Both drive the REAL GameController::Update() loop
-// through the same gfx::Input choke point the harness uses, so they
+// through the same nccu::engine::input::Input choke point the harness uses, so they
 // exercise the exact production path, not a unit-level shim.
 //
 // Revert-verify (both must FAIL without the production fix):
@@ -41,7 +41,7 @@
 
 using nccu::World;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
@@ -52,7 +52,7 @@ namespace {
 // follows it and auto-releases at EndFrame() — identical edge contract
 // to LiveInput/ScriptInput, so GameController cannot tell the difference
 // (we never touch ScriptInput.* — out of scope).
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
@@ -147,7 +147,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
 
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     const bool opened = WalkUpAndTalk(controller, in, world, Key::W, vx);
 
@@ -165,7 +165,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     CHECK(world.Dialog().Active());
     CHECK(world.Dialog().NpcId() == "victim");
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -192,7 +192,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
 
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     in.Hold(Key::W);                                   // shove up, hard
     for (int f = 0; f < 1200; ++f) {
         Frame(controller, in);
@@ -206,7 +206,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     const float endY = world.GetPlayer()->GetPosition().y;
     CHECK(endY >= vy);                                  // ended flush, not past
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -234,7 +234,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     // includes the 集英樓 Vendor) on the next Update().
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                             // roster -> Ch4
 
     const GameObject* vend = FindVendor(world);
@@ -293,7 +293,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     CHECK(pickupHits == 1);                            // EventBus purchase event
     CHECK(lastPickup == "UglyUmbrella");
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
@@ -315,7 +315,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
 
     world.Semester().Transition(SemesterState::Chapter2_Midterms);
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                             // roster -> Ch2
 
     Player* p = world.GetPlayer();
@@ -398,7 +398,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     Frame(controller, in);                             // LiftChapter2Clear
     CHECK(p->HasFlag(nccu::kFlagCh2Cleared));              // <-- Ch2 spine clears
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

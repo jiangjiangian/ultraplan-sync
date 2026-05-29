@@ -4,7 +4,7 @@
 // it closes the conversation with ZERO economy mutation — no money
 // deducted, no consumable added, no item.setsFlag set, no PickupAcquired
 // EventBus event. This drives the REAL GameController::Update() loop
-// through the same gfx::Input choke point the harness/I5 test use, so it
+// through the same nccu::engine::input::Input choke point the harness/I5 test use, so it
 // exercises the exact production decline path, not a unit shim.
 //
 // Revert-verify (this test must FAIL without the production fix):
@@ -44,11 +44,11 @@
 
 using nccu::World;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 
 namespace {
 
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
@@ -98,7 +98,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
 
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
     Frame(controller, in);                              // roster -> Ch4
 
     const GameObject* vend = FindVendor(world);
@@ -169,7 +169,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     CHECK(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
     CHECK(pickupHits == 1);
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
