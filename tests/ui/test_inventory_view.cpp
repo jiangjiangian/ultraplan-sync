@@ -49,6 +49,7 @@ bool HasRectRGB(const Spy& s, nccu::engine::math::Color want) {
 
 }  // namespace
 
+// 繪製背景、面板、標題、每列一行文字與選取游標。
 TEST_CASE("DrawInventory: backdrop + panel + title + one line per row + caret") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
@@ -57,13 +58,14 @@ TEST_CASE("DrawInventory: backdrop + panel + title + one line per row + caret") 
     };
     nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
 
-    CHECK(r.rects >= 2);                       // dim backdrop + panel
-    CHECK(Has(r.texts, "物品欄"));             // title
-    // Row 0 is selected -> "> " caret; row 1 -> "  " padding. Counts shown.
+    CHECK(r.rects >= 2);                       // 暗背景 + 面板
+    CHECK(Has(r.texts, "物品欄"));             // 標題
+    // 第 0 列被選取 -> 「> 」游標；第 1 列 -> 「  」留白。並顯示數量。
     CHECK(Has(r.texts, "> 暖暖包 x2"));
     CHECK(Has(r.texts, "  能量飲料 x1"));
 }
 
+// 游標會把選取符號移到被選取的列。
 TEST_CASE("DrawInventory: cursor moves the caret to the selected row") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
@@ -75,18 +77,19 @@ TEST_CASE("DrawInventory: cursor moves the caret to the selected row") {
     CHECK(Has(r.texts, "> 能量飲料 x1"));
 }
 
+// 會畫出被選取列的說明與使用提示。
 TEST_CASE("DrawInventory: selected row's description + use hint are drawn") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
         {"暖暖包", 2, "立刻烘乾全身雨水", true, "HotPack"},
         {"金幣", 100, "你的錢包餘額", false, nccu::kItemMoney},
     };
-    // Cursor on the usable consumable -> "E 使用" hint + its description.
+    // 游標在可用消耗品上 -> 顯示「E 使用」提示與其說明。
     nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
     CHECK(Has(r.texts, "立刻烘乾全身雨水"));
     CHECK(Has(r.texts, "↑↓ 選擇   E 使用"));
 
-    // Cursor on the view-only 金幣 row -> the plain hint (no E 使用).
+    // 游標在僅供檢視的金幣列 -> 只顯示一般提示（無 E 使用）。
     Spy r2;
     nccu::DrawInventory(r2, rows, /*cursor=*/1, 800.0f, 450.0f);
     CHECK(Has(r2.texts, "你的錢包餘額"));
@@ -94,6 +97,7 @@ TEST_CASE("DrawInventory: selected row's description + use hint are drawn") {
     CHECK_FALSE(Has(r2.texts, "↑↓ 選擇   E 使用"));
 }
 
+// 單一持有的列（count 為 0）不顯示 xN 後綴。
 TEST_CASE("DrawInventory: a single-instance row (count 0) shows no xN suffix") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
@@ -104,6 +108,7 @@ TEST_CASE("DrawInventory: a single-instance row (count 0) shows no xN suffix") {
     CHECK_FALSE(Has(r.texts, "> 真傘 x0"));
 }
 
+// 空背包會顯示「（空）」佔位字。
 TEST_CASE("DrawInventory: empty bag shows the （空） placeholder") {
     Spy r;
     std::vector<nccu::InventoryRow> none;
@@ -114,19 +119,19 @@ TEST_CASE("DrawInventory: empty bag shows the （空） placeholder") {
     CHECK(Has(r.texts, "（空）"));
 }
 
+// 超出範圍的游標會被夾住，而非當機。
 TEST_CASE("DrawInventory: an out-of-range cursor is clamped, not a crash") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
         {"暖暖包", 1, "立刻烘乾", true, "HotPack"},
     };
-    // cursor 99 must clamp to the last (only) row and still draw it.
+    // 游標 99 必須夾到最後一列（也是唯一一列）並仍能繪製。
     nccu::DrawInventory(r, rows, /*cursor=*/99, 800.0f, 450.0f);
     CHECK(Has(r.texts, "> 暖暖包 x1"));
 }
 
-// Item 2(c)/(e) regression: BuildInventoryRows aggregates EVERY category
-// the player meaningfully holds — 金幣 + held consumables + the carried
-// umbrella + current-cycle quest papers — each with the catalog name.
+// BuildInventoryRows 會彙整玩家實際持有的每一種類別 —— 金幣 + 持有的消耗品 +
+// 攜帶的傘 + 當前章節的任務紙張 —— 每項都帶有道具表名稱。
 namespace {
 const nccu::InventoryRow* Find(const std::vector<nccu::InventoryRow>& rows,
                                std::string_view itemId) {
@@ -135,25 +140,25 @@ const nccu::InventoryRow* Find(const std::vector<nccu::InventoryRow>& rows,
 }
 }  // namespace
 
+// BuildInventoryRows 彙整金幣、消耗品、傘與任務紙張。
 TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella + quest") {
     Player p{nccu::engine::math::Vec2{0, 0}};
-    // Default Player: only 金幣 (100), empty bag, no flags.
+    // 預設 Player：只有金幣（100）、空背包、無旗標。
     {
         const auto rows = nccu::BuildInventoryRows(p);
         REQUIRE(rows.size() == 1);
         const nccu::InventoryRow* money = Find(rows, nccu::kItemMoney);
         REQUIRE(money != nullptr);
         CHECK(money->name == "金幣");
-        CHECK(money->count == 100);          // balance carried in count
-        CHECK_FALSE(money->usable);          // 金幣 is view-only
+        CHECK(money->count == 100);          // 餘額存於 count
+        CHECK_FALSE(money->usable);          // 金幣僅供檢視
         CHECK_FALSE(money->description.empty());
     }
 
-    // Hold consumables, the true umbrella, the 申請書, and 2/3 notes.
-    // B2.1: the bag umbrella row is now driven by the HELD umbrella kind
-    // (SetHeldUmbrella), not the persistent ending flag — set both as the
-    // grant sites do (the flag is the Ending A marker; the held kind is the
-    // bag row's source of truth).
+    // 持有消耗品、真傘、申請書，以及三頁筆記中的兩頁。
+    // 背包傘列由「手持傘種類」（SetHeldUmbrella）驅動，而非持久的結局旗標 ——
+    // 此處兩者都設，如同實際發放處（旗標是結局 A 的標記；手持種類才是背包列的
+    // 真正來源）。
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.AddConsumable("EnergyDrink");
     p.SetHeldUmbrella(HeldUmbrella::True);

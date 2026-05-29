@@ -46,40 +46,34 @@ Vendor::Vendor(nccu::engine::math::Vec2 position, VendorConfig config)
       config_(std::move(config)) {}
 
 bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
-    // Defensive bounds check first — a null player or an out-of-range index
-    // is a programmer error from the caller (UI passing the wrong slot), so
-    // we silently bail without emitting any event to avoid lying to the
-    // user about a transaction that never started.
+    // 先做防禦性邊界檢查——null 玩家或超出範圍的索引，是呼叫端（UI 傳錯插槽）的程式
+    // 錯誤，故我們靜默退出、不發任何事件，以免對使用者謊報一筆根本未開始的交易。
     if (!player) return false;
     if (stockIndex >= config_.stock.size()) return false;
 
     VendorItem& item = config_.stock[stockIndex];
 
-    // Sold out (stockLeft hit 0; -1 = unlimited). Checked before the
-    // charge so the purse is never touched for an item we can't deliver.
+    // 已售完（stockLeft 歸 0；-1 = 無限）。在扣款「之前」檢查，使我們無法交付的品項
+    // 絕不動到錢包。
     if (item.stockLeft == 0) {
         nccu::events::Sink().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kSoldOut) });
         return false;
     }
 
-    // DeductMoney is the gatekeeper: it returns false on insufficient funds
-    // and performs NO side effect, so the player's purse is safe here.
+    // DeductMoney 是把關者：餘額不足時回傳 false 且「不」產生任何副作用，故此處玩家的
+    // 錢包安全無虞。
     if (!player->DeductMoney(item.price)) {
         nccu::events::Sink().Publish(Event{ EventType::ShowMessage, std::string(nccu::vendor::msg::kInsufficientFunds) });
         return false;
     }
 
-    // Success: announce the transaction (UI) and the item gain (inventory).
-    // Two events because subscribers are different — one paints a toast,
-    // the other appends to the inventory model.
+    // 成功：公告這筆交易（UI）與獲得的品項（物品欄）。發兩個事件，因為訂閱者不同——
+    // 一個畫提示橫幅，另一個附加到物品欄模型。
     //
-    // Item 5b: the toast now shows the SPEND — "買了<中文名>，花了 N 元
-    // （剩 M 元）" — using the item-catalog display name (so the 集英樓
-    // 醜傘 and every market stall read consistently) and the
-    // post-deduction balance (DeductMoney already ran above, so
-    // GetMoney() is the remaining purse). An itemId without a catalog row
-    // falls back to its raw id (ItemInfoFor's fallback), so a future stock
-    // line never prints blank.
+    // 提示橫幅現在顯示「花費」——「買了<中文名>，花了 N 元（剩 M 元）」——採用物品圖鑑
+    // 的顯示名稱（使集英樓的醜傘與每個市集攤位讀來一致），並用扣款後的餘額（DeductMoney
+    // 已於上方執行，故 GetMoney() 即剩餘的錢包）。沒有圖鑑列的 itemId 會退回其原始 id
+    //（ItemInfoFor 的退路），故未來的庫存品項絕不會印出空白。
     namespace msg = nccu::vendor::msg;
     const std::string itemName{nccu::ItemInfoFor(item.itemId).displayName};
     const std::string toast =

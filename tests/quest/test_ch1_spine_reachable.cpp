@@ -27,45 +27,28 @@
 using nccu::ScriptInput;
 using nccu::World;
 
-// BUGLEDGER I7 regression — Ch1→Ch2 progression must stay reachable on
-// the SHIPPED collision_mask.png.
+// 此測試確保在實際出貨的 collision_mask.png 上，Ch1→Ch2 的進度仍然可達。
 //
-// Defect (perception-found, root-caused from src): collision_mask.png
-// (versioned in git 964b4ee "version runtime-required assets", AFTER the
-// harness ending scripts + the plan unit tests were authored against an
-// all-walkable world) bakes a continuous E-W wall at y≈1761–1819 across
-// the whole south campus. Its ONLY vertical gap is the column x≈880–1042.
-// Every committed `goto` route drove straight up a WALLED column (x=320 /
-// 560 / 750 / 1140 / 1180 / 1500 / 1560 / 1706), so the player flush-
-// stopped at y≈1821 and never progressed — Ch1 soft-locked, no ending
-// reached, byte-identically every run. `goto` is a pure axis driver (NOT
-// a path-finder, by design — ScriptInput.cpp:260-270); the routes, not
-// the engine, were stale (Verdict B). The campus is genuinely traversable
-// (test_spawn_reachability's flood-fill passes); it just requires routing
-// through the gap.
+// 問題背景：collision_mask.png 在整個南側校園 y≈1761–1819 烘焙了一道連續的
+// 東西向牆，其唯一的縱向缺口在 x≈880–1042 這一行。先前所有的 `goto` 路線都
+// 直接往上撞進有牆的縱列（x=320 / 560 / 750 / 1140 / 1180 / 1500 / 1560 /
+// 1706），玩家因此貼牆停在 y≈1821 而無法前進——Ch1 卡死、抵達不了任何結局，
+// 且每次執行都一樣。`goto` 依設計是純軸向驅動（不是尋路器）；過時的是路線
+// 而非引擎。校園本身確實可通行（見 test_spawn_reachability 的洪水填充），
+// 只是必須改走那個缺口。
 //
-// 善有善報 redesign + A1 hard-gate: this test pins a robust, mask+NPC-verified
-// route that walks the MINIMAL Ch1 reciprocity spine IN ORDER —
-//   1. talk to 苦主 at 綜合院館 (Flag_PromisedVictim),
-//   2. confront the 西裝學長 at 集英樓 and commit a choice
-//      (Flag_SuitSeniorChoiceMade) — which is what makes the umbrella APPEAR
-//      (A1: MaybeSpawnChapter1VictimUmbrella; before the choice the pickup
-//      does NOT exist in the world, so the spine cannot be skipped),
-//   3. find HIS transparent umbrella near 集英樓 (Flag_HasVictimUmbrella),
-//   4. carry it BACK to him (the GRANT: TryReturnVictimUmbrella sets
-//      Flag_HasTrueUmbrella + publishes UmbrellaClaimed → Ch1 clears →
-//      Interlude via the EventWiring sibling-if),
-//   5. exit the Interlude south (→ Chapter2_Midterms).
-// The chapter clears on RETURNING the umbrella, NOT on grabbing one off the
-// ground. All legs route through the x≈1041 gap / wall-north corridor / the
-// clear x=1660 column. It drives the REAL ScriptInput+GameController harness
-// seam (exactly the Harness ordering). If a future mask edit re-seals the
-// gap, the route regresses, or the hard gate dead-ends, the semester never
-// reaches Ch2 and this fails.
-//
-// Companion guarantees: test_scriptinput_plan.cpp (goto reaches a clear
-// target / drive+E claims a non-blocking Item, both on this same mask)
-// and test_i6_interact_reach.cpp (the interact verb opens NPC dialog).
+// 本測試釘住一條經地圖與 NPC 驗證過、穩健的最小 Ch1 互惠主線路線，依序：
+//   1. 在綜合院館找苦主對話（Flag_PromisedVictim），
+//   2. 在集英樓對峙西裝學長並做出選擇（Flag_SuitSeniorChoiceMade）——這才會
+//      讓雨傘出現（選擇前撿取物根本不存在於世界中，主線無法跳過），
+//   3. 在集英樓附近找到他的透明傘（Flag_HasVictimUmbrella），
+//   4. 把傘帶回給他（授予：TryReturnVictimUmbrella 設下 Flag_HasTrueUmbrella
+//      並發布 UmbrellaClaimed → Ch1 清關 → 經事件接線進入幕間市集），
+//   5. 從南側離開幕間市集（→ Chapter2_Midterms）。
+// 章節是在「歸還」雨傘時清關，而非在地上撿到一把傘時。所有路段都走 x≈1041 的
+// 缺口／牆北走廊／淨空的 x=1660 縱列。它驅動真正的 ScriptInput + GameController
+// 接縫（與 Harness 的執行順序一致）。若日後地圖修改重新封住缺口、路線退化、
+// 或硬性關卡走進死路，學期就到不了 Ch2，此測試便會失敗。
 
 namespace {
 
@@ -113,12 +96,11 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
         f};
 }
 
-// The verified minimal-Ch1-reciprocity-spine route. Every leg was traced
-// against the real CollisionMask + DefaultNpcSpawns hitboxes (see the
-// in-suite "wall gap" sanity case below) via map_registry.py --route and
-// run end-to-end through the harness.
+// 經驗證的最小 Ch1 互惠主線路線。每個路段都對照真正的 CollisionMask 與
+// DefaultNpcSpawns 碰撞框追蹤過（參見下方套件內的「牆縫」健全性案例），
+// 並端到端跑過 harness。
 const char* kSpineScript =
-    // (1) spawn → 苦主 @綜合院館 (1660,1010) through the gap, then promise.
+    // (1) 出生點 → 穿過缺口到綜合院館 (1660,1010) 的苦主，然後承諾。
     "goto 1040 1712\n" "goto 1048 1704\n" "goto 1264 1632\n"
     "goto 1280 1624\n" "goto 1296 1616\n" "goto 1312 1608\n"
     "goto 1328 1600\n" "goto 1408 1512\n" "goto 1416 1504\n"
