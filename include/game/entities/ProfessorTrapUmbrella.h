@@ -12,7 +12,7 @@ public:
                               UmbrellaStyle::Spiked),
           spawnedEnemiesCount_(0) {}
 
-    void beClaimed(Player* player) override;
+    void BeClaimed(Player* player) override;
 
     [[nodiscard]] int GetSpawnedEnemiesCount() const noexcept { return spawnedEnemiesCount_; }
 

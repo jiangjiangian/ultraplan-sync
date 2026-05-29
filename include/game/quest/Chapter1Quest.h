@@ -51,7 +51,7 @@ class DialogState;                  // read const by LiftChapter1Clear
 //
 // The world TrueUmbrella is REMOVED in the redesign (the victim grants it
 // now); the Cursed / Fragile / ProfessorTrap umbrellas stay on the ground
-// as the morality / Ending-B paths and clear Ch1 via their own beClaimed —
+// as the morality / Ending-B paths and clear Ch1 via their own BeClaimed —
 // this hook is the ONLY non-cursed clear path.
 // Plan P2 step 2: `bus` is injected; this hook publishes ShowMessage
 // when the player meets the victim without yet having his umbrella.
@@ -63,7 +63,7 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
 // the chapter clear — but only AFTER the 苦主's (d) 重逢致謝 exchange dialogue
 // has CLOSED (the `dialog.Active()` guard), so the player reads the exchange
 // scene before Ch1 snaps to the Interlude. Publishes ShowMessage THEN
-// UmbrellaClaimed("TrueUmbrella") (beClaimed's HUD-slot order) and the
+// UmbrellaClaimed("TrueUmbrella") (BeClaimed's HUD-slot order) and the
 // EventWiring Ch1 sibling-if then transitions Ch1→Interlude (returnTo Ch2).
 // Once-guarded (kFlagClearChapter1) so it fires exactly once though polled
 // every non-dialog frame. No-op outside Ch1 / before the grant / while the

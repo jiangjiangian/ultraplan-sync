@@ -96,7 +96,7 @@ void SceneRouter::SettleSideEffects(World& world) {
     // so the bag's umbrella row disappears — the card and the bag finally
     // agree. Clearing Flag_HasTrueUmbrella keeps Ending A's 持-TrueUmbrella
     // condition meaning exactly "re-claimed THIS run's Ch4 TrueUmbrella"
-    // (EndingGate.cpp): Ch3's beClaimed re-sets it, Ch4 entry clears it
+    // (EndingGate.cpp): Ch3's BeClaimed re-sets it, Ch4 entry clears it
     // again, the Ch4 reclaim/finale re-sets it — and it is consequential
     // ONLY in Chapter4_Finals (CheckEndingGates early-returns elsewhere), so
     // clearing it on Ch2/Ch3 entry is safe. Entry-only (the cur !=

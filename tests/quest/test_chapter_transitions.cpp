@@ -222,7 +222,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
     }
 }
 
-TEST_CASE("TrueUmbrella::beClaimed: chapter toast Top, pickup line Bottom") {
+TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
     // Cycle 9.G follow-up to 9.B / 9.A.2. Pre-9.G, both publishes fed a
     // single-slot HUD channel: the umbrella's own ShowMessage and the
     // chapter-clear ShowMessage emitted by the UmbrellaClaimed
@@ -251,7 +251,7 @@ TEST_CASE("TrueUmbrella::beClaimed: chapter toast Top, pickup line Bottom") {
 
     TrueUmbrella umb{Vec2{0, 0}};
     Player player{Vec2{0, 0}};
-    umb.beClaimed(&player);
+    umb.BeClaimed(&player);
 
     // Two-channel post-conditions: Top carries the chapter-clear toast,
     // Bottom carries the umbrella pickup text. Neither overwrites the

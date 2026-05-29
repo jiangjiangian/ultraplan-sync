@@ -235,7 +235,7 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
 TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the ending flag persists") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     // Hold the cursed umbrella + the persistent Ending B marker (as
-    // CursedUmbrella::beClaimed sets them together).
+    // CursedUmbrella::BeClaimed sets them together).
     p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag(nccu::kFlagTookCursedUmbrella);
     REQUIRE(Find(nccu::BuildInventoryRows(p), nccu::kItemCursedUmbrella) != nullptr);
 

@@ -36,7 +36,7 @@ LookForStyle(UmbrellaStyle style) noexcept {
 // no-op (umbrellas don't tick), so that role is dropped; Render (the
 // per-style glyph) and Interact (the quest-gated claim) are real and kept.
 // All four leaves (True/Fragile/ProfessorTrap/Cursed) only override
-// beClaimed() — they share this exact role set — so WithRoles is keyed on
+// BeClaimed() — they share this exact role set — so WithRoles is keyed on
 // this intermediate (Derived = TransparentUmbrella); static_cast to it is
 // valid for every leaf.
 class TransparentUmbrella : public WithRoles<TransparentUmbrella, Item>,
@@ -60,7 +60,7 @@ public:
     void Interact(Player* initiator) override;
     void OnPickup(Player* player) override;
 
-    virtual void beClaimed(Player* player) = 0;
+    virtual void BeClaimed(Player* player) = 0;
 
 protected:
     nccu::engine::math::Color umbrellaTint_;

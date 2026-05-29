@@ -242,7 +242,7 @@ TEST_CASE("Ch3 clear: claiming the 道具箱 TrueUmbrella -> Interlude returnTo 
     m.Transition(SemesterState::Chapter3_SportsDay);
     REQUIRE(m.Current() == SemesterState::Chapter3_SportsDay);
 
-    // Ch1-isomorphic: beClaimed publishes UmbrellaClaimed; the Ch3
+    // Ch1-isomorphic: BeClaimed publishes UmbrellaClaimed; the Ch3
     // sibling-if routes to the third market, returning to Ch4.
     EventBus::Instance().Publish(
         Event{EventType::UmbrellaClaimed, "TrueUmbrella"});

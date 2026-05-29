@@ -12,7 +12,7 @@ public:
                               UmbrellaStyle::Broken),
           leakRate_(0.5f) {}
 
-    void beClaimed(Player* player) override;
+    void BeClaimed(Player* player) override;
 
     [[nodiscard]] float GetLeakRate() const noexcept { return leakRate_; }
 

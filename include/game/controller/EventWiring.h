@@ -114,15 +114,22 @@ inline void WireHudMessageSubscriber(EventBus& bus, World& world) {
 // clean when callers pass AddKarma(0) (rare, but cheap to filter).
 inline void WireKarmaToastSubscriber(EventBus& bus) {
     bus.Subscribe(EventType::KarmaChanged,
-        [](const Event& e) {
+        [&bus](const Event& e) {
             if (e.text.empty() || e.text == "+0" || e.text == "-0")
                 return;
             // "業力 " + signed-delta text fits well under the dialog
             // box's 28-cell budget (the 業力 ideographs are 2 cells
             // each, the delta is at most 5 ASCII chars including the
             // sign for ±100 — well under 28).
-            EventBus::Instance().Publish(
-                Event{EventType::ShowMessage, "業力 " + e.text});
+            // Re-publish on the SAME bus we subscribed to — never
+            // EventBus::Instance(). Under a redirected events::Sink (test
+            // isolation / harness) the derived ShowMessage must land on the
+            // same bus as its KarmaChanged source, or the HUD subscriber
+            // there never sees the toast (CONVENTIONS §7: handlers use the
+            // captured bus, never re-Instance()). Lifetime-safe: the
+            // GameController dtor Clears this bus before it is destroyed,
+            // so the captured reference can never dangle.
+            bus.Publish(Event{EventType::ShowMessage, "業力 " + e.text});
         });
 }
 

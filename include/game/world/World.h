@@ -352,7 +352,7 @@ public:
     void RespawnChapterRoster(nccu::SemesterState state);
 
     // End-of-frame deferred deletion (mark-then-sweep). The Update loops
-    // only mark dead objects (Deactivate / beClaimed / pickup), never
+    // only mark dead objects (Deactivate / BeClaimed / pickup), never
     // erase mid-iteration — so a single remove-erase pass at the very end
     // of the frame avoids iterator invalidation and the objects_.front()
     // == Player invariant (per CLAUDE.md §5: "Deferred end-of-frame
