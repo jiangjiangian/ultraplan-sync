@@ -1,0 +1,48 @@
+#include "game/entities/TransparentUmbrella.h"
+#include "engine/events/EventBus.h"
+#include "engine/events/EventSink.h"
+#include "game/entities/Player.h"
+#include "game/quest/Flags.h"
+#include "engine/render/IRenderer.h"
+#include "game/gfx/UmbrellaGlyph.h"
+
+#include <string>
+
+namespace {
+// Shared by both pick-up entry points. The main quest must be active
+// (the player accepted the 苦主's plea — Flag_PromisedVictim) before any
+// umbrella can be claimed; otherwise nudge the player toward the quest
+// rather than doing nothing (a silent no-op reads as a broken pickup).
+bool QuestGateOpen(Player* player) {
+    if (!player) return true;                  // preserve prior null path
+    if (player->HasFlag(nccu::kFlagPromisedVictim)) return true;
+    nccu::events::Sink().Publish(Event{
+        EventType::ShowMessage,
+        std::string("這把傘不是你的——先去找那位掉了傘的同學問問吧。")});
+    return false;
+}
+}  // namespace
+
+void TransparentUmbrella::Interact(Player* initiator) {
+    if (QuestGateOpen(initiator)) beClaimed(initiator);
+}
+
+void TransparentUmbrella::OnPickup(Player* player) {
+    if (QuestGateOpen(player)) beClaimed(player);
+}
+
+void TransparentUmbrella::Render(nccu::engine::render::IRenderer& renderer) const {
+    // The owner pinned each umbrella's look (真傘=藍 / 破傘=剩手柄 /
+    // 詛咒傘=暗紫 / 醜傘=綠, ProfessorTrap a danger-red trap). All four
+    // silhouettes + their signature colours live in ONE place,
+    // nccu::game::gfx::DrawUmbrellaGlyph, which is ALSO what the ground pickup and the
+    // ending card draw — so a given umbrella reads identically wherever it
+    // appears. The per-subclass UmbrellaStyle just selects which look; the
+    // colour now comes from the shared glyph (umbrellaTint_ is retained on
+    // the object for any caller that wants the tint, but Render no longer
+    // needs it). Rect-only, no sprite/text — MVC clean (the View renders
+    // off the object's own data; no sim/state touched).
+    nccu::game::gfx::DrawUmbrellaGlyph(renderer, LookForStyle(style_),
+                                 nccu::engine::math::Rect{position_.x, position_.y,
+                                                 20.0f, 20.0f});
+}

@@ -16,6 +16,14 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 include(FetchContent)
 
+# doctest v2.4.11 declares cmake_minimum_required(VERSION 3.0); CMake >= 4.0
+# dropped policy-<3.5 compatibility and aborts configure on it. Bake CMake's
+# documented escape hatch in so a bare `cmake -B build` works without the
+# caller passing -DCMAKE_POLICY_VERSION_MINIMUM=3.5 (a user -D still wins).
+if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
+    set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif()
+
 file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
     "${SRC_DIR}/*.cpp"
     "${INCLUDE_DIR}/*.h"
@@ -33,8 +41,33 @@ if(NOT raylib_FOUND)
     FetchContent_MakeAvailable(raylib)
 endif()
 
-add_executable(${PROJECT_NAME} "${SRC_DIR}/main.cpp")
-target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
+add_executable(${PROJECT_NAME} "${SRC_DIR}/app/main.cpp")
+# Two include roots:
+#   ${INCLUDE_DIR}        — engine + ui + game/* in their full layered form
+#                           (every file under include/, with the file's actual
+#                           on-disk path matching its #include string)
+#   ${INCLUDE_DIR}/game   — the composition root's short-form shortcut, so
+#                           main.cpp reads "world/World.h" instead of
+#                           "game/world/World.h". The game/ leaf is the
+#                           app's "domain root"; main.cpp gets the short form
+#                           since the WHOLE program is built from there.
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${INCLUDE_DIR}"
+    "${INCLUDE_DIR}/game")
+
+# Ship the game binary as `umbrella` (per the assignment README naming) while
+# keeping the CMake target name (${PROJECT_NAME}) and the _tests/_lib targets
+# unchanged — so `./build/OOP_Raylib_Lab_tests` (the test gate) is unaffected
+# and only the runnable game becomes `./build/umbrella`.
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME umbrella)
+# Keep ./build/OOP_Raylib_Lab resolving (the harness playtest.sh + docs launch
+# the game by that path) as a symlink to the umbrella binary, so the rename
+# ADDS the assignment name without breaking the existing tooling.
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+            "$<TARGET_FILE_NAME:${PROJECT_NAME}>"
+            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/OOP_Raylib_Lab"
+    VERBATIM)
 
 # Add a static lib for the gameplay code IF any non-main .cpp files exist.
 # Early in development the lib may be empty; we add it lazily so configure succeeds.
@@ -63,13 +96,18 @@ FetchContent_MakeAvailable(doctest)
 
 enable_testing()
 
-file(GLOB TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/*.cpp")
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
     target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}_lib doctest::doctest)
     target_compile_definitions(${PROJECT_NAME}_tests PRIVATE
         TEST_FIXTURES_DIR="${CMAKE_SOURCE_DIR}/tests/fixtures"
-        TEST_CONTENT_DIR="${CMAKE_SOURCE_DIR}/docs/content")
+        TEST_CONTENT_DIR="${CMAKE_SOURCE_DIR}/docs/content"
+        # UI-B-1: the all-literal glyph-coverage gate scans every "…" string
+        # literal under src/ + include/ at TEST time (the files are not shipped
+        # at runtime), so it needs the project source root, the same way the
+        # dialog tests get the content dir. CTest runs with cwd = build dir.
+        TEST_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     add_test(NAME unit_tests COMMAND ${PROJECT_NAME}_tests)
 endif()
 
@@ -85,4 +123,20 @@ function(copy_resources_to_target TARGET_NAME)
 endfunction()
 if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
     copy_resources_to_target(${PROJECT_NAME})
+endif()
+
+# Blueprint Phase 4 §A — Doxygen architecture-audit target. Generates
+# the class hierarchy + per-directory dependency graphs into
+# build/doxygen/html/ (gitignored). Optional build-dep (graphviz +
+# doxygen); the target is added unconditionally but the build only
+# succeeds when both are installed. Run:
+#     cmake --build build --target docs
+# Then open build/doxygen/html/hierarchy.html or any dir_*.html.
+find_program(DOXYGEN_EXECUTABLE doxygen)
+if(DOXYGEN_EXECUTABLE)
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_SOURCE_DIR}/Doxyfile"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Generating Doxygen architecture audit (build/doxygen/html/)"
+        VERBATIM)
 endif()

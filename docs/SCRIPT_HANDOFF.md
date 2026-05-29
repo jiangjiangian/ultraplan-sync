@@ -45,9 +45,11 @@
 
 ### Ending C 觸發點
 - 在 **集英樓便利商店**（不是樂活小舖）
-- Ch1 福利社阿姨只是 Ending C 的「種子」——讓玩家認識醜綠傘的存在
-- Ch2/Ch3 各自累積 `Flag_BoughtUglyUmbrella` 計數
-- Ch4 集英樓便利商店「再次購買」才最終觸發
+- Ch1 福利社阿姨 (c) 是 Ending C 的純敘事「種子」——讓玩家認識醜綠傘的存在
+  ——**不設定任何旗標**（cycle-8 audit F1 / B3 precedent 移除了原本 inert 的
+  `Flag_KnowsUglyUmbrella` 註解，src/ include/ 從未讀取它）
+- Ending-C 的唯一觸發點：Ch4 集英樓 Vendor 的購買，由 Vendor 設定
+  `Flag_BoughtUglyUmbrella`；`src/EndingGate.cpp:66` 讀取此旗標
 
 ---
 
@@ -156,7 +158,7 @@ Chapter1_AddDrop → Interlude_Market → Chapter2_Midterms → Chapter3_SportsD
 
 ### chapter3.md
 1. **苦主 Ch3 在角落擺手工飾品攤**——維持存在感但不介入主線
-2. **A 系攤主前置條件**：要玩家「先幫她問 B 系要衛生紙」（強化物物交換鏈連鎖感）
+2. **A 系攤主前置條件**：要玩家「先幫她問 B 系要烘焙紙」（強化物物交換鏈連鎖感）
 3. **C 系學姊指定道具箱位置**「第三個，從左邊算」——給玩家具體行動目標
 
 ### chapter4.md

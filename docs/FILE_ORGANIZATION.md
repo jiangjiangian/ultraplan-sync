@@ -1,133 +1,108 @@
-# 檔案組織提案 — include/ 與 src/ 子資料夾
+# 檔案組織 — 10-bucket 分層（已實作）
 
 ## TL;DR
 
-- 30+ 個 header 散在 `include/` 底層已經難掃 — **建議分子資料夾**。
-- **CMakeLists 不用改半行**（`GLOB_RECURSE` 已經會遞迴撈 `.h` / `.cpp`）。
-- 唯一的成本：每個 `#include "Foo.h"` 要改成 `#include "subfolder/Foo.h"` —— 一行 `sed` 就解掉。
-- `include/gfx/` 已經是這種佈局的先例。
+- `include/`、`src/`、`tests/` 各分成 **10 個對齊的子資料夾**：
+  `gfx/ entities/ world/ quest/ state/ dialog/ vendor/ ui/ controller/ harness/`
+- 每個 bucket 在三邊都有 `README.md`，列出責任、檔案、依賴方向。
+- `src/main.cpp` 仍保留在 `src/` 根（composition root，CLAUDE.md §5）。
+- `CMakeLists.txt` 已是 `GLOB_RECURSE`（`src/` 與 `tests/`）所以**無**需手列檔案。
+- 每個 `#include "Foo.h"` 一律寫成 `#include "<bucket>/Foo.h"`。`gfx/` 早就是這樣，其他 bucket 在 Cycle 11 對齊完成。
 
 ---
 
-## 為什麼 CMakeLists 不會壞
+## 為什麼是 10 桶而非當初提案 A 的 6 桶？
 
-看 `CMakeLists.txt:19-22`：
+`docs/FILE_ORGANIZATION.md` 的歷史版本提案 A 是 6 桶（`entities/ world/ state/ event/ factory/ ui/`）。從 Cycle 1 到 10 之間又長出了：
+
+- `quest/` — 章節 quest 控制器 + spawn / pickup / vendor table（提案 A 沒有）
+- `dialog/` — runtime dialogue 載入 / 排版 / 播放（原本散在多處）
+- `vendor/` — 商人從一般 NPC 拆出，因為它擁有庫存 / 價格 / 拒絕對白
+- `controller/` — 不只 EventBus + Factory，還包含 GameController / InputHandler / SceneRouter（Cycle 10.P0a 拆分）
+- `harness/` — autoplay 框架（CLAUDE.md §4），與 controller 分桶以保 normal-play bit-for-bit
+
+`gfx/` 一直是子資料夾，這次無變動。`event/` 與 `factory/` 併入 `controller/`，避免 1-2 檔的小桶。
+
+---
+
+## 實作的目錄樹
+
+```
+include/
+├── gfx/         RAII / value-type wrappers over raylib (lowest layer)
+├── entities/    GameObject 階層：Player, NPC, Item, 五種 Umbrella, Consumable 群, Pickup 群
+├── world/       World 容器、Buildings、Obstacles、Physics、CollisionMask、BuildingTracker
+├── quest/       Chapter{2,3,4}Quest、ChapterGate、Chapter{Pickups,QuestItems,Spawns,Vendors}、
+│                NpcSpawns、PipoyaRoster、QuestObjective
+├── state/       SemesterStateMachine + Chapter1AddDrop / Chapter2Midterms / Chapter3SportsDay /
+│                Chapter4Finals / Interlude{Market,Exit,ExitMarker} / EndingGate
+├── dialog/      DialogLoader、DialogSource、DialogState、DialogLayout、DialogView、DialogOpener
+├── vendor/      Vendor、VendorConfig、VendorLoader、VendorMessages、VendorSprite
+├── ui/          View、TitleScreen、CharacterSelect、EndingView、InventoryView、MessageView、
+│                RainHud、HudSlot、ChapterToast、QuestGiverIndicator、GameHelp、ReducedMotion
+├── controller/  GameController、InputHandler、SceneRouter、EventBus、EventWiring、
+│                GameObjectFactory、GameObjectQueries
+└── harness/     Harness、ScriptInput
+src/
+├── main.cpp     (composition root — stays at root, CLAUDE.md §5)
+├── gfx/         (empty — gfx headers are header-only RAII wrappers)
+├── entities/    (12 .cpp — Player、NPC、Pickup 群、Umbrella 群、Consumable 群)
+├── world/       World、TerrainMask、BuildingTracker
+├── quest/       Chapter{2,3,4}Quest、ChapterGate、ChapterVendors (其餘 quest header-only)
+├── state/       SemesterStateMachine、EndingGate (其餘 chapter / interlude header-only)
+├── dialog/      6 個對應 dialog/ header 的 impl
+├── vendor/      Vendor、VendorLoader
+├── ui/          View、TitleScreen、CharacterSelect、EndingView、InventoryView、MessageView
+├── controller/  GameController、InputHandler、SceneRouter、EventBus、GameObjectFactory
+└── harness/     Harness、ScriptInput
+tests/
+├── gfx/         7 個 pure-value POD wrapper tests
+├── entities/    11 個 Player / NPC / Item / Pickup / Umbrella 行為 tests
+├── world/       4 個 World / Physics / CollisionMask / BuildingTracker tests
+├── quest/       23 個（最大 bucket）— chapter spine、ripple、roster、economy、gate
+├── state/       5 個 state machine / interlude / ending gate tests
+├── dialog/      8 個 dialog parser / layout / source / state tests
+├── vendor/      5 個 vendor actor / loader / inventory tests
+├── ui/          15 個 HUD / view / a11y tests
+├── controller/  8 個 input / scene router / event bus / factory tests
+├── harness/     3 個 ScriptInput tests
+└── fixtures/    test-only data assets (no .cpp)
+```
+
+每個 bucket 詳細責任 + 依賴方向見：
+
+- include/: [gfx](../include/gfx/README.md) · [entities](../include/entities/README.md) · [world](../include/world/README.md) · [quest](../include/quest/README.md) · [state](../include/state/README.md) · [dialog](../include/dialog/README.md) · [vendor](../include/vendor/README.md) · [ui](../include/ui/README.md) · [controller](../include/controller/README.md) · [harness](../include/harness/README.md)
+- src/: [gfx](../src/gfx/README.md) · [entities](../src/entities/README.md) · [world](../src/world/README.md) · [quest](../src/quest/README.md) · [state](../src/state/README.md) · [dialog](../src/dialog/README.md) · [vendor](../src/vendor/README.md) · [ui](../src/ui/README.md) · [controller](../src/controller/README.md) · [harness](../src/harness/README.md)
+- tests/: [gfx](../tests/gfx/README.md) · [entities](../tests/entities/README.md) · [world](../tests/world/README.md) · [quest](../tests/quest/README.md) · [state](../tests/state/README.md) · [dialog](../tests/dialog/README.md) · [vendor](../tests/vendor/README.md) · [ui](../tests/ui/README.md) · [controller](../tests/controller/README.md) · [harness](../tests/harness/README.md)
+
+---
+
+## CMakeLists.txt：唯一改動
+
+`tests/` 的 glob 由 `GLOB` 改為 `GLOB_RECURSE`，以便撈到 `tests/<bucket>/*.cpp`。`src/` 的 glob 早就是 `GLOB_RECURSE`。
 
 ```cmake
-file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
-    "${SRC_DIR}/*.cpp"
-    "${INCLUDE_DIR}/*.h"
-)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 ```
 
-- `GLOB_RECURSE` = 遞迴掃整棵樹，**深度不限**。把 `Player.h` 移到 `include/entities/player/Player.h` 都會被撈到。
-- `target_include_directories(... PUBLIC "${INCLUDE_DIR}")` 只有 **一個** include root，所以引用方一律寫相對於 `include/` 的路徑。
-
-實證：`include/gfx/Color.h` 在 src 端就是 `#include "gfx/Color.h"`，不需要在 CMakeLists 多加 include path。
+`target_include_directories(... PUBLIC "${INCLUDE_DIR}")` 只有一個 include root，所以 `#include "<bucket>/Foo.h"` 直接 resolve 不需要增 include path。
 
 ---
 
-## 提案 A：4 桶 + 已存在的 gfx（最小變動，推薦）
+## #include 規範
 
-```
-include/
-├── gfx/           (已存在 — raylib wrapper)
-├── entities/      GameObject, Character, Player, NPC, Item, TransparentUmbrella + 4衍生,
-│                  ConsumableItem + 3衍生, CashPickup, Vendor, VendorConfig
-├── world/         Buildings, Obstacles, Physics, BuildingTracker, WorldConfig
-├── state/         SemesterState, SemesterStateMachine, Chapter1AddDrop, Chapter2Midterms,
-│                  Chapter3SportsDay, Chapter4Finals, InterludeMarket
-├── event/         EventBus
-├── factory/       GameObjectFactory
-└── ui/            CharacterSelect (一次性畫面)
-```
+- 所有 project header：`#include "<bucket>/Foo.h"`（永遠帶 bucket 前綴）。
+- 第三方：`#include "raylib.h"`、`#include "doctest/doctest.h"` 不變。
+- 系統 header：`#include <...>` 不變。
 
-- **遷移成本**：~30 headers → 改 ~50 處 `#include`。`sed` 一條搞定。
-- **心智負擔**：低。每個資料夾名字直接對應「我在找這個概念」的問題。
-
----
-
-## 提案 B：對映 SOLID review 的「Model / View / Controller」（理論最純，工程量大）
-
-```
-include/
-├── gfx/
-├── model/         GameObject, Character, Player, NPC, Item, Umbrella 群, Consumable 群,
-│                  CashPickup, Vendor, VendorConfig, WorldConfig
-├── view/          (空，未來放 renderer / HUD 模組)
-├── controller/    EventBus, GameObjectFactory, SemesterStateMachine, BuildingTracker,
-│                  Chapter 群, InterludeMarket, CharacterSelect
-└── infra/         Buildings, Obstacles, Physics (純資料 + 靜態幾何)
-```
-
-- 直接讓助教看到 MVC 分層。
-- 缺點：`controller` 變成大鍋飯（Lab9 警告 controller 易變 God），長期還是要再切。
-
----
-
-## 不建議：扁平 + 後綴前綴命名
-
-例：`Player_State.h`, `Umbrella_True.h`, `Chapter_AddDrop.h`。Windows 風格，掃起來反而更難。
-
----
-
-## 遷移腳本（提案 A）
-
-```bash
-# 1. 建子資料夾
-mkdir -p include/{entities,world,state,event,factory,ui}
-
-# 2. git mv (保留歷史)
-git mv include/Player.h include/entities/
-git mv include/Character.h include/entities/
-git mv include/GameObject.h include/entities/
-git mv include/NPC.h include/entities/
-git mv include/Item.h include/entities/
-git mv include/TransparentUmbrella.h include/entities/
-git mv include/{True,Fragile,ProfessorTrap,Cursed}Umbrella.h include/entities/
-git mv include/ConsumableItem.h include/entities/
-git mv include/{HotPack,WaterproofSpray,EnergyDrink}.h include/entities/
-git mv include/CashPickup.h include/entities/
-git mv include/Vendor.h include/entities/
-git mv include/VendorConfig.h include/entities/
-
-git mv include/{Buildings,Obstacles,Physics,BuildingTracker,WorldConfig}.h include/world/
-git mv include/SemesterState{,Machine}.h include/state/
-git mv include/Chapter{1AddDrop,2Midterms,3SportsDay,4Finals}.h include/state/
-git mv include/InterludeMarket.h include/state/
-git mv include/EventBus.h include/event/
-git mv include/GameObjectFactory.h include/factory/
-git mv include/CharacterSelect.h include/ui/
-
-# 3. 對映 src 端
-mkdir -p src/{entities,world,state,event,factory,ui}
-# ... (git mv 同名 .cpp 進去；CMake 仍會掃到)
-
-# 4. 一次性改 #include — 整個 src / tests / include 全掃
-# 對每個移動過的 header 名字，把 #include "Foo.h" 換成 #include "subfolder/Foo.h"
-# 範例（Player.h → entities/Player.h）：
-grep -rl '#include "Player.h"' include/ src/ tests/ | xargs sed -i '' 's|#include "Player.h"|#include "entities/Player.h"|g'
-# (重複 30 次，或寫 python 腳本一次解掉)
-
-# 5. 重新 cmake configure（GLOB_RECURSE 抓新檔）
-cmake -B build -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-cmake --build build
-ctest --test-dir build --output-on-failure
-```
-
----
-
-## 建議流程
-
-1. **先別動** —— 等下一波功能 ready 再一次重組，避免合併衝突。
-2. 一旦要動，**選提案 A**，分一個 PR 專門做 reorg，不要混 feature。
-3. 用 `git mv` 保留歷史；用全自動 sed 改 `#include`；CMake 重新 configure 一次就行。
-4. 寫到 commit message：`refactor(layout): group headers by domain (entities/world/state/...)`
+`include/<bucket>/Foo.h` 內部互引可以省略前綴（同層）但目前一律保留前綴，掃起來最一致。
 
 ---
 
 ## 注意事項
 
-- **gfx 已經是子資料夾**，提案 A 直接沿用同個哲學，整體一致。
-- `include/` 同名衝突風險：`Player.cpp` 找 `Player.h`，分開後寫 `entities/Player.h` 就一清二楚。
-- 別碰 `resources/` —— 那是執行期 raylib 載入路徑，動就壞。
+- **gfx/** 是 header-only 的 RAII / value-type wrappers，所以 `src/gfx/` 是空的（保留資料夾以維持對稱；要加 `.cpp` 立刻能被 `GLOB_RECURSE` 撈到）。
+- **state/** 與 **quest/** 也有不少 header-only chapter / table — `src/state/` 只有 2 個 `.cpp`，`src/quest/` 只有 5 個。
+- **harness/** 是 top-of-the-chain：只有 `main.cpp` 引用它；它的 sources 全部隔在 `UMBRELLA_SCRIPT` 後面，normal-play 完全 bypass。
+- **resources/** 維持不動（CLAUDE.md §5）。
+- **docs/content/** 維持不動（dialogue 是 runtime-loaded — 見 CLAUDE.md §6）。
