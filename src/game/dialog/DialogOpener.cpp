@@ -76,8 +76,8 @@ int Ch2SuitSenior(const Player& p) {
     return 0;                                       // (a) 路過
 }
 
-// Precedence (chapter2.md L225 「取代 (a)/(b) 段」 > L211 「取代 (a) 段」):
-// ProfessorTrap outranks HelpedTA.
+// 優先序（章節內容「取代 (a)/(b) 段」 > 「取代 (a) 段」）：
+// ProfessorTrap 優先於 HelpedTA。
 int Ch2Ta(const Player& p) {
     if (p.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c) -10
     if (p.HasFlag(kFlagHelpedTACh1))      return 1;  // (b)
@@ -215,7 +215,7 @@ int Ch4ShopAuntie(const Player& p) {
     return p.HasFlag(kFlagBoughtCoffeeForAuntie) ? 0 : 3;
 }
 
-// ---- Dispatch table --------------------------------------------------------
+// ---- 分派表 --------------------------------------------------------
 
 using OpenerResolver = int (*)(const Player&);
 
@@ -417,29 +417,25 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
     }
 
     const int sub = ResolveOpenerSubState(npcId, state, player);
-    if (sub == 0) { OpenNpcDialog(dlg, npcId, state); return; }  // 1b-2 path
+    if (sub == 0) { OpenNpcDialog(dlg, npcId, state); return; }  // 走「選單 vs 只有台詞」路徑
 
     const nccu::dialog::SubEntry* hit = nullptr;
     for (const auto& e : nccu::dialog::Entries(npcId, state))
         if (e.subState == sub) {
             hit = &e; break;
         }
-    if (hit == nullptr) { OpenNpcDialog(dlg, npcId, state); return; }  // fallback
+    if (hit == nullptr) { OpenNpcDialog(dlg, npcId, state); return; }  // 退路
 
-    dlg.Open(hit->lines);  // line-only consequence / recap
+    dlg.Open(hit->lines);  // 只有台詞的後果／回顧
     dlg.SetNpcContext(std::string(npcId));
 
-    // Apply the entry's own side-effects ONCE — the Ch1 1b-3 reward
-    // recap (ta 申請書 / victim 承諾): only when it sets a true flag the
-    // player doesn't have yet. Scoped to Chapter1_AddDrop on purpose:
-    // this is the Ch1 reward-recap mechanism. Ch2/3/4 ripple karma is
-    // path-b (TryRescueBookworm / TryApplyChNRipple / trade hooks), and
-    // a ripple subState's parsed setsFlag is an ARTIFACT of the
-    // chapter*.md prose, not an intended reward — e.g. chapter4.md 助教
-    // (c) L235's precedence note carries `Flag_HelpedTA_Ch1 = true`, so
-    // an unscoped auto-apply would spuriously grant HelpedTA_Ch1 to a
-    // player routed to (c). Ch2/Ch3 only avoided this by content luck
-    // (empty setsFlag); the guard makes safety structural.
+    // 「一次性」套用此條目自身的副作用——第一章的獎勵回顧（助教申請書／苦主承諾）：僅當它
+    // 設下一個玩家尚未持有的 true 旗標時。刻意限定於 Chapter1_AddDrop：這是第一章的獎勵
+    // 回顧機制。第二／三／四章的漣漪業力走另一條路徑（TryRescueBookworm／
+    // TryApplyChNRipple／交易鉤子），而漣漪子狀態解析出的 setsFlag 是章節內容散文的「副產物」、
+    // 而非有意的獎勵——例如第四章助教 (c) 的優先序註記帶有 `Flag_HelpedTA_Ch1 = true`，故
+    // 若不限定範圍而自動套用，會錯誤地把 HelpedTA_Ch1 授予被路由到 (c) 的玩家。第二／三章
+    // 從前只是靠內容運氣（setsFlag 為空）才倖免；此防護使安全成為結構性的。
     const std::string flag(hit->setsFlag);
     if (state == SemesterState::Chapter1_AddDrop &&
         !flag.empty() && hit->flagValue && !player.HasFlag(flag)) {

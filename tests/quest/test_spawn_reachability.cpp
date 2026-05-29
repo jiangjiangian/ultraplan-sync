@@ -1,3 +1,7 @@
+/**
+ * @file test_spawn_reachability.cpp
+ * @brief 載入實際碰撞地圖，以洪水填充驗證每個任務關鍵生成點都不嵌牆且從玩家出生點可達；無資產時優雅跳過。
+ */
 #include "doctest/doctest.h"
 #include "game/world/CollisionMask.h"
 #include "game/quest/NpcSpawns.h"
@@ -90,6 +94,7 @@ std::vector<Spot> GameplaySpots() {
 
 } // namespace
 
+// 每個遊戲生成點都必須可通行，且從玩家出生點以洪水填充可達（否則代表校園被封死或物件嵌牆）。
 TEST_CASE("every gameplay spawn is walkable and reachable from the player") {
     const CollisionMask mask = nccu::LoadTerrainMask();
     if (mask.Empty()) {
@@ -100,15 +105,14 @@ TEST_CASE("every gameplay spawn is walkable and reachable from the player") {
 
     const auto spots = GameplaySpots();
 
-    // 1. No entity may spawn embedded in solid terrain.
+    // 1. 任何實體都不得生成在實心地形裡。
     for (const auto& s : spots) {
         INFO("spawn '" << std::string(s.name) << "' at (" << s.x << ", "
              << s.y << ") is inside solid terrain");
         CHECK_FALSE(mask.BlockedBox(s.x, s.y, kBox, kBox));
     }
 
-    // 2. Flood-fill the walkable space from the player spawn on an 8 px
-    //    lattice; every other spot must be within one cell of it.
+    // 2. 以 8 px 網格從玩家出生點對可通行空間做洪水填充；其餘每個生成點都必須在其一格範圍內。
     constexpr int kStep = 8;
     const int gw = mask.Width()  / kStep;
     const int gh = mask.Height() / kStep;

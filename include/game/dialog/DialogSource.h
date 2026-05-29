@@ -18,7 +18,7 @@ class DialogRepository;     // 前向宣告——詳見 DialogRepository.h
  * 依需求透過 LoadChapter 載入章節 Markdown，每狀態快取一份 LoadedChapter。
  *
  * 為何存在：對白內容過去在建置期凍結進生成的標頭，任何文字微調都得重新生成並重編。
- * 本供給層改為在執行期直接讀取作者撰寫的 docs/content/*.md，並提供 Reload()，讓作者
+ * 本供給層改為在執行期直接讀取作者撰寫的 docs/content 下的 *.md，並提供 Reload()，讓作者
  * 編輯章節檔後於下一次對話即見效、無需重建。
  *
  * 「英文 npcId → 中文 section 名」與「SemesterState → 章節檔名」是固定查表，置於 .cpp。
@@ -42,7 +42,7 @@ const std::vector<SubEntry>& Entries(std::string_view npcId,
 /**
  * @brief 清掉所有已快取章節，使下次 Entries() 重新自磁碟讀取 Markdown。
  *
- * 熱重載鉤子：編輯 docs/content/*.md 後呼叫 Reload()，即供給新文字。
+ * 熱重載鉤子：編輯 docs/content 下的 *.md 後呼叫 Reload()，即供給新文字。
  */
 void Reload();
 

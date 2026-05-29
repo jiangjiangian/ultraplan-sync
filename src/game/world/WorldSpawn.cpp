@@ -105,72 +105,56 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         objects_.push_back(std::move(coin));
     }
 
-    // Quest items: chapter-scoped QuestFlagPickups. Roster-tracked like
-    // the coins, so an uncollected item is swept on the next state change
-    // instead of leaking into the Interlude / next chapter. Ch1's 申請書
-    // is NOT here — it stays ctor-spawned (a permanent Ch1 object);
-    // ChapterQuestItems(Ch1) is empty.
+    // 任務物品：章節限定的 QuestFlagPickup。與硬幣一樣記入名冊，故未拾取的物品會在下次
+    // 狀態切換時被清掃，而非洩漏進插曲段／下一章。第一章的申請書「不」在此——它仍由建構式
+    // 生成（一個永久的第一章物件）；ChapterQuestItems(Ch1) 為空。
     //
-    // Ch2 = the 3 散落筆記, but those are DEFERRED: they must not appear
-    // until the player wakes the 學霸 and he asks for them
-    // (MaybeSpawnChapter2Notes, gated on Flag_Bookworm). So skip Ch2 here
-    // — at chapter entry no note exists.
+    // 第二章 = 3 份散落筆記，但它們是「延後」生成的：必須等到玩家喚醒學霸、他開口要這些
+    // 筆記後才出現（MaybeSpawnChapter2Notes，以 Flag_Bookworm 為閘）。故此處略過第二章
+    // ——章節進入時尚無任何筆記。
     //
-    // A1: Ch1 = the 苦主's transparent umbrella, now ALSO DEFERRED: it must
-    // not appear until the player has confronted the 西裝學長 and committed a
-    // choice (Flag_SuitSeniorChoiceMade) — the 學長 reveals where he dropped
-    // it (MaybeSpawnChapter1VictimUmbrella). So skip Ch1 here too — at chapter
-    // entry the umbrella does NOT exist in the world, so the player cannot
-    // grab it before the 學長 step (hard-gating the 苦主 → 學長 → 傘 → 苦主
-    // spine). Every other state's items (none today) still spawn at entry
-    // through this shared helper.
+    // 第一章 = 苦主的透明傘，現在「也」延後生成：必須等到玩家面對西裝學長並確認某個選項
+    //（Flag_SuitSeniorChoiceMade）後才出現——學長會透露他把傘掉在哪
+    //（MaybeSpawnChapter1VictimUmbrella）。故此處也略過第一章——章節進入時這把傘「不」
+    // 存在於世界中，使玩家無法在學長那一步之前就拿走它（硬閘控 苦主 → 學長 → 傘 → 苦主
+    // 主線）。其餘所有狀態的物品（今日無）仍會在進入時經此共用輔助函式生成。
     if (state != SemesterState::Chapter2_Midterms &&
         state != SemesterState::Chapter1_AddDrop)
         SpawnChapterQuestItems(state);
 
-    // Ch4 期末考終焉: the TrueUmbrella re-found behind the 體育館
-    // (chapter4.md L6 傘再度失蹤). Claiming it does NOT clear Ch4 — it only
-    // satisfies Ending A's 持-TrueUmbrella condition via Flag_HasTrueUmbrella
-    // (no EventWiring Ch4 sibling-if). Coord (1640,375) is the walkable
-    // 體育館後台 pocket INSIDE the gym footprint — INTENTIONALLY hidden
-    // behind the gym building (an easter-egg alternate route to Ending A,
-    // parallel to the gentle 助教 finale of T4). KEEP it hidden — T5 only
-    // moves the Ch3 umbrella, never this one. Roster-tracked, swept on state
-    // change. Spawned at chapter entry (ungated).
+    // Ch4 期末考終焉：在體育館後方重新尋獲的 TrueUmbrella（劇情中傘再度失蹤）。拾取它
+    // 「不」清第四章關——它只經 Flag_HasTrueUmbrella 滿足結局 A 的「持有 TrueUmbrella」
+    // 條件（無事件接線的第四章兄弟 if）。座標 (1640,375) 是位於體育館足跡「內」、可行走的
+    // 後台口袋——刻意藏在體育館建築後方（通往結局 A 的彩蛋替代路線，與助教溫柔終局並行）。
+    // 維持其隱藏——只有第三章的傘會被移動，這把絕不移動。記入名冊，狀態切換時清掃。在章節
+    // 進入時生成（無閘控）。
     if (state == SemesterState::Chapter4_Finals) {
         auto umb = GameObjectFactory::Create(
             ObjectType::TrueUmbrella, nccu::engine::math::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
 
-        // B2: the DLC easter-egg "?" sign at the 風雩走廊 (corridor rect
-        // {1242,8,154,108}, centre ≈(1319,62)). Placed at its south edge so
-        // a player exploring up from the 操場/plaza can walk to it and read
-        // the teaser. Re-readable, no gameplay effect (no flag/karma/money).
-        // Roster-tracked, so it is swept the moment Ch4 ends like every other
-        // chapter object. Present only for the open-explore Chapter4_Finals.
+        // 位於風雩走廊（走廊矩形 {1242,8,154,108}，中心約 (1319,62)）的 DLC 彩蛋「?」
+        // 告示牌。放在其南緣，使從操場／廣場往上探索的玩家能走到它並讀到預告。可重複閱讀、
+        // 無玩法效果（不設旗標／業力／金錢）。記入名冊，故第四章一結束便與其他章節物件一樣
+        // 被清掃。僅在可自由探索的 Chapter4_Finals 出現。
         auto dlc = std::make_unique<DlcSign>(nccu::engine::math::Vec2{1305.0f, 88.0f});
         chapterRoster_.push_back(dlc.get());
         objects_.push_back(std::move(dlc));
     }
-    // Ch3 校慶運動會: the TrueUmbrella the 啦啦隊 took. T5 — it is now
-    // DEFERRED (MaybeSpawnChapter3Umbrella), spawned only AFTER the C-系
-    // 學姊 reveals its location (Flag_KnowsUmbrellaLoc), and at a coord
-    // LEFT of the gym so it is no longer occluded by the 體育館 building
-    // (the old (1640,375) sat inside the gym footprint — visible only once
-    // you walked behind it; players reported "傘沒出現"). Claiming it is
-    // the Ch3 clear (Ch1-isomorphic: BeClaimed → UmbrellaClaimed → the
-    // EventWiring Ch3 sibling-if → Interlude returnTo Ch4). So it is NOT
-    // spawned here at entry — see MaybeSpawnChapter3Umbrella below.
+    // Ch3 校慶運動會：被啦啦隊拿走的 TrueUmbrella。它現在是「延後」生成
+    //（MaybeSpawnChapter3Umbrella），只在 C 系學姊透露其位置（Flag_KnowsUmbrellaLoc）
+    // 後才生成，且座標在體育館「左側」，使其不再被體育館建築遮住（舊的 (1640,375) 落在
+    // 體育館足跡內——須走到後方才看得到；玩家曾回報「傘沒出現」）。拾取它即第三章通關
+    //（與第一章同構：BeClaimed → UmbrellaClaimed → 事件接線的第三章兄弟 if → 插曲段
+    // returnTo 第四章）。故此處在進入時「不」生成——見下方 MaybeSpawnChapter3Umbrella。
 
-    // 操場 校慶 crowd (player request): 5 students RUN the track at distinct
-    // speeds + 10 IDLE/mill, each a DIFFERENT shipped sprite (no new art).
-    // All decorative — isQuestGiver=false, non-blocking (NPC::BlocksMovement
-    // is false for circular_/wander_) — so the crowd never gates or walls
-    // the player. Sprites load only under loadSprites_ (headless tests skip
-    // the GPU upload, as the archetype/ambient loops do). This Ch3 path runs
-    // AFTER the ctor's terrainMask_ load (it is a state-change spawn, never
-    // the initial ctor call), so the idlers get a valid wander mask.
+    // 操場校慶人群（玩家需求）：5 名學生在跑道上以不同速度「奔跑」 + 10 名閒置／走動，
+    // 每個都用不同的隨附 sprite（不新增美術）。全部為裝飾——isQuestGiver=false、不阻擋
+    //（circular_/wander_ 的 NPC::BlocksMovement 為 false）——故人群絕不會閘控或擋住玩家。
+    // sprite 僅在 loadSprites_ 下載入（headless 測試略過 GPU 上傳，與原型／環境迴圈同理）。
+    // 此第三章路徑在建構式載入 terrainMask_ 「之後」執行（它是狀態切換生成，絕非最初的
+    // 建構式呼叫），故閒置者能取得有效的遊蕩遮罩。
     if (state == SemesterState::Chapter3_SportsDay) {
         static const char* const kCrowd[15] = {
             "resources/assets/sprites/school_uniform_3/male_01.png",
@@ -190,9 +174,9 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             "resources/assets/sprites/school_uniform_3/female_12.png",
         };
         const nccu::engine::math::Vec2 trackC{kSportsTrackCx, kSportsTrackCy};
-        const float trackR = 150.0f;   // runners circle ~on the stadium track
-        for (int i = 0; i < 5; ++i) {                 // runners
-            const float a0 = static_cast<float>(i) * 1.25664f;   // 72° apart
+        const float trackR = 150.0f;   // 跑者大致沿體育場跑道繞圈
+        for (int i = 0; i < 5; ++i) {                 // 跑者
+            const float a0 = static_cast<float>(i) * 1.25664f;   // 相隔 72°
             auto run = std::make_unique<NPC>(
                 nccu::engine::math::Vec2{trackC.x + trackR * std::cos(a0),
                                 trackC.y + trackR * std::sin(a0)},
@@ -209,7 +193,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             {1820.0f, 800.0f}, {1480.0f, 720.0f}, {1640.0f, 700.0f},
             {1900.0f, 660.0f}};
         unsigned seed = 0x5A17C0DEu;
-        for (int i = 0; i < 10; ++i) {                // idlers
+        for (int i = 0; i < 10; ++i) {                // 閒置者
             auto npc = std::make_unique<NPC>(
                 kIdle[i], std::vector<std::string>{}, false,
                 std::string_view{});
@@ -222,23 +206,17 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         }
     }
 
-    // G-1 + G-2: the Ch1 加退選搶課 crowd + stationary flavor NPCs (player
-    // request — make the course-grab rush feel populated). Mirrors the Ch3
-    // 操場 crowd block above: roster-tracked (swept on chapter exit), sprites
-    // gated by loadSprites_ (headless tests skip the GPU upload), and this Ch1
-    // path runs only on a state-change/ctor respawn so the wanderers get a
-    // valid terrain mask. ALL are decorative-or-flavor — never quest-givers,
-    // never spine-touching:
-    //   • Crowd (Chapter1CrowdSpawns): wander=true → non-blocking ambient
-    //     pedestrians (random-walk + animate), empty npcId → no dialog, no
-    //     `!`. Distinct per-NPC PRNG seed so they don't march in lock-step.
-    //   • Flavor (Chapter1FlavorSpawns): wander=false → solid standing
-    //     students with a flavor npcId. Their chapter1.md (a) line pool is
-    //     loaded into dialogLines_ here via NPC::LoadDialog; GameController
-    //     routes a flavor npcId to NPC::Interact() (deterministic per-talk
-    //     cycle), NEVER to a spine hook — so they set no quest flag and the
-    //     hard-gated 苦主→學長→苦主 spine is untouched. isQuestGiver=false →
-    //     no `!` (Ch1IndicatorVisible's fall-through returns the false bit).
+    // 第一章加退選搶課人群 + 站立的風味 NPC（玩家需求——讓搶課的混亂感覺有人氣）。比照
+    // 上方第三章操場人群區塊：記入名冊（章節離開時清掃）、sprite 以 loadSprites_ 閘控
+    //（headless 測試略過 GPU 上傳），且此第一章路徑只在狀態切換／建構式重生時執行，故遊蕩者
+    // 能取得有效的地形遮罩。全部為裝飾或風味——絕非任務給予者、絕不碰主線：
+    //   • 人群（Chapter1CrowdSpawns）：wander=true → 不阻擋的環境行人（隨機走動 + 動畫），
+    //     npcId 為空 → 無對話、無「!」。每個 NPC 各有不同的 PRNG 種子，故不會步伐一致地齊走。
+    //   • 風味（Chapter1FlavorSpawns）：wander=false → 實心站立的學生、帶風味 npcId。其章節
+    //     內容的 (a) 台詞池在此經 NPC::LoadDialog 載入 dialogLines_；GameController 會把風味
+    //     npcId 路由到 NPC::Interact()（每次對話依序循環），「絕不」路由到主線鉤子——故它們
+    //     不設任何任務旗標，硬閘控的 苦主→學長→苦主 主線不受影響。isQuestGiver=false → 無
+    //    「!」（Ch1IndicatorVisible 的落空回傳 false 位元）。
     if (state == SemesterState::Chapter1_AddDrop) {
         unsigned seed = 0xC0FFEE11u;
         for (const auto& s : Chapter1CrowdSpawns()) {
@@ -255,10 +233,9 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         for (const auto& s : Chapter1FlavorSpawns()) {
             auto npc = std::make_unique<NPC>(s.pos, std::vector<std::string>{},
                                              s.isQuestGiver, s.npcId);
-            // Load the flavor line pool from chapter1.md (the NPC's (a)
-            // section). NPC::Interact() then cycles these one per talk. A
-            // headless context with no readable content yields an empty pool
-            // (LoadDialog is no-throw) — Interact() simply no-ops, no crash.
+            // 從章節內容載入風味台詞池（該 NPC 的 (a) 段）。NPC::Interact() 之後每次對話
+            // 依序循環取用。無可讀內容的 headless 環境會得到空池（LoadDialog 不拋例外）——
+            // Interact() 單純無動作、不會當機。
             npc->LoadDialog(s.npcId, SemesterState::Chapter1_AddDrop, 0);
             if (loadSprites_)
                 npc->LoadSprite(PickNpcSprite(s.npcId, s.pos, s.spritePath));
@@ -279,10 +256,9 @@ void World::SpawnChapterQuestItems(nccu::SemesterState state) {
 }
 
 bool World::MaybeSpawnChapter2Notes() {
-    // Self-gating, sibling of UpdateSportsLap. The 3 散落筆記 appear ONLY
-    // after the 學霸 is woken (Flag_Bookworm, set by TryRescueBookworm's
-    // wake step). One-shot per Ch2 visit (ch2NotesSpawned_), so a re-talk
-    // / re-frame never double-spawns.
+    // 自我閘控，為 UpdateSportsLap 的兄弟。3 份散落筆記「只」在學霸被喚醒後出現
+    //（Flag_Bookworm，由 TryRescueBookworm 的喚醒步驟設下）。每次第二章造訪一次性
+    //（ch2NotesSpawned_），故重新對話／重新進場絕不會重複生成。
     if (ch2NotesSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter2_Midterms) return false;
     if (!player_ || !player_->HasFlag(kFlagBookworm)) return false;
@@ -292,17 +268,14 @@ bool World::MaybeSpawnChapter2Notes() {
 }
 
 bool World::MaybeSpawnChapter1VictimUmbrella() {
-    // A1: the Ch1 苦主's transparent umbrella is REVEAL-AFTER-CHOICE, the
-    // sibling of MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella. It
-    // appears ONLY after the player has committed a choice with the 西裝學長
-    // (Flag_SuitSeniorChoiceMade, set by GameController on a confirmed
-    // suit_senior choice) — so it does not exist before the 學長 step. The
-    // placement (coord/flag/message) stays single-sourced in
-    // ChapterQuestItems(Chapter1) via the shared SpawnChapterQuestItems
-    // helper. One-shot per Ch1 visit (ch1VictimUmbrellaSpawned_). Roster-
-    // tracked, so it is swept if the player leaves Ch1 uncleared. Carrying it
-    // back to the 苦主 is the Ch1 clear (TryReturnVictimUmbrella's grant); the
-    // pickup itself only sets Flag_HasVictimUmbrella.
+    // 第一章苦主的透明傘是「選擇後才揭示」，為 MaybeSpawnChapter2Notes /
+    // MaybeSpawnChapter3Umbrella 的兄弟。它「只」在玩家對西裝學長確認某個選項後出現
+    //（Flag_SuitSeniorChoiceMade，suit_senior 選項確認時由 GameController 設下）——故它
+    // 在學長那一步之前不存在。其擺放（座標／旗標／訊息）仍單一來源於
+    // ChapterQuestItems(Chapter1)，經共用的 SpawnChapterQuestItems 輔助函式。每次第一章
+    // 造訪一次性（ch1VictimUmbrellaSpawned_）。記入名冊，故玩家未通關就離開第一章時會被
+    // 清掃。把它帶回給苦主才是第一章通關（TryReturnVictimUmbrella 的授予）；拾取物本身只
+    // 設下 Flag_HasVictimUmbrella。
     if (ch1VictimUmbrellaSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter1_AddDrop) return false;
     if (!player_ || !player_->HasFlag(kFlagSuitSeniorChoiceMade))
@@ -313,16 +286,13 @@ bool World::MaybeSpawnChapter1VictimUmbrella() {
 }
 
 bool World::MaybeSpawnChapter3Umbrella() {
-    // T5: the Ch3 TrueUmbrella is REVEAL-AFTER-CLUE, the sibling of
-    // MaybeSpawnChapter2Notes. It appears ONLY after the C-系 學姊 reveals
-    // its location (Flag_KnowsUmbrellaLoc, set by TryAdvanceCh3Trade's final
-    // link) — so it does not exist before the clue is earned. One-shot per
-    // Ch3 visit (ch3UmbrellaSpawned_). Spawned at kChapter3UmbrellaPos —
-    // LEFT of the 體育館 (gym left edge x=1493), in the open gap between
-    // 風雩樓 and the gym, so it is visible/reachable instead of occluded
-    // inside the gym footprint as the old (1640,375) was. Roster-tracked,
-    // so it is swept if the player leaves Ch3 uncleared. Claiming it is the
-    // Ch3 clear (BeClaimed → UmbrellaClaimed → EventWiring → Interlude).
+    // 第三章的 TrueUmbrella 是「線索後才揭示」，為 MaybeSpawnChapter2Notes 的兄弟。它
+    //「只」在 C 系學姊透露其位置後出現（Flag_KnowsUmbrellaLoc，由 TryAdvanceCh3Trade 的
+    // 最後一個環節設下）——故在取得線索之前不存在。每次第三章造訪一次性
+    //（ch3UmbrellaSpawned_）。生成於 kChapter3UmbrellaPos——體育館「左側」（體育館左緣
+    // x=1493），落在風雩樓與體育館之間的空隙，故可見且可達，而非像舊的 (1640,375) 那樣被
+    // 遮在體育館足跡內。記入名冊，故玩家未通關就離開第三章時會被清掃。拾取它即第三章通關
+    //（BeClaimed → UmbrellaClaimed → 事件接線 → 插曲段）。
     if (ch3UmbrellaSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter3_SportsDay) return false;
     if (!player_ || !player_->HasFlag(kFlagKnowsUmbrellaLoc)) return false;
@@ -335,20 +305,17 @@ bool World::MaybeSpawnChapter3Umbrella() {
 }
 
 bool World::MaybeSpawnInterludeLibrarianReturn() {
-    // G-3: the Ch2→Ch3 Interlude 管理員的傘 return-point, the sibling of
-    // MaybeSpawnChapter2Notes / MaybeSpawnChapter3Umbrella. A small marker NPC
-    // (kNpcLibrarianReturn) appears at the 中正圖書館 front (just south of the
-    // library rect {698,254,382,255}) ONLY when ALL hold:
-    //   • the FSM is in the Interlude, and
-    //   • this market returns to Ch3 (InterludeReturnTo == Chapter3_SportsDay)
-    //     — the only market where the Ch2 loaner can still be in hand, and
-    //   • the player STILL holds the loaner (Flag_LibrarianUmbrella +
-    //     HeldUmbrella::Loaner), and
-    //   • the loaner has not already been returned (Flag_…Returned).
-    // One-shot per Interlude visit (interludeReturnSpawned_). Roster-tracked,
-    // so it is swept on the next state change. If the player never returns it,
-    // the loaner still auto-clears on Ch3 entry (SceneRouter) with no karma —
-    // returning it is the purely-positive optional 責任感 +10 path.
+    // 第二章→第三章插曲段「管理員的傘」歸還點，為 MaybeSpawnChapter2Notes /
+    // MaybeSpawnChapter3Umbrella 的兄弟。一個小型標記 NPC（kNpcLibrarianReturn）會出現在
+    // 中正圖書館前方（就在圖書館矩形 {698,254,382,255} 南側），「只」在以下全部成立時：
+    //   • FSM 位於插曲段，且
+    //   • 此市集會返回第三章（InterludeReturnTo == Chapter3_SportsDay）——這是唯一仍可能
+    //     手持第二章借傘的市集，且
+    //   • 玩家「仍」持有借傘（Flag_LibrarianUmbrella + HeldUmbrella::Loaner），且
+    //   • 借傘尚未歸還（Flag_…Returned）。
+    // 每次插曲段造訪一次性（interludeReturnSpawned_）。記入名冊，故下次狀態切換時清掃。
+    // 若玩家始終不歸還，借傘仍會在進入第三章時自動清除（SceneRouter）且無業力——歸還它是
+    // 純正向的選用「責任感 +10」路線。
     if (interludeReturnSpawned_) return false;
     if (semester_.Current() != SemesterState::Interlude_Market) return false;
     if (semester_.InterludeReturnTo() != SemesterState::Chapter3_SportsDay)
@@ -358,10 +325,9 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
     if (player_->HeldUmbrellaKind() != HeldUmbrella::Loaner) return false;
     if (player_->HasFlag(kFlagLibrarianUmbrellaReturned)) return false;
 
-    // (820,560): mask-verified STRICTLY walkable (100%, all 4 neighbours
-    // 100%) and flood-reachable from the Interlude entry (500,1500), just
-    // south of the 中正圖書館 rect bottom (y=509). It is the librarian's own
-    // Ch1/Ch2 desk apron, so it reads as "return it to her counter".
+    // (820,560)：經遮罩驗證為「嚴格」可行走（100%，四個鄰格皆 100%），且可由插曲段入口
+    //（500,1500）淹沒法到達，就在中正圖書館矩形底部（y=509）南側。它是管理員第一／二章
+    // 櫃台前的區域，故讀來像「把傘還回她的櫃台」。
     auto npc = std::make_unique<NPC>(
         nccu::engine::math::Vec2{820.0f, 560.0f}, std::vector<std::string>{},
         /*isQuestGiver=*/false, std::string_view{kNpcLibrarianReturn});
