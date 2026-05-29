@@ -5,7 +5,7 @@
 #include "game/dialog/DialogOpener.h"
 #include "game/state/EndingGate.h"
 #include "game/quest/ChapterGate.h"
-#include "ui/ChapterToast.h"
+#include "game/state/ChapterToast.h"
 #include "game/controller/screens/EndingScreen.h"    // P3 step 1a: HandleEndingMenu free fn
 #include "game/controller/screens/PauseScreen.h"     // P3 step 1b: HandlePauseMenu free fn
 #include "game/controller/screens/InventoryScreen.h" // P3 step 1c: HandleInventory free fn
@@ -17,9 +17,9 @@
 #include "game/quest/Chapter4Quest.h"
 #include "game/quest/ItemCatalog.h"
 #include "game/quest/NpcSpawns.h"     // G-2: IsChapter1FlavorNpc routing
-#include "ui/EndingView.h"        // A-T3: IsEndingState + the ending-menu map
-#include "ui/GameHelp.h"          // kGameHelpPageCount (paged 說明 nav)
-#include "ui/InventoryView.h"     // kInventoryRowsPerPage (paged bag nav)
+#include "game/state/EndingMenuModel.h"  // IsEndingState + EndingMenuChoiceAt
+#include "game/state/GameHelpPages.h"    // kGameHelpPageCount
+#include "game/quest/InventoryPaging.h"  // kInventoryRowsPerPage
 #include "game/vendor/Vendor.h"
 #include "game/state/InterludeExit.h"
 #include "game/controller/GameObjectQueries.h"

@@ -1,18 +1,17 @@
 #ifndef MESSAGE_VIEW_H_
 #define MESSAGE_VIEW_H_
-#include "ui/HudSlot.h"
+#include "engine/events/HudSlot.h"
+#include "game/world/HudTiming.h"   // kHudTtl + kHudFade (game-side)
 #include <string>
 
 namespace nccu { namespace gfx { class IRenderer; } }
 
 namespace nccu {
 
-// How long a ShowMessage banner stays on screen, and how long its
-// tail-end fade lasts (the last kHudFade seconds of kHudTtl). Exposed so
-// the reactive test can pick ages either side of the TTL without
-// hard-coding magic numbers.
-inline constexpr float kHudTtl  = 4.0f;
-inline constexpr float kHudFade = 1.0f;
+// kHudTtl + kHudFade live in game/world/HudTiming.h (included above)
+// so the World — which ages the HUD slots against kHudTtl in
+// HudExpired() and snaps to it in DismissHud() — can read them
+// without pulling this ui render header.
 
 // Transient bottom-anchored toast for the latest EventType::ShowMessage
 // (quest cues / 喚醒提示 / 章節清關旁白 / ripple reactions / vendor text),

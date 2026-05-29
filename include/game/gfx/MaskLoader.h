@@ -1,6 +1,6 @@
 #ifndef GFX_MASK_LOADER_H_
 #define GFX_MASK_LOADER_H_
-#include "raylib.h"
+#include "engine/render/ImageDecoder.h"
 #include "game/world/CollisionMask.h"
 #include <cstdio>
 #include <string>
@@ -8,8 +8,9 @@
 namespace nccu::gfx {
 
 // Loads the terrain walkability PNG into a raylib-free CollisionMask.
-// raylib's CPU Image API lives ONLY here so the rest of the engine
-// never sees raylib.h. A pixel is WALKABLE iff it is fully transparent
+// Blueprint Phase 4 R5: the raylib::Image lifetime + decode are
+// confined to engine/render/ImageDecoder.cpp; this header pulls in
+// zero raylib symbols. A pixel is WALKABLE iff it is fully transparent
 // or pure white; everything else is SOLID. That dual rule survives both
 // an RGB white-background export and an RGBA transparent-background
 // export, so the artist can flatten the file however their editor
@@ -22,15 +23,13 @@ namespace nccu::gfx {
 // collision degrades visibly instead of failing silently.
 inline CollisionMask LoadCollisionMask(const std::string& primary,
                                        const std::string& fallback) {
-    ::Image img = ::LoadImage(primary.c_str());
+    DecodedImage img = LoadRgba8Image(primary);
     const char* used = primary.c_str();
-    if (img.data == nullptr || img.width <= 0) {
-        if (img.data) ::UnloadImage(img);
-        img = ::LoadImage(fallback.c_str());
+    if (img.Empty()) {
+        img  = LoadRgba8Image(fallback);
         used = fallback.c_str();
     }
-    if (img.data == nullptr || img.width <= 0) {
-        if (img.data) ::UnloadImage(img);
+    if (img.Empty()) {
         std::fprintf(stderr,
             "[CollisionMask] WARNING: neither '%s' nor '%s' found — "
             "terrain collision DISABLED (everything walkable)\n",
@@ -38,10 +37,11 @@ inline CollisionMask LoadCollisionMask(const std::string& primary,
         return CollisionMask{};
     }
 
-    ::ImageFormat(&img, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
-    const int w = img.width, h = img.height;
-    const auto* px = static_cast<const unsigned char*>(img.data);
-    std::vector<std::uint8_t> solid(static_cast<std::size_t>(w) * h);
+    const int w = img.width;
+    const int h = img.height;
+    const auto& px = img.rgba8;
+    std::vector<std::uint8_t> solid(
+        static_cast<std::size_t>(w) * static_cast<std::size_t>(h));
     for (std::size_t i = 0, n = solid.size(); i < n; ++i) {
         const unsigned char r = px[i * 4 + 0];
         const unsigned char g = px[i * 4 + 1];
@@ -51,7 +51,6 @@ inline CollisionMask LoadCollisionMask(const std::string& primary,
             (a == 0) || (r == 255 && g == 255 && b == 255);
         solid[i] = walkable ? 0 : 1;
     }
-    ::UnloadImage(img);
     std::fprintf(stderr, "[CollisionMask] loaded %dx%d from '%s'\n",
                  w, h, used);
     return CollisionMask{w, h, std::move(solid)};

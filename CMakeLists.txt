@@ -124,3 +124,19 @@ endfunction()
 if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
     copy_resources_to_target(${PROJECT_NAME})
 endif()
+
+# Blueprint Phase 4 §A — Doxygen architecture-audit target. Generates
+# the class hierarchy + per-directory dependency graphs into
+# build/doxygen/html/ (gitignored). Optional build-dep (graphviz +
+# doxygen); the target is added unconditionally but the build only
+# succeeds when both are installed. Run:
+#     cmake --build build --target docs
+# Then open build/doxygen/html/hierarchy.html or any dir_*.html.
+find_program(DOXYGEN_EXECUTABLE doxygen)
+if(DOXYGEN_EXECUTABLE)
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_SOURCE_DIR}/Doxyfile"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        COMMENT "Generating Doxygen architecture audit (build/doxygen/html/)"
+        VERBATIM)
+endif()

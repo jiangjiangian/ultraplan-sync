@@ -1,6 +1,6 @@
 #ifndef EVENT_WIRING_H_
 #define EVENT_WIRING_H_
-#include "ui/ChapterToast.h"
+#include "game/state/ChapterToast.h"
 #include "engine/events/EventBus.h"
 #include "game/state/SemesterStateMachine.h"
 #include "game/world/World.h"

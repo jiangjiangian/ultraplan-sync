@@ -1,8 +1,8 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 #include "engine/core/GameObject.h"
-#include "ui/HudSlot.h"
-#include "ui/MessageView.h"
+#include "engine/events/HudSlot.h"
+#include "game/world/HudTiming.h"   // kHudTtl + kHudFade
 #include "game/entities/Player.h"
 #include "game/state/SemesterState.h"
 #include "game/state/SemesterStateMachine.h"

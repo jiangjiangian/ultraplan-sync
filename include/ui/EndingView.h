@@ -1,5 +1,8 @@
 #ifndef ENDING_VIEW_H_
 #define ENDING_VIEW_H_
+#include "game/state/EndingMenuModel.h"  // IsEndingState + EndingMenuChoice +
+                                           // EndingMenuChoiceAt + EndingMenuLabel
+                                           // (game-side; this header renders against them)
 #include "game/state/SemesterState.h"
 #include <string>
 #include <string_view>
@@ -7,9 +10,6 @@
 
 namespace nccu {
 namespace gfx { class IRenderer; }
-
-// True for Ending_A / Ending_B / Ending_C.
-[[nodiscard]] bool IsEndingState(SemesterState s) noexcept;
 
 // 5c — every literal string the ending screen can render, across ALL
 // three endings and every deciding-condition branch, returned from the
@@ -44,27 +44,11 @@ struct EndingSummary {
     bool finaleChoiceMade = false;
 };
 
-// A-T3 — the ending screen's bottom 3-option menu. The ending screen is a
-// STABLE, INTERACTIVE screen (no longer a passive card): ←/→ move the
-// cursor, E/Enter confirm. The three choices, in cursor order:
-//   0  回首頁     — back to the title screen.
-//   1  重新開始   — a fresh new game from Ch1.
-//   2  結束       — true quit (the ONLY path that closes the window).
-// This enum is the single source of truth for the menu's meaning; the
-// LABELS live in EndingMenuLabel(). Both routing semantics are realised
-// through World::PendingAppAction in GameController (the View only renders
-// the highlighted row) — see EndingMenuActionAt below.
-enum class EndingMenuChoice { BackToTitle, RestartGame, Quit };
-
-// Pure index → choice mapping (cursor 0..2). Out-of-range clamps into the
-// valid set so a stray cursor can never select "nothing". Testable without
-// any World / renderer.
-[[nodiscard]] EndingMenuChoice EndingMenuChoiceAt(int index) noexcept;
-
-// The on-screen label for a choice (CJK; every glyph baked into the atlas
-// — these strings are included in EndingCardStrings() so the glyph-scan
-// test covers them). Single source of truth shared by the renderer.
-[[nodiscard]] std::string_view EndingMenuLabel(EndingMenuChoice c) noexcept;
+// EndingMenuChoice + EndingMenuChoiceAt + EndingMenuLabel live in
+// game/state/EndingMenuModel.h (game-side); included above so this
+// header still resolves their names for callers that include only
+// ui/EndingView.h. The renderer here just reads them; the controller
+// drives them.
 
 // Full-screen ending screen: black backdrop + title + the opening 字卡,
 // THEN (Item 1) an in-fiction "why you're here" reason and a 結算 stats
