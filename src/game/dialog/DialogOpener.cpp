@@ -337,17 +337,13 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
         return;
     }
 
-    // A2 (hard-gate the Ch2 spine): the 學霸 must NOT be approachable before
-    // the player has met the 圖書館管理員. The spine is 管理員 → 學霸(喚醒) →
-    // 撿筆記 → 學霸(換回); the librarian's (a) line is what points the player to
-    // the 羅馬廣場 statue where the 學霸 is slumped. Talked-to out of order
-    // (before Flag_MetLibrarian), the slumped 學霸 does not respond and a cue
-    // redirects the player to the 櫃台. Line-only, sets nothing — the player
-    // can go meet the librarian and return. Once she is met, the normal
-    // (a)/(c)/(d) routing below takes over (TryRescueBookworm also nudges on
-    // the E-interact path; this is the dialog-side mirror). Skipped once woken
-    // (Flag_Bookworm implies the librarian was met — you cannot wake him
-    // otherwise) so a re-talk after waking never wrongly redirects.
+    // 硬閘控第二章主線：學霸「不得」在玩家見到圖書館管理員之前就可接洽。主線是
+    // 管理員 → 學霸(喚醒) → 撿筆記 → 學霸(換回)；管理員的 (a) 台詞會指引玩家前往
+    // 羅馬廣場那座學霸癱倒的雕像。若順序錯亂（在 Flag_MetLibrarian 之前）就先找學霸，
+    // 癱倒的學霸不會回應，並有提示把玩家導向櫃台。只有台詞、不設任何旗標——玩家可以去見
+    // 管理員再回來。一旦見過她，下方正常的 (a)/(c)/(d) 路由便接手（TryRescueBookworm
+    // 也會在按 E 互動路徑上推一把；這是對話側的鏡像）。一旦喚醒便略過（Flag_Bookworm
+    // 意味著已見過管理員——否則無法喚醒他），故喚醒後重新對話絕不會錯誤轉向。
     if (state == SemesterState::Chapter2_Midterms && npcId == "bookworm" &&
         !player.HasFlag(kFlagMetLibrarian) &&
         !player.HasFlag(kFlagBookworm)) {
@@ -359,31 +355,23 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
         return;
     }
 
-    // C.3(b): 西裝學長 is the ripple-critical choice-opener. Once the
-    // player has committed a choice with him (Flag_SuitSeniorChoiceMade
-    // is set by GameController when a suit_senior choice is confirmed),
-    // re-talking must NOT re-present the branch menu — otherwise the
-    // player could stack mutually-exclusive ripple flags (pick (d)
-    // Flag_HelpedSenior, then re-talk and pick (c) Flag_ScoldedSenior).
-    // Recap = the subState-0 opener lines, line-only (no menu, no
-    // re-applied karma/flag). shop_auntie / victim stay re-enterable
-    // (low impact; after C.1 a shop_auntie re-entry is harmless).
+    // 西裝學長是攸關漣漪的選項開場。一旦玩家對他確認過某個選項（suit_senior 選項確認時，
+    // GameController 會設下 Flag_SuitSeniorChoiceMade），重新對話便「不得」再次呈現分支
+    // 選單——否則玩家可能堆疊互斥的漣漪旗標（先選 (d) Flag_HelpedSenior，再重新對話選 (c)
+    // Flag_ScoldedSenior）。回顧 = 子狀態 0 的開場台詞，只有台詞（無選單、不重套業力／
+    // 旗標）。shop_auntie / victim 維持可重新進入（影響低；其重新進入無害）。
     if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
         player.HasFlag(kFlagSuitSeniorChoiceMade)) {
-        OpenNpcDialogSub(dlg, npcId, state, 0);   // opener lines, NO choices
+        OpenNpcDialogSub(dlg, npcId, state, 0);   // 開場台詞，「無」選項
         dlg.SetNpcContext(std::string(npcId));
         return;
     }
 
-    // S5e-2d: 助教 (d) 結算 — the moral choice that gates Ending A.
-    // chapter4.md (d)'s 「體諒」/「質問」are parser-flattened bold
-    // sub-blocks (same class as S5c-2 (c)/(c-fail)), so the choice is
-    // CODE-CONSTRUCTED (no 2nd content nod, not a fragile line-split —
-    // payload is code, the .md owns flavour; path-b precedent). The
-    // opener lines are the routed (a)/(b)/(c) reaction; the menu is the
-    // 結算. One-shot like C.3(b): Flag_TaFinaleChoiceMade (set by
-    // GameController on confirm) → line-only recap, never re-presented
-    // (no double karma / no flipping the moral choice).
+    // 助教 (d) 結算——閘控結局 A 的道德選擇。章節內容中 (d) 的「體諒」/「質問」是被解析器
+    // 壓平的粗體子區塊，故此選項採「程式碼建構」（酬載為程式碼、由內容檔負責風味；走另一條
+    // 路徑的先例）。開場台詞是被路由的 (a)/(b)/(c) 反應；選單則是結算。與西裝學長一樣為
+    // 一次性：Flag_TaFinaleChoiceMade（確認時由 GameController 設下）→ 只有台詞的回顧、
+    // 絕不再次呈現（不重複業力／不翻轉道德選擇）。
     if (state == SemesterState::Chapter4_Finals && npcId == "ta") {
         const int taSub = ResolveOpenerSubState(npcId, state, player);
         std::vector<std::string> openerLines;
@@ -391,19 +379,17 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
             if (e.subState == taSub) { openerLines = e.lines; break; }
 
         if (player.HasFlag(kFlagTaFinaleChoiceMade)) {
-            dlg.Open(std::move(openerLines));     // recap, NO menu
+            dlg.Open(std::move(openerLines));     // 回顧，「無」選單
             dlg.SetNpcContext(std::string(npcId));
             return;
         }
         std::vector<DialogChoice> taChoices;
-        // S5e-2d / T4: 體諒 is the gentle finale. It sets Flag_ConsoledTA
-        // (Ending A's moral key) AND — because being kind makes the 助教
-        // press YOUR umbrella back into your hands — GameController also
-        // grants Flag_HasTrueUmbrella on this branch (the gentle reclaim
-        // route to Ending A, parallel to the hidden Ch4 umbrella). The
-        // "拿回你的傘" beat is spoken HERE so the return is on-screen, not
-        // implicit. DialogChoice carries one flag (Flag_ConsoledTA); the
-        // HasTrueUmbrella grant is wired in GameController on confirm.
+        // 體諒 是溫柔的終局。它設下 Flag_ConsoledTA（結局 A 的道德鑰匙），「且」——因為
+        // 善意會讓助教把「你的」傘塞回你手裡——GameController 在此分支也授予
+        // Flag_HasTrueUmbrella（通往結局 A 的溫柔取回路線，與隱藏的第四章雨傘並行）。
+        //「拿回你的傘」這一節拍在「此處」說出，使歸還呈現在畫面上、而非隱含。DialogChoice
+        // 帶一個旗標（Flag_ConsoledTA）；HasTrueUmbrella 的授予在確認時由 GameController
+        // 接線。
         taChoices.push_back(DialogChoice{
             "體諒助教的辛勞", 15, kFlagConsoledTA, true,
             {"（你接過那把傘，順手替他把懷裡的考卷扶正）",
@@ -418,13 +404,11 @@ void OpenNpcDialog(DialogState& dlg, Player& player,
              "「規定就是規定，我配合。」",
              "「傘是你的，我還你。」",
              "（他不再說話，繼續巡考）"}});
-        // 1c: the no-commit exit. Appended LAST so 體諒/質問 keep indices
-        // 0/1 (test_ch4_finale pins them). Zero karmaDelta + empty setsFlag
-        // and NO nextLines → Advance() Close()s immediately (vendor-decline
-        // shape), and GameController skips Flag_TaFinaleChoiceMade for this
-        // label, so the finale menu is NOT consumed — the player can walk
-        // off and re-approach 助教 to decide later (no soft-lock, no
-        // accidental Ending). The 助教 keeps巡考 in the background.
+        // 不做承諾的退出。附加在「最後」，使 體諒/質問 維持索引 0/1（test_ch4_finale
+        // 固定之）。零 karmaDelta + 空 setsFlag 且「無」後續台詞 → Advance() 會立刻
+        // Close()（攤販不買的形狀），且 GameController 對此標籤略過 Flag_TaFinaleChoiceMade，
+        // 故終局選單「不」被消費——玩家可以走開、稍後再接洽助教決定（無軟鎖、不會誤入結局）。
+        // 助教則在背景繼續巡考。
         taChoices.push_back(DialogChoice{
             kDialogExitLabel, 0, std::string{}, false, {}});
         dlg.Open(std::move(openerLines), std::move(taChoices));

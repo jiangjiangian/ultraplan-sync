@@ -16,35 +16,28 @@
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif
 
-// Defense-in-depth guard for the collision-mask integration. A baked
-// terrain mask that seals the campus perimeter, or a spawn coordinate
-// dropped onto a Collision-layer prop, makes the game silently
-// unplayable while every other test stays green (the 2026-05-16 bug:
-// the southern perimeter wall had its only gap ~100 px east of the 正門
-// art, and 學霸 sat on a planter polygon). This test loads the REAL
-// shipped mask and asserts, with a flood-fill from the player spawn,
-// that every quest-critical entity is actually walkable AND reachable.
+// 碰撞地圖整合的縱深防禦。若烘焙出的地形遮罩封住了校園邊界，或某個生成座標
+// 落在碰撞層的物件上，遊戲會悄悄變得無法遊玩，而其他測試卻全綠（曾發生過的問題：
+// 南側邊界牆唯一的缺口在正門美術約 100 px 之東，且學霸坐在一塊花圃多邊形上）。
+// 本測試載入實際出貨的遮罩，並以從玩家出生點出發的洪水填充，斷言每個任務關鍵
+// 實體都確實可通行且可達。
 //
-// It degrades gracefully: a fresh checkout without the untracked
-// resources/ assets gets an empty mask (everything walkable) — the
-// guard then skips rather than failing, since it can only assert what
-// it can load.
+// 它會優雅降級：全新 checkout 沒有未追蹤的 resources/ 資產時會得到空遮罩
+//（一切皆可通行）——此時守門選擇跳過而非失敗，因為它只能斷言它載入得到的東西。
 
 using nccu::CollisionMask;
 
 namespace {
 
-constexpr float kBox = 24.0f;  // mirrors world::kPlayerWidth/Height
+constexpr float kBox = 24.0f;  // 對應 world::kPlayerWidth/Height
 
 struct Spot { const char* name; float x; float y; };
 
-// Player / umbrella / quest-pickup spawns MUST mirror the literals in
-// src/World.cpp::World() — keep this list in sync if those move. The
-// archetype NPCs and ambient pedestrians are pulled live from
-// DefaultNpcSpawns() / AmbientStudentSpawns() so a future spawn move is
-// covered with zero duplication. Ambient pedestrians are included
-// because a wanderer that *starts* embedded in a wall reads in-game as
-// "someone stuck in the wall" even though it never blocks progress.
+// 玩家／雨傘／任務撿取物的生成座標必須與 src/World.cpp 建構子中的字面值一致——
+// 若那些座標移動，要同步更新此清單。原型 NPC 與路人行人是從 DefaultNpcSpawns() /
+// AmbientStudentSpawns() 即時取得，因此未來移動生成點可零重複地涵蓋。納入路人行人
+// 是因為一個一「開始」就嵌在牆裡的遊走者，在遊戲中看起來就像「有人卡在牆裡」，
+// 即使它從不擋住進度。
 std::vector<Spot> GameplaySpots() {
     std::vector<Spot> s = {
         {"player",            500.0f, 1860.0f},
@@ -59,13 +52,10 @@ std::vector<Spot> GameplaySpots() {
     for (const auto& n : nccu::AmbientStudentSpawns())
         s.push_back(Spot{n.spritePath, n.pos.x, n.pos.y});
 
-    // S5b–S5e chapter spawns — these were NEVER reachability-validated
-    // (the playtest found objects in walls/trees). Cover every coord a
-    // chapter actually spawns: per-chapter NPC rosters (the new
-    // librarian / 香腸 / 大聲公 / 學姊 + the re-positioned archetypes),
-    // the Ch2 散落筆記, the parsed Interlude stalls + the hardcoded
-    // Ch2 自販機 / Ch4 集英樓 Vendors, and the Ch3/Ch4 道具箱
-    // TrueUmbrella (World.cpp inline spawn at {1500,1430}).
+    // 各章的生成座標——這些先前從未做過可達性驗證（試玩時發現物件落在牆裡／樹上）。
+    // 涵蓋每個章節實際會生成的座標：各章 NPC 名冊（新角色 librarian／香腸／
+    // 大聲公／學姊，以及重新放置的原型）、Ch2 散落筆記、解析出的幕間攤位，加上
+    // 寫死的 Ch2 自販機／Ch4 集英樓攤商，以及 Ch3/Ch4 道具箱的 TrueUmbrella。
     using nccu::SemesterState;
     for (auto st : {SemesterState::Chapter2_Midterms,
                     SemesterState::Chapter3_SportsDay,
@@ -86,14 +76,12 @@ std::vector<Spot> GameplaySpots() {
         for (const auto& v : nccu::ChapterVendors(st))
             s.push_back(Spot{"vendor", v.pos.x, v.pos.y});
     }
-    // Ch4 hidden-behind-gym TrueUmbrella (World.cpp entry spawn, KEPT inside
-    // the gym footprint as an easter egg — it only needs to be walkable +
-    // reachable, occlusion is intentional).
+    // Ch4 藏在體育館後方的 TrueUmbrella（進場生成，刻意保留在體育館範圍內作為彩蛋——
+    // 它只需可通行且可達，遮擋是刻意的）。
     s.push_back(Spot{"Ch4 體育館後台 TrueUmbrella", 1640.0f, 375.0f});
-    // T5: the Ch3 reveal-after-clue TrueUmbrella, repositioned LEFT of the
-    // gym so it is NOT occluded (World::MaybeSpawnChapter3Umbrella spawns it
-    // at kChapter3UmbrellaPos once Flag_KnowsUmbrellaLoc). Must still be
-    // walkable + reachable from the player spawn.
+    // Ch3 給線索後才現身的 TrueUmbrella，重新放到體育館左側以免被遮擋
+    //（World::MaybeSpawnChapter3Umbrella 在 Flag_KnowsUmbrellaLoc 後生成於
+    // kChapter3UmbrellaPos）。仍必須從玩家出生點可通行且可達。
     s.push_back(Spot{"Ch3 TrueUmbrella (left of gym)",
                      nccu::kChapter3UmbrellaPos.x,
                      nccu::kChapter3UmbrellaPos.y});
