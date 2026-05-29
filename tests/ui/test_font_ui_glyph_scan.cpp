@@ -11,33 +11,29 @@
 #include <string>
 #include <vector>
 
-// 5c — ROBUST glyph-coverage gate. Every glyph used in a code-built UI
-// string MUST be baked into the CJK font atlas (CollectCodepoints()),
-// else raylib renders the no-glyph `?` tofu. The existing
-// test_font_ui_glyphs.cpp pins specific historical glyphs; THIS test
-// SCANS the actual UI literal strings and fails if ANY glyph is absent,
-// so a future edit that adds an uncovered glyph (a new ending reason
-// line, a help-copy tweak, a menu label) can't silently drift back into
-// tofu. The strings come from the SAME source the renderer draws:
-// EndingCardStrings() (every ending-screen branch) + GameHelp + the
-// View.cpp HUD/menu/inventory literals.
+/**
+ * @file test_font_ui_glyph_scan.cpp
+ * @brief 全面的字形涵蓋閘：掃描各種由程式組出的 UI 字串（結局卡、章節卡、遊戲說明、
+ *        View 的 HUD/選單/物品欄字面、任務目標、道具表名稱與說明、商人提示），
+ *        若其中任一字未烘進中文字型圖集（CollectCodepoints()）即失敗，以免日後新增
+ *        未涵蓋的字而在畫面上變成「?」豆腐。
+ */
 //
-// T5 broadens the scan to EVERY code-built UI string the owner saw `?` in:
-// the HUD 目標 objective text (QuestObjectiveStrings — 綜合院館 / 集英樓 /
-// 羅馬廣場 / 操場 / 校慶 / 期末考終焉…), the ItemCatalog names+descriptions
-// (bag rows + vendor toast), the Vendor toast pieces (VendorMessages), the
-// new 【雨傘外觀】 help lines, and the ending strings. So an uncovered glyph
-// anywhere on those surfaces fails the build, not the player's screen.
+// 凡是程式組出的 UI 字串所用的每個字，都必須烘進中文字型圖集（CollectCodepoints()），
+// 否則 raylib 會渲染成無字形的「?」豆腐。test_font_ui_glyphs.cpp 固定特定的歷史字形；
+// 本檔則「掃描」實際的 UI 字面字串，只要有任一字缺漏就失敗，使日後新增未涵蓋的字
+// （新的結局緣由台詞、說明文案調整、選單標籤）不會悄悄退回豆腐。這些字串來自渲染器
+// 實際繪製的同一來源。掃描範圍涵蓋玩家曾看到「?」的每一處由程式組出的 UI 字串：
+// HUD 目標文字、道具表名稱與說明、商人提示片段、雨傘外觀說明行，以及結局字串。
 //
-// Headless-safe: CollectCodepoints() + raylib's codepoint decoder need
-// no GL context (same as the sibling font test).
+// 無頭安全：CollectCodepoints() 與 raylib 的碼位解碼器都不需 GL 環境。
 
 using nccu::engine::render::detail::CollectCodepoints;
 
 namespace {
 
-// Decode a UTF-8 string to codepoints via raylib's own decoder (the path
-// CollectCodepoints uses), and assert each is in the atlas set.
+// 用 raylib 自己的解碼器把 UTF-8 字串解成碼位（與 CollectCodepoints 所走路徑相同），
+// 並斷言每個碼位都在圖集集合內。
 void RequireAllCovered(const std::vector<int>& atlas, const std::string& s,
                        const char* whatFor) {
     int n = 0;
@@ -45,9 +41,8 @@ void RequireAllCovered(const std::vector<int>& atlas, const std::string& s,
     for (int i = 0; i < n; ++i) {
         const int cp = dec[i];
         if (cp <= 0) continue;
-        // ASCII control / space and printable are always in the atlas
-        // (CollectCodepoints adds 32..126 unconditionally); skip the
-        // no-glyph 0 the decoder emits on a malformed tail.
+        // ASCII 控制字元／空白與可列印字一定在圖集中（CollectCodepoints 無條件加入
+        // 32..126）；略過解碼器在格式不正確的尾端所產生的無字形 0。
         INFO(whatFor << " glyph U+" << std::hex << std::setw(4)
                      << std::setfill('0') << cp << " in: " << s);
         CHECK(std::find(atlas.begin(), atlas.end(), cp) != atlas.end());
@@ -55,15 +50,14 @@ void RequireAllCovered(const std::vector<int>& atlas, const std::string& s,
     ::UnloadCodepoints(dec);
 }
 
-// The code-built View.cpp HUD / menu / inventory / affordance literals
-// (the CJK ones — ASCII-only strings need no atlas check). Kept here as
-// the curated companion to the auto-derived ending/help sets; if a new
-// View literal adds a glyph, add it here so the gate covers it.
+// View.cpp 中由程式組出的 HUD／選單／物品欄／操作提示字面（僅中文者 —— 純 ASCII
+// 字串不需檢查圖集）。此處作為自動推導的結局／說明集合之手動補充；若新增的 View
+// 字面引入了新字形，請加到這裡讓閘涵蓋它。
 const std::vector<std::string>& ViewLiterals() {
     static const std::vector<std::string> kV = {
         "金幣: %d 元",
         "M 選單",
-        "Tab: 物品欄   M: 選單",   // UI-B-2 top-left control hint
+        "Tab: 物品欄   M: 選單",   // 左上角操作提示
         "遊戲選單",
         "繼續", "說明", "減少動畫", "擴大目標", "重新開始", "離開",
         "  [開]", "  [關]",
@@ -72,29 +66,32 @@ const std::vector<std::string>& ViewLiterals() {
         "M / E 返回選單",
         "物品欄",
         "（空）",
-        "\xE2\x96\xBC more",   // ▼ more (DialogView affordance)
+        "\xE2\x96\xBC more",   // ▼ more（對話框的提示）
     };
     return kV;
 }
 
 } // namespace
 
+// 結局畫面的每個字形都已烘進字型圖集。
 TEST_CASE("5c: every ending-screen glyph is baked into the font atlas") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> strs = nccu::EndingCardStrings();
-    CHECK(strs.size() > 10);          // sanity: the tables really enumerated
+    CHECK(strs.size() > 10);          // 確認：表確實有列舉內容
     for (const std::string& s : strs)
         RequireAllCovered(atlas, s, "ending-screen");
 }
 
+// 章節書擋大卡的每個字形都已烘進圖集。
 TEST_CASE("U1-T2: every chapter bookend big-card glyph is baked into the atlas") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> strs = nccu::ChapterCardStrings();
-    CHECK(strs.size() >= 8);          // 4 chapter Lost pairs + the Found pair
+    CHECK(strs.size() >= 8);          // 4 對章節 Lost + 1 對 Found
     for (const std::string& s : strs)
         RequireAllCovered(atlas, s, "chapter-card");
 }
 
+// 遊戲說明（GameHelp）的每個字形都已烘進圖集。
 TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string_view ln : nccu::kGameHelpLines)
@@ -103,9 +100,8 @@ TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {
                       "help-closing");
 }
 
-// U2-T4: the help is now PAGED (kGameHelpPages). Scan the paged view too,
-// so a glyph added to a page line that somehow isn't mirrored in the flat
-// kGameHelpLines still can't tofu on screen — the renderers draw the pages.
+// 說明現已分頁（kGameHelpPages）。連分頁視圖也一併掃描，使某行加到分頁中卻未同步到
+// 扁平 kGameHelpLines 的字形仍不致在畫面上變豆腐 —— 渲染器畫的是分頁。
 TEST_CASE("U2-T4: every paged 遊戲說明 glyph is baked into the atlas") {
     const std::vector<int> atlas = CollectCodepoints();
     CHECK(nccu::kGameHelpPageCount == 2);
@@ -118,28 +114,32 @@ TEST_CASE("U2-T4: every paged 遊戲說明 glyph is baked into the atlas") {
     CHECK(pageNo == 2);
 }
 
+// View.cpp 的每個 HUD/選單/物品欄字面字形都已烘入。
 TEST_CASE("5c: every View.cpp HUD/menu/inventory literal glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string& s : ViewLiterals())
         RequireAllCovered(atlas, s, "view-literal");
 }
 
+// 每個 HUD 目標文字的字形都已烘入。
 TEST_CASE("T5: every HUD 目標 objective-text glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> objs = nccu::QuestObjectiveStrings();
-    CHECK(objs.size() >= 9);          // sanity: every chapter/state enumerated
+    CHECK(objs.size() >= 9);          // 確認：每個章節／狀態都有列舉
     for (const std::string& s : objs)
         RequireAllCovered(atlas, s, "objective");
 }
 
+// 每個道具表名稱與說明的字形都已烘入。
 TEST_CASE("T5: every ItemCatalog name + description glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> cat = nccu::CatalogStrings();
-    CHECK(cat.size() > 10);           // sanity: the catalog table was flattened
+    CHECK(cat.size() > 10);           // 確認：道具表已攤平
     for (const std::string& s : cat)
         RequireAllCovered(atlas, s, "catalog");
 }
 
+// 每個商人提示／訊息的字形都已烘入。
 TEST_CASE("T5: every Vendor toast / message glyph is baked") {
     const std::vector<int> atlas = CollectCodepoints();
     namespace m = nccu::vendor::msg;

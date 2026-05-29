@@ -14,16 +14,13 @@ namespace nccu {
 
 namespace {
 
-// Scaffold: which NPCs present the branch menu in this state. The Ch1
-// choice-opener set is now {suit_senior, victim, shop_auntie}.
-// 西裝學長 / 苦主 carry the genuine ripple A/B. 福利社阿姨's menu offers
-// 詢問雨傘 / 購買醜綠傘 / 請阿姨喝一杯熱咖啡: the (c) 購買醜綠傘 choice does
-// NOT set any flag on the DialogChoice (verified: chapter1.md (c) carries
-// `// karma +0` and no `Flag_X = true`, so the parsed entry's setsFlag is "");
-// B3 makes it a REAL buy whose money + held ugly umbrella are applied in
-// GameController on confirm (TryBuyAuntieUglyUmbrella), NOT here, and it
-// deliberately does NOT set Flag_BoughtUglyUmbrella — that Ending-C lock is
-// the Ch4 集英樓 Vendor's (src/EndingGate.cpp). Everyone else stays line-only.
+// 在此狀態下哪些 NPC 會呈現分支選單。第一章的選項開場集合為 {suit_senior、victim、
+// shop_auntie}。西裝學長／苦主帶有真正的漣漪 A/B。福利社阿姨的選單提供 詢問雨傘 /
+// 購買醜綠傘 / 請阿姨喝一杯熱咖啡：其中 (c) 購買醜綠傘 選項「不」在 DialogChoice 上設下
+// 任何旗標（已驗證：該選項只帶 `// karma +0` 而無 `Flag_X = true`，故解析後的 setsFlag
+// 為 ""）；它是一筆「真正」的購買，金錢 + 持有型醜傘在確認時由 GameController
+//（TryBuyAuntieUglyUmbrella）套用，而非在此處，且刻意「不」設下 Flag_BoughtUglyUmbrella
+// ——那個結局 C 鎖屬於第四章集英樓攤販。其餘所有人維持只有台詞。
 bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
     if (s != SemesterState::Chapter1_AddDrop) return false;
     return npcId == "suit_senior" || npcId == "victim" ||
@@ -31,26 +28,22 @@ bool UsesChoiceOpener(std::string_view npcId, SemesterState s) {
 }
 
 // =============================================================================
-// Per-(state, npcId) opener-substate resolvers — the table form of what used
-// to be a 200-line switch in ResolveOpenerSubState. Each resolver answers ONE
-// question: "given this player's flags/karma, which subState of this NPC's
-// chapter*.md entries should the line-only / recap opener show?". Returning 0
-// always means "the (a) baseline opener of OpenNpcDialog"; the caller short-
-// circuits sub==0 back to the menu-vs-line-only path so a resolver returning
-// 0 cannot accidentally drop a player into a non-existent recap.
+// 各 (state, npcId) 的開場子狀態解析器——把原本 ResolveOpenerSubState 裡 200 行的
+// switch 改寫成表格形式。每個解析器只回答一個問題：「在此玩家的旗標／業力下，應顯示此
+// NPC 章節條目中的哪個子狀態作為只有台詞／回顧的開場？」。回傳 0 永遠代表「OpenNpcDialog
+// 的 (a) 基準開場」；呼叫端會在 sub==0 時短路回到「選單 vs 只有台詞」的路徑，故解析器
+// 回傳 0 不會誤把玩家丟進不存在的回顧。
 //
-// Routing is line-only recap. Any karma/flag the entry's prose carries is
-// path-b (TryApplyChNRipple / quest hooks), NOT applied by the opener — the
-// only place a routed (b)/(c)/(d) opener line writes player state is the
-// Ch1-scoped 1b-3 reward-recap guard in OpenNpcDialog (申請書 / 承諾 reward).
-// The dispatch lookup below is O(N) over ≤ ~20 rows — trivially fast.
+// 路由僅為只有台詞的回顧。條目散文所帶的任何業力／旗標都走另一條路徑
+//（TryApplyChNRipple／任務鉤子），「不」由開場套用——被路由的 (b)/(c)/(d) 開場台詞唯一
+// 會寫入玩家狀態之處，是 OpenNpcDialog 中限定於第一章的獎勵回顧防護（申請書／承諾獎勵）。
+// 下方的分派查找對 ≤ 約 20 列為 O(N)——極快。
 // =============================================================================
 
 // ---- Ch1 加退選之亂 ---------------------------------------------------------
 
-// 助教 申請書 errand recap — once granted (Flag_HelpedTA_Ch1) OR after the
-// player has the 申請書 in hand (Flag_FoundForm), her opener moves to (b)
-// thank-you/idle. Otherwise (a) "請幫我撿一張表" plea.
+// 助教申請書跑腿回顧——一旦給予（Flag_HelpedTA_Ch1），或玩家已拿到申請書
+//（Flag_FoundForm），她的開場便轉為 (b) 致謝／閒置。否則為 (a)「請幫我撿一張表」的請求。
 int Ch1Ta(const Player& p) {
     if (p.HasFlag(kFlagHelpedTACh1)) return 1;
     if (p.HasFlag(kFlagFoundForm))   return 1;
@@ -72,11 +65,10 @@ int Ch1Victim(const Player& p) {
 }
 
 // ---- Ch2 期中考週 ----------------------------------------------------------
-// S5c-3 ripple routing. Line-only recap; the once-per-Ch2 karma is landed by
-// TryApplyCh2Ripple, not here. B5: 學霸/苦主/阿姨's reactive beats USED to be
-// inline `*（若 Flag_X）*` lines the parser silently drops. They are now
-// re-authored as genuine flag-gated SEPARATE subStates in chapter2.md and
-// routed here so the line actually displays.
+// 第二章漣漪路由。只有台詞的回顧；每個第二章一次性的業力由 TryApplyCh2Ripple 落地，
+// 而非在此。學霸／苦主／阿姨的反應節拍從前是內聯的 `*（若 Flag_X）*` 行、會被解析器
+// 悄悄丟棄。它們如今在章節內容中改寫為真正受旗標閘控的「獨立」子狀態，並在此路由，
+// 使該行真正顯示。
 
 int Ch2SuitSenior(const Player& p) {
     if (p.HasFlag(kFlagHelpedSenior))  return 1;  // (b) +3
@@ -131,17 +123,14 @@ int Ch2Victim(const Player& p) {
 }
 
 // ---- Ch3 校慶運動會 --------------------------------------------------------
-// 物物交換鏈三節點：route to (b)「交易完成 / 情報揭露」once this NPC's link
-// has been done, else (a). The (a) sub-blocks「玩家尚未帶X / 玩家帶著X」are
-// parser-flattened conditional lines (KNOWN OMISSION, same class as S5c-2
-// (c)/(c-fail) and 學霸 (a) cursed line) — accepted, not routable without a
-// chapter3.md edit. (b) is line-only recap; the +3/+3/+5 is landed by
-// TryAdvanceCh3Trade, not the opener's once-apply.
+// 物物交換鏈三節點：一旦此 NPC 的環節完成，便路由到 (b)「交易完成 / 情報揭露」，否則
+//（a）。(a) 的子區塊「玩家尚未帶X / 玩家帶著X」是被解析器壓平的條件行（已知省略，與
+// 第二章 (c)/(c-fail) 及學霸 (a) 詛咒台詞同類）——接受現狀，未改章節內容前無法路由。
+// (b) 是只有台詞的回顧；+3/+3/+5 由 TryAdvanceCh3Trade 落地，而非開場的一次性套用。
 //
-// S5d-3 ripple routing (genuine flag-gated SEPARATE subStates; chapter3.md
-// karma is `- \`// karma\`` bullet-doc, NOT a `>` blockquote, so nothing here
-// is parser-applied — these routes are pure narrative recap, the only code-
-// karma is ProfTrap -10 via TryApplyCh3Ripple).
+// 第三章漣漪路由（真正受旗標閘控的「獨立」子狀態；章節內容的業力是條列文件而非引用區塊，
+// 故此處無一由解析器套用——這些路由純為敘事回顧，唯一的程式碼業力是經 TryApplyCh3Ripple
+// 的教授陷阱 -10）。
 
 // (a) Ch2 救回分支（Flag_BookwormRecovered=true）/ (b) 未救回分支（=false）.
 int Ch3Bookworm(const Player& p) {
@@ -158,10 +147,9 @@ int Ch3Victim(const Player& p) {
     return p.HasFlag(kFlagPromisedVictim) ? 0 : 1;
 }
 
-// HelpedSenior → (b) 物物交換鏈提示（省一步）. Else (a), whose Helped=true/false
-// condition lines are parser-flattened (KNOWN OMISSION); ScoldedSenior「不觸發
-// 對話」 is likewise not expressible as a subState — accepted, would need a
-// chapter3.md edit.
+// HelpedSenior → (b) 物物交換鏈提示（省一步）。否則為 (a)，其 Helped=true/false 的條件行
+// 被解析器壓平（已知省略）；ScoldedSenior「不觸發對話」同樣無法表達為子狀態——接受現狀，
+// 須改章節內容才能處理。
 int Ch3SuitSenior(const Player& p) {
     return p.HasFlag(kFlagHelpedSenior) ? 1 : 0;
 }
@@ -184,16 +172,13 @@ int Ch3SeniorC(const Player& p) {
 }
 
 // ---- Ch4 期末考終焉 --------------------------------------------------------
-// S5e-2a peak ripple routing (line-only recap; chapter4.md karma is `- \`//
-// karma\`` bullet-doc, NOT a `>` blockquote, so nothing is parser-applied —
-// the Ch4 karma that matters is landed by TryApplyCh4Ripple (S5e-2c) and the
-// 助教 (d) 體諒 choice (S5e-2d)). 助教 (d) is NOT routed here — it is a
-// code-constructed choice-opener (S5e-2d).
+// 第四章高潮漣漪路由（只有台詞的回顧；章節內容的業力是條列文件而非引用區塊，故無一由
+// 解析器套用——真正要緊的第四章業力由 TryApplyCh4Ripple 與助教 (d) 體諒 選項落地）。
+// 助教 (d) 不在此路由——它是程式碼建構的選項開場。
 
-// chapter4.md L88: !HelpedSenior / ScoldedSenior → 學長 不出場. Spawn-
-// suppression is a KNOWN OMISSION (roster keeps him); degrade to (a) 假笑面具.
-// Otherwise karma splits the arc: >70 崩潰坦白 (b), <30 翻臉 (c), the 30..70
-// middle stays (a).
+// 章節內容規定：!HelpedSenior / ScoldedSenior → 學長不出場。但抑制生成是已知省略
+//（名冊仍保留他）；故降級為 (a) 假笑面具。否則業力把劇情分流：>70 崩潰坦白 (b)、
+// <30 翻臉 (c)，介於 30..70 的中段維持 (a)。
 int Ch4SuitSenior(const Player& p) {
     if (!p.HasFlag(kFlagHelpedSenior)) return 0;
     if (p.GetKarma() > 70) return 1;   // (b)
@@ -206,28 +191,26 @@ int Ch4Bookworm(const Player& p) {
     return p.HasFlag(kFlagBookwormRecovered) ? 1 : 2;
 }
 
-// (b)/(c) 互斥, HelpedTA_Ch1 優先 (chapter4.md L235); the (c) -15 still lands
-// separately via TryApplyCh4Ripple. (a) 巡考慌張 default. (d) 體諒 is the
-// S5e-2d choice.
+// (b)/(c) 互斥，HelpedTA_Ch1 優先；(c) 的 -15 仍另經 TryApplyCh4Ripple 落地。
+// 預設為 (a) 巡考慌張。(d) 體諒 是程式碼建構的那個選項。
 int Ch4Ta(const Player& p) {
     if (p.HasFlag(kFlagHelpedTACh1))      return 1;  // (b)
     if (p.HasFlag(kFlagHasProfessorTrap)) return 2;  // (c)
     return 0;                                          // (a)
 }
 
-// (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338). 否則 (a) 釋懷
-// （已歸還 or Ch1 無承諾, L325). HasUmbrella() is set by TrueUmbrella::BeClaimed.
+// (b) 淡漠：承諾過但傘到第四章仍未在手。否則為 (a) 釋懷（已歸還，或第一章未承諾）。
+// HasUmbrella() 由 TrueUmbrella::BeClaimed 設定。
 int Ch4Victim(const Player& p) {
     if (p.HasFlag(kFlagPromisedVictim) && !p.HasUmbrella()) return 1;
     return 0;
 }
 
-// B3: the Ch1→Ch4 阿姨 ripple the GDD names (Flag_BoughtCoffeeForAuntie_Ch1)
-// but engine never read. Ch1 請過咖啡情分 → (a) 直接情報（subState 0，主動說
-// 助教往哪跑）；否則 → (d) 間接情報（subState 3，只說「那個常來的助教很趕」）.
-// The +3 (a)-route callback is path-b via TryApplyCh4Ripple (chapter4.md karma
-// is bullet-doc, not a `>` blockquote — nothing here is parser-applied). (b)/(c)
-// 推銷綠傘/拒買 stay the Ending-C 集英樓 Vendor flavour beats.
+// 企劃指名、但引擎從未讀取的第一章→第四章阿姨漣漪（Flag_BoughtCoffeeForAuntie_Ch1）。
+// 第一章請過咖啡的情分 → (a) 直接情報（subState 0，主動說助教往哪跑）；否則 → (d)
+// 間接情報（subState 3，只說「那個常來的助教很趕」）。+3 的 (a) 路線回扣經
+// TryApplyCh4Ripple 走另一條路徑（章節內容的業力是條列文件而非引用區塊——此處無一由
+// 解析器套用）。(b)/(c) 推銷綠傘/拒買 維持結局 C 集英樓攤販的風味節拍。
 int Ch4ShopAuntie(const Player& p) {
     return p.HasFlag(kFlagBoughtCoffeeForAuntie) ? 0 : 3;
 }
@@ -242,10 +225,8 @@ struct DispatchEntry {
     OpenerResolver resolver;
 };
 
-// One row per (state, npcId) that routes by subState. Any (state, npcId) not
-// listed falls through to subState 0 (the (a) baseline opener of
-// OpenNpcDialog). Order within a state is for readability only — lookup is
-// linear and the keys are unique.
+// 每個依子狀態路由的 (state, npcId) 各一列。任何未列出的 (state, npcId) 都落到子狀態 0
+//（OpenNpcDialog 的 (a) 基準開場）。同一狀態內的順序僅為可讀性——查找是線性的、鍵皆唯一。
 constexpr std::array<DispatchEntry, 20> kDispatch{{
     {SemesterState::Chapter1_AddDrop,   "ta",                Ch1Ta},
     {SemesterState::Chapter1_AddDrop,   "victim",            Ch1Victim},
@@ -282,7 +263,7 @@ void OpenNpcDialogSub(DialogState& dlg, std::string_view npcId,
             return;
         }
     }
-    dlg.Open({});  // no match -> stays inactive
+    dlg.Open({});  // 無相符 -> 維持未啟用
 }
 
 void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
@@ -296,25 +277,22 @@ void OpenNpcDialog(DialogState& dlg, std::string_view npcId,
             break;
         }
     }
-    if (opener == nullptr) { dlg.Open({}); return; }  // no opener -> inactive
+    if (opener == nullptr) { dlg.Open({}); return; }  // 無開場 -> 未啟用
 
     std::vector<std::string> openerLines = opener->lines;
 
     if (!UsesChoiceOpener(npcId, state)) {
-        dlg.Open(std::move(openerLines));  // line-only
+        dlg.Open(std::move(openerLines));  // 只有台詞
         dlg.SetNpcContext(std::string(npcId));
         return;
     }
 
-    // Highest substate that is a genuine BRANCH of this opener's decision
-    // (vs a post-decision recap reached only by ResolveOpenerSubState's
-    // routed line-only path). The Ch1 victim now has a (d) 重逢致謝 recap
-    // (善有善報: shown AFTER the umbrella is returned, routed via
-    // ResolveOpenerSubState==3); it must NOT appear as a premature menu
-    // choice at the (a) plea, where the only real branches are (b) 承諾 /
-    // (c) 無視. Capping at (c)=2 keeps the victim's plea menu to those two,
-    // exactly as it was before the recap substate was added; every other
-    // choice-opener NPC keeps every ≥1 substate (cap stays inclusive).
+    // 此開場決策中「真正屬於分支」的最高子狀態（相對於那些僅由 ResolveOpenerSubState
+    // 路由、只有台詞之路徑才會到達的決策後回顧）。第一章苦主現在有一個 (d) 重逢致謝 回顧
+    //（善有善報：在傘歸還「之後」才顯示，經 ResolveOpenerSubState==3 路由）；它「不得」在
+    // (a) 請求處作為過早的選單選項出現，那裡真正的分支只有 (b) 承諾 / (c) 無視。把上限設在
+    // (c)=2 使苦主的請求選單維持只有這兩項，與加入回顧子狀態之前完全一致；其餘所有選項開場
+    // NPC 則保留每個 ≥1 的子狀態（上限為含括）。
     const int maxChoiceSub =
         (state == SemesterState::Chapter1_AddDrop && npcId == "victim")
             ? 2 : 99;
@@ -340,18 +318,14 @@ int ResolveOpenerSubState(std::string_view npcId, SemesterState state,
 
 void OpenNpcDialog(DialogState& dlg, Player& player,
                    std::string_view npcId, SemesterState state) {
-    // A1 (hard-gate the Ch1 spine): the 西裝學長 must NOT open his choice
-    // menu before the player has even met the 苦主. The spine is
-    // 苦主 → 學長 → (傘出現) → 苦主; the 學長's branch (要回傘 / 善意提醒 /
-    // 接受取傘) only makes sense once the 苦主 has asked the player to chase
-    // his stolen umbrella (Flag_PromisedVictim). Talked-to out of order, the
-    // 學長 brushes the stranger off and points them back toward 綜合院館 —
-    // a coherent in-fiction redirect, NOT the ripple-critical menu (which
-    // would otherwise let a player commit the 學長 choice and even claim a
-    // morality umbrella before the chapter's first beat). Line-only, sets
-    // nothing, so the player can still go meet the 苦主 and return. The
-    // morality umbrellas stay gated on Flag_PromisedVictim too (Transparent
-    // Umbrella::QuestGateOpen), so this never dead-ends the Ending-B path.
+    // 硬閘控第一章主線：西裝學長「不得」在玩家連苦主都還沒見到之前就開啟他的選項選單。
+    // 主線是 苦主 → 學長 → (傘出現) → 苦主；學長的分支（要回傘 / 善意提醒 / 接受取傘）
+    // 唯有在苦主已請玩家去追回他被拿走的傘（Flag_PromisedVictim）之後才合理。若順序錯亂
+    // 就先找學長，他會把這個陌生人打發走、指引其回去綜合院館——一個劇情上連貫的轉向，而
+    // 「非」攸關漣漪的選單（否則玩家可能在本章第一個節拍前就確認學長選項、甚至取得道德
+    // 雨傘）。只有台詞、不設任何旗標，故玩家仍能去見苦主再回來。道德雨傘同樣以
+    // Flag_PromisedVictim 為閘（TransparentUmbrella::QuestGateOpen），故此處絕不會使
+    // 結局 B 路線走進死路。
     if (state == SemesterState::Chapter1_AddDrop && npcId == "suit_senior" &&
         !player.HasFlag(kFlagPromisedVictim) &&
         !player.HasFlag(kFlagSuitSeniorChoiceMade)) {

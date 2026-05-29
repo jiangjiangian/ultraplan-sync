@@ -24,11 +24,11 @@ struct Spy final : nccu::engine::render::IRenderer {
     std::vector<std::string>   texts;
     std::vector<float>         textX;
     int                        fontSize = 0;
-    nccu::engine::math::Rect            backdrop{0, 0, 0, 0};   // widest rect seen
+    nccu::engine::math::Rect            backdrop{0, 0, 0, 0};   // 目前見過最寬的矩形
 
     void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color) override {
         ++rects;
-        if (r.width > backdrop.width) backdrop = r;     // the box is widest
+        if (r.width > backdrop.width) backdrop = r;     // 框是最寬的矩形
     }
     void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }

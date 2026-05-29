@@ -1,33 +1,26 @@
-// Cycle 9.E.3 (audit M2 / M3): pin the pause-menu UI for the
-// ReducedMotion and LargeTargets accessibility flags. 9.E.1/9.E.2
-// added the World flags + env-var hooks but the player still had no
-// non-env-var way to flip them; this cycle wires Enter on the two new
-// pause-menu toggle rows into World::SetReducedMotion /
-// SetLargeTargets, mirroring the existing 4-row menu's input loop.
+/**
+ * @file test_pause_menu_toggle.cpp
+ * @brief 驗證暫停選單對「減少動畫 / 擴大目標」兩個無障礙旗標的 UI 接線：
+ *        透過 GameController 真實輸入迴圈，確認 6 列選單的游標環狀走訪、
+ *        兩個切換列 Enter 就地翻轉對應旗標且互相獨立、可往復切換，以及位移後的
+ *        破壞性列（重新開始 / 離開）仍對應正確的 AppAction；另含選單只開於 M 不開
+ *        於 ESC。
+ */
 //
-// Pinned via GameController's REAL input loop (not direct
-// world.SetMenuCursor calls) so the cursor-range bump from 4 → 6
-// rows + the toggle-row switch arms are both exercised end-to-end:
+// World 旗標與環境變數掛鉤已在先前加入，但玩家仍沒有非環境變數的方式可切換它們；
+// 此處把暫停選單兩個新切換列的 Enter 接到 World::SetReducedMotion /
+// SetLargeTargets，與既有的輸入迴圈相同。透過 GameController 真實輸入迴圈
+// （而非直接呼叫 world.SetMenuCursor）固定以下，使游標範圍由 4 → 6 列與切換列的
+// 動作都被端到端地走過：
 //
-//   (a) kMenuItemCount is 6 and ↓ ↑ walks the full 0..5 range with
-//       modular wraparound (no off-by-one at the new boundary).
-//   (b) Enter on row 2 flips World::ReducedMotion() (with the menu
-//       staying open and the cursor staying on row 2 so the [開]/[關]
-//       label change is visible to the player).
-//   (c) Enter on row 3 flips World::LargeTargets() with the same
-//       in-place semantics; the two flags are independent (toggling
-//       one does not perturb the other — same orthogonality the
-//       test_large_targets sibling pins on the raw setters).
-//   (d) Both toggles round-trip: a second Enter on the same row
-//       restores the previous state (so the cursor never deadlocks).
-//
-// Revert-verify (must FAIL without 9.E.3):
-//   * Drop the new case-2 / case-3 arms in GameController → (b)/(c)
-//     fail: the flag never flips even though Enter fires.
-//   * Restore kMenuItemCount = 4 → (a) fails: walking ↓ five times
-//     wraps at index 3, not 5.
-//   * Swap the two case bodies → (b)/(c) cross-pollute and the
-//     orthogonality check trips.
+//   (a) kMenuItemCount 為 6，且 ↓ ↑ 走訪完整的 0..5 範圍並環狀環繞（新邊界處
+//       無差一錯誤）。
+//   (b) 在第 2 列按 Enter 翻轉 World::ReducedMotion()（選單保持開啟、游標停在
+//       第 2 列，使 [開]/[關] 標籤變化對玩家可見）。
+//   (c) 在第 3 列按 Enter 以相同的就地語意翻轉 World::LargeTargets()；兩個旗標
+//       相互獨立（切換其一不影響另一 —— 與 test_large_targets 在原始 setter 上
+//       固定的獨立性相同）。
+//   (d) 兩個切換都可往復：在同一列再按一次 Enter 會還原先前狀態（故游標不會卡死）。
 
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
@@ -47,10 +40,9 @@ using nccu::engine::input::Key;
 
 namespace {
 
-// Same TestInput shape as test_menu_help.cpp — a minimal InputSource
-// the GameController consults via the Input static facade. Tap()
-// queues an edge-triggered IsPressed for ONE frame; EndFrame() must
-// be called after each c.Update() so the auto-release runs.
+// 與 test_menu_help.cpp 相同的 TestInput —— GameController 經由 Input 靜態介面
+// 查詢的最小 InputSource。Tap() 會為某一幀排入一次邊緣觸發的 IsPressed；每次
+// c.Update() 之後都必須呼叫 EndFrame()，自動釋放才會執行。
 class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k) {
@@ -93,6 +85,7 @@ void Frame(GameController& c, TestInput& in) {
 
 }  // namespace
 
+// 暫停選單現有 6 列，游標環繞於 0..5。
 TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -104,7 +97,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
 
-    Frame(controller, in);                         // settle
+    Frame(controller, in);                         // 安頓
     CHECK(World::kMenuItemCount == 6);
 
     in.Tap(Key::M);
@@ -112,19 +105,19 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     REQUIRE(world.MenuOpen());
     CHECK(world.MenuCursor() == 0);
 
-    // Walk ↓ five times — the cursor must hit every row index 1..5.
+    // 往下走五次 —— 游標必須命中 1..5 的每個列索引。
     for (int expected = 1; expected <= 5; ++expected) {
         in.Tap(Key::Down);
         Frame(controller, in);
         CHECK(world.MenuCursor() == expected);
     }
 
-    // One more ↓ wraps to 0 (modular MoveMenuCursor).
+    // 再往下一次環繞到 0（環狀的 MoveMenuCursor）。
     in.Tap(Key::Down);
     Frame(controller, in);
     CHECK(world.MenuCursor() == 0);
 
-    // ↑ from 0 wraps to 5 (the other direction of the same modulus).
+    // 從 0 往上環繞到 5（同一模數的另一方向）。
     in.Tap(Key::Up);
     Frame(controller, in);
     CHECK(world.MenuCursor() == 5);
@@ -134,6 +127,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
     EventBus::Instance().Clear();
 }
 
+// 在第 2 列按 Enter 會翻轉 World.ReducedMotion()。
 TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -152,14 +146,14 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
 
-    // Walk to row 2 (減少動畫).
+    // 走到第 2 列（減少動畫）。
     in.Tap(Key::Down);
     Frame(controller, in);
     in.Tap(Key::Down);
     Frame(controller, in);
     REQUIRE(world.MenuCursor() == 2);
 
-    // Enter flips ReducedMotion on; menu stays open; cursor unchanged.
+    // Enter 把 ReducedMotion 打開；選單保持開啟；游標不變。
     in.Tap(Key::Enter);
     Frame(controller, in);
     CHECK(world.ReducedMotion());
@@ -167,14 +161,14 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     CHECK(world.MenuCursor() == 2);
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
-    // Second Enter flips it back off — round-trip, no latch.
+    // 再按一次 Enter 把它關回去 —— 往復切換，無鎖存。
     in.Tap(Key::Enter);
     Frame(controller, in);
     CHECK_FALSE(world.ReducedMotion());
     CHECK(world.MenuOpen());
     CHECK(world.MenuCursor() == 2);
 
-    // LargeTargets must stay default throughout — toggles are orthogonal.
+    // 全程 LargeTargets 必須維持預設 —— 兩個切換相互獨立。
     CHECK_FALSE(world.LargeTargets());
 
     nccu::engine::input::Input::SetSource(nullptr);
@@ -182,6 +176,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
     EventBus::Instance().Clear();
 }
 
+// 在第 3 列按 Enter 會翻轉 World.LargeTargets()。
 TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -200,7 +195,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
 
-    // Walk to row 3 (擴大目標).
+    // 走到第 3 列（擴大目標）。
     for (int i = 0; i < 3; ++i) {
         in.Tap(Key::Down);
         Frame(controller, in);
@@ -214,14 +209,14 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     CHECK(world.MenuCursor() == 3);
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
-    // Second Enter flips back off.
+    // 再按一次 Enter 關回去。
     in.Tap(Key::Enter);
     Frame(controller, in);
     CHECK_FALSE(world.LargeTargets());
     CHECK(world.MenuOpen());
     CHECK(world.MenuCursor() == 3);
 
-    // ReducedMotion must stay default throughout — toggles orthogonal.
+    // 全程 ReducedMotion 必須維持預設 —— 兩個切換相互獨立。
     CHECK_FALSE(world.ReducedMotion());
 
     nccu::engine::input::Input::SetSource(nullptr);
@@ -229,13 +224,12 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
     EventBus::Instance().Clear();
 }
 
+// 列位移後，破壞性列仍對應正確的 AppAction。
 TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
-    // The new 6-row order shifts 重新開始 from index 2 → 4 and 離開
-    // from 3 → 5. Pin both: Restart on row 4 must request
-    // AppAction::Restart (not None / not Quit); Quit on row 5 must
-    // request AppAction::Quit. Pure intent — main.cpp's outer loop
-    // is what acts on it; here we just verify the controller routes
-    // the right enum from the right index.
+    // 新的 6 列順序把重新開始由索引 2 → 4、離開由 3 → 5。兩者都固定：第 4 列的
+    // 重新開始必須請求 AppAction::Restart（非 None、非 Quit）；第 5 列的離開必須
+    // 請求 AppAction::Quit。純屬意圖 —— 實際動作由 main.cpp 外層迴圈執行；此處只
+    // 驗證 controller 從正確索引路由出正確列舉。
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -260,7 +254,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Restart);
 
-        // Toggles untouched.
+        // 切換旗標未受影響。
         CHECK_FALSE(world.ReducedMotion());
         CHECK_FALSE(world.LargeTargets());
 
@@ -293,13 +287,12 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
     EventBus::Instance().Clear();
 }
 
+// 選單只開於 M，絕不開於 ESC（ESC 是程式的離開鍵）。
 TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
-    // The pause menu used to toggle on ESC. But ESC is raylib's default
-    // exit key, so main.cpp's WindowShouldClose loops quit on it — binding
-    // the menu to ESC also flashed the menu for one frame before the
-    // window closed. The menu now lives on M; GameController never reads
-    // ESC, so a frozen Update treats it as a no-op and ESC's only role
-    // (in the real app) is the clean program exit owned by main.cpp.
+    // 暫停選單原本綁在 ESC 上切換。但 ESC 是 raylib 預設的離開鍵，main.cpp 的
+    // WindowShouldClose 迴圈會因它而離開 —— 把選單綁在 ESC 也會在視窗關閉前閃現
+    // 選單一幀。選單現在改在 M；GameController 從不讀取 ESC，故凍結中的 Update
+    // 視其為無操作，ESC 在實際程式中唯一的角色就是由 main.cpp 負責的乾淨離開。
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -309,24 +302,24 @@ TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
     GameController controller{world, EventBus::Instance()};
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
-    Frame(controller, in);                         // settle
+    Frame(controller, in);                         // 安頓
 
-    // ESC must NOT open the menu.
+    // ESC 不可開啟選單。
     in.Tap(Key::Escape);
     Frame(controller, in);
     CHECK_FALSE(world.MenuOpen());
 
-    // M opens it.
+    // M 開啟它。
     in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
 
-    // ESC must NOT close it either (no resume-on-ESC).
+    // ESC 也不可關閉它（不會以 ESC 恢復遊戲）。
     in.Tap(Key::Escape);
     Frame(controller, in);
     CHECK(world.MenuOpen());
 
-    // M toggles it back closed.
+    // M 把它切換回關閉。
     in.Tap(Key::M);
     Frame(controller, in);
     CHECK_FALSE(world.MenuOpen());

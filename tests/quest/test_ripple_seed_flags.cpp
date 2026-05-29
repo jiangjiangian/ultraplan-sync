@@ -1,3 +1,7 @@
+/**
+ * @file test_ripple_seed_flags.cpp
+ * @brief 驗證 Ch1 各「壞傘」領取時種下對應漣漪旗標（ProfTrap/Cursed），含冪等與污染值；好傘/脆傘不種旗標且 BeClaimed 冪等。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/Flags.h"
 #include "game/entities/CursedUmbrella.h"
@@ -8,11 +12,11 @@
 #include "engine/events/EventBus.h"
 #include "engine/math/Vec2.h"
 
-// S5c-0 / F.9-a/b: the Ch1 "bad umbrella" claims are the SOURCE of the
-// negative ripples Ch2/Ch3/Ch4 cash in (助教 -10/-15, 學霸 cold, Ending
-// B). Before this they were never set, so that whole chain was dead
-// content. These pin the seed at the claim site + its specificity.
+// Ch1 的「壞傘」領取，是 Ch2/Ch3/Ch4 兌現負面漣漪的源頭（助教 -10/-15、
+// 學霸冷淡、Ending B）。在此之前這些旗標從未被設下，整條鏈都是死內容。
+// 以下案例釘住「在領取點種下旗標」以及其專一性。
 
+// 領取 ProfessorTrapUmbrella 會種下 Flag_HasProfessorTrap（只一次，第二次領取為無操作）。
 TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
     EventBus::Instance().Clear();
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -23,15 +27,15 @@ TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
     CHECK(p.HasFlag(nccu::kFlagHasProfessorTrap));
     CHECK(p.HasUmbrella());
 
-    // Idempotent guard: a second claim is a no-op, the flag stays set.
+    // 冪等守門：第二次領取為無操作，旗標維持已設。
     trap.BeClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagHasProfessorTrap));
 }
 
+// 領取 CursedUmbrella 會種下 Flag_TookCursedUmbrella 並提升污染值；karma 在撿取當下不變、污染值不重複提升。
 TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)") {
-    // Was: "...+ keeps the penalty" with a one-shot -30 at pickup. P2 moves
-    // the karma cost off the pickup and onto per-chapter ApplyCursedTaintDecay
-    // (SceneRouter Ch2/3/4 entry). The flag + the ending-B path stay intact.
+    // 此前的做法是在撿取時一次性扣 -30 karma；現在把 karma 代價從撿取移到
+    // 各章的污染衰減（在 SceneRouter 進入 Ch2/3/4 時）。旗標與 Ending B 路徑維持不變。
     EventBus::Instance().Clear();
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
@@ -41,23 +45,19 @@ TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)
     CursedUmbrella cursed{nccu::engine::math::Vec2{0, 0}};
     cursed.BeClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));
-    CHECK(p.GetCursedTaint() == 1);          // P2: taint bumped, not karma
-    CHECK(p.GetKarma() == k0);               // karma unchanged at pickup
+    CHECK(p.GetCursedTaint() == 1);          // 提升的是污染值，不是 karma
+    CHECK(p.GetKarma() == k0);               // 撿取當下 karma 不變
 
-    cursed.BeClaimed(&p);                    // idempotent (isActive_ guard)
+    cursed.BeClaimed(&p);                    // 冪等（isActive_ 守門）
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));
-    CHECK(p.GetCursedTaint() == 1);          // NOT double-bumped
+    CHECK(p.GetCursedTaint() == 1);          // 不重複提升
 }
 
-// Regression — CLAUDE.md §5 red line: "Umbrella BeClaimed / pickups
-// keep their isActive_ idempotency guard." TrueUmbrella and
-// FragileUmbrella::BeClaimed previously had NO guard (unlike Cursed /
-// ProfTrap above), relying solely on the caller's ForEachActiveExcept
-// active-filter. OnPickup is a SECOND entry point and the contract
-// requires the guard on the method itself (defense-in-depth). A
-// guard-less TrueUmbrella re-publishes UmbrellaClaimed on a second
-// call — which, since the Ch1/Ch3 EventWiring sibling-if advances the
-// semester on that event, is a latent double-transition hazard.
+// 紅線契約：雨傘的 BeClaimed／撿取必須保留 isActive_ 冪等守門。TrueUmbrella 與
+// FragileUmbrella::BeClaimed 過去沒有守門，僅依賴呼叫端的活動過濾；但 OnPickup 是
+// 第二個進入點，契約要求方法本身也要守門（縱深防禦）。無守門的 TrueUmbrella 在
+// 第二次呼叫時會重發 UmbrellaClaimed——由於 Ch1/Ch3 的事件接線會因該事件推進學期，
+// 這是潛在的重複轉場風險。
 TEST_CASE("TrueUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
     EventBus::Instance().Clear();
     int claimed = 0;
@@ -68,14 +68,15 @@ TEST_CASE("TrueUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
     TrueUmbrella good{nccu::engine::math::Vec2{0, 0}};
     good.BeClaimed(&p);
     CHECK(p.HasUmbrella());
-    CHECK_FALSE(good.IsActive());            // marked for the sweep
+    CHECK_FALSE(good.IsActive());            // 已標記待清除
     CHECK(claimed == 1);
 
-    good.BeClaimed(&p);                       // second call: must be a no-op
-    CHECK(claimed == 1);                      // NOT re-published (was 2 pre-fix)
+    good.BeClaimed(&p);                       // 第二次呼叫：必須是無操作
+    CHECK(claimed == 1);                      // 不重發（修正前會變成 2）
     EventBus::Instance().Clear();
 }
 
+// FragileUmbrella::BeClaimed 同樣具冪等性，第二次呼叫不得重發 UmbrellaClaimed。
 TEST_CASE("FragileUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
     EventBus::Instance().Clear();
     int claimed = 0;
@@ -89,11 +90,12 @@ TEST_CASE("FragileUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)"
     CHECK_FALSE(fragile.IsActive());
     CHECK(claimed == 1);
 
-    fragile.BeClaimed(&p);                    // second call: must be a no-op
-    CHECK(claimed == 1);                      // NOT re-published (was 2 pre-fix)
+    fragile.BeClaimed(&p);                    // 第二次呼叫：必須是無操作
+    CHECK(claimed == 1);                      // 不重發（修正前會變成 2）
     EventBus::Instance().Clear();
 }
 
+// 好傘／脆傘不會種下任何漣漪旗標（保證壞傘旗標的專一性）。
 TEST_CASE("The good/fragile umbrellas do NOT seed the ripple flags") {
     EventBus::Instance().Clear();
     Player p{nccu::engine::math::Vec2{0, 0}};

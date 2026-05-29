@@ -6,30 +6,24 @@
 #include <string>
 #include <vector>
 
-// Guards the V1 fix (DialogView.cpp B4 "▼ more" pagination affordance)
-// and the V3 ending-card captions at the font-atlas level.
+/**
+ * @file test_font_ui_glyphs.cpp
+ * @brief 在字型圖集層級守住特定關鍵字形：對話框分頁的「▼」下翻提示、結局卡字卡
+ *        中只在 UiLiteralChars() 才有的字（討／厭與引號），以及每個建築名稱所用
+ *        的字都必須烘進圖集，否則 raylib 會渲染成無字形的「?」豆腐。
+ */
 //
-// Why this matters / what reverting breaks:
-//   nccu::engine::render::detail::CollectCodepoints() builds the glyph set baked
-//   into the CJK font atlas: ASCII 32..126, every codepoint in
-//   docs/content/*.md, then UiLiteralChars(). DialogView draws U+25BC
-//   (▼) as the "press advance for more" cue; it is NOT ASCII and does
-//   not occur in any content .md, so it only reaches the atlas via
-//   UiLiteralChars(). If the V1 line ("\xE2\x96\xBC" in
-//   include/gfx/Font.h::UiLiteralChars) is reverted, 0x25BC drops out
-//   of CollectCodepoints(), raylib renders the no-glyph `?` fallback,
-//   and B4's pagination affordance becomes a meaningless tofu `?`
-//   (exactly the c3_b dialog+tofu regression the gfx pass captured).
-//   The first TEST_CASE below then fails.
+// CollectCodepoints() 建構烘進中文字型圖集的字形集合：ASCII 32..126、
+// docs/content/*.md 中的每個碼位，再加上 UiLiteralChars()。對話框以 U+25BC（▼）
+// 作為「按鍵繼續以閱讀更多」的提示；它不是 ASCII，也不出現在任何內容 .md，故只能
+// 透過 UiLiteralChars() 進入圖集。若該 ▼ 項被移除，0x25BC 會自圖集消失，提示就會
+// 變成無意義的豆腐「?」。
 //
-//   The ending captions (V3) likewise live in UiLiteralChars(): 討/厭
-//   in Ending B's 字卡 occur in NO content file, so reverting the V3
-//   literal additions would tofu the bad-ending card even when
-//   docs/content is readable. The second TEST_CASE pins those glyphs.
+// 結局字卡同理：結局 B 字卡中的「討／厭」不在任何內容檔，故只能透過
+// UiLiteralChars() 進入圖集。
 //
-// Pure logic only — CollectCodepoints() reads files + uses raylib's
-// codepoint decoder but needs no GL context, so this is headless-safe
-// like the other tests/*.cpp doctest units (see test_color.cpp).
+// 純邏輯 —— CollectCodepoints() 會讀檔並用 raylib 的碼位解碼器，但不需 GL 環境，
+// 故可在無頭環境執行。
 
 using nccu::engine::render::detail::CollectCodepoints;
 
@@ -41,42 +35,40 @@ bool Contains(const std::vector<int>& v, int cp) {
 
 } // namespace
 
+// CollectCodepoints 會烘入 U+25BC 下翻提示（▼）。
 TEST_CASE("CollectCodepoints bakes the U+25BC down-cue (V1 ▼ fix)") {
     const std::vector<int> cps = CollectCodepoints();
-    // 0x25BC ▼ : DialogView's B4 pagination affordance. Reverting the
-    // UiLiteralChars() ▼ entry removes this and the cue tofus to `?`.
+    // 0x25BC ▼：對話框的分頁提示。移除 UiLiteralChars() 的 ▼ 項會使它消失，
+    // 提示就會變成豆腐「?」。
     CHECK(Contains(cps, 0x25BC));
-    // No ▲ up-cue is used anywhere (DialogView draws only the down-cue),
-    // so 0x25B2 is intentionally NOT required by this game's UI.
+    // 任何地方都沒用到 ▲ 上翻提示（對話框只畫下翻提示），故本遊戲 UI 刻意不要求
+    // 0x25B2。
 }
 
+// CollectCodepoints 會烘入結局字卡的字形。
 TEST_CASE("CollectCodepoints bakes the V3 ending-caption glyphs") {
     const std::vector<int> cps = CollectCodepoints();
-    // 討 (U+8A0E) and 厭 (U+53AD) appear ONLY in Ending B's 字卡
-    // 「你成為了你曾經最討厭的那種人」 — they are in no docs/content
-    // file, so they reach the atlas exclusively through UiLiteralChars().
+    // 討（U+8A0E）與厭（U+53AD）只出現在結局 B 字卡「你成為了你曾經最討厭的那種人」——
+    // 它們不在任何 docs/content 檔，故只能透過 UiLiteralChars() 進入圖集。
     CHECK(Contains(cps, 0x8A0E));   // 討
     CHECK(Contains(cps, 0x53AD));   // 厭
-    // CJK quote brackets used by every ending caption.
+    // 每段結局字卡都用到的中文引號。
     CHECK(Contains(cps, 0x300C));   // 「
     CHECK(Contains(cps, 0x300D));   // 」
-    // Sanity: ASCII is always present (the always-added 32..126 block).
+    // ASCII 一定存在（永遠加入的 32..126 區段）。
     CHECK(Contains(cps, static_cast<int>('A')));
 }
 
-// REQUIREMENT #10: every glyph used by a building name must be in the
-// atlas. View.cpp draws "Inside: " + World::CurrentBuildingName() from
-// nccu::buildings::kAll; a name glyph absent from both docs/content and
-// UiLiteralChars() renders as the no-glyph `?` (the reported 缺字 bug —
-// 井/仁/勇/塘/夫/志/泳/雩 were missing because they occur in no content
-// file). This drives the REAL Buildings.h table, so a future rename that
-// introduces an uncovered glyph fails here too. Reverting the Font.h
-// building-name literal block drops those 8 glyphs and this fails.
+// 每個建築名稱所用的字都必須在圖集中。View.cpp 會畫出「Inside: 」加上
+// World::CurrentBuildingName()（取自 nccu::buildings::kAll）；名稱中若有字既不在
+// docs/content 也不在 UiLiteralChars()，就會渲染成無字形的「?」（曾回報的缺字：
+// 井/仁/勇/塘/夫/志/泳/雩，因為它們不在任何內容檔）。此處驅動真實的 Buildings.h
+// 表，故日後改名而引入未涵蓋的字也會在此失敗。
 TEST_CASE("CollectCodepoints covers every Buildings.h name glyph (#10)") {
     const std::vector<int> cps = CollectCodepoints();
     for (const auto& b : nccu::buildings::kAll) {
-        // Decode the UTF-8 building name to codepoints via raylib's own
-        // decoder (same path CollectCodepoints uses for the literals).
+        // 用 raylib 自己的解碼器把 UTF-8 建築名解成碼位（與 CollectCodepoints
+        // 處理字面字串所走的路徑相同）。
         const std::string name{b.name};
         int n = 0;
         int* dec = ::LoadCodepoints(name.c_str(), &n);
@@ -87,14 +79,14 @@ TEST_CASE("CollectCodepoints covers every Buildings.h name glyph (#10)") {
         }
         ::UnloadCodepoints(dec);
     }
-    // Spot-check the 8 that were the actual reported defect (in no
-    // docs/content file → atlas only via the #10 UiLiteralChars block).
-    CHECK(Contains(cps, 0x4E95));   // 井  (井塘樓)
-    CHECK(Contains(cps, 0x4EC1));   // 仁  (大仁樓)
-    CHECK(Contains(cps, 0x52C7));   // 勇  (大勇樓)
-    CHECK(Contains(cps, 0x5858));   // 塘  (井塘樓)
-    CHECK(Contains(cps, 0x592B));   // 夫  (果夫樓)
-    CHECK(Contains(cps, 0x5FD7));   // 志  (志希樓)
-    CHECK(Contains(cps, 0x6CF3));   // 泳  (游泳館)
-    CHECK(Contains(cps, 0x96E9));   // 雩  (風雩樓/風雩走廊)
+    // 抽查當初實際回報缺字的那 8 個（不在任何 docs/content 檔 → 僅透過
+    // UiLiteralChars() 區段進入圖集）。
+    CHECK(Contains(cps, 0x4E95));   // 井（井塘樓）
+    CHECK(Contains(cps, 0x4EC1));   // 仁（大仁樓）
+    CHECK(Contains(cps, 0x52C7));   // 勇（大勇樓）
+    CHECK(Contains(cps, 0x5858));   // 塘（井塘樓）
+    CHECK(Contains(cps, 0x592B));   // 夫（果夫樓）
+    CHECK(Contains(cps, 0x5FD7));   // 志（志希樓）
+    CHECK(Contains(cps, 0x6CF3));   // 泳（游泳館）
+    CHECK(Contains(cps, 0x96E9));   // 雩（風雩樓／風雩走廊）
 }

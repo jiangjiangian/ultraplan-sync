@@ -18,8 +18,8 @@ void World::UpdateSportsLap() noexcept {
     const float dx = player_->GetPosition().x - kSportsTrackCx;
     const float dy = player_->GetPosition().y - kSportsTrackCy;
     const float dist = std::hypot(dx, dy);
-    // Only sweep while on/near the stadium track band — loitering the
-    // centre or wandering far off the field does not count toward the lap.
+    // 只在位於／接近體育場跑道環帶時才累計——逗留在中心或遊蕩到離場地很遠處都不計入
+    // 圈數。
     if (dist < 90.0f || dist > 320.0f) return;
     const float ang = std::atan2(dy, dx);
     if (!lapStarted_) {                       // first on-band frame: anchor

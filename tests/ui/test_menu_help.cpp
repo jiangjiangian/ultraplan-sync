@@ -1,20 +1,17 @@
-// REQUIREMENT #9 regression: the in-game pause menu gained a 說明 item.
-// This pins (a) the 4-item menu order (繼續 / 說明 / 重新開始 / 離開)
-// via GameController's real input loop, (b) that 說明 opens an in-place
-// help overlay (World::HelpOpen) instead of an AppAction, (c) that the
-// help overlay is dismissable (M/E/Enter) back to the still-open menu,
-// and (d) that the sim stays frozen the whole time (no movement / no
-// rain tick) — so adding help can never perturb gameplay or the
-// deterministic ending scripts.
+/**
+ * @file test_menu_help.cpp
+ * @brief 驗證遊戲內暫停選單的「說明」項：透過 GameController 真實輸入迴圈確認
+ *        說明會開啟就地的說明遮罩（而非觸發 AppAction）、可被 M/E/Enter 關回
+ *        仍開著的選單、整段期間模擬凍結；以及說明文字的內容與分頁、暫停可延長
+ *        雨壓力的提示，與 ←/→ 翻頁行為。
+ */
 //
-// Revert-verify (must FAIL without the #9 menu wiring):
-//   * Restore kMenuItemCount=3 / the 3-label menu and drop the case-1
-//     SetHelpOpen branch — confirming index 1 then no longer opens help
-//     (HelpOpen stays false); the "說明 opens help" CHECK fails.
-//   * Cycle 9.E.3 bumped kMenuItemCount from 4 → 6 by inserting the
-//     減少動畫 / 擴大目標 toggle rows at indices 2 and 3. 說明 is still
-//     index 1 (this test's invariant), so only the count CHECK below
-//     needed updating; the index-1-opens-help path is unchanged.
+// 遊戲內暫停選單新增了「說明」項。本檔固定 (a) 透過 GameController 真實輸入迴圈
+// 確認選單順序中「說明」位於索引 1、(b) 說明會開啟就地的說明遮罩（World::HelpOpen）
+// 而非觸發 AppAction、(c) 說明遮罩可被 M/E/Enter 關回仍開著的選單、(d) 整段期間
+// 模擬凍結（不移動／雨量不前進）—— 故新增說明絕不會擾動遊玩或確定性的結局腳本。
+// 後來選單列由 4 → 6（在索引 2、3 插入減少動畫／擴大目標切換列），但「說明」仍在
+// 索引 1（本測試的不變量）。
 
 #include "doctest/doctest.h"
 #include "game/world/World.h"
@@ -65,6 +62,7 @@ void Frame(GameController& c, TestInput& in) {
 
 }  // namespace
 
+// 暫停選單的「說明」會開啟／關閉說明遮罩，且整段期間模擬凍結。
 TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -74,26 +72,24 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
 
-    Frame(controller, in);                       // settle (roster, etc.)
+    Frame(controller, in);                       // 安頓（名冊等）
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
     const nccu::engine::math::Vec2 pos0 = p->GetPosition();
     const float rain0 = p->GetRainMeter();
 
-    // The menu is a 6-item menu now (REQUIREMENT #9 + Cycle 9.E.3 added
-    // 減少動畫 and 擴大目標 toggle rows between 說明 and 重新開始). The
-    // 說明 item — what THIS test pins — remains at index 1.
+    // 選單現在是 6 列（在說明與重新開始之間加入了減少動畫與擴大目標切換列）。
+    // 本測試所固定的「說明」項仍在索引 1。
     CHECK(World::kMenuItemCount == 6);
 
-    // Open the pause menu (M — ESC is reserved for quitting the program).
+    // 開啟暫停選單（M —— ESC 保留給離開程式）。
     in.Tap(Key::M);
     Frame(controller, in);
     REQUIRE(world.MenuOpen());
-    CHECK(world.MenuCursor() == 0);              // starts on 繼續
+    CHECK(world.MenuCursor() == 0);              // 起始於繼續
     CHECK_FALSE(world.HelpOpen());
 
-    // Move to index 1 (說明) and confirm → help overlay opens; the menu
-    // stays open behind it; NO AppAction was requested.
+    // 移到索引 1（說明）並確認 → 說明遮罩開啟；選單仍在其後開著；未請求 AppAction。
     in.Tap(Key::Down);
     Frame(controller, in);
     CHECK(world.MenuCursor() == 1);
@@ -103,8 +99,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK(world.MenuOpen());
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
-    // While help is up the sim is frozen: feed movement + many frames,
-    // the player must not move and rain must not tick.
+    // 說明開著時模擬凍結：餵入移動鍵與多幀，玩家不可移動、雨量不可前進。
     for (int f = 0; f < 30; ++f) {
         in.Hold(Key::D);
         Frame(controller, in);
@@ -114,29 +109,27 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK(p->GetPosition().x == doctest::Approx(pos0.x));
     CHECK(p->GetPosition().y == doctest::Approx(pos0.y));
     CHECK(p->GetRainMeter() == doctest::Approx(rain0));
-    CHECK(world.HelpOpen());                     // still up — D didn't close it
+    CHECK(world.HelpOpen());                     // 仍開著 —— D 沒有關掉它
 
-    // E dismisses help back to the menu (menu still open, cursor intact).
+    // E 把說明關回選單（選單仍開著、游標保持不變）。
     in.Tap(Key::E);
     Frame(controller, in);
     CHECK_FALSE(world.HelpOpen());
     CHECK(world.MenuOpen());
     CHECK(world.MenuCursor() == 1);
 
-    // M from the menu now resumes the game (closing the menu also
-    // clears any help latch via SetMenuOpen(false)).
+    // 此時從選單按 M 恢復遊戲（關閉選單也會透過 SetMenuOpen(false) 清掉任何
+    // 說明鎖存）。
     in.Tap(Key::M);
     Frame(controller, in);
     CHECK_FALSE(world.MenuOpen());
     CHECK_FALSE(world.HelpOpen());
 
-    // The help text is non-empty and short enough for the panel (≤ 24
-    // full-width cells worst case — the panel is narrower than the box).
+    // 說明文字非空，且短到能放進面板（最壞情況 ≤ 24 個全形字寬 —— 面板比對話框窄）。
     auto cells = [](std::string_view s) {
-        // count UTF-8 lead bytes; CJK ≈ 1 cell here for a coarse bound,
-        // every authored help line is CJK/ASCII mixed and intentionally
-        // short. (Exact East-Asian width is the dialog box's concern;
-        // the help panel is wide and only needs a sane upper bound.)
+        // 計算 UTF-8 前導位元組數；此處中文以約 1 字寬作粗略上界，每行說明都是
+        // 中英混合且刻意精簡。（精確的東亞寬度是對話框的事；說明面板較寬，只需
+        // 一個合理上界。）
         int n = 0;
         for (unsigned char c : s) if ((c & 0xC0) != 0x80) ++n;
         return n;
@@ -146,14 +139,10 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     CHECK_FALSE(nccu::kGameHelpClosing.empty());
     CHECK(cells(nccu::kGameHelpClosing) <= 24);
 
-    // Cycle 9.E (audit H3 / D11 / SC 2.2.1): pin the pause-pauses-rain
-    // hint into the help text so a player can discover the pause-as-
-    // timing-extension affordance. The hint must live on a SINGLE line;
-    // a line-by-line "contains both '暫停' and '雨壓力'" assertion is
-    // key-agnostic (the menu key moved from ESC to M, but the pause
-    // affordance is the same). A future copy-edit that rewrites the
-    // wording but keeps both tokens on one line still passes; only
-    // deleting the hint (or splitting it) fails.
+    // 把「暫停可暫停雨壓力」的提示固定進說明文字，讓玩家能發現「以暫停換取時間」
+    // 的操作。此提示必須位於「單一行」；逐行檢查「同時含『暫停』與『雨壓力』」
+    // 的斷言與按鍵無關（選單鍵已由 ESC 改為 M，但暫停操作不變）。日後改寫措辭但
+    // 仍把兩個關鍵詞留在同一行仍會通過；只有刪除該提示（或拆成兩行）才會失敗。
     bool sawPauseRainHint = false;
     for (std::string_view ln : nccu::kGameHelpLines) {
         const bool hasPause = ln.find("暫停")   != std::string_view::npos;
@@ -167,18 +156,16 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     EventBus::Instance().Clear();
 }
 
-// U2-T4: the 說明 overlay is PAGED (the help grew a 【道具須知】 section).
-// Pin: (a) two pages, (b) the paged view + the closing line equal the flat
-// kGameHelpLines (so the glyph-scan, which iterates the flat list, can't go
-// stale), (c) the new economy/usage tips are present, (d) each page ends on
-// a blank-or-content line within the panel's cell budget.
+// 說明遮罩分成兩頁，且分頁內容與扁平的 kGameHelpLines 保持一致。
+// 固定：(a) 兩頁、(b) 分頁視圖加收尾行等於扁平的 kGameHelpLines（使逐項走訪
+// 扁平清單的字形掃描不致過時）、(c) 新的經濟／使用提示存在、(d) 每行都在面板的
+// 字寬上限內。
 TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
     CHECK(nccu::kGameHelpPageCount == 2);
     REQUIRE(nccu::kGameHelpPages.size() == 2);
 
-    // Flatten the pages, dropping the trailing closing line (which is the
-    // last entry of page 2 AND kept as kGameHelpClosing). It must equal the
-    // flat kGameHelpLines element-for-element.
+    // 把各頁攤平，去掉結尾的收尾行（它是第 2 頁的最後一項，同時也保留為
+    // kGameHelpClosing）。攤平後必須與扁平的 kGameHelpLines 逐項相等。
     std::vector<std::string_view> paged;
     for (const auto page : nccu::kGameHelpPages)
         for (std::string_view ln : page) paged.push_back(ln);
@@ -189,7 +176,7 @@ TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
     for (std::size_t i = 0; i < paged.size(); ++i)
         CHECK(paged[i] == nccu::kGameHelpLines[i]);
 
-    // Every page line within ~24 full-width cells (the panel budget).
+    // 每行都在約 24 個全形字寬（面板上限）內。
     auto cells = [](std::string_view s) {
         int n = 0;
         for (unsigned char c : s) if ((c & 0xC0) != 0x80) ++n;
@@ -198,23 +185,22 @@ TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
     for (const auto page : nccu::kGameHelpPages)
         for (std::string_view ln : page) CHECK(cells(ln) <= 24);
 
-    // The owner item-6 tips are present somewhere in the help.
+    // 道具相關提示應出現在說明中的某處。
     auto helpHas = [](std::string_view needle) {
         for (std::string_view ln : nccu::kGameHelpLines)
             if (ln.find(needle) != std::string_view::npos) return true;
         return false;
     };
-    CHECK(helpHas("跨章節"));        // 金幣 persists across chapters
-    CHECK(helpHas("清空"));          // other items wiped on market exit
-    CHECK(helpHas("減緩雨量"));      // most items relieve rain
-    CHECK(helpHas("自動減緩"));      // umbrella relieves rain automatically
+    CHECK(helpHas("跨章節"));        // 金幣跨章節保留
+    CHECK(helpHas("清空"));          // 其他道具在離開市集時清空
+    CHECK(helpHas("減緩雨量"));      // 多數道具能減緩雨量
+    CHECK(helpHas("自動減緩"));      // 傘會自動減緩雨量
 }
 
-// U2-T4: ←/→ flip the help page while the overlay is up; the index wraps and
-// resets to page 0 on (re)open. Driven through GameController's real input
-// loop so the wiring is pinned. The page is PURE UI state (World::HelpPage),
-// NOT serialized (the harness emits no cursor/page), so a paged help leaves
-// state.jsonl byte-identical — the sim is also frozen the whole time.
+// 說明遮罩開著時，←/→ 翻頁，索引會環繞，且（重新）開啟時重置到第 0 頁。
+// 透過 GameController 真實輸入迴圈驅動以固定接線。頁碼是純 UI 狀態
+// （World::HelpPage），不被序列化（工具不輸出游標／頁碼），故分頁說明讓
+// state.jsonl 維持逐位元相同 —— 整段期間模擬同樣凍結。
 TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim frozen") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -224,48 +210,48 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
 
-    Frame(controller, in);                       // settle
+    Frame(controller, in);                       // 安頓
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
     const nccu::engine::math::Vec2 pos0 = p->GetPosition();
     const float rain0 = p->GetRainMeter();
 
-    // Open menu → 說明 (index 1) → Enter opens help on page 0.
+    // 開選單 → 說明（索引 1）→ Enter 開啟說明於第 0 頁。
     in.Tap(Key::M);          Frame(controller, in);
     in.Tap(Key::Down);       Frame(controller, in);
     in.Tap(Key::Enter);      Frame(controller, in);
     REQUIRE(world.HelpOpen());
-    CHECK(world.HelpPage() == 0);                // opens on the first page
+    CHECK(world.HelpPage() == 0);                // 開於第一頁
 
-    // → advances to page 1; → again WRAPS back to 0 (2 pages).
+    // → 前進到第 1 頁；再 → 環繞回 0（共 2 頁）。
     in.Tap(Key::Right);      Frame(controller, in);
     CHECK(world.HelpPage() == 1);
     in.Tap(Key::Right);      Frame(controller, in);
     CHECK(world.HelpPage() == 0);
-    // ← wraps the other way: 0 → last page (1).
+    // ← 反方向環繞：0 → 最後一頁（1）。
     in.Tap(Key::Left);       Frame(controller, in);
     CHECK(world.HelpPage() == 1);
 
-    // The sim stayed frozen across all that paging (no move / no rain tick).
+    // 整段翻頁期間模擬都維持凍結（不移動／雨量不前進）。
     CHECK(p->GetPosition().x == doctest::Approx(pos0.x));
     CHECK(p->GetPosition().y == doctest::Approx(pos0.y));
     CHECK(p->GetRainMeter() == doctest::Approx(rain0));
 
-    // Close help (E) then reopen → back on page 0 (SetHelpOpen resets it).
+    // 關閉說明（E）再重開 → 回到第 0 頁（SetHelpOpen 會重置它）。
     in.Tap(Key::E);          Frame(controller, in);
     CHECK_FALSE(world.HelpOpen());
-    in.Tap(Key::Enter);      Frame(controller, in);   // cursor still on 說明
+    in.Tap(Key::Enter);      Frame(controller, in);   // 游標仍在說明
     REQUIRE(world.HelpOpen());
     CHECK(world.HelpPage() == 0);
 
-    // Flip to page 1, then resume the game (M from the menu after dismissing
-    // help) — SetMenuOpen(false) must also clear the help page latch.
+    // 翻到第 1 頁，再恢復遊戲（關閉說明後從選單按 M）—— SetMenuOpen(false)
+    // 也必須清掉說明頁碼的鎖存。
     in.Tap(Key::Right);      Frame(controller, in);
     CHECK(world.HelpPage() == 1);
-    in.Tap(Key::E);          Frame(controller, in);   // help → menu
-    in.Tap(Key::M);          Frame(controller, in);   // menu → game
+    in.Tap(Key::E);          Frame(controller, in);   // 說明 → 選單
+    in.Tap(Key::M);          Frame(controller, in);   // 選單 → 遊戲
     CHECK_FALSE(world.MenuOpen());
-    CHECK(world.HelpPage() == 0);                      // reset on resume
+    CHECK(world.HelpPage() == 0);                      // 恢復時重置
 
     nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);

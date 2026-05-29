@@ -293,8 +293,7 @@ TEST_CASE("UI-B-3: every ending-card row stays within the screen text area") {
             const float rightEdge = r.textX[i] + rowPx;
             INFO("screenW=" << screenW << " row='" << r.texts[i]
                  << "' x=" << r.textX[i] << " right=" << rightEdge);
-            // Every row's left edge is on-screen and its right edge does not
-            // run off the screen's right side (a small slack for the px model).
+            // 每列的左緣都在畫面內，右緣不會超出畫面右側（像素模型留些許餘裕）。
             CHECK(r.textX[i] >= -0.5f);
             CHECK(rightEdge <= screenW + 2.0f);
         }

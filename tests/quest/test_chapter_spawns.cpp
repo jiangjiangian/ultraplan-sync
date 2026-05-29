@@ -1,3 +1,7 @@
+/**
+ * @file test_chapter_spawns.cpp
+ * @brief 驗證 Ch1 名冊資料與生成、名冊抽換時保住 Player 不變量、往返切換的復原，以及重複 respawn 不重複/不洩漏。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/ChapterSpawns.h"
 #include "game/quest/ChapterQuestItems.h"
@@ -17,7 +21,7 @@ using nccu::World;
 
 namespace {
 
-// npcIds present in the live object roster (NPC overrides NpcId()).
+// 活動物件名冊中存在的 npcId（NPC 覆寫了 NpcId()）。
 std::set<std::string> RosterNpcIds(const World& w) {
     std::set<std::string> ids;
     for (const auto& o : w.Objects()) {
@@ -31,19 +35,18 @@ bool HasNpc(const World& w, const char* id) {
     return RosterNpcIds(w).count(id) != 0;
 }
 
-// The 5 Ch1 spine/ripple archetypes — the npcIds the ChapterNpcSpawns(Ch1)
-// DATA table declares. G-1/G-2 added a Ch1 crowd (wanderers, empty npcId) +
-// 3 stationary flavor NPCs (ch1_flavor_* npcIds) via World::SpawnChapterNpcs'
-// code block, NOT the data table, so the live npcId roster is now the 5
-// archetypes PLUS the 3 flavor ids. These helpers keep the spine assertions
-// exact (the 5 archetypes are unchanged) while tolerating the flavor ids.
+// Ch1 的 5 個主線／漣漪原型——即 ChapterNpcSpawns(Ch1) 資料表宣告的 npcId。
+// 另外有一批 Ch1 人潮（遊走、空 npcId）與 3 個靜態風味 NPC（ch1_flavor_* npcId）
+// 是經由 World::SpawnChapterNpcs 的程式碼區塊加入，而非資料表，因此活動的 npcId
+// 名冊現在是 5 個原型再加上 3 個風味 id。這些輔助函式讓主線斷言保持精確
+//（5 個原型不變），同時容忍風味 id。
 const std::set<std::string>& Ch1Archetypes() {
     static const std::set<std::string> kIds = {
         "victim", "suit_senior", "bookworm", "ta", "shop_auntie"};
     return kIds;
 }
 
-// Live count of just the spine archetypes (excludes the flavor NPCs).
+// 只計算主線原型的活動數量（排除風味 NPC）。
 std::size_t ArchetypeNpcCount(const World& w) {
     std::size_t n = 0;
     for (const auto& id : RosterNpcIds(w))
@@ -51,9 +54,8 @@ std::size_t ArchetypeNpcCount(const World& w) {
     return n;
 }
 
-// CashPickups are chapter-roster members too (S5b-4: per-chapter coins,
-// swept on a state change like the NPCs), so the "survives a swap" count
-// must exclude them as well.
+// CashPickup 也是章節名冊成員（各章金幣，會像 NPC 一樣在狀態改變時被清除），
+// 因此「跨切換後存活」的計數也必須把它們排除。
 std::size_t RosterCashCount(const World& w) {
     std::size_t n = 0;
     for (const auto& o : w.Objects())
@@ -63,6 +65,7 @@ std::size_t RosterCashCount(const World& w) {
 
 } // namespace
 
+// Ch1 資料表為 5 個原型，且與舊版 DefaultNpcSpawns() 逐欄相同；幕間市集與三個結局都沒有 NPC 名冊。
 TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") {
     const auto& ch1 = ChapterNpcSpawns(SemesterState::Chapter1_AddDrop);
     std::set<std::string> ids;
@@ -71,7 +74,7 @@ TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") 
                                        "ta", "shop_auntie"});
     CHECK(ch1.size() == 5);
 
-    // Ch1 must be byte-identical to the legacy DefaultNpcSpawns().
+    // Ch1 必須與舊版 DefaultNpcSpawns() 逐位元相同。
     const auto& legacy = nccu::DefaultNpcSpawns();
     REQUIRE(ch1.size() == legacy.size());
     for (std::size_t i = 0; i < ch1.size(); ++i) {
@@ -81,21 +84,18 @@ TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") 
         CHECK(ch1[i].isQuestGiver == legacy[i].isQuestGiver);
     }
 
-    // States with no NPC roster through ALL of Phase 2 (durable — does
-    // not churn as S5c/d/e fill the chapters): the Interlude has none
-    // (its actors are parser Vendors via ChapterVendors, not NPCs; the
-    // exit is a trigger zone, S5b-2), and the three endings render a
-    // card with no roster. Ch2/Ch3/Ch4 are populated by design as each
-    // S5c/d/e lands — their rosters are pinned by their own tests
-    // (test_chapter2_roster, …), not by a blanket "later states empty"
-    // assertion here.
+    // 全程都沒有 NPC 名冊的狀態（穩定、不會隨各章陸續填入而變動）：幕間市集
+    // 沒有 NPC（它的角色是經 ChapterVendors 的攤商，不是 NPC；出口是一個觸發區），
+    // 而三個結局只渲染一張卡片、沒有名冊。Ch2/Ch3/Ch4 依設計會被填入——它們的
+    // 名冊由各自的測試（test_chapter2_roster 等）釘住，而不是在此用一句「後續狀態為空」概括。
     CHECK(ChapterNpcSpawns(SemesterState::Interlude_Market).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_A).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_B).empty());
-    CHECK(ChapterNpcSpawns(SemesterState::Ending_D).empty());   // G1
+    CHECK(ChapterNpcSpawns(SemesterState::Ending_D).empty());
     CHECK(ChapterNpcSpawns(SemesterState::Ending_C).empty());
 }
 
+// World 建構子會生成 Ch1 名冊，且 Player 維持在物件清單最前端。
 TEST_CASE("World ctor spawns the Ch1 roster, Player stays at front") {
     World w("", /*loadSprites=*/false);
 
@@ -109,10 +109,11 @@ TEST_CASE("World ctor spawns the Ch1 roster, Player stays at front") {
         CHECK(HasNpc(w, id));
 }
 
+// RespawnChapterRoster 會抽換 NPC 名冊，但保住 Player 不變量；往返切換後完整名冊復原、非名冊物件不受影響。
 TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") {
     World w("", /*loadSprites=*/false);
 
-    // Capture identity + the non-chapter object count BEFORE any swap.
+    // 在任何抽換之前，先記下身分與「非章節物件」的數量。
     Player*     beforePlayer = w.GetPlayer();
     GameObject* beforeFront  = w.Objects().front().get();
     REQUIRE(beforePlayer != nullptr);
@@ -120,56 +121,51 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
 
     const std::size_t totalCh1   = w.Objects().size();
     const std::size_t ch1Cash    = RosterCashCount(w);
-    // The 5 spine archetypes are present at entry (G-1/G-2's crowd + flavor
-    // NPCs are ADDITIVE — counted via the live roster below, not here).
+    // 5 個主線原型在進場時就在場（人潮與風味 NPC 是附加的——以下用活動名冊計算，不在此計入）。
     REQUIRE(ArchetypeNpcCount(w) == 5);
-    REQUIRE(ch1Cash == 5);                              // S5b-4 Ch1 spread
-    REQUIRE(nccu::ChapterQuestItems(                    // table declares 1...
+    REQUIRE(ch1Cash == 5);                              // Ch1 金幣分佈
+    REQUIRE(nccu::ChapterQuestItems(                    // 表宣告 1 個……
                 SemesterState::Chapter1_AddDrop).size() == 1);
 
-    // --- Transition to a state with an empty roster. ---
-    // Vehicle history: Interlude (S5a-1) → non-empty at S5b-3 (Vendors);
-    // Chapter2 (S5b-3) → non-empty at S5c-1. Ending_A is the DURABLE
-    // choice: an ending renders a card and has no NPC roster / no
-    // Vendors / no CashPickups by design — it stays empty through all of
-    // Phase 2, so this swap-mechanism + Player-invariant test never
-    // churns again as S5d/S5e fill the remaining chapters.
+    // --- 切換到一個名冊為空的狀態。---
+    // 選 Ending_A 作為穩定的對照：結局只渲染一張卡片，依設計沒有 NPC 名冊／
+    // 沒有攤商／沒有金幣——它全程維持為空，因此這個「抽換機制 + Player 不變量」
+    // 的測試不會因為其他章節陸續填入而需要反覆改寫。
     w.RespawnChapterRoster(SemesterState::Ending_A);
 
-    // The Ch1 NPCs are gone (the 5 archetypes AND the 3 flavor NPCs — every
-    // chapter-roster member is swept); no chapter NPC id remains.
+    // Ch1 的 NPC 都消失了（5 個原型與 3 個風味 NPC——每個章節名冊成員都被清除）；
+    // 不殘留任何章節 NPC id。
     CHECK(RosterNpcIds(w).empty());
     for (const char* id : {"victim", "suit_senior", "bookworm",
                            "ta", "shop_auntie"})
         CHECK_FALSE(HasNpc(w, id));
 
-    // Player identity + front invariant survive the swap intact.
+    // Player 身分與「最前端」不變量在抽換後完好。
     CHECK(w.GetPlayer() == beforePlayer);
     CHECK(w.Objects().front().get() == beforeFront);
     CHECK(static_cast<GameObject*>(w.GetPlayer()) == w.Objects().front().get());
 
-    // Everything that is NOT a chapter-roster member is still present
-    // (player + 3 morality umbrellas + the ctor 申請書 QuestFlagPickup +
-    // ambient students — none of which are roster-tracked). The Ch1 crowd +
-    // flavor NPCs (G-1/G-2) ARE roster-tracked, so they were swept too; we
-    // capture the post-swap survivor count directly rather than deriving it.
+    // 所有非章節名冊成員仍在場（玩家 + 3 把道德傘 + 建構子的申請書 QuestFlagPickup
+    // + 路人學生——這些都不受名冊追蹤）。Ch1 人潮與風味 NPC 受名冊追蹤，因此也被清除；
+    // 這裡直接取抽換後的存活數量，而不去推導它。
     const std::size_t nonChapter = w.Objects().size();
-    CHECK(nonChapter < totalCh1);                        // the roster was swept
+    CHECK(nonChapter < totalCh1);                        // 名冊已被清除
 
-    // --- Round-trip back to Ch1: the full roster comes back. ---
+    // --- 往返回到 Ch1：完整名冊復原。---
     w.RespawnChapterRoster(SemesterState::Chapter1_AddDrop);
 
     for (const char* id : {"victim", "suit_senior", "bookworm",
                            "ta", "shop_auntie"})
         CHECK(HasNpc(w, id));
-    CHECK(ArchetypeNpcCount(w) == 5);                    // spine unchanged
-    CHECK(w.Objects().size() == totalCh1);               // crowd+flavor restored
+    CHECK(ArchetypeNpcCount(w) == 5);                    // 主線不變
+    CHECK(w.Objects().size() == totalCh1);               // 人潮與風味也復原
 
-    // Invariant still holds after the round-trip.
+    // 往返之後不變量仍成立。
     CHECK(w.GetPlayer() == beforePlayer);
     CHECK(w.Objects().front().get() == beforeFront);
 }
 
+// 對同一狀態重複呼叫 respawn 不會重複生成或洩漏 NPC。
 TEST_CASE("Repeated same-state respawn does not duplicate or leak NPCs") {
     World w("", /*loadSprites=*/false);
     const std::size_t total = w.Objects().size();
@@ -178,6 +174,6 @@ TEST_CASE("Repeated same-state respawn does not duplicate or leak NPCs") {
     w.RespawnChapterRoster(SemesterState::Chapter1_AddDrop);
 
     CHECK(w.Objects().size() == total);
-    CHECK(ArchetypeNpcCount(w) == 5);                    // spine: no dup/leak
+    CHECK(ArchetypeNpcCount(w) == 5);                    // 主線：不重複、不洩漏
     CHECK(static_cast<GameObject*>(w.GetPlayer()) == w.Objects().front().get());
 }

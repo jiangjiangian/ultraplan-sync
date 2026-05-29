@@ -169,11 +169,11 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
 
     const auto rows = nccu::BuildInventoryRows(p);
 
-    // 金幣 first (deterministic order), still present.
+    // 金幣排第一（順序確定），仍在。
     REQUIRE(!rows.empty());
     CHECK(rows.front().itemId == nccu::kItemMoney);
 
-    // Consumables with their counts + usable flag.
+    // 消耗品連同其數量與可用旗標。
     const nccu::InventoryRow* hot = Find(rows, "HotPack");
     REQUIRE(hot != nullptr);
     CHECK(hot->name == "暖暖包");
@@ -185,30 +185,29 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
     CHECK(energy->count == 1);
     CHECK(energy->usable);
 
-    // The held umbrella, derived from HeldUmbrellaKind() (B2.1).
+    // 手持的傘，由 HeldUmbrellaKind() 推導。
     const nccu::InventoryRow* umb = Find(rows, nccu::kItemTrueUmbrella);
     REQUIRE(umb != nullptr);
     CHECK(umb->name == "真傘");
-    CHECK(umb->count == 0);                  // single instance, no xN
+    CHECK(umb->count == 0);                  // 單一持有，無 xN
     CHECK_FALSE(umb->usable);
 
-    // Quest papers: 申請書 + the 三頁筆記 collapsed into one "xN" row.
+    // 任務紙張：申請書 + 三頁筆記合併成一個「xN」列。
     const nccu::InventoryRow* form = Find(rows, nccu::kItemForm);
     REQUIRE(form != nullptr);
     CHECK(form->name == "申請書");
     const nccu::InventoryRow* notes = Find(rows, nccu::kItemNotes);
     REQUIRE(notes != nullptr);
-    CHECK(notes->count == 2);                // 2 of the 3 held
+    CHECK(notes->count == 2);                // 三頁中持有兩頁
     CHECK_FALSE(notes->usable);
 }
 
-// B2.1: the bag umbrella row reflects the umbrella the player is HOLDING
-// RIGHT NOW (HeldUmbrellaKind), not a persistent ending flag. The ugly /
-// cursed ending flags are NEVER cleared, so keying the bag off them left a
-// stale row after the umbrella was lost; the held-kind is the source of truth.
+// 背包傘列反映玩家「當下手持」的傘（HeldUmbrellaKind），而非持久的結局旗標。
+// 醜傘／詛咒傘的結局旗標永不清除，故若以它們為依據，傘失去後會殘留過時的列；
+// 手持種類才是真正的依據。
 TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags") {
-    // Ugly held → ugly row (even though Flag_BoughtUglyUmbrella is the
-    // Ending C marker; here it is the held kind that drives the row).
+    // 手持醜傘 → 醜傘列（即使 Flag_BoughtUglyUmbrella 是結局 C 標記；此處驅動
+    // 該列的是手持種類）。
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetHeldUmbrella(HeldUmbrella::Ugly);
     {
@@ -216,7 +215,7 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
         CHECK(Find(rows, nccu::kItemUglyUmbrella) != nullptr);
         CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
     }
-    // The cursed held umbrella → 詛咒傘 row.
+    // 手持詛咒傘 → 詛咒傘列。
     Player q{nccu::engine::math::Vec2{0, 0}};
     q.SetHeldUmbrella(HeldUmbrella::Cursed);
     {
@@ -225,9 +224,8 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
         REQUIRE(c != nullptr);
         CHECK(c->name == "詛咒傘");
     }
-    // The carried 苦主's umbrella (mid-quest, before the return grant) is a
-    // CARRIED quest item (flag-driven, NO shelter) — still shown, but it is
-    // not a held-over-head umbrella, so HasUmbrella stays false.
+    // 攜帶的苦主之傘（任務途中、歸還發放前）是「攜帶」的任務道具（旗標驅動、
+    // 不提供遮蔽）—— 仍會顯示，但它不是撐在頭上的傘，故 HasUmbrella 維持 false。
     Player v{nccu::engine::math::Vec2{0, 0}};
     v.SetFlag(nccu::kFlagHasVictimUmbrella);
     {
@@ -237,31 +235,28 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
     }
 }
 
-// B2.1 core regression: a LOST umbrella must vanish from the bag. The ending
-// flag persists (it decides A/B/C), but SetHasUmbrella(false) — the Ch4-entry
-// 傘再度失蹤 / a per-chapter「傘又掉了」reset — clears the held kind, so the
-// umbrella row disappears and no stale row lingers.
+// 失去的傘必須從背包消失。結局旗標持續存在（用以決定 A/B/C），但
+// SetHasUmbrella(false)（進第四章「傘再度失蹤」／各章「傘又掉了」的重置）會清除
+// 手持種類，故傘列消失、不留過時列。
 TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the ending flag persists") {
     Player p{nccu::engine::math::Vec2{0, 0}};
-    // Hold the cursed umbrella + the persistent Ending B marker (as
-    // CursedUmbrella::BeClaimed sets them together).
+    // 持有詛咒傘 + 持久的結局 B 標記（如 CursedUmbrella::BeClaimed 一併設定）。
     p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag(nccu::kFlagTookCursedUmbrella);
     REQUIRE(Find(nccu::BuildInventoryRows(p), nccu::kItemCursedUmbrella) != nullptr);
 
-    // The umbrella is lost (Ch4 entry / per-chapter reset).
+    // 傘被失去（進第四章／各章重置）。
     p.SetHasUmbrella(false);
     const auto rows = nccu::BuildInventoryRows(p);
-    // No umbrella row of ANY kind, even though the ending flag is still set.
+    // 任何種類的傘列都不存在，儘管結局旗標仍設著。
     CHECK(Find(rows, nccu::kItemCursedUmbrella) == nullptr);
     CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
     CHECK(Find(rows, nccu::kItemUglyUmbrella) == nullptr);
-    CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));   // ending flag untouched
+    CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));   // 結局旗標未受影響
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
 }
 
-// B2.1: every held-over-head kind maps to exactly one catalog row (the 破傘
-// / 陷阱傘 / 管理員的傘 additions included); None / Victim yield no held-kind
-// row (Victim is carried, shown via its quest flag).
+// 每種撐在頭上的傘都對應恰好一列道具表（含破傘／陷阱傘／管理員的傘）；
+// None／Victim 不產生手持種類的列（Victim 屬攜帶，透過其任務旗標顯示）。
 TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
     struct Case { HeldUmbrella kind; const char* item; };
     const Case cases[] = {
@@ -280,21 +275,20 @@ TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
         REQUIRE(r != nullptr);
         CHECK_FALSE(r->name.empty());
         CHECK_FALSE(r->description.empty());
-        CHECK_FALSE(r->usable);            // umbrellas are view-only
+        CHECK_FALSE(r->usable);            // 傘僅供檢視
     }
-    // None / Victim → no held-kind umbrella row.
+    // None / Victim → 無手持種類的傘列。
     Player none{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::HeldUmbrellaCatalogId(none.HeldUmbrellaKind()) == nullptr);
     CHECK(nccu::HeldUmbrellaCatalogId(HeldUmbrella::Victim) == nullptr);
 }
 
-// T6: each bag row gets a left-edge CATEGORY swatch so 金幣 / 雨傘 / 任務紙張
-// read as a different KIND than usable consumables. The umbrella row draws
-// the SAME shared glyph (and its signature colour) the world / ending use,
-// keyed off the carried-umbrella sentinel.
+// 每個背包列在左緣有一個「分類」色塊，使金幣／雨傘／任務紙張讀起來與可用消耗品
+// 是不同的種類。傘列畫的是世界／結局所用的同一個共用傘形圖（及其代表色），依
+// 攜帶傘的標記決定。
 TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
     using nccu::game::gfx::UmbrellaLook;
-    // Cursed umbrella row → the dark-purple swatch.
+    // 詛咒傘列 → 暗紫色塊。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
@@ -304,7 +298,7 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
         CHECK(HasRectRGB(r,
             nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::CursedPurple)));
     }
-    // Ugly umbrella row → the fluorescent-green swatch.
+    // 醜傘列 → 螢光綠色塊。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
@@ -314,7 +308,7 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
         CHECK(HasRectRGB(r,
             nccu::game::gfx::UmbrellaLookColor(UmbrellaLook::UglyGreen)));
     }
-    // True umbrella row → the blue swatch.
+    // 真傘列 → 藍色塊。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
@@ -325,10 +319,10 @@ TEST_CASE("T6: the umbrella bag row draws its umbrella-look swatch") {
     }
 }
 
+// 多分類的背包會畫出比裸清單更多的矩形。
 TEST_CASE("T6: a multi-category bag draws more rects than a bare list") {
-    // A bag with money + a consumable + an umbrella + a paper draws a swatch
-    // per row (so the categories are visually distinct), i.e. clearly more
-    // rects than the backdrop + panel + underline alone.
+    // 含金幣 + 消耗品 + 傘 + 紙張的背包會為每列畫一個色塊（使分類在視覺上可區別），
+    // 即矩形數明顯多於「背景 + 面板 + 底線」。
     Spy r;
     std::vector<nccu::InventoryRow> rows{
         {"金幣", 100, "餘額", false, nccu::kItemMoney},
@@ -337,48 +331,47 @@ TEST_CASE("T6: a multi-category bag draws more rects than a bare list") {
         {"申請書", 0, "交給助教", false, nccu::kItemForm},
     };
     nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
-    // backdrop + panel + underline = 3; then a selection bar + >=1 swatch
-    // rect per row. Four categories ⇒ comfortably more than 3 + 4.
+    // 背景 + 面板 + 底線 = 3；再加一個選取列底條與每列至少 1 個色塊矩形。
+    // 四個分類 ⇒ 明顯多於 3 + 4。
     CHECK(r.rects > 8);
-    // The 4 row names + the description name + description + hint still draw.
+    // 4 個列名 + 說明名稱 + 說明 + 提示仍會繪製。
     CHECK(Has(r.texts, "> 金幣 x100"));
     CHECK(Has(r.texts, "  真傘"));
 }
 
-// ---- U2-T1: paging window math (pure, no renderer) -----------------------
+// ---- 分頁視窗計算（純函式、無渲染器）------------------------------------
+// InventoryPageCount / InventoryPageOf 的視窗計算。
 TEST_CASE("U2-T1: InventoryPageCount / InventoryPageOf window math") {
     using nccu::InventoryPageCount;
     using nccu::InventoryPageOf;
     const int P = nccu::kInventoryRowsPerPage;
     REQUIRE(P >= 1);
 
-    // Empty / single page.
-    CHECK(InventoryPageCount(0) == 1);          // empty bag is "1 / 1"
+    // 空 / 單頁。
+    CHECK(InventoryPageCount(0) == 1);          // 空背包視為「1 / 1」
     CHECK(InventoryPageCount(1) == 1);
-    CHECK(InventoryPageCount(P) == 1);          // exactly one full page
-    CHECK(InventoryPageCount(P + 1) == 2);      // one over → a 2nd page
+    CHECK(InventoryPageCount(P) == 1);          // 恰好一整頁
+    CHECK(InventoryPageCount(P + 1) == 2);      // 多一個 → 第二頁
     CHECK(InventoryPageCount(2 * P) == 2);
     CHECK(InventoryPageCount(2 * P + 1) == 3);
 
-    // The cursor's page: row 0..P-1 → page 0, P..2P-1 → page 1, …
+    // 游標所在頁：列 0..P-1 → 第 0 頁，P..2P-1 → 第 1 頁，依此類推。
     CHECK(InventoryPageOf(0, 3 * P) == 0);
     CHECK(InventoryPageOf(P - 1, 3 * P) == 0);
     CHECK(InventoryPageOf(P, 3 * P) == 1);
     CHECK(InventoryPageOf(2 * P, 3 * P) == 2);
-    // Out-of-range cursor is clamped before the division (no negative page,
-    // no page past the last) — mirrors the View's own clamp.
+    // 超出範圍的游標會在除法前被夾住（不會有負頁、也不會超過最後一頁）——
+    // 與 View 自身的夾值一致。
     CHECK(InventoryPageOf(-5, 2 * P) == 0);
-    CHECK(InventoryPageOf(9999, 2 * P) == 1);   // last page
-    CHECK(InventoryPageOf(0, 0) == 0);          // empty bag
+    CHECK(InventoryPageOf(9999, 2 * P) == 1);   // 最後一頁
+    CHECK(InventoryPageOf(0, 0) == 0);          // 空背包
 }
 
-// U2-T1: a bag with more rows than fit shows the cursor's PAGE (so the
-// selected row is visible) and a 「第 N／M 頁」 indicator. The off-page rows
-// are NOT drawn; the on-page rows + the selected row ARE.
+// 列數超過一頁的背包會顯示游標所在頁（使被選取列可見）與「第 N／M 頁」指示。
+// 不在當前頁的列不繪製；當前頁的列與被選取列會繪製。
 TEST_CASE("U2-T1: an over-full bag pages and shows the page indicator") {
     const int P = nccu::kInventoryRowsPerPage;
-    // Build P+2 rows: r00..r(P+1). Names are unique so we can check which
-    // page is drawn.
+    // 建立 P+2 列：r00..r(P+1)。名稱各異，方便檢查畫的是哪一頁。
     std::vector<nccu::InventoryRow> rows;
     for (int i = 0; i < P + 2; ++i) {
         std::string nm = "道具" + std::to_string(i);
@@ -387,7 +380,7 @@ TEST_CASE("U2-T1: an over-full bag pages and shows the page indicator") {
     const int total = nccu::InventoryPageCount(P + 2);
     REQUIRE(total == 2);
 
-    // Cursor on row 0 → page 1: row0 visible, the last row (page 2) NOT.
+    // 游標在第 0 列 → 第 1 頁：道具0 可見，最後一列（第 2 頁）不可見。
     {
         Spy r;
         nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
@@ -395,7 +388,7 @@ TEST_CASE("U2-T1: an over-full bag pages and shows the page indicator") {
         CHECK_FALSE(Has(r.texts, "  道具" + std::to_string(P + 1)));
         CHECK(Has(r.texts, "第 1／2 頁   ←／→ 翻頁"));
     }
-    // Cursor on the last row → page 2: that row visible + selected; row0 NOT.
+    // 游標在最後一列 → 第 2 頁：該列可見且被選取；道具0 不可見。
     {
         Spy r;
         nccu::DrawInventory(r, rows, /*cursor=*/P + 1, 800.0f, 450.0f);
@@ -405,8 +398,8 @@ TEST_CASE("U2-T1: an over-full bag pages and shows the page indicator") {
     }
 }
 
-// U2-T1: a single-page bag still shows a 「第 1／1 頁」 indicator (consistent
-// affordance), but WITHOUT the ←/→ 翻頁 hint (there is nowhere to flip).
+// 單頁背包仍顯示「第 1／1 頁」指示（一致的操作提示），但不顯示 ←/→ 翻頁提示
+// （沒有頁可翻）。
 TEST_CASE("U2-T1: a single-page bag shows 第 1／1 頁 without the flip hint") {
     Spy r;
     std::vector<nccu::InventoryRow> rows{
@@ -418,10 +411,9 @@ TEST_CASE("U2-T1: a single-page bag shows 第 1／1 頁 without the flip hint") 
     CHECK_FALSE(Has(r.texts, "第 1／1 頁   ←／→ 翻頁"));
 }
 
-// ---- U2-T2: the long post-G4 description WRAPS inside the box ------------
-// The densest catalog line must be split into rows by CellWidth so no single
-// drawn text run exceeds the box's inner cell budget — i.e. it can't spill
-// past the border. We assert via the same CellWidth the wrap uses.
+// ---- 長說明在框內換行 ---------------------------------------------------
+// 最密集的道具表台詞必須依 CellWidth 拆成多列，使任何單段繪製文字都不超過框的
+// 內部字寬上限 —— 亦即不會溢出邊界。以換行所用的同一個 CellWidth 斷言。
 TEST_CASE("U2-T2: a long description is wrapped to fit the box width") {
     Spy r;
     const std::string longDesc =
@@ -430,47 +422,44 @@ TEST_CASE("U2-T2: a long description is wrapped to fit the box width") {
         {"防水噴霧", 1, longDesc, true, "WaterproofSpray"}};
     nccu::DrawInventory(r, rows, /*cursor=*/0, 800.0f, 450.0f);
 
-    // Every drawn text run that is a slice of the description must be within
-    // the box budget (54 cells — the value DrawInventory wraps to). The
-    // un-split full string (≈48 cells here) would also pass the 54 bound,
-    // so to prove WRAPPING really happened we additionally check that a
-    // deliberately over-long description is broken into >1 run.
+    // 每段屬於說明切片的繪製文字都必須在框的上限內（54 字寬 —— DrawInventory
+    // 換行所用的值）。未拆的完整字串（此處約 48 字寬）也會通過 54 的界限，故為了
+    // 證明真的有換行，再額外檢查一個刻意過長的說明會被拆成多於 1 段。
     for (const std::string& t : r.texts)
         CHECK(nccu::dialog::CellWidth(t) <= 54);
 
     Spy r2;
     std::string huge;
-    for (int i = 0; i < 8; ++i) huge += "防水噴霧雨量擋雨業力";  // ~80 cells
+    for (int i = 0; i < 8; ++i) huge += "防水噴霧雨量擋雨業力";  // 約 80 字寬
     std::vector<nccu::InventoryRow> rows2{
         {"測試", 0, huge, false, "id"}};
     nccu::DrawInventory(r2, rows2, 0, 800.0f, 450.0f);
     int sliceRows = 0;
     for (const std::string& t : r2.texts)
         if (t.find("防水噴霧") != std::string::npos) ++sliceRows;
-    CHECK(sliceRows >= 2);                       // it wrapped onto >1 row
+    CHECK(sliceRows >= 2);                       // 已換到多於 1 列
     for (const std::string& t : r2.texts)
-        CHECK(nccu::dialog::CellWidth(t) <= 54); // never wider than the box
+        CHECK(nccu::dialog::CellWidth(t) <= 54); // 絕不寬於框
 }
 
-// ---- U2-T3: UmbrellaLookOf maps the new held-umbrella sentinels ----------
-// The bag swatch must draw the CORRECT umbrella look for every held kind —
-// previously fragile/proftrap fell through to the (wrong) intact blue. We
-// assert the swatch's signature colour appears in the drawn rects.
+// ---- 新增手持傘標記的色塊對應 -------------------------------------------
+// 背包色塊必須為每種手持傘畫出「正確」的傘外觀 —— 破傘／陷阱傘先前會錯誤地落到
+// 完整的藍傘。此處斷言色塊的代表色出現在繪製矩形中。
 TEST_CASE("U2-T3: fragile→破傘 and proftrap→陷阱傘 swatches are correct") {
     using nccu::game::gfx::UmbrellaLook;
     using nccu::game::gfx::UmbrellaLookColor;
 
-    // 破傘 (Fragile) → the FragileBroken (handle/ribs, grey) signature.
+    // 破傘（Fragile）→ FragileBroken（傘柄／傘骨、灰）的代表色。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
             {"破傘", 0, "骨架斷了的傘", false, nccu::kItemFragileUmbrella}};
         nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
         CHECK(HasRectRGB(r, UmbrellaLookColor(UmbrellaLook::FragileBroken)));
-        // And NOT the intact-blue it used to wrongly default to.
+        // 而非它先前錯誤預設的完整藍傘。
         CHECK_FALSE(HasRectRGB(r, UmbrellaLookColor(UmbrellaLook::TrueBlue)));
     }
-    // 陷阱傘 (ProfessorTrap) → the danger-red signature.
+    // 陷阱傘（ProfessorTrap）→ 危險紅的代表色。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
@@ -480,7 +469,7 @@ TEST_CASE("U2-T3: fragile→破傘 and proftrap→陷阱傘 swatches are correct
         CHECK(HasRectRGB(r, UmbrellaLookColor(UmbrellaLook::ProfessorTrap)));
         CHECK_FALSE(HasRectRGB(r, UmbrellaLookColor(UmbrellaLook::TrueBlue)));
     }
-    // The plain 管理員的傘 loaner is fine as the clean blue canopy.
+    // 一般的管理員借傘以乾淨的藍傘面呈現即可。
     {
         Spy r;
         std::vector<nccu::InventoryRow> rows{
@@ -491,14 +480,13 @@ TEST_CASE("U2-T3: fragile→破傘 and proftrap→陷阱傘 swatches are correct
     }
 }
 
-// U2-T3: the Ch3 物物交換鏈 carried items (香腸 / 大聲公) are VIEW-ONLY 道具,
-// not usable consumables — they must (a) NOT show the 「E 使用」 hint and (b)
-// draw a DISTINCT food/道具 swatch, not the teal potion-flask of a usable
-// consumable.
+// 第三章物物交換鏈攜帶的道具（香腸／大聲公）是僅供檢視的道具，而非可用消耗品 ——
+// 它們必須 (a) 不顯示「E 使用」提示，且 (b) 畫出獨特的食物／道具色塊，而非可用
+// 消耗品的青色藥水瓶。
 TEST_CASE("U2-T3: Ch3 trade items are non-usable food-swatch rows") {
-    // The distinct food swatch colour DrawSwatch uses for RowKind::Food.
+    // DrawSwatch 對 RowKind::Food 使用的獨特食物色塊顏色。
     const nccu::engine::math::Color kFoodParcel{225, 140, 55, 255};
-    // The teal consumable-flask body — the Ch3 items must NOT draw this.
+    // 青色消耗品瓶身 —— 第三章道具不可畫出此色。
     const nccu::engine::math::Color kConsumableFlask{60, 200, 180, 255};
 
     for (const char* id : {nccu::kItemSausage, nccu::kItemLoudspeaker}) {
@@ -506,10 +494,10 @@ TEST_CASE("U2-T3: Ch3 trade items are non-usable food-swatch rows") {
         std::vector<nccu::InventoryRow> rows{
             {"道具", 0, "拿去交換", /*usable=*/false, id}};
         nccu::DrawInventory(r, rows, 0, 800.0f, 450.0f);
-        // View-only: the plain hint, never the use hint.
+        // 僅供檢視：一般提示，絕不顯示使用提示。
         CHECK(Has(r.texts, "↑↓ 選擇"));
         CHECK_FALSE(Has(r.texts, "↑↓ 選擇   E 使用"));
-        // Food swatch present; the teal consumable flask absent.
+        // 有食物色塊；無青色消耗品瓶。
         CHECK(HasRectRGB(r, kFoodParcel));
         CHECK_FALSE(HasRectRGB(r, kConsumableFlask));
     }

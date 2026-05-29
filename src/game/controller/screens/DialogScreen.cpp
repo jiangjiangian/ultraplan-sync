@@ -22,7 +22,7 @@
 #include <string>
 
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出
 
 bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
                   InputHandler& input, SceneRouter& sceneRouter) {
@@ -30,12 +30,10 @@ bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
     using nccu::engine::input::Key;
     using nccu::engine::platform::Time;
     DialogState& dlg = world.Dialog();
-    // I5: drop the pending-vendor target the instant its menu is no
-    // longer the open conversation (closed greeting-only, advanced
-    // past with no stock, replaced by an NPC dialog, swept by a
-    // chapter transition). Keeps the non-owning Vendor* from ever
-    // outliving the World object it points at — once cleared, the
-    // confirm branch's `pendingVendor && ...` guard is inert.
+    // 一旦攤販選單不再是開啟中的對話（只剩招呼語就關閉、無庫存而被翻過、被某 NPC 對話
+    // 取代、被章節轉場清掃），立刻丟棄待處理的攤販目標。使這個非擁有的 Vendor* 絕不會
+    // 比它所指向的 World 物件活得久——一經清空，確認分支的 `pendingVendor && ...` 防護
+    // 即失效。
     if (pendingVendor &&
         (!dlg.Active() || dlg.NpcId() != kVendorContext))
         pendingVendor = nullptr;
@@ -45,186 +43,128 @@ bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
             if (Input::IsPressed(Key::Up))   dlg.MoveChoice(-1);
             if (Input::IsPressed(Key::Down)) dlg.MoveChoice(1);
         }
-        // Cycle 9.E (audit H2 / D5 / SC 2.2.2): hold-E to fast-advance
-        // dialog. Tap-press (edge IsPressed) keeps its existing
-        // mash-once-per-press semantics; HOLDING E for >= 300 ms then
-        // also fires the same advance branch every ~4 frames so a
-        // long-winded NPC can be skimmed without finger pain. The
-        // gameplay E-probe (out of this dialog branch, line ~432) is
-        // edge-only and untouched — held-E only auto-advances dialog,
-        // never re-triggers interactions / vendor menus.
+        // 按住 E 可快速推進對話。點按（邊緣 IsPressed）維持其既有的「每次按下推進一次」
+        // 語意；而「按住」E 達 300 ms 以上後，也會每約 4 幀觸發同一個推進分支，使話多的
+        // NPC 能不費手指地略讀。玩法用的 E 探測（位於此對話分支之外）僅靠邊緣且未受更動
+        // ——按住 E 只會自動推進對話，絕不會重新觸發互動／攤販選單。
         //
-        // Cycle 10.P0a: the edge/hold edge timing now lives on
-        // InputHandler::TickDialogAdvance — the exact same edge OR
-        // ≥300 ms held + 4-frame cooldown contract, pinned by
-        // test_input_handler. The Controller asks "should advance
-        // this frame?" and acts.
+        // 邊緣／按住的時機判斷現位於 InputHandler::TickDialogAdvance——與其完全相同的
+        //「邊緣，或按住 ≥300 ms + 4 幀冷卻」約定，由 test_input_handler 固定。控制器只
+        // 詢問「本幀是否應推進？」並據以動作。
         const float ddt = nccu::engine::platform::Time::DeltaSeconds();
         const bool advanceE = input.TickDialogAdvance(ddt);
         if (advanceE) {
-            // Capture the npc BEFORE Advance() — confirming the last
-            // choice can Close() the dialog, which clears NpcId().
+            // 在 Advance()「之前」擷取 npc——確認最後一個選項可能會 Close() 對話，進而
+            // 清掉 NpcId()。
             const std::string npc = dlg.NpcId();
-            // I5: capture the highlighted stock index BEFORE Advance()
-            // — confirming resets choiceCursor_ (Close/next-lines).
+            // 在 Advance()「之前」擷取高亮的庫存索引——確認會重置 choiceCursor_
+            //（關閉／後續台詞）。
             const bool atChoice = dlg.AtChoice();
             const std::size_t stockIdx =
                 static_cast<std::size_t>(dlg.ChoiceCursor());
             if (const DialogChoice* c = dlg.Advance(); c && p) {
-                // I5: a confirmed Vendor stock line drives the real
-                // purchase. ALL economy side-effects (DeductMoney,
-                // AddConsumable, the ShowMessage + PickupAcquired
-                // EventBus events, the money soft-cap, item.setsFlag
-                // → e.g. Flag_BoughtUglyUmbrella for Ending C) stay
-                // inside Vendor::TryBuy exactly as the pinned
-                // test_vendor contract asserts — the DialogChoice
-                // carries no karma/flag of its own, so the generic
-                // ApplyDialogChoice below is a no-op for it. The Ch2
-                // EnergyDrink reaches the count inventory through
-                // this same TryBuy → AddConsumable path, so
-                // TryRescueBookworm's ConsumeOne("EnergyDrink") can
-                // now succeed in-engine (Flag_Ch2Cleared reachable).
+                // 已確認的攤販庫存品項會驅動真正的購買。「所有」經濟副作用（DeductMoney、
+                // AddConsumable、ShowMessage + PickupAcquired 事件、金錢軟上限、
+                // item.setsFlag → 例如結局 C 的 Flag_BoughtUglyUmbrella）都留在
+                // Vendor::TryBuy 內，完全如固定的 test_vendor 約定所斷言——DialogChoice
+                // 本身不帶業力／旗標，故下方泛用的 ApplyDialogChoice 對它是空操作。第二章
+                // 的能量飲料也經這同一條 TryBuy → AddConsumable 路徑進入計數型物品欄，使
+                // TryRescueBookworm 的 ConsumeOne("EnergyDrink") 如今能在引擎內成功
+                //（Flag_Ch2Cleared 變得可達）。
                 if (npc == kVendorContext && pendingVendor &&
                     atChoice) {
-                    // REQUIREMENT #4: the LAST choice is always the
-                    // "不買" decline (OpenVendorMenu appends it after
-                    // every stock line), so its index is exactly the
-                    // stock size. Picking it must NOT buy — close the
-                    // conversation and drop the pending vendor with
-                    // ZERO economy mutation (no DeductMoney, no
-                    // AddConsumable, no item.setsFlag, no EventBus
-                    // purchase event). Only a real stock index
-                    // (< stock size) reaches Vendor::TryBuy, whose
-                    // pinned side-effect contract is unchanged.
+                    // 最後一個選項永遠是「不買」（OpenVendorMenu 在每個庫存品項之後附上
+                    // 它），故其索引恰等於庫存數量。選它「不得」購買——關閉對話並丟棄待處理
+                    // 攤販，且「零」經濟變動（不 DeductMoney、不 AddConsumable、無
+                    // item.setsFlag、無購買事件）。只有真正的庫存索引（< 庫存數量）才會
+                    // 進入 Vendor::TryBuy，其固定的副作用約定未變。
                     const std::size_t stockN =
                         pendingVendor->Config().stock.size();
-                    if (stockIdx >= stockN) {        // decline
+                    if (stockIdx >= stockN) {        // 不買
                         pendingVendor = nullptr;
                         dlg.Close();
-                        // Cycle 10.P0b: roster settle picks up any
-                        // FSM transition (none expected here, but
-                        // cheap insurance against a future side
-                        // effect inside Close()). View-only — does
-                        // not mutate player.pos / flags / events,
-                        // so the harness state.jsonl observable
-                        // timeline is unchanged.
+                        // 名冊整理會接住任何 FSM 轉場（此處預期沒有，但作為對 Close() 內
+                        // 未來副作用的廉價保險）。僅供顯示——不改寫 player.pos／旗標／
+                        // 事件，故 harness 存檔可觀察時間線不變。
                         sceneRouter.SettleRoster(world);
                         return true;
                     }
                     (void)pendingVendor->TryBuy(p, stockIdx);
                     pendingVendor = nullptr;
-                    // G2: do NOT resolve the ending here. A confirmed
-                    // stock pick has no nextLines, so the vendor box is
-                    // already CLOSED at this point — calling
-                    // CheckEndingGates now would snap Ending C the same
-                    // frame the 醜傘 is bought, with no closing beat
-                    // (the owner's abrupt-ending complaint). Instead the
-                    // non-dialog poll (end of Update) runs
-                    // TryOpenEndingConfession first → opens the 務實 自白
-                    // → CheckEndingGates defers behind it → C fires once
-                    // the player closes the monologue. CheckChapterGates
-                    // stays (a buy is never a chapter-clear trigger, so
-                    // it is the same cheap no-op insurance as before).
+                    // 不在此解算結局。已確認的庫存品項沒有後續台詞，故攤販對話框此刻已
+                    //「關閉」——現在呼叫 CheckEndingGates 會在買下醜傘的同一幀就切到結局 C、
+                    // 毫無收尾節拍（即作者抱怨的突兀結局）。改由非對話輪詢（Update 末端）
+                    // 先跑 TryOpenEndingConfession → 開啟務實自白 → CheckEndingGates 延後
+                    // 於其後 → 待玩家關閉獨白後 C 才觸發。保留 CheckChapterGates（購買絕非
+                    // 章節通關觸發源，故與先前一樣是廉價的空操作保險）。
                     CheckChapterGates(bus, *p, world.Semester(), dlg);
-                    // Cycle 10.P0b (L8 fix): the gate calls above
-                    // can Transition() — settle the roster NOW so
-                    // the frame the player sees has a coherent
-                    // npcs[]. Pre-fix, the respawn waited for the
-                    // NEXT frame's top-of-Update() check. View-only:
-                    // SettleSideEffects (player pos, consumables,
-                    // events) still runs at top of NEXT Update so
-                    // the harness state.jsonl is byte-identical.
+                    // 上方閘門呼叫可能 Transition()——「現在」就整理名冊，使玩家所見的
+                    // 那幀有一致的 npcs[]。修正前，重生要等到「下」一幀 Update 最前端的
+                    // 檢查。僅供顯示：SettleSideEffects（玩家位置、消耗品、事件）仍在「下」
+                    // 一次 Update 最前端執行，故 harness 存檔逐位元一致。
                     sceneRouter.SettleRoster(world);
                     return true;
                 }
                 ApplyDialogChoice(*p, *c);
-                // 1c: the trailing "我再想想…" exit (kDialogExitLabel)
-                // is a no-commit back-out — it must NOT trip any
-                // menu's post-choice bookkeeping below. ApplyDialog
-                // Choice was already a no-op for it (zero karma /
-                // empty flag); the guard here additionally stops the
-                // 助教 finale self-lock from firing, so the moral
-                // choice stays UNMADE and re-approachable (mirrors the
-                // vendor decline's "no side effect" contract).
+                // 結尾的「我再想想…」退出（kDialogExitLabel）是不做承諾的退出——它「不得」
+                // 觸發下方任何選單的選後記帳。ApplyDialogChoice 對它本已是空操作（零業力／
+                // 空旗標）；此處的防護額外阻止助教終局的自我上鎖，使該道德選擇維持「未做」
+                // 且可再次接洽（與攤販不買的「無副作用」約定一致）。
                 const bool exitChoice = c->label == kDialogExitLabel;
-                // C.3(b): a confirmed 西裝學長 choice locks the
-                // branch menu so re-talking can't stack mutually-
-                // exclusive ripple flags. DialogOpener reads this
-                // flag and recaps line-only thereafter.
+                // 已確認的西裝學長選項會鎖住分支選單，使重新對話無法堆疊互斥的漣漪旗標。
+                // DialogOpener 會讀取此旗標，其後只做台詞回顧。
                 if (!exitChoice && npc == "suit_senior")
                     p->SetFlag(kFlagSuitSeniorChoiceMade);
-                // S5e-2d: a confirmed 助教 (d) 結算 choice in Ch4
-                // locks the menu (one-shot, like C.3(b)) so the
-                // moral choice (體諒 → Flag_ConsoledTA, +15) can't
-                // be flipped/re-applied on a re-talk. ApplyDialog
-                // Choice already set Flag_ConsoledTA + karma; the
-                // CheckEndingGates below routes Ending A if its
-                // karma>80 + TrueUmbrella conditions also hold. The
-                // 1c exit is excluded so backing out does NOT set
-                // Flag_TaFinaleChoiceMade (no premature Ending C/B).
+                // 第四章中已確認的助教 (d) 結算 選項會鎖住選單（一次性，與西裝學長同理），
+                // 使該道德選擇（體諒 → Flag_ConsoledTA，+15）無法在重新對話時被翻轉／
+                // 重複套用。ApplyDialogChoice 已設下 Flag_ConsoledTA + 業力；下方的
+                // CheckEndingGates 會在其 業力>80 + TrueUmbrella 條件也成立時路由至結局 A。
+                // 排除「我再想想…」退出，使退出「不」設下 Flag_TaFinaleChoiceMade（避免
+                // 過早進入結局 C／B）。
                 if (!exitChoice && npc == "ta" &&
                     world.Semester().Current() ==
                         SemesterState::Chapter4_Finals) {
                     p->SetFlag(kFlagTaFinaleChoiceMade);
-                    // T4: the gentle finale returns YOUR umbrella. When
-                    // the player chose 體諒 (ApplyDialogChoice just set
-                    // Flag_ConsoledTA), the 助教 presses the true
-                    // umbrella back — TryGrantTaFinaleUmbrella sets
-                    // Flag_HasTrueUmbrella + HasUmbrella so the gentle
-                    // path can reach Ending A WITHOUT also finding the
-                    // hidden Ch4 umbrella (both routes now reach A;
-                    // EndingGate keeps the karma>80 gate). The harsh
-                    // 質問 branch never sets Flag_ConsoledTA, so the
-                    // helper no-ops and that path resolves to Ending B
-                    // (coldFinale). The spoken "拿回你的傘" beat lives in
-                    // the 體諒 choice's nextLines (DialogOpener T4).
+                    // 溫柔的終局會把「你的」傘還給你。當玩家選擇體諒（ApplyDialogChoice
+                    // 剛設下 Flag_ConsoledTA）時，助教把真傘塞回——TryGrantTaFinaleUmbrella
+                    // 設下 Flag_HasTrueUmbrella + HasUmbrella，使溫柔路線「無需」另外找到
+                    // 隱藏的第四章雨傘也能抵達結局 A（兩條路線如今皆可達 A；EndingGate 維持
+                    // 業力>80 的閘）。嚴厲的質問分支永不設下 Flag_ConsoledTA，故此輔助函式
+                    // 空操作、該路線解算為結局 B（冷淡終局）。口白「拿回你的傘」這一節拍位於
+                    // 體諒選項的後續台詞中（見 DialogOpener）。
                     TryGrantTaFinaleUmbrella(
                         *p, npc, world.Semester().Current());
                 }
-                // B3: the Ch1 福利社阿姨 (c) 購買醜綠傘 is a REAL buy.
-                // The DialogChoice itself carries no money/umbrella (it
-                // stays a pure choice-opener entry — setsFlag "", karma
-                // 0, so the existing test_dialog_opener assertions hold);
-                // the economy lands HERE, attributed by npc + the chosen
-                // label, mirroring how the 助教 finale grants the true
-                // umbrella on confirm. Deducts 80 元 + grants the held
-                // ugly umbrella with a 花費/餘額 toast; does NOT set
-                // Flag_BoughtUglyUmbrella (that is the Ch4 Vendor's
-                // Ending-C lock). No-op for the 阿姨's other choices and
-                // for the 1c exit (label mismatch). Idempotent (already
-                // holding Ugly → no re-deduct) and fund-guarded inside.
+                // 第一章福利社阿姨 (c) 購買醜綠傘 是一筆「真正」的購買。DialogChoice 本身
+                // 不帶金錢／雨傘（維持為純粹的選項開場條目——setsFlag ""、業力 0，使既有的
+                // test_dialog_opener 斷言成立）；經濟在「此處」落地，由 npc + 所選標籤歸因，
+                // 與助教終局在確認時授予真傘的方式一致。扣 80 元 + 授予持有型醜傘並附花費／
+                // 餘額提示；「不」設下 Flag_BoughtUglyUmbrella（那是第四章攤販的結局 C 鎖）。
+                // 對阿姨的其他選項與「我再想想…」退出皆為空操作（標籤不符）。具冪等性（已
+                // 持有醜傘 → 不重複扣款），且內部有資金防護。
                 if (!exitChoice)
                     (void)TryBuyAuntieUglyUmbrella(
                         bus, *p, npc, c->label, world.Semester().Current());
-                // Ending gates first, then chapter gates (existing
-                // precedent: EndingGate predates this). Order is safe
-                // either way — once an ending fires, Current() is
-                // Ending_X and none of CheckChapterGates' Ch2/Ch3/
-                // Interlude sibling-ifs can match.
+                // 先結局閘門，再章節閘門（既有慣例：EndingGate 早於此）。兩種順序皆安全
+                // ——一旦結局觸發，Current() 即為 Ending_X，CheckChapterGates 的第二／
+                // 三章／插曲段兄弟 if 皆無法相符。
                 CheckEndingGates(bus, *p, world.Semester(), dlg);
                 CheckChapterGates(bus, *p, world.Semester(), dlg);
             }
         }
-        // Cycle 10.P0b (L8 fix): any transition the dialog branch
-        // produced (CheckEndingGates / CheckChapterGates) must
-        // roll its roster into View BEFORE the frame draws. The
-        // early-return paths above already called SettleRoster
-        // themselves; this one covers the fall-through path (a
-        // non-purchase, non-terminal advance). View-only: the
-        // harness-observable side effects (player pos, consumables,
-        // events) wait until top-of-next-Update's SettleSideEffects
-        // so state.jsonl stays byte-identical.
+        // 對話分支產生的任何轉場（CheckEndingGates／CheckChapterGates）都必須在本幀繪製
+        //「之前」把名冊併入 View。上方的提前返回路徑已各自呼叫過 SettleRoster；此處涵蓋
+        // 落空路徑（非購買、非終端的推進）。僅供顯示：harness 可觀察的副作用（玩家位置、
+        // 消耗品、事件）等到下一次 Update 最前端的 SettleSideEffects，故存檔逐位元一致。
         sceneRouter.SettleRoster(world);
         return true;
     } else {
-        // Dialog not active this tick: drop any stale hold-E
-        // accumulation so the next conversation starts fresh.
-        // Cheap; idempotent — InputHandler tracks IsDown(E) itself
-        // and would reset on release anyway, but an explicit drop
-        // here keeps the contract obvious.
+        // 本 tick 對話未啟用：丟棄任何殘留的按住 E 累積量，使下一段對話從頭開始。廉價且
+        // 冪等——InputHandler 自身會追蹤 IsDown(E)、放開時本就會重置，但此處明確丟棄使
+        // 約定一目了然。
         input.ResetDialogAdvance();
     }
-    return false;   // no dialog active — fall through
+    return false;   // 無進行中的對話——落空
 }
 
 } // namespace nccu

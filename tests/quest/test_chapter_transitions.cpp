@@ -1,3 +1,7 @@
+/**
+ * @file test_chapter_transitions.cpp
+ * @brief 驗證每次章節/幕間/結局轉場發出的提示字串、HUD 上下兩槽分流，以及名冊在轉場同幀更新、不殘留前一章。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/Flags.h"
 #include "game/quest/ChapterGate.h"
@@ -24,22 +28,18 @@ using nccu::SemesterStateMachine;
 using nccu::World;
 using nccu::engine::math::Vec2;
 
-// H2 (cycle9): every chapter / interlude / ending transition now publishes
-// a ShowMessage so the player sees the FSM advance. Before this, the
-// playtest log had `events=[]` at every Transition (Ch1 -> 市 -> Ch2 -> ...
-// -> Ending) and the only visible HUD text was the unrelated leftover
-// umbrella toast. These tests pin the exact strings emitted at each
-// transition site so a future refactor that re-silences the FSM is caught.
+// 每次章節／幕間／結局的轉場都會發布一則 ShowMessage，讓玩家看到狀態機在前進。
+// 在此之前，每次 Transition（Ch1 → 市 → Ch2 → … → 結局）都沒有事件，HUD 上
+// 唯一看得到的文字是無關的殘留雨傘提示。以下測試釘住每個轉場點實際發出的字串，
+// 以便日後若重構又讓狀態機「靜音」時能被抓到。
 
 namespace {
 
-// Latest ShowMessage payload. A free std::string captured by ref keeps
-// the lambda stable across moves (the Subscription token is movable but
-// the captured ref is to the caller's stack-local string). The
-// subscriber wired in production by GameController mirrors the same text
-// into World::HudMessage(); using a direct subscriber here avoids
-// constructing a GameController (which needs the full Input/Renderer
-// stack the headless test cannot provide).
+// 最新一則 ShowMessage 的內容。以 ref 擷取一個自由的 std::string，可讓 lambda
+// 在被移動時仍穩定（Subscription token 可移動，但擷取的是呼叫端堆疊上字串的
+// 參考）。正式版中由 GameController 接上的訂閱者會把同樣的文字鏡射到
+// World::HudMessage()；這裡直接用一個訂閱者，可避免建構 GameController
+//（後者需要無頭測試提供不了的完整 Input/Renderer 堆疊）。
 [[nodiscard]] EventBus::Subscription
 SubscribeToLatest(std::string& latest) {
     return EventBus::Instance().ScopedSubscribe(
@@ -49,6 +49,7 @@ SubscribeToLatest(std::string& latest) {
 
 } // namespace
 
+// 轉場提示字串表涵蓋每一個狀態（各章、幕間、四個結局）。
 TEST_CASE("ChapterTransitionToast string table covers every state") {
     using nccu::ChapterTransitionToast;
     CHECK(ChapterTransitionToast(SemesterState::Chapter1_AddDrop)   == "✓ 進入第一章 加退選");
@@ -58,10 +59,11 @@ TEST_CASE("ChapterTransitionToast string table covers every state") {
     CHECK(ChapterTransitionToast(SemesterState::Chapter4_Finals)    == "✓ 進入第四章 期末考");
     CHECK(ChapterTransitionToast(SemesterState::Ending_A) == "✓ 抵達結局");
     CHECK(ChapterTransitionToast(SemesterState::Ending_B) == "✓ 抵達結局");
-    CHECK(ChapterTransitionToast(SemesterState::Ending_D) == "✓ 抵達結局");   // G1
+    CHECK(ChapterTransitionToast(SemesterState::Ending_D) == "✓ 抵達結局");
     CHECK(ChapterTransitionToast(SemesterState::Ending_C) == "✓ 抵達結局");
 }
 
+// Ch1 經 UmbrellaClaimed 轉到幕間市集時，會發布清關提示。
 TEST_CASE("EventWiring Ch1 -> Interlude (UmbrellaClaimed) publishes toast") {
     EventBus::Instance().Clear();
     std::string last;
@@ -79,6 +81,7 @@ TEST_CASE("EventWiring Ch1 -> Interlude (UmbrellaClaimed) publishes toast") {
     EventBus::Instance().Clear();
 }
 
+// Ch2 清關經閘門轉到幕間市集時，會發布清關提示。
 TEST_CASE("ChapterGate Ch2 -> Interlude publishes toast") {
     EventBus::Instance().Clear();
     std::string last;
@@ -97,6 +100,7 @@ TEST_CASE("ChapterGate Ch2 -> Interlude publishes toast") {
     EventBus::Instance().Clear();
 }
 
+// Ch3 清關（Flag_Ch3Cleared）經閘門轉到幕間市集時，會發布清關提示。
 TEST_CASE("ChapterGate Ch3 -> Interlude (Flag_Ch3Cleared) publishes toast") {
     EventBus::Instance().Clear();
     std::string last;
@@ -115,6 +119,7 @@ TEST_CASE("ChapterGate Ch3 -> Interlude (Flag_Ch3Cleared) publishes toast") {
     EventBus::Instance().Clear();
 }
 
+// Ch3 經 TrueUmbrella 轉到幕間市集時，會發布清關提示。
 TEST_CASE("EventWiring Ch3 -> Interlude (TrueUmbrella) publishes toast") {
     EventBus::Instance().Clear();
     std::string last;
@@ -133,12 +138,11 @@ TEST_CASE("EventWiring Ch3 -> Interlude (TrueUmbrella) publishes toast") {
     EventBus::Instance().Clear();
 }
 
+// 離開幕間市集時，會依 returnTo 發布對應目的章節的提示（Ch2/Ch3/Ch4）。
 TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
-    // NOTE: the test suite's EventBus isolation reporter (see
-    // test_eventbus_isolation.cpp) calls EventBus::Clear() at every
-    // subcase boundary, so the subscription MUST be created inside each
-    // SUBCASE — a Subscribe at TEST_CASE scope is wiped before the
-    // SUBCASE body runs.
+    // 注意：測試套件的 EventBus 隔離機制會在每個 subcase 邊界呼叫
+    // EventBus::Clear()，因此訂閱必須建立在每個 SUBCASE 內——在 TEST_CASE
+    // 範圍建立的 Subscribe 會在 SUBCASE 主體執行前就被清掉。
 
     SUBCASE("returnTo = Ch2") {
         std::string last;
@@ -181,6 +185,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
     }
 }
 
+// Ch4 經結局閘門轉到 Ending A/B/C 時，都會發布「抵達結局」提示。
 TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
     SUBCASE("Ending A path") {
         std::string last;
@@ -222,22 +227,15 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
     }
 }
 
+// 領取 TrueUmbrella 時，章節清關提示走 HUD 上方欄、雨傘撿取台詞走下方欄，兩欄同時存活、互不覆蓋、互不洩漏。
 TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
-    // Cycle 9.G follow-up to 9.B / 9.A.2. Pre-9.G, both publishes fed a
-    // single-slot HUD channel: the umbrella's own ShowMessage and the
-    // chapter-clear ShowMessage emitted by the UmbrellaClaimed
-    // subscriber (via PublishChapterTransitionToast). Whichever
-    // published last was what the player saw — Plan A (9.B) swapped
-    // the order so chapter-clear won, but the umbrella pickup line
-    // became visible for 0 frames.
-    //
-    // Plan B (cycle9f §B): chapter-clear publishes on HudSlot::Top;
-    // the umbrella pickup line stays on HudSlot::Bottom. Both bands
-    // are live at once, and BOTH lines are visible. This SUBCASE walks
-    // the live wiring (TrueUmbrella → bus' UmbrellaClaimed subscriber
-    // → chapter-gate → HUD subscriber) and asserts each slot carries
-    // its expected text — the regression net for re-collapsing the two
-    // channels into one.
+    // 背景：先前兩個發布都寫進同一個單槽的 HUD 頻道——雨傘自己的 ShowMessage，
+    // 以及 UmbrellaClaimed 訂閱者發出的章節清關 ShowMessage。後發布的那個才是
+    // 玩家看到的，導致清關訊息蓋掉雨傘撿取台詞（或反之）。現在的做法是：
+    // 章節清關發布在 HudSlot::Top，雨傘撿取台詞留在 HudSlot::Bottom，兩欄同時
+    // 存活、兩行都看得到。本案走過實際接線（TrueUmbrella → UmbrellaClaimed
+    // 訂閱者 → 章節閘門 → HUD 訂閱者），並斷言每個槽各帶其預期文字——這是防止
+    // 兩個頻道被重新合併為一的回歸網。
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
     std::string name;
@@ -245,23 +243,20 @@ TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
                                           w.Semester(), name);
     nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
 
-    // Pre-condition: semester is on Chapter 1 (the EventWiring
-    // sibling-if only fires from Chapter1_AddDrop).
+    // 前置條件：學期在 Chapter 1（事件接線的同層 if 只會從 Chapter1_AddDrop 觸發）。
     REQUIRE(w.Semester().Current() == SemesterState::Chapter1_AddDrop);
 
     TrueUmbrella umb{Vec2{0, 0}};
     Player player{Vec2{0, 0}};
     umb.BeClaimed(&player);
 
-    // Two-channel post-conditions: Top carries the chapter-clear toast,
-    // Bottom carries the umbrella pickup text. Neither overwrites the
-    // other — a regression that re-merged the slots would surface as a
-    // missing line in one of the two channels.
+    // 雙頻道的後置條件：上方欄帶章節清關提示，下方欄帶雨傘撿取文字，兩者互不覆蓋——
+    // 若回歸到兩槽合併，會表現為其中一個頻道少了一行。
     CHECK(w.HudMessage(nccu::HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");
     CHECK(w.HudMessage(nccu::HudSlot::Bottom).find("TrueUmbrella")
           != std::string::npos);
     CHECK(w.Semester().Current() == SemesterState::Interlude_Market);
-    // Cross-channel non-leak: each slot is exactly one thing.
+    // 跨頻道不洩漏：每個槽剛好只有一樣東西。
     CHECK(w.HudMessage(nccu::HudSlot::Top).find("TrueUmbrella")
           == std::string::npos);
     CHECK(w.HudMessage(nccu::HudSlot::Bottom).find("章節清關")
@@ -270,13 +265,11 @@ TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
     EventBus::Instance().Clear();
 }
 
+// 端到端：接上 GameController 風格的接線後，轉場的 ShowMessage 會抵達 World 的上方 HUD 槽（View 讀取的位置）。
 TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
-    // Combined check: when GameController-style wiring is in place, the
-    // ShowMessage from a transition arrives at the World's Top HUD slot
-    // — the surface the View reads. The diagnostic playtest read this
-    // exact field and saw stale Ch1-era text on every chapter change.
-    // Cycle 9.G: chapter toasts route to HudSlot::Top so they survive
-    // a same-frame Bottom-slot ShowMessage (arrival hint, karma, pickup).
+    // 綜合檢查：接上 GameController 風格的接線後，轉場發出的 ShowMessage 會抵達
+    // World 的上方 HUD 槽——也就是 View 讀取的那一面。章節提示路由到 HudSlot::Top，
+    // 以便在同一幀也有下方槽的 ShowMessage（抵達提示、karma、撿取）時仍能存活。
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
@@ -289,28 +282,22 @@ TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
     nccu::CheckChapterGates(EventBus::Instance(), p, m, d);
 
     CHECK(w.HudMessage(nccu::HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");
-    // Bottom slot stays empty — no Bottom publisher fired in this path.
+    // 下方槽維持空白——此路徑沒有任何下方槽的發布者觸發。
     CHECK(w.HudMessage(nccu::HudSlot::Bottom).empty());
 
     EventBus::Instance().Clear();
 }
 
-// Cycle 10.P0b L8 regression: every chapter/interlude/ending transition
-// rolls the roster into the visible npcs[] list on the SAME frame the
-// FSM moves. Pre-Cycle 10 the roster swap ran at the TOP of the next
-// Update(), so the state.jsonl line for transition frame N had
-// semester=NEW but npcs[]=OLD (the cycle9f §G.1 / §J diagnosis: all 7
-// spine transitions affected, repro in every one of the three ending
-// runs). The SceneRouter::SettleRoster end-of-Update call closes that
-// window. This test pins the contract using SceneRouter directly (no
-// View / Harness needed) so a future change that reverts to the
-// 1-frame lag (or makes it 2-frame, etc.) fails here.
+// 每次章節／幕間／結局轉場，都會在狀態機移動的「同一幀」把名冊更新進可見的 npcs[]。
+// 先前名冊抽換是在下一幀 Update() 的開頭執行，導致轉場當幀的狀態快照出現
+// semester=新章節但 npcs[]=舊章節的落差（七個主線轉場都會發生）。改由
+// SceneRouter::SettleRoster 在 Update 結尾呼叫，便關閉了這個落差窗口。本測試直接
+// 用 SceneRouter 釘住此契約（不需要 View／Harness），日後若退回 1 幀（或 2 幀）落差便會在此失敗。
 TEST_CASE("L8: roster follows FSM on the same frame as Transition()") {
     nccu::World w("", /*loadSprites=*/false);
     nccu::SceneRouter r{w.Semester().Current()};
 
-    // Helper to count NPCs whose npcId is in a given chapter's roster.
-    // Mimics state.jsonl's npcs[] field (only non-empty NpcIds).
+    // 計算 npcId 屬於某章名冊的 NPC，模擬狀態快照中的 npcs[] 欄位（只取非空 NpcId）。
     auto npcIds = [&w]() {
         std::vector<std::string> out;
         for (const auto& o : w.Objects()) {
@@ -321,38 +308,34 @@ TEST_CASE("L8: roster follows FSM on the same frame as Transition()") {
         return out;
     };
 
-    // ----- Tick N-1: FSM at Ch1, roster is Ch1 (5 archetypes). -----
+    // ----- 第 N-1 幀：狀態機在 Ch1，名冊是 Ch1（5 個原型）。-----
     auto ids = npcIds();
     CHECK(std::find(ids.begin(), ids.end(), "victim") != ids.end());
 
-    // ----- Tick N: a Transition fires mid-frame; SettleRoster runs at
-    // end-of-Update. Same call site as GameController's end-of-Update
-    // call. -----
+    // ----- 第 N 幀：轉場在幀中觸發；SettleRoster 在 Update 結尾執行，
+    // 呼叫位置與 GameController 的 Update 結尾相同。-----
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     r.SettleRoster(w);
 
-    // Within this tick's eventual View::Draw / state.jsonl dump, the
-    // roster MUST already be the new chapter's. Pre-fix this was the
-    // PREVIOUS chapter's, by design accident — the very bug L8.
+    // 在這一幀最終的 View::Draw／狀態快照中，名冊必須已是新章節的；
+    // 修正前因設計失誤而是前一章節的，正是此問題。
     ids = npcIds();
     CHECK(std::find(ids.begin(), ids.end(), "librarian") != ids.end());
-    // Ch1 and Ch2 share victim/suit_senior/bookworm/ta/shop_auntie;
-    // librarian appears only in Ch2 (the chapter-specific marker).
+    // Ch1 與 Ch2 共用 victim/suit_senior/bookworm/ta/shop_auntie；
+    // librarian 只在 Ch2 出現（章節專屬的標記）。
 
-    // Same one-call-per-transition contract: a second SettleRoster on
-    // the same FSM state is a no-op (idempotent under its own cursor).
+    // 每次轉場只呼叫一次的契約：對同一狀態機狀態再呼叫一次 SettleRoster 為無操作（以其自身游標冪等）。
     const std::size_t countAfter = ids.size();
     r.SettleRoster(w);
     ids = npcIds();
     CHECK(ids.size() == countAfter);
 }
 
+// 走完完整七段主線，每一步都呼叫 SettleRoster，確認每次轉場都在同一幀呈現目的狀態的名冊、不殘留前一章 NPC。
 TEST_CASE("L8: every transition closes its npcs[] lag (full spine)") {
-    // Walk the seven-transition spine — Ch1 -> Interlude -> Ch2 ->
-    // Interlude -> Ch3 -> Interlude -> Ch4 -> Ending_A — calling
-    // SettleRoster at every step exactly as the production
-    // end-of-Update path does. Each step must surface the destination
-    // state's roster on the same tick.
+    // 走完七段主線——Ch1 → 幕間 → Ch2 → 幕間 → Ch3 → 幕間 → Ch4 → Ending_A——
+    // 每一步都依正式版 Update 結尾的方式呼叫 SettleRoster。每一步都必須在同一幀
+    // 呈現目的狀態的名冊。
     nccu::World w("", /*loadSprites=*/false);
     nccu::SceneRouter r{w.Semester().Current()};
 
@@ -370,7 +353,7 @@ TEST_CASE("L8: every transition closes its npcs[] lag (full spine)") {
         w.Semester().Transition(s);
         r.SettleRoster(w);
 
-        // Each transition lands its destination roster on this tick.
+        // 每次轉場都在這一幀落定其目的名冊。
         const auto& expected = nccu::ChapterNpcSpawns(s);
         std::size_t hits = 0;
         for (const auto& o : w.Objects()) {
@@ -384,8 +367,7 @@ TEST_CASE("L8: every transition closes its npcs[] lag (full spine)") {
                       "transition to " << static_cast<int>(s)
                       << " left npcs[] missing roster entries");
 
-        // No leftover NPCs from a previous chapter. For each observed
-        // NPC, it must be in the new chapter's spawn table.
+        // 不殘留前一章的 NPC：每個觀察到的 NPC 都必須在新章節的生成表中。
         for (const auto& o : w.Objects()) {
             if (!o || !o->IsActive()) continue;
             const std::string id{o->NpcId()};

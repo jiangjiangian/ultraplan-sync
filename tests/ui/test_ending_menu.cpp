@@ -1,29 +1,23 @@
-// A-T3 — the ending screen's bottom 3-option menu (回首頁 / 重新開始 / 結束).
+/**
+ * @file test_ending_menu.cpp
+ * @brief 驗證結局畫面底部的三選項選單（回首頁 / 重新開始 / 結束）：純索引→選項
+ *        對應，以及實際 GameController 接線 —— 結局狀態下世界凍結、←/→ 環狀移動
+ *        游標、E/Enter 把游標對應到正確的 AppAction（回首頁/重新開始→Restart、
+ *        結束→Quit）。
+ */
 //
-// The ending screen used to be a passive card with no agency; the owner
-// asked for "結局加三個左右選項" — a ←/→ selectable, E/Enter confirmable menu
-// that routes back to the title, restarts a fresh game, or truly quits.
-// This pins TWO layers:
+// 結局畫面原本是個沒有互動的被動卡片；後來需求是「結局加三個左右選項」——
+// 一個可用 ←/→ 選擇、E/Enter 確認的選單，能回到標題、重新開始全新遊戲、或真正
+// 離開。本檔固定兩層：
 //
-//   (1) The PURE index → choice map (EndingMenuChoiceAt), independent of any
-//       World / renderer — so the menu's meaning is testable in isolation.
+//   (1) 純索引→選項對應（EndingMenuChoiceAt），與任何 World／渲染器無關 ——
+//       使選單的語意可獨立測試。
 //
-//   (2) The LIVE GameController wiring: while the semester is an ending
-//       state the world is FROZEN and the ending-menu keys are consumed —
-//       ←/→ move World::EndingMenuCursor (modular), E/Enter map the cursor
-//       to World::PendingAppAction (回首頁/重新開始 → Restart, 結束 → Quit).
-//       Driven through the controller's REAL input loop (not direct setter
-//       calls), exactly like test_pause_menu_toggle's (d) destructive-row
-//       test, so the cursor range + the cursor→AppAction switch are
-//       exercised end-to-end.
-//
-// Revert-verify (must FAIL without A-T3):
-//   * Drop the top-of-Update IsEndingState block in GameController → the
-//     cursor never moves and E/Enter never sets an AppAction (the world
-//     would instead try to simulate on the ending screen).
-//   * Map 結束 to Restart (or 回首頁 to Quit) → the cursor→AppAction
-//     assertions trip.
-//   * Make MoveEndingMenuCursor non-modular → the wrap checks trip.
+//   (2) 實際的 GameController 接線：當學期處於結局狀態時世界凍結、結局選單按鍵
+//       被消耗 —— ←/→ 環狀移動 World::EndingMenuCursor，E/Enter 把游標對應到
+//       World::PendingAppAction。透過 controller 真實的輸入迴圈驅動（而非直接呼叫
+//       setter），與 test_pause_menu_toggle 的破壞性列測試相同，故游標範圍與
+//       游標→AppAction 的切換都被端到端地走過。
 
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
@@ -46,7 +40,7 @@ using nccu::engine::input::Key;
 
 namespace {
 
-// Same minimal InputSource shape as test_pause_menu_toggle / test_menu_help.
+// 與 test_pause_menu_toggle / test_menu_help 相同的最小 InputSource。
 class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k) {
@@ -79,8 +73,7 @@ private:
 
 void Frame(GameController& c, TestInput& in) { c.Update(); in.EndFrame(); }
 
-// Put the World into a given ending state (the gate logic is owned
-// elsewhere; the menu only cares THAT we are in an ending).
+// 把 World 置入指定的結局狀態（判定邏輯由別處負責；選單只在意「我們處於結局」）。
 void EnterEnding(World& w, nccu::SemesterState s) {
     w.Semester().Transition(s);
     REQUIRE(nccu::IsEndingState(w.Semester().Current()));
@@ -88,22 +81,24 @@ void EnterEnding(World& w, nccu::SemesterState s) {
 
 }  // namespace
 
-// ---- (1) the pure index → choice map -----------------------------------
+// ---- (1) 純索引→選項對應 -----------------------------------------------
+// EndingMenuChoiceAt 把 0/1/2 對應到 回首頁/重新開始/結束。
 TEST_CASE("A-T3: EndingMenuChoiceAt maps 0/1/2 to Title/Restart/Quit") {
     CHECK(nccu::EndingMenuChoiceAt(0) == EndingMenuChoice::BackToTitle);
     CHECK(nccu::EndingMenuChoiceAt(1) == EndingMenuChoice::RestartGame);
     CHECK(nccu::EndingMenuChoiceAt(2) == EndingMenuChoice::Quit);
-    // Out-of-range clamps into the valid set (never "nothing").
+    // 超出範圍會夾進有效集合（絕不會「什麼都不是」）。
     CHECK(nccu::EndingMenuChoiceAt(3)  == EndingMenuChoice::BackToTitle);
     CHECK(nccu::EndingMenuChoiceAt(-1) == EndingMenuChoice::Quit);
     CHECK(nccu::World::kEndingMenuItemCount == 3);
-    // Each choice has a non-empty label (the renderer / glyph-scan rely on it).
+    // 每個選項都有非空標籤（渲染器／字形掃描依賴它）。
     CHECK_FALSE(nccu::EndingMenuLabel(EndingMenuChoice::BackToTitle).empty());
     CHECK_FALSE(nccu::EndingMenuLabel(EndingMenuChoice::RestartGame).empty());
     CHECK_FALSE(nccu::EndingMenuLabel(EndingMenuChoice::Quit).empty());
 }
 
-// ---- (2) live controller wiring ----------------------------------------
+// ---- (2) 實際的 controller 接線 ----------------------------------------
+// 在結局畫面，←/→ 會環狀移動游標。
 TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -116,8 +111,8 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     nccu::engine::input::Input::SetSource(&in);
 
     EnterEnding(world, nccu::SemesterState::Ending_D);
-    Frame(controller, in);                 // settle on the ending screen
-    CHECK(world.EndingMenuCursor() == 0);  // starts on 回首頁
+    Frame(controller, in);                 // 在結局畫面安頓
+    CHECK(world.EndingMenuCursor() == 0);  // 起始於回首頁
 
     in.Tap(Key::Right);
     Frame(controller, in);
@@ -127,15 +122,15 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     Frame(controller, in);
     CHECK(world.EndingMenuCursor() == 2);  // 結束
 
-    in.Tap(Key::Right);                    // wraps 2 -> 0
+    in.Tap(Key::Right);                    // 環繞 2 -> 0
     Frame(controller, in);
     CHECK(world.EndingMenuCursor() == 0);
 
-    in.Tap(Key::Left);                     // wraps 0 -> 2 (other direction)
+    in.Tap(Key::Left);                     // 反方向環繞 0 -> 2
     Frame(controller, in);
     CHECK(world.EndingMenuCursor() == 2);
 
-    // No confirm pressed yet ⇒ no app action requested.
+    // 尚未按確認 ⇒ 未請求任何 app 動作。
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
     nccu::engine::input::Input::SetSource(nullptr);
@@ -143,13 +138,14 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
     EventBus::Instance().Clear();
 }
 
+// 結局選單的確認會把游標對應到正確的 AppAction。
 TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
-    // 回首頁 (cursor 0) → Restart (back to title).
+    // 回首頁（游標 0）→ Restart（回到標題）。
     SUBCASE("回首頁 → Restart") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
@@ -164,7 +160,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         nccu::engine::input::Input::SetSource(nullptr);
     }
 
-    // 重新開始 (cursor 1) → Restart (fresh game via the title).
+    // 重新開始（游標 1）→ Restart（經由標題開始全新遊戲）。
     SUBCASE("重新開始 → Restart") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
@@ -175,13 +171,13 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
         in.Tap(Key::Right);
         Frame(controller, in);
         REQUIRE(world.EndingMenuCursor() == 1);
-        in.Tap(Key::E);                    // E confirms too (not just Enter)
+        in.Tap(Key::E);                    // E 也能確認（不只 Enter）
         Frame(controller, in);
         CHECK(world.PendingAppAction() == World::AppAction::Restart);
         nccu::engine::input::Input::SetSource(nullptr);
     }
 
-    // 結束 (cursor 2) → Quit (the ONLY path that closes the window).
+    // 結束（游標 2）→ Quit（唯一會關閉視窗的路徑）。
     SUBCASE("結束 → Quit") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
@@ -204,11 +200,11 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
     EventBus::Instance().Clear();
 }
 
+// 結局畫面上世界凍結（無模擬、無移動）。
 TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)") {
-    // The ending replaces gameplay: with a movement key HELD, the player must
-    // NOT move, and an arbitrary number of frames must not advance the sim
-    // (the early-return before the object tick / movement / sweep). This is
-    // what makes the ending screen a steady, agency-only screen.
+    // 結局取代遊玩：即使按住移動鍵，玩家也不可移動，任意幀數都不可推進模擬
+    // （在物件 tick／移動／掃描之前就提前返回）。這正是讓結局畫面成為穩定、
+    // 只剩選單操作的畫面之關鍵。
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -224,12 +220,12 @@ TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)"
     const auto before = p->GetPosition();
 
     EnterEnding(world, nccu::SemesterState::Ending_D);
-    in.Hold(Key::D);                       // hold "move right"
+    in.Hold(Key::D);                       // 按住「向右移動」
     for (int i = 0; i < 30; ++i) Frame(controller, in);
     const auto after = p->GetPosition();
-    CHECK(after.x == doctest::Approx(before.x));   // frozen — did not move
+    CHECK(after.x == doctest::Approx(before.x));   // 凍結 — 未移動
     CHECK(after.y == doctest::Approx(before.y));
-    // And no AppAction was requested by mere movement keys.
+    // 純粹的移動鍵不會請求任何 AppAction。
     CHECK(world.PendingAppAction() == World::AppAction::None);
 
     nccu::engine::input::Input::SetSource(nullptr);
