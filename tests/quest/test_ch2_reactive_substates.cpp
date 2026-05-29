@@ -1,13 +1,12 @@
-// B5 regression: the four Ch2 reactive beats that USED to be inline
+/**
+ * @file test_ch2_reactive_substates.cpp
+ * @brief 驗證 Ch2 四段反應式台詞已改寫為真正的旗標分支子狀態，且各台詞只在其對應旗標下載入並可達。
+ */
 #include "game/quest/Flags.h"
-// `*（若 Flag_X = true）*` lines the DialogLoader silently dropped are
-// now re-authored as genuine flag-gated SEPARATE substates in
-// chapter2.md and routed by ResolveOpenerSubState. These cases prove
-// each reactive line actually loads AND is reachable for the gating
-// flag — and only for it. Revert-verified: reverting either the
-// chapter2.md substate split or the DialogOpener Ch2 routing makes the
-// routing/line CHECKs fail (the line is dropped / the default (a) opens
-// instead).
+// Ch2 原本以行內標註撰寫的四段反應式台詞（DialogLoader 會默默丟棄的
+// 「*（若 Flag_X = true）*」這類行）已改寫為 chapter2.md 中真正受旗標守門的
+// 獨立子狀態，並由 ResolveOpenerSubState 負責路由。以下案例證明每段反應式
+// 台詞確實會載入，且只在其守門旗標下才可達——其他情況不會洩漏。
 #include "doctest/doctest.h"
 #include "game/dialog/DialogOpener.h"
 #include "game/dialog/DialogSource.h"
@@ -26,7 +25,7 @@ namespace {
 Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 constexpr auto kCh2 = SemesterState::Chapter2_Midterms;
 
-// Does any line of the substate vector equal `needle`?
+// 該子狀態的任一行台詞是否等於 needle？
 bool SubHasLine(std::string_view npc, int sub, const std::string& needle) {
     for (const auto& e : nccu::dialog::Entries(npc, kCh2))
         if (e.subState == sub)
@@ -36,20 +35,22 @@ bool SubHasLine(std::string_view npc, int sub, const std::string& needle) {
 }
 }  // namespace
 
+// 改寫後的 chapter2.md 反應式子狀態確實載入了對應台詞。
 TEST_CASE("B5: chapter2.md re-authored reactive substates load the line") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 
-    // 學霸 (b) = cursed-umbrella cold reaction (subState 1).
+    // 學霸 (b) = 對詛咒傘的冷反應（子狀態 1）。
     CHECK(SubHasLine("bookworm", 1, "……你今天感覺有點怪。"));
-    // 福利社阿姨 (b) = ugly-umbrella recognition (subState 1).
+    // 福利社阿姨 (b) = 認出醜傘（子狀態 1）。
     CHECK(SubHasLine("shop_auntie", 1, "你那把螢光綠的沒帶來嗎？辨識度那麼高。"));
-    // 苦主 (c) = promise callback (subState 2).
+    // 苦主 (c) = 承諾回呼（子狀態 2）。
     CHECK(SubHasLine("victim", 2, "你說過你會找——你真的還在找。"));
-    // 苦主 (d) = ugly-umbrella recognition (subState 3).
+    // 苦主 (d) = 認出醜傘（子狀態 3）。
     CHECK(SubHasLine("victim", 3, "那個螢光綠的是你的嗎？辨識度很高。"));
 }
 
+// Ch2 路由只在各自的旗標下才會抵達對應的反應式子狀態。
 TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
@@ -59,7 +60,7 @@ TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 0);  // (a)
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 1);  // (b)
-        // Recovered still outranks the cursed variant.
+        // 救回狀態的優先序仍高於詛咒變體。
         p.SetFlag(nccu::kFlagBookwormRecovered);
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 3);  // (d)
     }
@@ -79,30 +80,29 @@ TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
     }
 }
 
+// OpenNpcDialog 端到端能開啟對應的反應式台詞（學霸詛咒 (b)、苦主承諾 (c)），且 (a) 預設不含詛咒台詞。
 TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 
     SUBCASE("學霸 cursed: first line is the routed (b) opener, line-only") {
         Player p = MakePlayer();
-        // A2 (hard-gate): the 學霸 is unreachable before the 圖書館管理員 is
-        // met (Flag_MetLibrarian) — talked-to first he just slumps and a cue
-        // points to the 櫃台. Meet her so this subcase exercises the genuine
-        // cursed (b) reaction (which is gated behind the chain head, not a
-        // first-contact bypass).
+        // 硬性關卡：學霸在見到圖書館管理員（Flag_MetLibrarian）前是無法互動的——
+        // 一開始找他只會看到他趴著，並有提示指向櫃台。先見過管理員，這個子案例
+        // 才能測到真正的詛咒 (b) 反應（它被擋在鏈頭之後，而非首次接觸即可繞過）。
         p.SetFlag(nccu::kFlagMetLibrarian);
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "bookworm", kCh2);
         REQUIRE(d.Active());
         CHECK_FALSE(d.AtChoice());
-        CHECK(d.CurrentLine() == "……嗯？你說什麼。");        // (b) line 0
+        CHECK(d.CurrentLine() == "……嗯？你說什麼。");        // (b) 第 0 行
         bool sawCursed = false;
         for (int i = 0; i < 16 && d.Active(); ++i) {
             if (d.CurrentLine() == "……你今天感覺有點怪。") sawCursed = true;
             d.Advance();
         }
-        CHECK(sawCursed);                                     // line displays
+        CHECK(sawCursed);                                     // 台詞有顯示
     }
     SUBCASE("苦主 promise: (c) recap reaches the callback line") {
         Player p = MakePlayer();
@@ -110,7 +110,7 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "victim", kCh2);
         REQUIRE(d.Active());
-        CHECK(d.CurrentLine() == "你也在圖書館備考嗎。");      // (c) line 0
+        CHECK(d.CurrentLine() == "你也在圖書館備考嗎。");      // (c) 第 0 行
         bool sawPromise = false;
         for (int i = 0; i < 16 && d.Active(); ++i) {
             if (d.CurrentLine() == "你說過你會找——你真的還在找。")
@@ -129,6 +129,6 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
             if (d.CurrentLine() == "……你今天感覺有點怪。") sawCursed = true;
             d.Advance();
         }
-        CHECK_FALSE(sawCursed);   // cursed beat must NOT leak into (a)
+        CHECK_FALSE(sawCursed);   // 詛咒台詞不得洩漏進 (a)
     }
 }

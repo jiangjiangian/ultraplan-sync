@@ -8,6 +8,14 @@
 using nccu::DialogState;
 using nccu::SemesterState;
 
+/**
+ * @file test_dialog_opener.cpp
+ * @brief 驗證 DialogOpener 系列函式：依 npcId／章節載入開場白與選項、未知 id 不啟用、
+ *        選擇分支後續台詞、once-only 獎勵不重複給、以及 ResolveOpenerSubState 依旗標
+ *        決定開場子狀態與 Player overload 套用 karma／旗標的行為。
+ */
+
+// OpenNpcDialogSub 載入苦主 Ch1 (a) 開場白（純台詞）。
 TEST_CASE("OpenNpcDialogSub loads victim Ch1 (a) opener, line-only") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "victim", SemesterState::Chapter1_AddDrop, 0);
@@ -20,12 +28,14 @@ TEST_CASE("OpenNpcDialogSub loads victim Ch1 (a) opener, line-only") {
     CHECK_FALSE(d.Active());
 }
 
+// OpenNpcDialogSub 遇到未知 npcId 時對話維持未啟用。
 TEST_CASE("OpenNpcDialogSub unknown npcId leaves dialog inactive") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "nobody", SemesterState::Chapter1_AddDrop, 0);
     CHECK_FALSE(d.Active());
 }
 
+// OpenNpcDialogSub 載入西裝學長 Ch1 (a) 開場白的第一行。
 TEST_CASE("OpenNpcDialogSub suit_senior Ch1 (a) opener first line") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "suit_senior",
@@ -34,21 +44,21 @@ TEST_CASE("OpenNpcDialogSub suit_senior Ch1 (a) opener first line") {
     CHECK(d.CurrentLine() == "欸，加退選也沒搶到嗎？");
 }
 
+// 3 參數版 OpenNpcDialog：苦主 Ch1 顯示開場白與 2 個選項，選 (b) 後續播放。
 TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     DialogState d;
     nccu::OpenNpcDialog(d, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
-    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) opener line 0
-    // Step through the 5 opener lines into choice mode.
+    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) 開場白第 0 行
+    // 走過 5 行開場白進入選項模式。
     for (int i = 0; i < 5; ++i) d.Advance();
     CHECK(d.AtChoice());
     REQUIRE(d.Choices().size() == 2);
-    // Table order: subState 1 (b) first, subState 2 (c) second.
-    // T1 first-person POV: the (c) ignore choice no longer carries a
-    // 「玩家」 subject — re-authored to 「別過頭，當作沒看見」.
+    // 表格順序：subState 1 (b) 在前、subState 2 (c) 在後。
+    // 第一人稱視角：(c) 忽略選項已不帶「玩家」主詞，改寫為「別過頭，當作沒看見」。
     CHECK(d.Choices()[0].label == "我去幫你追");
     CHECK(d.Choices()[1].label == "別過頭，當作沒看見");
-    // Pick the help branch (index 0) -> its (b) consequence plays.
+    // 選擇幫忙分支（索引 0）-> 播放其 (b) 後果。
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "我去幫你追");
@@ -56,46 +66,40 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
     CHECK(c->flagValue == true);
     CHECK_FALSE(d.AtChoice());
     CHECK(d.Active());
-    CHECK(d.CurrentLine() == "真的？謝謝你……");          // (b) line 0
-    while (d.Active()) d.Advance();                       // exhaust -> close
+    CHECK(d.CurrentLine() == "真的？謝謝你……");          // (b) 第 0 行
+    while (d.Active()) d.Advance();                       // 走完 -> 關閉
     CHECK_FALSE(d.Active());
 }
 
+// 3 參數版 OpenNpcDialog：福利社阿姨 Ch1 顯示開場白與買傘等選項。
 TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
     DialogState d;
     nccu::OpenNpcDialog(d, "shop_auntie", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
-    // Step through the 4 (a) opener lines into choice mode.
+    // 走過 4 行 (a) 開場白進入選項模式。
     for (int i = 0; i < 4; ++i) d.Advance();
     CHECK(d.AtChoice());
-    // B3: a third Ch1 choice — 請阿姨喝咖啡 — seeds the Ch1→Ch4
-    // 福利社阿姨 ripple the GDD names but engine never read.
+    // 第三個 Ch1 選項——請阿姨喝咖啡——是 Ch1→Ch4 福利社阿姨支線的種子。
     REQUIRE(d.Choices().size() == 3);
-    // Table order: subState 1, 2, 3 (a<b<c<d, opener is subState 0).
+    // 表格順序：subState 1, 2, 3（a<b<c<d，開場白是 subState 0）。
     CHECK(d.Choices()[0].label == "詢問雨傘");
     CHECK(d.Choices()[1].label == "購買醜綠傘");
     CHECK(d.Choices()[2].label == "請阿姨喝一杯熱咖啡");
-    // Cycle-8 audit F1: the Ch1 阿姨 (c) buy branch is now a pure
-    // narrative seed — it sets NO flag (the inert Flag_KnowsUglyUmbrella
-    // annotation was removed per the B3 precedent; src/include never
-    // read it). Ending C's real trigger is the Ch4 集英樓 Vendor
-    // (EndingGate.cpp:66 on Flag_BoughtUglyUmbrella).
+    // Ch1 阿姨 (c) 購買分支現在純粹是敘事種子——它不設定任何 flag。
+    // Ending C 真正的觸發點是 Ch4 集英樓的 Vendor（依 Flag_BoughtUglyUmbrella）。
     d.MoveChoice(1);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "購買醜綠傘");
-    CHECK(c->setsFlag == "");     // F1: no flag (was Flag_KnowsUglyUmbrella)
-    while (d.Active()) d.Advance();    // exhaust -> close
+    CHECK(c->setsFlag == "");     // 不設定 flag
+    while (d.Active()) d.Advance();    // 走完 -> 關閉
     CHECK_FALSE(d.Active());
 }
 
-// B3 regression: the Ch1 福利社阿姨 (d) 請咖啡 choice is the SEED of
-// Flag_BoughtCoffeeForAuntie_Ch1 — the GDD-named Ch1→Ch4 ripple that
-// was dead content (set by nothing, read by nothing). Picking it must
-// set the flag (+5 karma); WITHOUT the chapter1.md (d) substate +
-// the choice-opener path this choice does not exist and the REQUIRE
-// on its presence fails.
+// Ch1 福利社阿姨 (d) 請咖啡 選項是 Flag_BoughtCoffeeForAuntie_Ch1 的種子
+//（Ch1→Ch4 的支線）。選擇它必須設定該旗標並加 5 karma；少了 chapter1.md 的
+// (d) 子狀態與選項開場路徑，此選項就不存在，對其存在的 REQUIRE 會失敗。
 TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     DialogState d;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -109,7 +113,7 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     CHECK(coffee.setsFlag == nccu::kFlagBoughtCoffeeForAuntie);
     CHECK(coffee.flagValue == true);
     CHECK(coffee.karmaDelta == 5);
-    // Confirm the choice end-to-end through the GameController applier.
+    // 透過 GameController 的套用器端到端確認此選項。
     d.MoveChoice(2);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
@@ -118,22 +122,21 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     CHECK(p.GetKarma() == k0 + 5);
 }
 
-// Item 5a regression: the Ch1 福利社阿姨 請咖啡 choice is ONCE-ONLY. Once
-// Flag_BoughtCoffeeForAuntie_Ch1 is set (first pick), re-confirming the
-// same choice on a re-talk must NOT re-apply the +5 karma (no farming).
-// The guard lives in ApplyDialogChoice (a self-flagging choice the player
-// already satisfied is inert). The inert (b)/(c) flavour choices (karma
-// +0 / no flag) stay re-pickable — verified they don't move karma either.
+// Ch1 福利社阿姨 請咖啡 選項是「一次性」的。一旦
+// Flag_BoughtCoffeeForAuntie_Ch1 被設定（首次選擇），再次對話重選同一選項
+// 不得重複加 5 karma（不能刷分）。守門邏輯在 ApplyDialogChoice（玩家已滿足
+// 的自設旗標選項是惰性的）。惰性的 (b)/(c) 風味選項（karma +0／無旗標）仍可
+// 重選——也驗證它們同樣不會改動 karma。
 TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
-    // First visit: pick coffee -> +5, flag set.
+    // 第一次：選咖啡 -> +5、設定旗標。
     {
         DialogState d;
         nccu::OpenNpcDialog(d, p, "shop_auntie",
                             SemesterState::Chapter1_AddDrop);
-        for (int i = 0; i < 4; ++i) d.Advance();    // opener lines
+        for (int i = 0; i < 4; ++i) d.Advance();    // 開場白
         REQUIRE(d.AtChoice());
         d.MoveChoice(2);                            // 請咖啡
         const nccu::DialogChoice* c = d.Advance();
@@ -143,7 +146,7 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
     CHECK(p.HasFlag(nccu::kFlagBoughtCoffeeForAuntie));
     CHECK(p.GetKarma() == k0 + 5);
 
-    // Second visit: pick coffee AGAIN -> karma must NOT move (already done).
+    // 第二次：再選一次咖啡 -> karma 不得改動（已完成）。
     {
         DialogState d;
         nccu::OpenNpcDialog(d, p, "shop_auntie",
@@ -155,10 +158,10 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
         REQUIRE(c != nullptr);
         nccu::ApplyDialogChoice(p, *c);
     }
-    CHECK(p.GetKarma() == k0 + 5);                  // STILL +5, not +10
+    CHECK(p.GetKarma() == k0 + 5);                  // 仍是 +5，不是 +10
 
-    // The inert (b) 詢問雨傘 choice (karma +0, no flag) is re-pickable and
-    // moves nothing — confirms the guard only catches reward choices.
+    // 惰性的 (b) 詢問雨傘 選項（karma +0、無旗標）可重選且不改動任何值——
+    // 確認守門只攔截獎勵型選項。
     {
         DialogState d;
         nccu::OpenNpcDialog(d, p, "shop_auntie",
@@ -170,31 +173,34 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
         REQUIRE(c != nullptr);
         nccu::ApplyDialogChoice(p, *c);
     }
-    CHECK(p.GetKarma() == k0 + 5);                  // unchanged
+    CHECK(p.GetKarma() == k0 + 5);                  // 不變
 }
 
+// ResolveOpenerSubState：助教的開場子狀態由跑腿任務旗標決定。
 TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
-    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // fresh
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // 初始
     p.SetFlag(nccu::kFlagFoundForm);
-    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // reward
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // 獎勵
     p.SetFlag(nccu::kFlagHelpedTACh1);
-    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // stays 1
+    CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // 維持 1
 }
 
+// ResolveOpenerSubState：苦主的回顧開場由承諾／給傘旗標決定。
 TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
-    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) fresh
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) 初始
     p.SetFlag(nccu::kFlagPromisedVictim);
-    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // (b) promised
-    // 善有善報: once the真傘 is granted (the返還 happened) the victim routes
-    // to the (d) 重逢致謝 recap, outranking the promise recap.
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // (b) 已承諾
+    // 善有善報：一旦真傘已歸還（返還發生過），苦主就導向 (d) 重逢致謝 回顧，
+    // 其優先序高於承諾回顧。
     p.SetFlag(nccu::kFlagHasTrueUmbrella);
-    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 3);  // (d) reunion
+    CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 3);  // (d) 重逢
 }
 
+// ResolveOpenerSubState：非任務 NPC 永遠是 subState 0。
 TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -204,6 +210,7 @@ TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
     CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
 }
 
+// Player overload：助教獎勵的 karma／旗標只套用一次。
 TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -213,10 +220,10 @@ TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
     nccu::OpenNpcDialog(d, p, "ta", Ch1);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
-    CHECK(d.CurrentLine() == "謝謝你……那份表格要是不見我真的完了。");  // ta sub-1 line 0
+    CHECK(d.CurrentLine() == "謝謝你……那份表格要是不見我真的完了。");  // 助教 sub-1 第 0 行
     CHECK(p.HasFlag(nccu::kFlagHelpedTACh1));
     CHECK(p.GetKarma() == k0 + 5);
-    // Re-open with the SAME player -> apply-once guard skips (no double).
+    // 以同一個玩家重開 -> 套用一次的守門會略過（不重複）。
     DialogState d2;
     nccu::OpenNpcDialog(d2, p, "ta", Ch1);
     CHECK(d2.Active());
@@ -224,6 +231,7 @@ TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
     CHECK(p.GetKarma() == k0 + 5);
 }
 
+// Player overload：助教在無旗標時是純台詞的開場。
 TEST_CASE("Player overload: ta with no flag is the line-only intro") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p2{nccu::engine::math::Vec2{0, 0}};
@@ -232,23 +240,25 @@ TEST_CASE("Player overload: ta with no flag is the line-only intro") {
     nccu::OpenNpcDialog(d2, p2, "ta", Ch1);
     CHECK(d2.Active());
     CHECK_FALSE(d2.AtChoice());
-    CHECK(d2.CurrentLine() == "同學，加退選截止了，現在不受理。");  // ta sub-0 line 0
+    CHECK(d2.CurrentLine() == "同學，加退選截止了，現在不受理。");  // 助教 sub-0 第 0 行
     CHECK(p2.GetKarma() == k0);
     CHECK_FALSE(p2.HasFlag(nccu::kFlagHelpedTACh1));
 }
 
+// Player overload：苦主在無旗標時仍會開啟 1b-2 的選項。
 TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     DialogState d;
     nccu::OpenNpcDialog(d, p, "victim", Ch1);
     CHECK(d.Active());
-    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) opener line 0
+    CHECK(d.CurrentLine() == "……我的傘也不見了。");      // (a) 開場白第 0 行
     for (int i = 0; i < 5; ++i) d.Advance();
     CHECK(d.AtChoice());
     CHECK(d.Choices().size() == 2);
 }
 
+// Player overload：苦主在已有承諾旗標時是純台詞的回顧。
 TEST_CASE("Player overload: victim with promise flag is line-only recap") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -258,80 +268,70 @@ TEST_CASE("Player overload: victim with promise flag is line-only recap") {
     nccu::OpenNpcDialog(d, p, "victim", Ch1);
     CHECK(d.Active());
     CHECK_FALSE(d.AtChoice());
-    CHECK(d.CurrentLine() == "真的？謝謝你……");        // victim sub-1 line 0
-    CHECK(p.GetKarma() == k0);   // +5 was the choice's job, flag preset -> skip
+    CHECK(d.CurrentLine() == "真的？謝謝你……");        // 苦主 sub-1 第 0 行
+    CHECK(p.GetKarma() == k0);   // +5 是選項的職責，旗標已預設 -> 略過
 }
 
 // ---------------------------------------------------------------------------
-// Ch1 suit_senior (b) seeds the Flag_ScoldedSenior arc KEY. The flag drives
-// the cross-chapter "保持距離" arc — DialogOpener Ch2 suit_senior → (c)
-// 尷尬讓開, Ch3 距離, Ch4 不出場 (World spawn filter) — so it must be
-// reachable from a Ch1 choice.
+// Ch1 西裝學長 (b) 是 Flag_ScoldedSenior 支線的關鍵旗標。此旗標驅動跨章節的
+// 「保持距離」支線——DialogOpener Ch2 西裝學長 → (c) 尷尬讓開、Ch3 距離、
+// Ch4 不出場（World 生成過濾）——因此必須能從 Ch1 的選項抵達。
 //
-// T1 reframe (CHANGELOG): the (b) choice is no longer a hostile 斥責 (-5).
-// It is now a RATIONAL firm call-out — 「理性指出他品行不該，要回雨傘」,
-// karma +3 — and the downstream reactions were softened from resentment to
-// mild embarrassment (Chapter2Quest's Ch2 ScoldedSenior ripple is now
-// karma-neutral). The flag KEY is retained so no branch goes dead; only the
-// framing and karma sign changed. First-person POV: the choice label carries
-// no 「玩家」 subject. Revert-verify: revert the chapter1.md (b) change and
-// every CHECK below fails (choice 0 carries no flag → ScoldedSenior never
-// set → the whole arc unreachable).
+// (b) 選項已不再是帶敵意的斥責（-5），而改為理性而堅定的指正——
+//「理性指出他品行不該，要回雨傘」、karma +3——且後續反應從怨懟軟化為輕微尷尬
+//（Chapter2Quest 的 Ch2 ScoldedSenior 連鎖現在對 karma 中性）。關鍵旗標保留，
+// 沒有任何分支變死；只有定調與 karma 正負號改變。第一人稱視角：選項標籤不帶
+//「玩家」主詞。
 TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     DialogState d;
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
-    // A1 (hard-gate): the 西裝學長 only presents his choice menu AFTER the
-    // player has met the 苦主 and promised to chase the umbrella
-    // (Flag_PromisedVictim). Without it he brushes the stranger off (a
-    // line-only redirect, no menu). Set the promise so this test exercises
-    // the genuine choice menu, as it always meant to.
+    // 硬性條件：西裝學長只有在玩家已遇見苦主並承諾追傘（Flag_PromisedVictim）
+    // 之後，才會呈現選項選單。否則他只會把陌生人打發掉（純台詞的轉向，無選單）。
+    // 設定承諾旗標，讓本測試演練真正的選項選單。
     p.SetFlag(nccu::kFlagPromisedVictim);
 
     nccu::OpenNpcDialog(d, p, "suit_senior", Ch1);
     CHECK(d.Active());
     CHECK(d.CurrentLine() == "欸，加退選也沒搶到嗎？");
-    // Step through the 5 opener lines into choice mode.
+    // 走過 5 行開場白進入選項模式。
     for (int i = 0; i < 5; ++i) d.Advance();
     REQUIRE(d.AtChoice());
     REQUIRE(d.Choices().size() == 3);
 
-    // Choice index 0 is the (b) call-out branch. T1 reframe: it is now a
-    // RATIONAL firm call-out (+3), not a hostile 斥責 (-5). It still sets
-    // Flag_ScoldedSenior — kept as the "保持距離" arc KEY — so the Ch2/3/4
-    // routing is unchanged; only the framing (embarrassment, not resentment)
-    // and the karma sign moved. First-person label, no 「玩家」 subject.
-    // (DialogOpener.cpp packs substates ≥ 1 ascending, so b→0, c→1, d→2 —
-    // the ending_a.txt `choose 2` for suit_senior still resolves to (d)
-    // HelpedSenior. State.jsonl byte-parity preserved.)
+    // 選項索引 0 是 (b) 指正分支。現在是理性而堅定的指正（+3），而非帶敵意的
+    // 斥責（-5）。它仍設定 Flag_ScoldedSenior——保留為「保持距離」支線的關鍵
+    // 旗標——所以 Ch2/3/4 的路由不變；只有定調（尷尬而非怨懟）與 karma 正負號
+    // 改變。第一人稱標籤，不帶「玩家」主詞。
+    //（DialogOpener.cpp 把 subState ≥ 1 升序打包，所以 b→0、c→1、d→2——
+    // ending_a.txt 中 suit_senior 的 choose 2 仍解析到 (d) HelpedSenior。）
     const nccu::DialogChoice& scolded = d.Choices()[0];
     CHECK(scolded.label == "理性指出他品行不該，要回雨傘");
     CHECK(scolded.setsFlag == nccu::kFlagScoldedSenior);
     CHECK(scolded.flagValue == true);
     CHECK(scolded.karmaDelta == 3);
 
-    // End-to-end via the GameController applier — the live confirm path.
+    // 透過 GameController 套用器端到端——實際的確認路徑。
     d.MoveChoice(0);
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     nccu::ApplyDialogChoice(p, *c);
     CHECK(p.HasFlag(nccu::kFlagScoldedSenior));
-    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedSenior));   // mirror, not set
+    CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedSenior));   // 對照，未設定
     CHECK(p.GetKarma() == k0 + 3);
 }
 
+// Ch2 西裝學長在 Flag_ScoldedSenior 時導向 (c) 冷淡分支。
 TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {
-    // DialogOpener.cpp:101 was a read with no setter. After F2 the (b)
-    // 斥責 path lands the flag and this branch fires.
+    // 原本是只讀取而無設定者的旗標；Ch1 (b) 指正路徑會設定它，使此分支觸發。
     const auto Ch2 = SemesterState::Chapter2_Midterms;
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagScoldedSenior);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, p) == 2);   // (c)
 
     Player q{nccu::engine::math::Vec2{0, 0}};
-    // No flag → (a) opener — the default. (Mirror sanity check; if this
-    // ever changes, the audit-F2 routing is no longer the only path.)
+    // 無旗標 → (a) 開場白，即預設。（對照的合理性檢查。）
     CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, q) == 0);
 }

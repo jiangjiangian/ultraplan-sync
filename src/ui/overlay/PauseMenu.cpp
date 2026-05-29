@@ -20,20 +20,17 @@ void DrawPauseMenu(nccu::engine::render::IRenderer& r,
 
     if (!world.MenuOpen()) return;
 
-    // In-game pause menu overlay — drawn LAST so it sits above the world,
-    // HUD, dialog and inventory. Reactive: a pure function of
-    // World::MenuOpen + MenuCursor (no retained UI state in the View).
-    // A full-screen dim then a centred panel; the cursor row gets a
-    // marker + highlight colour so keyboard selection is unambiguous.
+    // 遊戲內暫停選單疊層——最後繪製，使其位於世界、HUD、對話與物品欄之上。反應式：
+    // 為 World::MenuOpen + MenuCursor 的純函式（View 內不保留 UI 狀態）。先全螢幕變暗，
+    // 再畫置中面板；游標所在列加上標記與高亮色，使鍵盤選取明確無歧義。
     const float W = screenW;
     const float H = screenH;
     r.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 150});
 
     constexpr float kPanelW = 340.0f;
-    // Cycle 9.E.3: panel grew from 250 to 330 px to accommodate 6
-    // rows (was 4) — kFirstY 78 + 5 * kRowH 40 = 278 px from the
-    // top edge, plus a ~50 px hint band → 330 keeps the same visual
-    // breathing room above & below the rows the 4-row layout had.
+    // 面板由 250 增至 330 px 以容納 6 列（原為 4）——kFirstY 78 + 5 * kRowH 40 =
+    // 距頂邊 278 px，再加約 50 px 的提示帶 → 330 可在各列上下保留與 4 列版面相同的
+    // 視覺呼吸空間。
     constexpr float kPanelH = 330.0f;
     const float px = W * 0.5f - kPanelW * 0.5f;
     const float py = H * 0.5f - kPanelH * 0.5f;
@@ -44,14 +41,11 @@ void DrawPauseMenu(nccu::engine::render::IRenderer& r,
         .At(Vec2{px + kPanelW * 0.5f - 64.0f, py + 24.0f})
         .Size(28).Color(Colors::Gold).Draw();
 
-    // Cycle 9.E.3: 6 items now — 繼續 / 說明 / 減少動畫[開|關] /
-    // 擴大目標[開|關] / 重新開始 / 離開. Toggle rows (2,3) show the
-    // current state suffix; ordering mirrors GameController's
-    // switch. 說明 opens the help overlay drawn below; rows 2 and 3
-    // flip World::SetReducedMotion / SetLargeTargets in place
-    // (cursor stays on the row so the player can verify the change).
-    // Destructive items (Restart/Quit) sit farthest from index 0 so
-    // an accidental Enter on Resume doesn't risk progress loss.
+    // 現有 6 個項目——繼續 / 說明 / 減少動畫[開|關] / 擴大目標[開|關] / 重新開始 /
+    // 離開。可切換的列（2、3）會顯示當前狀態後綴；順序對齊 GameController 的 switch。
+    // 「說明」開啟下方繪製的說明疊層；第 2、3 列就地翻轉 World::SetReducedMotion /
+    // SetLargeTargets（游標停留在該列，使玩家能確認變更）。具破壞性的項目（重新開始／
+    // 離開）距索引 0 最遠，使在「繼續」上誤按 Enter 不致冒進度遺失之險。
     static const char* kLabels[World::kMenuItemCount] = {
         "繼續", "說明", "減少動畫", "擴大目標", "重新開始", "離開"};
     constexpr float kFirstY = 78.0f;
@@ -61,9 +55,8 @@ void DrawPauseMenu(nccu::engine::render::IRenderer& r,
         std::string row =
             (sel ? std::string("> ") : std::string("  ")) +
             kLabels[i];
-        // Toggle rows: append the current on/off state in brackets.
-        // The leading "  " / "> " keeps every row's x-alignment so
-        // the cursor caret column stays stable as it moves up/down.
+        // 可切換的列：在方括號中附上當前開／關狀態。前導的 "  " / "> " 維持每列的
+        // x 對齊，使游標插字符的欄位在上下移動時保持穩定。
         if (i == 2) {
             row += world.ReducedMotion() ? "  [開]" : "  [關]";
         } else if (i == 3) {
@@ -75,10 +68,9 @@ void DrawPauseMenu(nccu::engine::render::IRenderer& r,
             .Color(sel ? Color{255, 153, 0, 255} : Colors::White)
             .Draw();
     }
-    // Audit D3 / SC 1.4.3: was Colors::DarkGray (80,80,80) on the
-    // Color{20,22,30,230} pause-menu panel — ~1.05:1, effectively
-    // invisible. Color{180,180,180,255} hits ~7:1 (AAA-large,
-    // AA-normal) on the same backing.
+    // 原為 Colors::DarkGray (80,80,80) 疊在 Color{20,22,30,230} 的暫停選單面板上——
+    // 對比約 1.05:1，幾乎不可見。改用 Color{180,180,180,255} 在同一底色上達到約 7:1
+    //（大字 AAA、一般字 AA）。
     TextBuilder{"↑ ↓ 選擇   Enter 確認   M 繼續"}
         .At(Vec2{px + 20.0f, py + kPanelH - 30.0f})
         .Size(14).Color(Color{180, 180, 180, 255}).Draw();

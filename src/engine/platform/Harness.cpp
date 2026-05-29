@@ -185,18 +185,13 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
 
     o << ",\"building\":\"" << EscapeJson(world.CurrentBuildingName()) << '"';
     o << ",\"invOpen\":" << (world.InventoryOpen() ? "true" : "false");
-    // Cycle 9.B L9 / 9.G: don't echo an aged-out toast — the View has
-    // already stopped drawing it (DrawHudMessage early-returns when
-    // age >= kHudTtl), so the state.jsonl should agree with what the
-    // player can see, not with a stale buffer the World holds for the
-    // fade-out contract. HudMessage() itself stays untouched (the View
-    // owns that contract); the harness simply emits "" when expired.
+    // 不回放已過期的提示——View 早已停止繪製它（age >= kHudTtl 時 DrawHudMessage
+    // 提前返回），故存檔輸出應與玩家所見一致，而非與 World 為淡出約定所保留的過時緩衝
+    // 一致。HudMessage() 本身維持不動（該約定由 View 掌管）；harness 只在過期時輸出 ""。
     //
-    // Cycle 9.G: split into top_hud + bottom_hud so a Ch->IL transition
-    // frame can record the (Top) chapter toast AND the (Bottom) arrival
-    // hint simultaneously — pre-split this was the very clobber the
-    // post-iteration diagnosis flagged (§B). The legacy "hud" key is
-    // retired; downstream diagnostic scripts read the two new keys.
+    // 拆成 top_hud + bottom_hud，使章節 -> 插曲段的轉場幀能同時記錄（Top）章節提示
+    //「與」（Bottom）抵達提示——拆分前正是診斷所指出的那種互相覆蓋。舊的 "hud" 鍵已
+    // 退役；下游診斷腳本改讀這兩個新鍵。
     o << ",\"top_hud\":\""
       << (world.HudExpired(HudSlot::Top)
               ? "" : EscapeJson(world.HudMessage(HudSlot::Top)))

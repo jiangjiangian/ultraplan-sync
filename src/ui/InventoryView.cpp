@@ -4,8 +4,8 @@
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"
 #include "game/gfx/UmbrellaGlyph.h"
-#include "game/quest/ItemCatalog.h"   // kItem* category sentinels
-#include "game/dialog/DialogLayout.h" // WrapToCells — CJK-aware description wrap
+#include "game/quest/ItemCatalog.h"   // kItem* 分類哨兵值
+#include "game/dialog/DialogLayout.h" // WrapToCells——CJK 感知的說明文字換行
 
 #include <algorithm>
 #include <string>
@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace nccu {
-using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
+using namespace nccu::game::gfx;  // game/gfx 輔助函式
 
 using namespace nccu::engine::render;
 using namespace nccu::engine::math;

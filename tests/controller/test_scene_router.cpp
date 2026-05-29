@@ -19,24 +19,24 @@ using nccu::SceneRouter;
 using nccu::SemesterState;
 using nccu::World;
 
-// Cycle 10.P0a (awsome_cpp.md §6) + 10.P0b (L8 fix): SceneRouter owns
-// the chapter/interlude/ending transition observer that used to live
-// inline on GameController. The fix splits the observation into two
-// halves so the visible bug (npcs[] list lagging by 1 frame) closes
-// without touching the harness state.jsonl observable timeline:
-//
-//   SettleRoster        — end-of-Update; roster swap ONLY.
-//   SettleSideEffects   — top-of-Update; player pos / consumables / events.
-//
-// These tests pin the contract:
-//   1. SettleRoster on a state change actually respawns the NPCs.
-//   2. SettleRoster is idempotent on its own cursor.
-//   3. SettleSideEffects on Interlude entry moves the player, wipes
-//      consumables, publishes the arrival hint, resets the exit latch.
-//   4. SettleSideEffects on Ch4 entry clears the umbrella state.
-//   5. Calling SettleRoster THEN SettleSideEffects in the same tick
-//      keeps the side-effect half byte-equivalent to the pre-Cycle 10
-//      single-block behaviour — no double-spawn, no double-publish.
+/**
+ * @file test_scene_router.cpp
+ * @brief 驗證 SceneRouter：章節／interlude／ending 轉場的觀察者，將「換 roster」與
+ *        「套用副作用」拆成兩半，使可見的 bug（npcs[] 名單延遲一格）關閉，同時保持
+ *        副作用半部與舊的單塊行為等價。
+ *
+ * 兩半各自的職責：
+ *   SettleRoster      — Update 末段；只做 roster 換班。
+ *   SettleSideEffects — Update 前段；玩家位置 / 消耗品 / 事件。
+ *
+ * 這些測試釘住的契約：
+ *   1. 狀態改變時 SettleRoster 確實重生 NPC。
+ *   2. SettleRoster 對自己的 cursor 為冪等。
+ *   3. 進入 Interlude 時 SettleSideEffects 移動玩家、清空消耗品、發出抵達提示、重置出口 latch。
+ *   4. 進入 Ch4 時 SettleSideEffects 清除雨傘狀態。
+ *   5. 同一 tick 內先 SettleRoster 再 SettleSideEffects，副作用半部仍與拆分前的單塊行為
+ *      等價——不重複生成、不重複發佈。
+ */
 
 namespace {
 
@@ -46,8 +46,7 @@ bool HasNpcId(const World& w, const char* id) {
     return false;
 }
 
-// Latest ShowMessage payload — used to verify the arrival hint
-// publishes (or doesn't) on the right call.
+// 取得最新一筆 ShowMessage 內容——用以驗證抵達提示是否在正確的呼叫時機發佈。
 [[nodiscard]] EventBus::Subscription
 SubscribeToLatest(std::string& latest) {
     return EventBus::Instance().ScopedSubscribe(
@@ -57,6 +56,7 @@ SubscribeToLatest(std::string& latest) {
 
 } // namespace
 
+// ctor 後兩個 cursor 都從初始狀態起算。
 TEST_CASE("SceneRouter ctor: cursors start at the initial state") {
     SceneRouter r{SemesterState::Chapter1_AddDrop};
     CHECK(r.LastRosterState() == SemesterState::Chapter1_AddDrop);
@@ -64,34 +64,35 @@ TEST_CASE("SceneRouter ctor: cursors start at the initial state") {
     CHECK(r.InterludeExitLatchMut() == false);
 }
 
+// FSM 未移動時 SettleRoster 為 no-op。
 TEST_CASE("SettleRoster: no-op when the FSM hasn't moved") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
-    REQUIRE(HasNpcId(w, "victim"));        // Ch1 roster present
+    REQUIRE(HasNpcId(w, "victim"));        // Ch1 roster 已存在
 
-    r.SettleRoster(w);                     // FSM still Ch1
-    CHECK(HasNpcId(w, "victim"));          // unchanged
+    r.SettleRoster(w);                     // FSM 仍在 Ch1
+    CHECK(HasNpcId(w, "victim"));          // 不變
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter1_AddDrop);
 }
 
+// 發生轉場時 SettleRoster 重生新章節的 NPC。
 TEST_CASE("SettleRoster: respawns the new chapter's NPCs on a transition") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1 NPC
 
-    // FSM advances WITHOUT going through the SceneRouter (mimics a
-    // CheckChapterGates / EventWiring transition firing during the
-    // controller's Update body).
+    // FSM 在不經過 SceneRouter 的情況下推進（模擬 CheckChapterGates / EventWiring 的
+    // 轉場在 controller 的 Update 內觸發）。
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     r.SettleRoster(w);
 
-    // Ch2 roster now visible to the View (and state.jsonl npcs[]) on
-    // the SAME frame the FSM moved. Pre-fix this was 1 frame late.
-    CHECK(HasNpcId(w, "librarian"));       // Ch2-only quest-giver
-    CHECK(HasNpcId(w, "victim"));          // victim is Ch2 too
+    // Ch2 roster 在 FSM 移動的「同一格」就對 View（及 npcs[]）可見——拆分前此處會慢一格。
+    CHECK(HasNpcId(w, "librarian"));       // Ch2 專屬任務給予者
+    CHECK(HasNpcId(w, "victim"));          // 苦主在 Ch2 也在
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
 }
 
+// SettleRoster 不會動到 SettleSideEffects 的 cursor（拆分確實生效）。
 TEST_CASE("SettleRoster: SettleSideEffects cursor untouched (split is real)") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
@@ -99,14 +100,13 @@ TEST_CASE("SettleRoster: SettleSideEffects cursor untouched (split is real)") {
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     r.SettleRoster(w);
 
-    // The "side-effect cursor" must NOT have advanced — it tracks the
-    // top-of-Update half, which the test hasn't invoked yet. If both
-    // cursors moved together, the next SettleSideEffects call would
-    // be a no-op and the player would never be repositioned.
+    // 「副作用 cursor」不得前進——它追蹤的是 Update 前段那一半，本測試尚未呼叫。若兩個
+    // cursor 一起移動，下一次 SettleSideEffects 會變成 no-op，玩家便永遠不會被重新定位。
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
     CHECK(r.LastRosterState()        == SemesterState::Chapter1_AddDrop);
 }
 
+// 進入 Interlude：SettleSideEffects 同時處理位置、消耗品、提示與 latch。
 TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
     EventBus::Instance().Clear();
     std::string latestHud;
@@ -118,34 +118,34 @@ TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Pre-state: pretend the player wandered far from the IL entry,
-    // carries a Ch1 consumable, and the south-band latch fired earlier.
+    // 前置狀態：假裝玩家走離 Interlude 入口很遠、身上帶著 Ch1 消耗品，且南側 latch 先前已觸發。
     p->SetPosition(nccu::engine::math::Vec2{100.0f, 100.0f});
     p->AddConsumable("EnergyDrink");
     p->AddConsumable("EnergyDrink");
     r.InterludeExitLatchMut() = true;
     REQUIRE(p->ConsumableCount("EnergyDrink") == 2);
 
-    // FSM advances to Interlude (mimics the EventWiring Ch1→IL hop).
+    // FSM 推進到 Interlude（模擬 EventWiring 的 Ch1→IL 轉場）。
     w.Semester().Transition(SemesterState::Interlude_Market);
     r.SettleSideEffects(w);
 
-    // All four observable side effects fire together:
+    // 四項可見副作用同時發生：
     CHECK(p->GetPosition().x == doctest::Approx(nccu::kInterludeEntry.x));
     CHECK(p->GetPosition().y == doctest::Approx(nccu::kInterludeEntry.y));
-    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // wiped
+    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // 已清空
     CHECK(latestHud == nccu::kInterludeArrivalHint);
     CHECK(r.InterludeExitLatchMut() == false);
 
-    // Cursor stamped so a re-call is a no-op.
+    // cursor 已戳記，故重複呼叫為 no-op。
     CHECK(r.LastRosterState() == SemesterState::Interlude_Market);
     p->SetPosition(nccu::engine::math::Vec2{42.0f, 42.0f});
-    r.SettleSideEffects(w);                            // idempotent
+    r.SettleSideEffects(w);                            // 冪等
     CHECK(p->GetPosition().x == doctest::Approx(42.0f));
 
     EventBus::Instance().Clear();
 }
 
+// 進入 Ch4：SettleSideEffects 清除雨傘與 TrueUmbrella 旗標。
 TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     EventBus::Instance().Clear();
 
@@ -157,12 +157,11 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     p->SetHasUmbrella(true);
     p->SetFlag(nccu::kFlagHasTrueUmbrella);
 
-    // FSM jumps straight to Ch4 (mimics ChapterGate Interlude→Ch4).
+    // FSM 直接跳到 Ch4（模擬 ChapterGate 的 Interlude→Ch4）。
     w.Semester().Transition(SemesterState::Chapter4_Finals);
     r.SettleSideEffects(w);
 
-    // chapter4.md L6「傘再度失蹤」: the player walks out of 集英樓 with
-    // no umbrella. The fix's Ch4 branch is the GDD enforcement.
+    // 劇情上玩家走出集英樓時又沒了傘。Ch4 分支即此設定的強制執行。
     CHECK_FALSE(p->HasUmbrella());
     CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));
     CHECK(r.LastRosterState() == SemesterState::Chapter4_Finals);
@@ -170,12 +169,8 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
     EventBus::Instance().Clear();
 }
 
-// B4: the per-chapter「傘又掉了」card is now MECHANICALLY TRUE. The held
-// umbrella (the bug: 真傘 still in the Ch2 bag — it persisted because the
-// reset was Ch4-ONLY) is now cleared on Ch2 AND Ch3 entry too, mirroring
-// the Ch4 block. So entering ANY of Ch2/Ch3/Ch4 leaves the player
-// umbrella-less and the bag's umbrella row gone (SetHasUmbrella(false) also
-// empties the held-kind slot).
+// 每章「傘又掉了」現已機制上成立：進入 Ch2/Ch3/Ch4 任一者都會清除手持的傘（原本只在
+// Ch4 清除，導致真傘殘留在 Ch2 背包）。
 TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
@@ -183,8 +178,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Pretend the player carried a held umbrella out of Ch1 (e.g. the真傘
-    // the 苦主 handed back, or the Ch1 阿姨 ugly umbrella) into the bag.
+    // 假裝玩家從 Ch1 帶著一把手持傘（例如苦主交還的真傘）進入背包。
     p->SetHeldUmbrella(HeldUmbrella::True);
     p->SetFlag(nccu::kFlagHasTrueUmbrella);
     REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::True);
@@ -193,11 +187,12 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
     r.SettleSideEffects(w);
 
     CHECK_FALSE(p->HasUmbrella());
-    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // bag umbrella gone
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // 背包的傘消失
     CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));
     EventBus::Instance().Clear();
 }
 
+// 進入 Ch3 時也清除手持的傘。
 TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
@@ -205,7 +200,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Ch3 starts after Ch2; pretend a Ch2 loaner umbrella lingered.
+    // Ch3 接在 Ch2 之後；假裝有把 Ch2 借來的傘殘留。
     p->SetHeldUmbrella(HeldUmbrella::Loaner);
     REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::Loaner);
 
@@ -213,18 +208,16 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
     r.SettleSideEffects(w);
 
     CHECK_FALSE(p->HasUmbrella());
-    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // loaner gone
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // 借來的傘消失
     EventBus::Instance().Clear();
 }
 
+// 端到端流程：同一 tick 內先 SettleRoster、下一格再 SettleSideEffects，各半皆冪等。
 TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
-    // Pin the full Cycle 10.P0b flow: a transition fires mid-frame
-    // (after dialog branch / E-probe / CheckChapterGates / etc.); the
-    // controller calls SettleRoster at end-of-Update so the View's
-    // upcoming Draw paints with the new chapter's NPCs. On the NEXT
-    // frame's top-of-Update, SettleSideEffects fires the player-pos
-    // teleport + arrival hint. Both halves run exactly once per
-    // transition (idempotent under their own cursors).
+    // 釘住完整流程：轉場在某格中途觸發（在對話分支 / E-probe / CheckChapterGates 等之後）；
+    // controller 在 Update 末段呼叫 SettleRoster，使 View 接下來的 Draw 以新章節的 NPC 繪製。
+    // 下一格的 Update 前段，SettleSideEffects 才做玩家位置傳送 + 抵達提示。兩半每次轉場各
+    // 執行恰好一次（在各自 cursor 下冪等）。
     EventBus::Instance().Clear();
     std::string latestHud;
     auto sub = SubscribeToLatest(latestHud);
@@ -234,55 +227,51 @@ TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Simulate the umbrella-claim transition without driving the full
-    // event bus: just move the FSM (the SceneRouter cares about the
-    // FSM state only — it doesn't poll the EventBus).
+    // 模擬撿傘的轉場，但不驅動整套事件匯流排：只移動 FSM（SceneRouter 只關心 FSM 狀態，
+    // 不輪詢 EventBus）。
     w.Semester().Transition(SemesterState::Interlude_Market);
 
-    // ---- Tick N: end-of-Update SettleRoster ----
-    REQUIRE(HasNpcId(w, "victim"));        // Ch1 NPCs still present pre-call
+    // ---- 第 N 格：Update 末段 SettleRoster ----
+    REQUIRE(HasNpcId(w, "victim"));        // 呼叫前 Ch1 NPC 仍在
     r.SettleRoster(w);
-    CHECK_FALSE(HasNpcId(w, "victim"));    // IL roster is empty
-    // No player teleport yet — the harness observable is unchanged.
-    // (The test doesn't move the player itself; we just verify the
-    // SettleRoster pass did NOT publish the arrival hint or wipe
-    // consumables — that's SettleSideEffects' job on the NEXT tick.)
+    CHECK_FALSE(HasNpcId(w, "victim"));    // IL 的 roster 為空
+    // 玩家尚未被傳送——可見的觀察值不變。（本測試自己不移動玩家；此處僅驗證 SettleRoster
+    // 這一趟「沒有」發佈抵達提示或清空消耗品——那是下一格 SettleSideEffects 的工作。）
     CHECK(latestHud.empty());
 
-    // ---- Tick N+1: top-of-Update SettleSideEffects ----
+    // ---- 第 N+1 格：Update 前段 SettleSideEffects ----
     r.SettleSideEffects(w);
     CHECK(p->GetPosition().x == doctest::Approx(nccu::kInterludeEntry.x));
     CHECK(p->GetPosition().y == doctest::Approx(nccu::kInterludeEntry.y));
     CHECK(latestHud == nccu::kInterludeArrivalHint);
 
-    // Both halves idempotent on a repeat call.
+    // 重複呼叫時兩半皆冪等。
     p->SetPosition(nccu::engine::math::Vec2{7.0f, 8.0f});
     latestHud.clear();
     r.SettleRoster(w);
     r.SettleSideEffects(w);
-    CHECK(p->GetPosition().x == doctest::Approx(7.0f));  // not re-teleported
-    CHECK(latestHud.empty());                            // no re-publish
+    CHECK(p->GetPosition().x == doctest::Approx(7.0f));  // 未被重新傳送
+    CHECK(latestHud.empty());                            // 未重複發佈
 
     EventBus::Instance().Clear();
 }
 
+// 若 SettleRoster 被略過，SettleSideEffects 會防禦性地重生 roster。
 TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was skipped") {
-    // The Cycle 10 split keeps both halves runnable individually so
-    // callers that bypass SettleRoster (e.g. tests, or a future code
-    // path that only goes through the top-of-Update branch) still get
-    // a coherent roster. SettleSideEffects calls RespawnChapterRoster
-    // when its respawn cursor disagrees with the FSM state.
+    // 拆分讓兩半都能各自獨立執行，故繞過 SettleRoster 的呼叫端（例如測試，或未來只走
+    // Update 前段分支的程式路徑）仍能取得一致的 roster。當 SettleSideEffects 的 respawn
+    // cursor 與 FSM 狀態不一致時，它會呼叫 RespawnChapterRoster。
     EventBus::Instance().Clear();
 
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1
 
-    // FSM moves without going through SettleRoster first.
+    // FSM 在未先經過 SettleRoster 的情況下移動。
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     r.SettleSideEffects(w);
 
-    // Roster is now Ch2 — the defensive RespawnChapterRoster fired.
+    // roster 現為 Ch2——防禦性的 RespawnChapterRoster 已觸發。
     CHECK(HasNpcId(w, "librarian"));       // Ch2 NPC
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter2_Midterms);
     CHECK(r.LastRosterState() == SemesterState::Chapter2_Midterms);
@@ -290,13 +279,9 @@ TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was
     EventBus::Instance().Clear();
 }
 
-// B4: cross-Interlude bag survivors. After Ch1 → Interlude → Ch2, the ONLY
-// rows that may remain are 金幣 (cross-chapter money) and 申請書
-// (Flag_FoundForm — the cross-chapter carried item the TA arc relies on).
-// Consumables are wiped on market entry (ClearConsumables) and the held
-// umbrella is cleared on Ch2 entry (the B4 fix), so neither survives. This
-// pins "no other stale carry-over" through the real SceneRouter resets +
-// BuildInventoryRows.
+// 跨 Interlude 的背包倖存者：Ch1 → Interlude → Ch2 後，唯一可留存的列只有金幣（跨章節
+// 金錢）與申請書（跨章節攜帶物，TA 線仰賴）。消耗品在進市集時清空、手持傘在進 Ch2 時清除，
+// 故兩者都不留存。
 TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
@@ -304,15 +289,15 @@ TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // End-of-Ch1 bag: money (persists), the form (the carried item), a held
-    // umbrella (the 苦主's真傘), and a Ch1 consumable bought in the market.
+    // Ch1 末的背包：金錢（留存）、申請書（攜帶物）、手持傘（苦主的真傘）、以及在市集買的
+    // 一個 Ch1 消耗品。
     p->SetFlag(nccu::kFlagFoundForm);
     p->SetHeldUmbrella(HeldUmbrella::True);
     p->SetFlag(nccu::kFlagHasTrueUmbrella);
     p->AddConsumable("EnergyDrink");
     {
         const auto rows = nccu::BuildInventoryRows(*p);
-        // sanity: pre-transition the bag DOES hold the umbrella + consumable
+        // 健全性檢查：轉場前背包「確實」持有傘 + 消耗品
         bool hasUmb = false, hasDrink = false;
         for (const auto& row : rows) {
             if (row.itemId == nccu::kItemTrueUmbrella) hasUmb = true;
@@ -322,20 +307,19 @@ TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
         REQUIRE(hasDrink);
     }
 
-    // Interlude entry wipes consumables (+ repositions, hint, latch).
+    // 進入 Interlude 清空消耗品（並重新定位、提示、latch）。
     w.Semester().Transition(SemesterState::Interlude_Market);
     r.SettleSideEffects(w);
-    // Ch2 entry clears the held umbrella (the B4 reset).
+    // 進入 Ch2 清除手持傘。
     w.Semester().Transition(SemesterState::Chapter2_Midterms);
     r.SettleSideEffects(w);
 
     const auto rows = nccu::BuildInventoryRows(*p);
-    // EXACTLY two survivor categories, in the deterministic catalog order:
-    // money first, then the form. Nothing else.
+    // 恰好兩種倖存類別，依固定的 catalog 順序：先金錢、再申請書。別無其他。
     std::vector<std::string> ids;
     for (const auto& row : rows) ids.push_back(row.itemId);
     CHECK(ids == std::vector<std::string>{nccu::kItemMoney, nccu::kItemForm});
-    // Explicit negatives: no umbrella row, no consumable row.
+    // 明確的反例：沒有傘的列，也沒有消耗品的列。
     CHECK(std::none_of(rows.begin(), rows.end(), [](const nccu::InventoryRow& row) {
         return row.itemId.find("umbrella") != std::string::npos;
     }));

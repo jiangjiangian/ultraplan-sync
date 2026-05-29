@@ -165,12 +165,10 @@ void View::RenderEnding(const World& world, SemesterState st) {
         es.boughtUgly       = ep->HasFlag(kFlagBoughtUglyUmbrella);
         es.finaleChoiceMade = ep->HasFlag(kFlagTaFinaleChoiceMade);
     }
-    // A-T3: the ending screen is now an INTERACTIVE, STEADY screen with a
-    // bottom 3-option menu (回首頁 / 重新開始 / 結束). The View only
-    // RENDERS the highlighted row (World::EndingMenuCursor, a pure UI
-    // cursor moved by ←/→ in GameController); the menu INTENT
-    // (Restart / Quit) flows through World::PendingAppAction set in the
-    // controller — no gameplay logic in the View (MVC red line).
+    // 結局畫面是一個可互動且穩定的畫面，底部帶 3 選項選單（回首頁 / 重新開始 /
+    // 結束）。View 只「渲染」當前高亮列（World::EndingMenuCursor，純 UI 游標，由
+    // GameController 以 ←/→ 移動）；選單「意圖」（重新開始／結束）則經控制器設定的
+    // World::PendingAppAction 流出——View 內不含玩法邏輯（MVC 紅線）。
     DrawEndingCard(renderer_, es, world.Semester().CurrentName(),
                    endingAlpha_, viewportSize_.x, viewportSize_.y,
                    world.EndingMenuCursor());
@@ -186,21 +184,16 @@ void View::RenderWorld(const World& world, SemesterState st) {
         CameraScope cam{camera_};
         Renderer{}.Texture(worldmap_, Vec2{0.0f, 0.0f});
 
-        // 操場 lap track ground decal — extracted to
-        // ui/world/SportsLapTrack.cpp (P1 step 7f). Drawn BEFORE the
-        // painter's-order pass so 綜合院館 + the runners paint OVER it.
-        // No-op when no lap is active.
+        // 操場跑道的地面貼花——抽到 ui/world/SportsLapTrack.cpp。在畫家順序這一趟
+        // 之「前」繪製，使綜合院館與跑者疊在它「之上」。無進行中的跑圈時為空操作。
         DrawSportsLapTrack(renderer_, world);
 
-        // Painter's order: buildings keyed on their ground line, objects
-        // on their feet (top-left + player height). Lower y paints first,
-        // so a character above a building's base is covered by it; one
-        // standing below it draws on top — classic JRPG walk-behind.
-        // Ambient decorations: advance the render clock ONCE per drawn
-        // frame, then resolve the ping-pong frame index per visible def
-        // below. DeltaSeconds() is the fixed 1/60 step under the harness,
-        // so the animation is deterministic; this accumulator is pure View
-        // state and never reaches state.jsonl (MVC §5).
+        // 畫家順序：建築以其地面線為鍵，物件以其雙腳（左上角 + 玩家高度）為鍵。y 較
+        // 小者先畫，故位於某建築基座「上方」的角色會被它遮住；站在其「下方」者則畫在
+        // 上面——經典 JRPG 的 walk-behind。
+        // 環境裝飾：每幀繪製時把渲染時鐘推進「一次」，再於下方對每個可見定義解析其
+        // 來回（ping-pong）影格索引。在 harness 下 DeltaSeconds() 是固定的 1/60 步長，
+        // 故動畫具決定性；此累加器是純 View 狀態，絕不進入存檔（MVC）。
         decorationClock_ += static_cast<double>(nccu::engine::platform::Time::DeltaSeconds());
 
         drawOrder_.clear();
@@ -210,10 +203,9 @@ void View::RenderWorld(const World& world, SemesterState st) {
             drawOrder_.push_back(
                 DrawRef{buildings_[i].baseY, DrawKind::Building, nullptr, i});
         }
-        // Decorations of the CURRENT chapter only — keyed by the def's
-        // `chapter` so the chiikawa shows in Ch2 and the cat in Ch3, never
-        // both. Depth key is the sprite's bottom edge (its feet), so it
-        // walk-behinds against NPCs exactly like a building does.
+        // 只取「當前」章節的裝飾——以定義的 `chapter` 為鍵，使吉伊卡哇在第二章現身、
+        // 貓在第三章現身，不會同時出現。深度鍵是 sprite 的底邊（雙腳），故它對 NPC 的
+        // walk-behind 行為與建築完全相同。
         for (std::size_t i = 0; i < decorations_.size(); ++i) {
             const auto& def = nccu::game::gfx::kDecorations[decorations_[i].defIndex];
             if (def.chapter != st) continue;
@@ -233,10 +225,8 @@ void View::RenderWorld(const World& world, SemesterState st) {
         for (const DrawRef& d : drawOrder_) {
             switch (d.kind) {
             case DrawKind::Object:
-                // ISP role dispatch: render only objects that play the
-                // IDrawable role. d.obj is const, so use the const
-                // accessor; a non-drawable object (none today, but the
-                // contract allows it) is simply skipped.
+                // ISP 角色分派：只渲染扮演 IDrawable 角色的物件。d.obj 為 const，故用
+                // const 取值器；不可繪製的物件（目前沒有，但契約允許）直接略過。
                 if (const auto* dr = d.obj->AsDrawable()) dr->Render(renderer_);
                 break;
             case DrawKind::Building: {
@@ -244,8 +234,8 @@ void View::RenderWorld(const World& world, SemesterState st) {
                 const Texture&        tex = buildingTextures_[bs.texIndex];
                 const float sw = static_cast<float>(tex.Width());
                 const float sh = static_cast<float>(tex.Height());
-                // Negative source extents make DrawTexturePro mirror the
-                // sprite — carries the Tiled flip into the render.
+                // 負的來源範圍會讓 DrawTexturePro 鏡像該 sprite——把 Tiled 的翻轉
+                // 帶進渲染。
                 renderer_.DrawSprite(
                     tex,
                     Rect{0.0f, 0.0f,
@@ -258,11 +248,10 @@ void View::RenderWorld(const World& world, SemesterState st) {
                 const DecorationSprite& ds  = decorations_[d.index];
                 const auto&             def = nccu::game::gfx::kDecorations[ds.defIndex];
                 const Texture&          tex = ds.texture;
-                // Ping-pong (triangle-wave) frame from the render clock, then
-                // the source sub-rect for that frame; centred dest = the
-                // breathing 放大縮小. All maths is the pure SpriteStrip
-                // helpers (headless-tested); the blit is the same DrawSprite
-                // path buildings use — no raylib in any Model/Item code.
+                // 由渲染時鐘取得來回（三角波）影格，再取該影格的來源子矩形；置中的
+                // 目標矩形 = 呼吸般的放大縮小。所有運算都是純 SpriteStrip 輔助函式
+                //（headless 測試過）；位元搬移走的是建築所用的同一條 DrawSprite 路徑——
+                // 任何 Model／Item 程式碼都不含 raylib。
                 const int frame = nccu::game::gfx::FrameAt(
                     decorationClock_, def.frameCount, def.fps);
                 const Rect src = nccu::game::gfx::StripSourceRect(
@@ -275,24 +264,19 @@ void View::RenderWorld(const World& world, SemesterState st) {
             }
         }
 
-        // Quest-giver "!" overlays — extracted to
-        // ui/world/QuestGiverIndicators.cpp (P1 step 7f). Drawn after
-        // the painter's-order pass but inside the CameraScope so each
-        // "!" sits ON TOP of buildings that might occlude its NPC.
+        // 任務給予者的「!」提示——抽到 ui/world/QuestGiverIndicators.cpp。在畫家
+        // 順序這一趟「之後」、但仍在 CameraScope 內繪製，使每個「!」疊在可能遮住其
+        // NPC 的建築「之上」。
         DrawQuestGiverIndicators(renderer_, world);
 
-        // H3 visual ground marker — only paint the dashed gold exit line
-        // while the player is inside the Interlude (other chapters reuse
-        // the same world tile but treat that south band as ordinary
-        // road, so the marker would be misleading). Drawn INSIDE the
-        // CameraScope so the line sits at world y == kInterludeExitMinY
-        // and tracks the camera. Phase ticks with the local accumulator
-        // below so the dashes sweep west-to-east — pure visual flourish,
-        // does not affect the trigger (InterludeExit.h is geometry-only).
+        // 地面視覺標記——只在玩家位於插曲段內時才畫出虛線金色出口線（其他章節重用同一
+        // 張世界地磚，但把南側那一帶當作普通道路，故畫此標記會誤導）。在 CameraScope
+        // 內繪製，使該線位於世界座標 y == kInterludeExitMinY 並跟隨相機。相位隨下方的
+        // 區域累加器遞進，使虛線由西向東掃動——純視覺點綴，不影響觸發
+        //（InterludeExit.h 只管幾何）。
         if (st == SemesterState::Interlude_Market) {
-            // Audit D8 / SC 2.3.3: reduced-motion freezes the W→E sweep
-            // (phase stops advancing); the line is still drawn so the
-            // ground-marker affordance is preserved, only animation is.
+            // 減少動畫時凍結由西向東的掃動（相位停止遞進）；該線仍會繪製，以保留地面
+            // 標記的提示性，只凍結動畫。
             interludeMarkerPhase_ += InterludeMarkerPhaseStep(
                 nccu::engine::platform::Time::DeltaSeconds(),
                 world.ReducedMotion());
@@ -305,23 +289,19 @@ void View::RenderHud(const World& world, SemesterState st) {
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // 操場 校慶 lap progress ring (HUD, screen space) — extracted to
-    // ui/hud/SportsLapRing.cpp (P1 step 7e). Early-returns when no
-    // sports lap is active.
+    // 校慶操場跑圈進度環（HUD，螢幕座標）——抽到 ui/hud/SportsLapRing.cpp。無進行中
+    // 的運動會跑圈時提前返回。
     DrawSportsLapRing(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // Top-left status panel (karma/money/chapter/rain + control hints).
-    // Extracted to ui/hud/StatusPanel.cpp (P1 step 7a). Render-only;
-    // hugs the widest row via UTF-8 codepoint width estimation.
+    // 左上角狀態面板（業力／金錢／章節／降雨 + 操作提示）。抽到
+    // ui/hud/StatusPanel.cpp。只負責渲染；以 UTF-8 碼點寬度估計緊貼最寬的一列。
     DrawStatusPanel(renderer_, world);
 
-    // Rain "pressure" vignette — extracted to ui/hud/RainVignette.cpp
-    // (P1 step 7e). No-op when RainMeter < 60.
+    // 降雨「壓力」暈影——抽到 ui/hud/RainVignette.cpp。降雨計量 < 60 時為空操作。
     DrawRainVignette(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // Quest objective bar — extracted to ui/hud/ObjectiveBar.cpp
-    // (P1 step 7e). No-op when there is no Player or the objective
-    // string is empty for the current chapter.
+    // 任務目標列——抽到 ui/hud/ObjectiveBar.cpp。無 Player、或當前章節的目標字串為空
+    // 時為空操作。
     DrawObjectiveBar(renderer_, world, st,
                      viewportSize_.x, viewportSize_.y);
 }
@@ -330,20 +310,15 @@ void View::RenderOverlays(const World& world) {
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // Transient ShowMessage toasts: above the world/HUD labels, BELOW the
-    // dialog box — an open conversation takes visual precedence, matching
-    // the existing DrawDialog ordering. Suppressed during endings since
-    // Draw already early-returned above for IsEndingState. Text flows
-    // through the same IRenderer path → it picks up the CJK font (the
-    // gfx Font fix), so Chinese cues render, not as `?`.
+    // 短暫的 ShowMessage 提示橫幅：在世界／HUD 標籤之上、對話框「之下」——進行中的
+    // 對話具視覺優先，與既有的 DrawDialog 順序一致。結局期間不顯示，因為 Draw 已在
+    // 上方對 IsEndingState 提前返回。文字走同一條 IRenderer 路徑 → 會套用到 CJK
+    // 字型，故中文提示能正常渲染，不會變成 `?`。
     //
-    // Cycle 9.G — TWO independent channels are drawn each frame so a
-    // chapter-clear toast (Top) and a regular ShowMessage (Bottom) can
-    // coexist (cycle9f-post-iteration-diagnosis §B). Top is drawn
-    // FIRST so its painter order sits below Bottom on the z-layer —
-    // overlap is moot at the kSlotGap MessageView uses, but the
-    // ordering keeps Bottom (the more recent everyday toast) on top
-    // if a future layout shrinks the gap.
+    // 每幀繪製「兩」條彼此獨立的通道，使章節通關提示（Top）與一般 ShowMessage
+    //（Bottom）能並存。Top 先畫，使其畫家順序在 z 層上位於 Bottom 之下——在 MessageView
+    // 使用的 kSlotGap 下重疊與否無關緊要，但此順序可在未來版面縮小間隙時，讓 Bottom
+    //（較近期的日常提示）保持在上方。
     DrawHudMessage(renderer_, world.HudMessage(HudSlot::Top),
                    world.HudAge(HudSlot::Top),
                    viewportSize_.x, viewportSize_.y,
@@ -355,12 +330,11 @@ void View::RenderOverlays(const World& world) {
 
     DrawDialog(renderer_, world.Dialog());
 
-    // Tab inventory overlay, on top of the (frozen) world + dialog.
-    // Reactive: a pure function of World::InventoryOpen + the Player's
-    // bag, drawn each frame it is open (no retained UI state). The View
-    // owns World/Player here and builds the render-only InventoryRow DTO
-    // (BuildInventoryRows) so InventoryView itself stays render-only —
-    // same MVC split as the EndingSummary it hands DrawEndingCard.
+    // Tab 物品欄疊層，疊在（凍結的）世界 + 對話之上。反應式：為 World::InventoryOpen
+    // 與玩家背包的純函式，開啟期間每幀繪製（不保留 UI 狀態）。此處由 View 持有
+    // World／Player，並建立只供渲染的 InventoryRow DTO（BuildInventoryRows），使
+    // InventoryView 本身維持只負責渲染——與它交給 DrawEndingCard 的 EndingSummary
+    // 採同樣的 MVC 切分。
     if (world.InventoryOpen()) {
         if (const Player* ip = world.GetPlayer())
             DrawInventory(renderer_, BuildInventoryRows(*ip),
@@ -368,29 +342,23 @@ void View::RenderOverlays(const World& world) {
                           viewportSize_.x, viewportSize_.y);
     }
 
-    // Top-right "M 選單" affordance — extracted to
-    // ui/overlay/MenuAffordance.cpp (P1 step 7c). Early-returns when
-    // MenuOpen is true, so the call is safe every frame.
+    // 右上角「M 選單」提示——抽到 ui/overlay/MenuAffordance.cpp。MenuOpen 為真時
+    // 提前返回，故每幀呼叫都安全。
     DrawMenuAffordance(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // In-game pause menu overlay — extracted to ui/overlay/PauseMenu.cpp
-    // (P1 step 7b). No-op when MenuOpen is false, so the call is safe
-    // every frame.
+    // 遊戲內暫停選單疊層——抽到 ui/overlay/PauseMenu.cpp。MenuOpen 為偽時為空操作，
+    // 故每幀呼叫都安全。
     DrawPauseMenu(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // In-game 說明 (how-to-play) overlay — extracted to
-    // ui/overlay/HelpOverlay.cpp (P1 step 7d). No-op unless MenuOpen
-    // AND HelpOpen are both true, so the call is safe every frame.
+    // 遊戲內說明（玩法說明）疊層——抽到 ui/overlay/HelpOverlay.cpp。除非 MenuOpen
+    // 與 HelpOpen 同時為真，否則為空操作，故每幀呼叫都安全。
     DrawHelpOverlay(renderer_, world, viewportSize_.x, viewportSize_.y);
 
-    // U1-T2: the chapter bookend big card, drawn LAST so its brief
-    // full-attention beat sits above the world / HUD / dialog / menus.
-    // Advance its deterministic timer (Time::DeltaSeconds() is the fixed
-    // 1/60 step under the harness, so the card shows for the same frames
-    // every replay), then render. A no-op while inactive. Pure View state —
-    // never reaches state.jsonl. reducedMotion (audit D8 / SC 2.3.3) makes
-    // it appear opaque immediately and hard-cut at the end (no luminance
-    // ramp). The card auto-clears after ChapterCardState::kTotal seconds.
+    // 章節起訖大字卡，最後繪製，使其短暫的全神貫注節拍位於世界／HUD／對話／選單之上。
+    // 先推進其具決定性的計時器（在 harness 下 Time::DeltaSeconds() 是固定的 1/60
+    // 步長，故每次重播字卡顯示的幀數相同），再渲染。未啟用時為空操作。純 View 狀態——
+    // 絕不進入存檔。減少動畫時它會立即不透明出現、並在結束時硬切（無亮度漸變）。字卡會
+    // 在 ChapterCardState::kTotal 秒後自動清除。
     chapterCard_.Step(nccu::engine::platform::Time::DeltaSeconds());
     DrawChapterCard(renderer_, chapterCard_, viewportSize_.x, viewportSize_.y,
                     world.ReducedMotion());

@@ -1,19 +1,4 @@
-// Regression guards for BUGLEDGER I3 (interact-an-NPC is geometrically
 #include "game/quest/Flags.h"
-// impossible — the whole A/B/C spine soft-locked in Ch1) and I5
-// (Vendor::TryBuy had no runtime caller — Ending C / the Ch2 EnergyDrink
-// were unreachable). Both drive the REAL GameController::Update() loop
-// through the same nccu::engine::input::Input choke point the harness uses, so they
-// exercise the exact production path, not a unit-level shim.
-//
-// Revert-verify (both must FAIL without the production fix):
-//   * I3: restore the E-probe to `Rect{px,py,24,24}` (no kInteractReach
-//     inflation) — "walk up + E opens the victim dialog" fails: the
-//     flush-blocked player's probe never overlaps the NPC hitbox.
-//   * I5: drop the `o.IsVendor()` branch in the E-interact lambda (let a
-//     Vendor fall to o.Interact()) — the buy menu never opens, TryBuy is
-//     never called, Flag_BoughtUglyUmbrella / Flag_Ch2Cleared stay unset.
-
 #include "doctest/doctest.h"
 #include "game/controller/GameController.h"
 #include "game/world/World.h"
@@ -35,6 +20,16 @@
 #include <string>
 #include <vector>
 
+/**
+ * @file test_i35_interact_vendor.cpp
+ * @brief 透過真正的 GameController::Update() 迴圈驗證兩條互動主線：
+ *        (1) 走近會擋路的 NPC 後按 E 能開啟對話（互動觸及範圍 kInteractReach 充氣），
+ *        (2) 與 Vendor 互動會經由選單路由到 Vendor::TryBuy（含 Ch2 進度線）。
+ *
+ * 這些測試都經由 harness 所用的同一個 Input 入口來驅動，因此走的是正式產品路徑，而非
+ *        單元層的替身。
+ */
+
 #ifndef TEST_CONTENT_DIR
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif
@@ -45,22 +40,18 @@ using nccu::engine::input::Key;
 
 namespace {
 
-// Minimal scripted InputSource with raylib edge semantics, driven the
-// EXACT way the harness drives ScriptInput: each frame is
-//   set this frame's keys; controller.Update(); src.EndFrame();
-// so a Tap()'d key is "pressed" for precisely the one Update() that
-// follows it and auto-releases at EndFrame() — identical edge contract
-// to LiveInput/ScriptInput, so GameController cannot tell the difference
-// (we never touch ScriptInput.* — out of scope).
+// 最小的腳本化 InputSource，採 raylib 的 edge 語意，並以 harness 驅動 ScriptInput 的
+// 完全相同方式驅動：每格「設定本格按鍵；controller.Update(); src.EndFrame();」，使被
+// Tap() 的鍵恰好在其後的那一個 Update 期間為「pressed」，並在 EndFrame() 自動放開——
+// edge 契約與 LiveInput/ScriptInput 相同，GameController 分不出差異。
 class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
     void Release(Key k) { if (down_.erase(static_cast<int>(k)))         released_.insert(static_cast<int>(k)); }
     void Tap(Key k)     { Hold(k); autoUp_.insert(static_cast<int>(k)); }
 
-    // Called AFTER controller.Update(): expire the one-frame press/release
-    // edges and auto-up any tapped key (so the press was exactly one
-    // Update wide). Held keys (Hold without Tap) persist across frames.
+    // 在 controller.Update() 「之後」呼叫：使本格的 press/release edge 過期，並自動放開
+    // 任何被 tap 的鍵（使該按下恰好一個 Update 寬）。Hold（未 Tap）的鍵則跨格維持。
     void EndFrame() {
         pressed_.clear();
         released_.clear();
@@ -76,8 +67,7 @@ private:
     std::set<int> down_, pressed_, released_, autoUp_;
 };
 
-// One simulation frame: keys already set for this frame -> Update ->
-// expire the per-frame edges (mirror Harness::EndFrame).
+// 一個模擬格：本格按鍵已設好 -> Update -> 使每格 edge 過期（對應 Harness::EndFrame）。
 void Frame(nccu::GameController& c, TestInput& in) {
     c.Update();
     in.EndFrame();
@@ -95,8 +85,7 @@ const GameObject* FindVendor(const World& w) {
     return nullptr;
 }
 
-// Walk the player to flush-stop, then tap E once per frame until a dialog
-// opens (or budget exhausts). Returns whether a dialog opened.
+// 把玩家走到貼齊停住，然後每格 tap 一次 E 直到對話開啟（或預算用盡）。回傳是否開啟對話。
 bool WalkUpAndTalk(nccu::GameController& c, TestInput& in, World& w,
                    Key approach, float wantX) {
     in.Hold(approach);
@@ -105,7 +94,7 @@ bool WalkUpAndTalk(nccu::GameController& c, TestInput& in, World& w,
     for (int f = 0; f < 800; ++f) {
         Frame(c, in);
         const auto pos = w.GetPlayer()->GetPosition();
-        if (f > 5 && pos.x == lastX && pos.y == lastY) break;  // flush
+        if (f > 5 && pos.x == lastX && pos.y == lastY) break;  // 貼齊停住
         lastX = pos.x; lastY = pos.y;
     }
     in.Release(approach);
@@ -120,11 +109,8 @@ bool WalkUpAndTalk(nccu::GameController& c, TestInput& in, World& w,
 
 }  // namespace
 
-// I3 — the headline lock. A player WALKS (held Key::A) up to the Ch1 苦主
-// the way a human or the harness would, gets flush-blocked by the NPC's
-// movement collider, taps E, and the conversation must open. Before the
-// fix the E-probe equals the movement box so a flush stop never overlaps
-// the NPC and dialog NEVER opens (the entire spine soft-locks here).
+// 玩家「走」（按住 Key::A/W）靠近 Ch1 苦主，被其移動碰撞箱貼齊擋住後按 E，對話必須開啟。
+// 若 E 探測框等同移動箱，貼齊停住時不會與 NPC 重疊，對話便永不開啟（整條主線在此卡死）。
 TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
@@ -138,12 +124,9 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     const float vx = v->GetPosition().x;             // {1660,1010}
     const float vy = v->GetPosition().y;
 
-    // 善有善報: the victim moved to 綜合院館 (1660,1010), off the spawn row
-    // and behind the south-campus wall. The I3 GUARANTEE (a flush-blocked
-    // walked-up player can still talk via GameController's inflated E-probe)
-    // is position-independent, so place the player just SOUTH of the victim
-    // on the clear x=1660 column and walk UP into him — the same flush-block
-    // + E-probe geometry, exercised on the Y axis instead of the X axis.
+    // 苦主位於綜合院館 (1660,1010)，不在生成列上、且在南側校園牆後。互動觸及範圍的
+    // 保證與位置無關，故把玩家放在苦主正南方、淨空的 x=1660 列上，往北走向他——以同樣的
+    // 貼齊擋住 + E 探測幾何，改在 Y 軸而非 X 軸上演練。
     world.GetPlayer()->SetPosition(nccu::engine::math::Vec2{vx, vy + 90.0f});
 
     TestInput in;
@@ -151,17 +134,15 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
 
     const bool opened = WalkUpAndTalk(controller, in, world, Key::W, vx);
 
-    // Flush against the victim: pre-fix this is where the spine dies. The
-    // player can be touched-but-not-overlapped, so a 24x24 E-probe at the
-    // player origin never collides. The interaction reach fix makes the
-    // inflated probe overlap the NPC hitbox. Approaching from the south, the
-    // player ends BELOW the victim (py >= vy), aligned on X.
+    // 貼齊苦主：玩家可能被「碰到但未重疊」，故位於玩家原點的 24x24 E 探測框不會碰撞。
+    // 互動觸及範圍的修正讓充氣後的探測框與 NPC 碰撞箱重疊。由南往北靠近，玩家最終在苦主
+    // 下方（py >= vy），X 對齊。
     const float px = world.GetPlayer()->GetPosition().x;
     const float py = world.GetPlayer()->GetPosition().y;
-    CHECK(py >= vy);                                   // never walked through
-    CHECK(py <= vy + 40.0f);                            // truly adjacent
-    CHECK(std::fabs(px - vx) < 1.0f);                   // Y-axis approach column
-    CHECK(opened);                                      // <-- the I3 lock
+    CHECK(py >= vy);                                   // 從未穿過
+    CHECK(py <= vy + 40.0f);                            // 確實緊鄰
+    CHECK(std::fabs(px - vx) < 1.0f);                   // Y 軸靠近的列
+    CHECK(opened);                                      // <-- 互動鎖定點
     CHECK(world.Dialog().Active());
     CHECK(world.Dialog().NpcId() == "victim");
 
@@ -170,10 +151,8 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     EventBus::Instance().Clear();
 }
 
-// I3 companion — the fix must NOT open a walk-through hole. The player
-// presses INTO the victim for many frames; the collider must keep the
-// player's box from ever strictly overlapping the NPC's box (flush is OK,
-// pass-through is not).
+// 互動觸及範圍的修正不得開出「可穿越」的漏洞。玩家持續數格往苦主擠；碰撞箱必須讓玩家的
+// 箱永不嚴格重疊 NPC 的箱（貼齊可以，穿過不行）。
 TEST_CASE("I3: player still cannot walk through a static NPC") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
@@ -186,37 +165,32 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     const float vx = v->GetPosition().x;
     const float vy = v->GetPosition().y;
 
-    // 善有善報: place the player just SOUTH of the victim (1660,1010) on the
-    // clear column and shove UP into him — same no-pass-through guarantee on
-    // the Y axis (the victim is no longer on the spawn row).
+    // 把玩家放在苦主 (1660,1010) 正南方的淨空列上，往北用力擠——在 Y 軸上演練同樣的
+    // 不可穿越保證（苦主已不在生成列上）。
     world.GetPlayer()->SetPosition(nccu::engine::math::Vec2{vx, vy + 90.0f});
 
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
-    in.Hold(Key::W);                                   // shove up, hard
+    in.Hold(Key::W);                                   // 用力往上擠
     for (int f = 0; f < 1200; ++f) {
         Frame(controller, in);
         const auto pos = world.GetPlayer()->GetPosition();
-        // The player's 24x24 box must never strictly overlap the victim's
-        // 24x24 box on the shared column: its top edge stays >= vy (flush),
-        // never crossing to the far side of the NPC.
+        // 在共用的列上，玩家的 24x24 箱絕不得嚴格重疊苦主的 24x24 箱：其上緣須維持
+        // >= vy（貼齊），絕不越過 NPC 的另一側。
         const bool sameCol = !(pos.x >= vx + 24.0f || pos.x + 24.0f <= vx);
-        if (sameCol) CHECK(pos.y >= vy);               // no pass-through
+        if (sameCol) CHECK(pos.y >= vy);               // 不可穿越
     }
     const float endY = world.GetPlayer()->GetPosition().y;
-    CHECK(endY >= vy);                                  // ended flush, not past
+    CHECK(endY >= vy);                                  // 最終貼齊，未越過
 
     nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
-// I5 — a Vendor interaction must route to TryBuy via the choice UI. We
-// drive the Ch4 集英樓 vendor (sells the ugly umbrella, setsFlag
-// Flag_BoughtUglyUmbrella → Ending C). E to open the buy menu, E to
-// confirm the only stock line; the purchase event fires, money is
-// deducted, the inventory + the ending flag update — all inside
-// Vendor::TryBuy, just as the pinned test_vendor contract requires.
+// 與 Vendor 互動必須經由選擇 UI 路由到 TryBuy。驅動 Ch4 集英樓攤位（販售醜傘，設定旗標
+// kFlagBoughtUglyUmbrella → 結局 C）。E 開啟購買選單、E 確認唯一的庫存項；購買事件觸發、
+// 扣錢、背包與結局旗標更新——全在 Vendor::TryBuy 內完成。
 TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
@@ -230,8 +204,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world, EventBus::Instance()};
 
-    // Drive the FSM to Ch4; GameController respawns the roster (which
-    // includes the 集英樓 Vendor) on the next Update().
+    // 驅動 FSM 到 Ch4；GameController 會在下一次 Update() 重生 roster（含集英樓 Vendor）。
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
@@ -243,54 +216,49 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     const float vy = vend->GetPosition().y;
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
-    p->AddMoney(300);                                  // afford the 100 umbrella
+    p->AddMoney(300);                                  // 足夠買 100 元的傘
     const int money0 = p->GetMoney();
     CHECK_FALSE(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
 
-    // Teleport adjacent (this test targets the BUY wiring, not pathing;
-    // the I3 cases already prove walk-up+E reaches the dialog).
+    // 傳送到緊鄰處（本測試針對購買的接線，非尋路；I3 案例已證明走近 + E 能抵達對話）。
     p->SetPosition(nccu::engine::math::Vec2{vx - 8.0f, vy});
 
-    in.Tap(Key::E);                                    // open the buy menu
+    in.Tap(Key::E);                                    // 開啟購買選單
     Frame(controller, in);
     REQUIRE(world.Dialog().Active());
 
-    // Page through the greeting line(s) to the stock choice.
+    // 翻過招呼語到庫存選項。
     for (int f = 0; f < 16 && !world.Dialog().AtChoice(); ++f) {
         in.Tap(Key::E);
         Frame(controller, in);
     }
     REQUIRE(world.Dialog().AtChoice());
-    // REQUIREMENT #4 reconciliation: the menu is now one stock line PLUS
-    // a trailing "不買" decline choice (a forced purchase is a defect).
-    // choiceCursor_ defaults to 0 (the stock line), so a single E still
-    // confirms the BUY exactly as before — the I5 wiring is unchanged;
-    // only the menu size grew by the decline entry. test_vendor_decline
-    // .cpp owns the proof that picking the decline mutates nothing.
-    REQUIRE(world.Dialog().Choices().size() == 2);     // stock + 不買
+    // 選單現為一個庫存項「加上」一個結尾的「不買」選項（強迫購買是缺陷）。choiceCursor_
+    // 預設為 0（庫存項），故按一次 E 仍如舊地確認購買；接線不變，僅選單因新增不買項而多
+    // 一列。挑選不買時不會改變任何狀態的證明由 test_vendor_decline.cpp 負責。
+    REQUIRE(world.Dialog().Choices().size() == 2);     // 庫存 + 不買
     CHECK(world.Dialog().Choices().back().label == "先不買，謝謝");
-    CHECK(world.Dialog().ChoiceCursor() == 0);         // defaults to buy
+    CHECK(world.Dialog().ChoiceCursor() == 0);         // 預設停在購買
 
-    in.Tap(Key::E);                                    // confirm the buy
+    in.Tap(Key::E);                                    // 確認購買
     Frame(controller, in);
 
-    CHECK(p->GetMoney() == money0 - 100);              // soft-cap economy intact
-    CHECK(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));      // Ending C key set
-    // B2.1: the 醜傘 buy is now a HELD umbrella, not a count-consumable —
-    // the player holds it (auto-shelter) and the bag shows a single ugly
-    // umbrella row, with NO phantom "UglyUmbrella" consumable entry.
-    CHECK(p->ConsumableCount("UglyUmbrella") == 0);    // not a consumable
+    CHECK(p->GetMoney() == money0 - 100);              // 經濟（soft-cap）不變
+    CHECK(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));      // 結局 C 的關鍵旗標
+    // 醜傘的購買現為「手持傘」，而非可計數的消耗品——玩家持有它（自動遮蔽），且背包只顯示
+    // 單獨一列醜傘，「沒有」幽靈般的 "UglyUmbrella" 消耗品項。
+    CHECK(p->ConsumableCount("UglyUmbrella") == 0);    // 非消耗品
     CHECK(p->HeldUmbrellaKind() == HeldUmbrella::Ugly);
-    CHECK(p->HasUmbrella());                           // now sheltered
-    CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));   // NOT the true umbrella
+    CHECK(p->HasUmbrella());                           // 現已遮蔽
+    CHECK_FALSE(p->HasFlag(nccu::kFlagHasTrueUmbrella));   // 不是真傘
     {
         const auto rows = nccu::BuildInventoryRows(*p);
         int umbRows = 0;
         for (const auto& r : rows)
             if (r.itemId == nccu::kItemUglyUmbrella) ++umbRows;
-        CHECK(umbRows == 1);                           // exactly one, no double row
+        CHECK(umbRows == 1);                           // 恰好一列，不重複
     }
-    CHECK(pickupHits == 1);                            // EventBus purchase event
+    CHECK(pickupHits == 1);                            // EventBus 購買事件
     CHECK(lastPickup == "UglyUmbrella");
 
     nccu::engine::input::Input::SetSource(nullptr);
@@ -298,13 +266,10 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     EventBus::Instance().Clear();
 }
 
-// I5 — the Ch2 spine, two-phase flow. The clear needs an inventory
-// EnergyDrink to WAKE 學霸 (only a Vendor buy can supply it). Buy at the
-// Ch2 自動販賣機; talk to 學霸 once -> phase 1 consumes the drink and wakes
-// him (Flag_Bookworm, which starts the note quest); with the 3 notes in,
-// a second talk -> phase 2 exchanges (Flag_BookwormRecovered); closing the
-// (d) thanks dialog lets LiftChapter2Clear set Flag_Ch2Cleared. Before the
-// I5 fix the EnergyDrink was unobtainable in-engine so the spine stalled.
+// Ch2 主線的兩階段流程。清關需要背包裡有 EnergyDrink 來喚醒學霸（只有 Vendor 購買能供給）。
+// 在 Ch2 自動販賣機買到；與學霸對話一次 -> 第一階段消耗飲料並喚醒他（kFlagBookworm，啟動
+// 撿筆記任務）；湊齊 3 份筆記後第二次對話 -> 第二階段交換（kFlagBookwormRecovered）；關閉
+// 道謝對話後，LiftChapter2Clear 設定 kFlagCh2Cleared。
 TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
@@ -320,15 +285,14 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
 
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
-    // The 3 散落筆記 are an orthogonal pickup quest; pre-set them so this
-    // test isolates the I5 EnergyDrink-supply defect (the rescue needs
-    // notes-complete AND a drink — we exercise the drink path).
+    // 3 份散落筆記是另一條正交的撿取任務；先預設它們，讓本測試專注隔離 EnergyDrink 的供給
+    //（救援需要筆記齊全「且」有飲料——這裡演練飲料路徑）。
     p->SetFlag(nccu::kFlagFoundNote1);
     p->SetFlag(nccu::kFlagFoundNote2);
     p->SetFlag(nccu::kFlagFoundNote3);
-    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // none until bought
+    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // 買到前皆無
 
-    // --- Buy the EnergyDrink at the Ch2 自動販賣機 vendor. ---
+    // --- 在 Ch2 自動販賣機購買 EnergyDrink。 ---
     const GameObject* vend = FindVendor(world);
     REQUIRE(vend != nullptr);
     p->SetPosition(nccu::engine::math::Vec2{vend->GetPosition().x - 8.0f,
@@ -341,62 +305,60 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
         Frame(controller, in);
     }
     REQUIRE(world.Dialog().AtChoice());
-    in.Tap(Key::E);                                    // confirm buy
+    in.Tap(Key::E);                                    // 確認購買
     Frame(controller, in);
-    CHECK(p->ConsumableCount("EnergyDrink") == 1);     // <-- I5 supply fixed
+    CHECK(p->ConsumableCount("EnergyDrink") == 1);     // <-- EnergyDrink 供給已修
 
-    // --- A2 (hard-gate): meet the 圖書館管理員 FIRST. She is the Ch2 chain
-    // head — until Flag_MetLibrarian is set, the 學霸 cannot be woken (the
-    // wake step refuses and the opener redirects to the 櫃台). Walk to her and
-    // tap E to fire the real TryMeetLibrarian hook. ---
+    // --- 硬性前置：先見圖書館管理員。她是 Ch2 鏈的起點——在 kFlagMetLibrarian 設定前
+    // 學霸無法被喚醒（喚醒步驟會拒絕，opener 改導向櫃台）。走向她並按 E 觸發真正的
+    // TryMeetLibrarian 鉤子。 ---
     const GameObject* lib = FindNpc(world, "librarian");
     REQUIRE(lib != nullptr);
     p->SetPosition(nccu::engine::math::Vec2{lib->GetPosition().x - 8.0f,
                                    lib->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
-    CHECK(p->HasFlag(nccu::kFlagMetLibrarian));         // chain head met
+    CHECK(p->HasFlag(nccu::kFlagMetLibrarian));         // 鏈起點已會面
     for (int f = 0; f < 16 && world.Dialog().Active(); ++f) {
         in.Tap(Key::E);
         Frame(controller, in);
     }
 
-    // --- Talk to 學霸, PHASE 1: consumes the drink -> wakes him
-    // (Flag_Bookworm). The new two-phase flow no longer recovers in one
-    // step: waking is what starts the note quest. ---
+    // --- 與學霸對話，第一階段：消耗飲料 -> 喚醒他（kFlagBookworm）。新的兩階段流程不再
+    // 一步完成；喚醒才是啟動撿筆記任務的動作。 ---
     const GameObject* bw = FindNpc(world, "bookworm");
     REQUIRE(bw != nullptr);
     p->SetPosition(nccu::engine::math::Vec2{bw->GetPosition().x - 8.0f,
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
-    CHECK(p->HasFlag(nccu::kFlagBookworm));                // woken
-    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // drink spent at wake
-    CHECK_FALSE(p->HasFlag(nccu::kFlagBookwormRecovered)); // not yet — needs notes
+    CHECK(p->HasFlag(nccu::kFlagBookworm));                // 已喚醒
+    CHECK(p->ConsumableCount("EnergyDrink") == 0);     // 飲料在喚醒時消耗
+    CHECK_FALSE(p->HasFlag(nccu::kFlagBookwormRecovered)); // 尚未——需要筆記
 
-    // Close the wake (c) dialog so the next E is a fresh interaction.
+    // 關閉喚醒對話，使下一次 E 是全新的互動。
     for (int f = 0; f < 16 && world.Dialog().Active(); ++f) {
         in.Tap(Key::E);
         Frame(controller, in);
     }
 
-    // --- Talk to 學霸, PHASE 2: notes are in (pre-set above) -> exchange:
-    // Flag_BookwormRecovered. No further drink consumed. ---
+    // --- 與學霸對話，第二階段：筆記已齊（上面預設）-> 交換：kFlagBookwormRecovered。
+    // 不再消耗飲料。 ---
     p->SetPosition(nccu::engine::math::Vec2{bw->GetPosition().x - 8.0f,
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
     CHECK(p->HasFlag(nccu::kFlagBookwormRecovered));
 
-    // Close the 學霸 (d) thanks dialog; LiftChapter2Clear then sets
-    // Flag_Ch2Cleared on the next non-dialog frame, the spine's Ch2 clear.
+    // 關閉學霸的道謝對話；LiftChapter2Clear 會在下一個非對話格設定 kFlagCh2Cleared，即
+    // 主線的 Ch2 清關。
     for (int f = 0; f < 32 && world.Dialog().Active(); ++f) {
         in.Tap(Key::E);
         Frame(controller, in);
     }
     CHECK_FALSE(world.Dialog().Active());
     Frame(controller, in);                             // LiftChapter2Clear
-    CHECK(p->HasFlag(nccu::kFlagCh2Cleared));              // <-- Ch2 spine clears
+    CHECK(p->HasFlag(nccu::kFlagCh2Cleared));              // <-- Ch2 主線清關
 
     nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);

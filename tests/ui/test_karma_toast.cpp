@@ -1,20 +1,19 @@
-// Cycle 9.B H5 — KarmaChanged is no longer a dead channel.
+/**
+ * @file test_karma_toast.cpp
+ * @brief 驗證業力變動的事件管線：每次 AddKarma 都發佈帶正負號差值的
+ *        KarmaChanged，WireKarmaToastSubscriber 將其轉成以「業力」開頭的
+ *        ShowMessage 並反映到 HUD，且詛咒傘拾取不會重複發佈。
+ */
 //
-// Before this fix, Player::AddKarma silently mutated karma_ and only
-// CursedUmbrella ever Publish()ed KarmaChanged (the diagnostic playtest
-// found 1 publisher / 0 subscribers — pure dead-letter). These tests
-// pin three guarantees:
-//   1. Every AddKarma call now publishes KarmaChanged with the signed
-//      delta as text ("+5", "-3").
-//   2. The WireKarmaToastSubscriber consumer turns that into a
-//      ShowMessage prefixed with 業力, which is what the HUD banner
-//      eventually mirrors.
-//   3. CursedUmbrella::BeClaimed (which goes through decreaseKarma →
-//      AddKarma) no longer double-publishes KarmaChanged.
+// 此處固定三項保證：
+//   1. 每次 AddKarma 都會發佈 KarmaChanged，文字為帶正負號的差值（"+5"、"-3"）。
+//   2. WireKarmaToastSubscriber 消費者會把它轉成以「業力」開頭的 ShowMessage，
+//      最終反映到 HUD 橫幅。
+//   3. CursedUmbrella::BeClaimed（經由 decreaseKarma → AddKarma）不會重複發佈
+//      KarmaChanged。
 //
-// The eventbus_isolation listener clears the bus between cases, so each
-// test starts from a clean slate even though all of them touch the
-// global EventBus singleton.
+// eventbus_isolation 監聽器會在每個 case 之間清空匯流排，故即使全部都觸及全域
+// EventBus 單例，每個測試仍從乾淨狀態開始。
 
 #include "doctest/doctest.h"
 #include "game/entities/CursedUmbrella.h"
@@ -31,7 +30,7 @@ using nccu::engine::math::Vec2;
 
 namespace {
 
-// Capture every KarmaChanged payload published during the test body.
+// 擷取測試本體期間所發佈的每一筆 KarmaChanged 內容。
 struct KarmaCapture {
     std::vector<std::string> deltas;
     EventBus::Subscription   sub;
@@ -47,6 +46,7 @@ KarmaCapture CaptureKarma() {
 
 } // namespace
 
+// 每次 AddKarma 都發佈帶正負號差值文字的 KarmaChanged。
 TEST_CASE("AddKarma publishes KarmaChanged with signed delta text") {
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
@@ -59,60 +59,53 @@ TEST_CASE("AddKarma publishes KarmaChanged with signed delta text") {
     REQUIRE(cap.deltas.size() == 2);
     CHECK(cap.deltas[1] == "-3");
 
-    // The signed format is %+d so positive deltas always carry an
-    // explicit '+' — the karma subscriber relies on this to render
-    // "業力 +5" vs "業力 -3" without a separate branch.
+    // 格式為 %+d，故正差值一律帶明確的 '+' —— 業力訂閱者依此直接組出「業力 +5」
+    // 或「業力 -3」，不需另設分支。
     CHECK(p.GetKarma() == 50 + 5 - 3);
 }
 
+// decreaseKarma 經由 AddKarma 轉發，只發佈一次（不重複）。
 TEST_CASE("decreaseKarma forwards through AddKarma — single publish only") {
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
 
     p.decreaseKarma(10);
-    // ONE event from one call: AddKarma's publish, not a duplicate
-    // from a separate decreaseKarma site. Pins the "no double-publish"
-    // invariant that the Cycle 9.B fix to CursedUmbrella depends on.
+    // 一次呼叫只有一個事件：來自 AddKarma 的發佈，而非 decreaseKarma 另行重複。
+    // 固定詛咒傘修正所依賴的「不重複發佈」不變量。
     REQUIRE(cap.deltas.size() == 1);
     CHECK(cap.deltas[0] == "-10");
 }
 
+// 詛咒傘的拾取本身不影響業力，故不發佈 KarmaChanged。
 TEST_CASE("P2: CursedUmbrella::BeClaimed publishes NO KarmaChanged (pickup is karma-neutral)") {
-    // Pre-P2 the cursed pickup ran .decreaseKarma(30) inline, which fired
-    // ONE KarmaChanged "-30" via Player::AddKarma's auto-publish (Cycle
-    // 9.B's de-duplication win). P2 moves the karma cost off the pickup
-    // and onto per-chapter ApplyCursedTaintDecay (SceneRouter Ch2/3/4
-    // entry), so the pickup itself emits ZERO KarmaChanged — the
-    // visible "業力 -5" banner now lands at the next chapter boundary
-    // instead, where the moral stain is actually compounding.
+    // 業力代價已從拾取移到每章的 ApplyCursedTaintDecay（SceneRouter 進第二／三／
+    // 四章時），故拾取本身發佈零個 KarmaChanged —— 可見的「業力 -5」橫幅改在下一個
+    // 章節邊界出現，也就是道德污點真正累積之處。
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
 
     CursedUmbrella umb{Vec2{0, 0}};
     umb.BeClaimed(&p);
 
-    CHECK(cap.deltas.empty());                       // no KarmaChanged at pickup
-    CHECK(p.GetKarma() == 50);                       // karma untouched
-    CHECK(p.GetCursedTaint() == 1);                  // taint bumped instead
+    CHECK(cap.deltas.empty());                       // 拾取時不發佈 KarmaChanged
+    CHECK(p.GetKarma() == 50);                       // 業力未受影響
+    CHECK(p.GetCursedTaint() == 1);                  // 改為累加污點
 
-    // Now drive the per-chapter decay: ONE KarmaChanged "-5" fires.
+    // 接著觸發每章衰減：發佈一次 KarmaChanged "-5"。
     p.ApplyCursedTaintDecay();
     REQUIRE(cap.deltas.size() == 1);
     CHECK(cap.deltas[0] == "-5");
     CHECK(p.GetKarma() == 45);
 }
 
+// WireKarmaToastSubscriber 把 KarmaChanged 轉成 HUD 提示。
 TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
-    // End-to-end: AddKarma -> KarmaChanged -> WireKarmaToastSubscriber
-    // -> ShowMessage -> WireHudMessageSubscriber -> World.HudMessage().
-    // This is the full production wiring exercised inside the unit
-    // test process (no GameController construction needed).
+    // 端到端：AddKarma -> KarmaChanged -> WireKarmaToastSubscriber
+    // -> ShowMessage -> WireHudMessageSubscriber -> World.HudMessage()。
+    // 這是在單元測試行程內走過的完整正式接線（不需建構 GameController）。
     //
-    // NOTE: the EventBus isolation reporter (test_eventbus_isolation)
-    // clears the bus at every subcase boundary, so the Wire... calls
-    // MUST live INSIDE each SUBCASE — a subscription at TEST_CASE scope
-    // is wiped before the body runs (same idiom as the
-    // "ChapterGate Interlude -> returnTo" case in test_chapter_transitions).
+    // 註：EventBus 隔離報告器會在每個 subcase 邊界清空匯流排，故 Wire... 呼叫
+    // 必須放在每個 SUBCASE 內 —— 在 TEST_CASE 層級的訂閱會在本體執行前就被清掉。
 
     SUBCASE("positive delta -> 業力 +N") {
         nccu::World w{"", /*loadSprites=*/false};
@@ -121,8 +114,7 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
         Player p{Vec2{0, 0}};
 
         p.AddKarma(5);
-        // The HUD message must contain BOTH the 業力 prefix and the
-        // signed delta — the brief's expected payload from H5.
+        // HUD 訊息必須同時含有「業力」前綴與帶正負號的差值。
         CHECK(w.HudMessage().find("業力") != std::string::npos);
         CHECK(w.HudMessage().find("+5") != std::string::npos);
     }
@@ -135,8 +127,7 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
 
         p.AddKarma(-3);
         CHECK(w.HudMessage().find("業力") != std::string::npos);
-        // The actual rendering carries the sign verbatim so a player
-        // can read 業力 -3 without ambiguity.
+        // 實際呈現會原樣帶上正負號，玩家能毫無歧義地讀到「業力 -3」。
         CHECK(w.HudMessage().find("-3") != std::string::npos);
     }
 
@@ -146,9 +137,8 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
         nccu::WireKarmaToastSubscriber(EventBus::Instance());
         Player p{Vec2{0, 0}};
 
-        // 0-delta calls happen rarely (defensive call sites). The
-        // subscriber filters "+0" / "-0" so they never burn the HUD
-        // banner with a dummy reading. World starts with empty HUD.
+        // 0 差值的呼叫偶爾發生（防禦性呼叫點）。訂閱者會濾掉 "+0" / "-0"，因此
+        // 不會用無意義的讀數佔用 HUD 橫幅。World 起始時 HUD 為空。
         REQUIRE(w.HudMessage().empty());
         p.AddKarma(0);
         CHECK(w.HudMessage().empty());

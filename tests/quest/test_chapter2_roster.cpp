@@ -1,3 +1,7 @@
+/**
+ * @file test_chapter2_roster.cpp
+ * @brief 驗證 Ch2 名冊為 6 個 NPC（含新角色 librarian），且 librarian 能解析到 chapter2.md。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/ChapterSpawns.h"
 #include "game/dialog/DialogSource.h"
@@ -13,9 +17,10 @@
 
 using nccu::SemesterState;
 
-// S5c-1: Ch2 has a real roster and the new librarian npcId resolves to
-// the chapter2.md「## NPC：圖書館管理員」section through DialogSource.
+// Ch2 擁有完整名冊，且新加入的 librarian npcId 會經 DialogSource
+// 解析到 chapter2.md 的「## NPC：圖書館管理員」段落。
 
+// Ch2 名冊應正好包含 chapter2.md 的 6 個 NPC，且 librarian 為任務給予者。
 TEST_CASE("ChapterNpcSpawns: Ch2 is the 6 chapter2.md NPCs") {
     const auto& ch2 = nccu::ChapterNpcSpawns(SemesterState::Chapter2_Midterms);
     REQUIRE(ch2.size() == 6);
@@ -30,31 +35,31 @@ TEST_CASE("ChapterNpcSpawns: Ch2 is the 6 chapter2.md NPCs") {
                            "ta", "shop_auntie", "librarian"})
         CHECK(ids.count(id) == 1);
 
-    // The librarian is the quest-giver (chapter2.md: 純資訊關鍵 NPC).
+    // librarian 是任務給予者（chapter2.md 中的純資訊關鍵 NPC）。
     REQUIRE(librarian != nullptr);
     CHECK(librarian->isQuestGiver);
 }
 
+// librarian 應能解析到 chapter2.md：有開場 (a)、不給 karma、不設旗標；其他章節則為空。
 TEST_CASE("DialogSource: librarian resolves to chapter2.md content") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     const auto& subs =
         nccu::dialog::Entries("librarian", SemesterState::Chapter2_Midterms);
-    REQUIRE_FALSE(subs.empty());                 // section found + parsed
+    REQUIRE_FALSE(subs.empty());                 // 有找到段落並完成解析
 
-    // (a) is the opener — the章節推進關鍵對話 the player must trigger.
+    // (a) 是開場——玩家必須觸發的章節推進關鍵對話。
     const nccu::dialog::SubEntry* a = nullptr;
     for (const auto& s : subs) if (s.subState == 0) a = &s;
     REQUIRE(a != nullptr);
     CHECK_FALSE(a->lines.empty());
 
-    // The librarian gives no karma (純資訊節點).
+    // librarian 是純資訊節點，不給予 karma、不設旗標。
     for (const auto& s : subs) {
         CHECK(s.karmaDelta == 0);
         CHECK(s.setsFlag.empty());
     }
 
-    // Unknown-in-Ch1 is fine: librarian only exists from Ch2 on; asking
-    // for it in an ending file (no such section) degrades to empty.
+    // librarian 自 Ch2 起才存在：在結局檔（無此段落）查詢時應安全退化為空。
     CHECK(nccu::dialog::Entries("librarian", SemesterState::Ending_A).empty());
 }

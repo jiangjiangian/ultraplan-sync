@@ -1,17 +1,15 @@
-// Test isolation for the global EventBus singleton.
-//
-// EventBus has no per-handler unsubscribe — only a global Clear(). Many
-// test cases Subscribe a lambda that captures stack/`this` and rely on
-// the *next* test's Clear() to remove it. A test that Publish()es before
-// its own Clear() (e.g. the CashPickup factory cases, Player::ApplyRain
-// respawn) then invokes a handler over a destroyed capture — observed as
-// SIGSEGV / "double free detected" and aborting the whole run.
-//
-// Production is unaffected: only GameController subscribes there, and its
-// dtor Clears. This listener makes the *suite* hermetic by clearing the
-// bus at every test/subcase boundary, so a handler can never outlive the
-// scope that registered it. (A proper RAII unsubscribe on EventBus is a
-// separate engine-hardening item — see .claude/BUGLEDGER.md.)
+/**
+ * @file test_eventbus_isolation.cpp
+ * @brief 註冊一個 doctest reporter，在每個 test case／subcase 邊界都 Clear 全域
+ *        EventBus，使整個測試套件對 EventBus 保持隔離（hermetic）。
+ *
+ * EventBus 沒有逐 handler 的取消訂閱，只有全域 Clear()。許多測試會 Subscribe 一個
+ * 捕捉堆疊變數／`this` 的 lambda，並仰賴「下一個」測試的 Clear() 來移除它。若某個
+ * 測試在自己 Clear() 之前就 Publish()，便可能對已銷毀的捕捉物呼叫 handler——表現為
+ * 記憶體錯誤而中止整個執行。正式程式不受影響：只有 GameController 在其中訂閱，且其
+ * 解構會 Clear。本 listener 在每個測試／subcase 邊界清空匯流排，使 handler 永遠不會
+ * 比註冊它的作用域活得更久。
+ */
 
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
@@ -29,7 +27,7 @@ struct EventBusIsolation : doctest::IReporter {
     void subcase_start(const doctest::SubcaseSignature&) override  { Reset(); }
     void subcase_end() override                                   { Reset(); }
 
-    // Unused reporting hooks — no-ops.
+    // 未使用的回報鉤子——皆為 no-op。
     void report_query(const doctest::QueryData&) override {}
     void test_run_start() override {}
     void test_run_end(const doctest::TestRunStats&) override {}

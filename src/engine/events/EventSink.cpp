@@ -3,12 +3,11 @@
 namespace nccu::events {
 
 namespace {
-// Per-process pointer to the EventBus entity callsites should publish
-// through. Null by default so a no-setup translation unit (a doctest
-// that only constructs a Player) falls through to EventBus::Instance()
-// and behaves byte-identically to the pre-P2 path. main.cpp sets it
-// alongside the GameController; the controller's dtor / main's outer
-// teardown reset it to null so a Restart cycle re-binds cleanly.
+// 行程層級的指標，指向各呼叫端應發布事件的 EventBus。預設為 null，
+// 使未做任何初始化的編譯單元（例如只建構 Player 的測試）退回到
+// EventBus::Instance()，行為與導入注入式 sink 之前完全一致（byte 級相同）。
+// main.cpp 會在建立 GameController 時一併設定；controller 解構與 main 的
+// 外層收尾會將其重設為 null，讓重新開始時能乾淨地重新綁定。
 EventBus* g_sink = nullptr;
 } // namespace
 

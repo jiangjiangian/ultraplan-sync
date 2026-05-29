@@ -1,3 +1,7 @@
+/**
+ * @file test_ch4_ending_confession.cpp
+ * @brief 驗證 Ch4 結局前的自白延後：自白播放時不轉場、關閉後才結算，且自白依優先序只觸發一次。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/Flags.h"
 #include "game/controller/GameController.h"
@@ -25,18 +29,14 @@ using nccu::SemesterState;
 using nccu::engine::input::Key;
 using nccu::engine::math::Vec2;
 
-// G2 — the ending must NOT be abrupt: every Ch4 ending TRIGGER is deferred
-// behind a brief inner-monologue (自白). These cases drive the REAL
-// GameController::Update() loop (the same nccu::engine::input::Input seam the harness +
-// test_rain_survival use) and prove the deferral end-to-end: an ending does
-// NOT fire while the 自白 dialog is on screen, and DOES fire once it closes.
-// They also pin TryOpenEndingConfession's once-key idempotency and that the
-// 自白 matches the ending the gate will land on.
+// 結局不可突兀：每個 Ch4 結局的觸發都會延後到一段簡短的內心獨白（自白）之後。
+// 以下案例驅動真正的 GameController::Update() 迴圈，端到端驗證這個延後：
+// 當自白對話還在畫面上時結局不會觸發，等它關閉後才觸發。同時釘住
+// TryOpenEndingConfession 的單次鍵冪等性，以及自白內容要與閘門最終落入的結局相符。
 
 namespace {
 
-// Never presses a key — the player stands still; only the per-frame
-// rain/confession/gate logic runs. Mirrors test_rain_survival's TestInput.
+// 完全不按鍵——玩家站著不動，只跑每幀的雨／自白／閘門邏輯。
 class TestInput final : public nccu::engine::input::InputSource {
 public:
     void EndFrame() {}
@@ -50,9 +50,8 @@ void Frame(nccu::GameController& c, TestInput& in) {
     in.EndFrame();
 }
 
-// Build a World already in Ch4 with the GameController wired, give the
-// player an umbrella so the rain tick DRAINS (never the lethal teleport
-// that would perturb a multi-frame deferral test), and return refs.
+// 建立一個已處於 Ch4、且已接好 GameController 的 World；給玩家一把傘，
+// 讓雨的計時只是扣血（而非會干擾多幀延後測試的致命傳送），並回傳參考。
 struct Ch4Fixture {
     World world;
     nccu::GameController controller;
@@ -64,8 +63,8 @@ struct Ch4Fixture {
         EventBus::Instance().Clear();
         world.Semester().Transition(SemesterState::Chapter4_Finals);
         nccu::engine::input::Input::SetSource(&in);
-        // Settle the Ch4 entry side-effects (clears HasUmbrella +
-        // Flag_HasTrueUmbrella) with one quiet frame, THEN arm the player.
+        // 先用一個安靜的幀讓 Ch4 進場的副作用沉澱（會清掉 HasUmbrella 與
+        // Flag_HasTrueUmbrella），之後再武裝玩家。
         Frame(controller, in);
     }
     ~Ch4Fixture() {
@@ -78,42 +77,41 @@ struct Ch4Fixture {
 
 }  // namespace
 
+// 買醜傘的結局會延後到自白之後：自白期間不轉場，關閉後才結算到 Ending C。
 TEST_CASE("G2: buy-ugly ending DEFERS behind the 自白, then resolves to C on close") {
     Ch4Fixture fx;
     Player& p = fx.P();
-    p.SetHasUmbrella(true);                       // keep rain draining, not lethal
+    p.SetHasUmbrella(true);                       // 維持雨只扣血、不致命
     REQUIRE(fx.world.Semester().Current() == SemesterState::Chapter4_Finals);
     REQUIRE_FALSE(fx.world.Dialog().Active());
 
-    // Arm the Ending-C trigger (what Vendor::TryBuy sets on the 集英樓 醜傘).
+    // 武裝 Ending C 的觸發（即 Vendor::TryBuy 在集英樓醜傘設下的旗標）。
     p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
 
-    // Next frame: the non-dialog poll opens the 務實 自白 and the ending
-    // gate DEFERS behind it — the player must read the monologue first.
+    // 下一幀：非對話輪詢開啟「務實」自白，結局閘門延後到它之後——玩家須先讀完獨白。
     Frame(fx.controller, fx.in);
-    CHECK(fx.world.Dialog().Active());                                  // 自白 up
-    CHECK(fx.world.Semester().Current() == SemesterState::Chapter4_Finals);  // NOT yet
+    CHECK(fx.world.Dialog().Active());                                  // 自白出現
+    CHECK(fx.world.Semester().Current() == SemesterState::Chapter4_Finals);  // 尚未轉場
 
-    // Even running more frames while the box is up changes nothing (the
-    // dialog freeze early-returns; the ending stays deferred).
+    // 對話框開著時即使多跑幾幀也不會改變（對話凍結會提前返回，結局維持延後）。
     for (int i = 0; i < 10; ++i) Frame(fx.controller, fx.in);
     CHECK(fx.world.Semester().Current() == SemesterState::Chapter4_Finals);
 
-    // Player finishes reading: close the box. The next non-dialog poll
-    // resolves the (persistent) flag to Ending C.
+    // 玩家讀完：關閉對話框。下一次非對話輪詢便把（持久的）旗標結算為 Ending C。
     fx.world.Dialog().Close();
     Frame(fx.controller, fx.in);
     CHECK(fx.world.Semester().Current() == SemesterState::Ending_C);
 }
 
+// 詛咒傘的結局會延後到自白之後：關閉後才結算到 Ending B。
 TEST_CASE("G2: cursed ending DEFERS behind the 自白, then resolves to B on close") {
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);
-    p.SetFlag(nccu::kFlagTookCursedUmbrella);         // carried from Ch1 -> Ending B
+    p.SetFlag(nccu::kFlagTookCursedUmbrella);         // 自 Ch1 帶來 -> Ending B
 
     Frame(fx.controller, fx.in);
-    CHECK(fx.world.Dialog().Active());                                  // curse 自白
+    CHECK(fx.world.Dialog().Active());                                  // 詛咒自白
     CHECK(fx.world.Semester().Current() == SemesterState::Chapter4_Finals);
 
     fx.world.Dialog().Close();
@@ -121,6 +119,7 @@ TEST_CASE("G2: cursed ending DEFERS behind the 自白, then resolves to B on clo
     CHECK(fx.world.Semester().Current() == SemesterState::Ending_B);
 }
 
+// 自白具單次性（once-key）：讀過之後絕不會在前往結局的路上再次開啟。
 TEST_CASE("G2: the 自白 is one-shot (once-key) — it never re-opens after reading") {
     Ch4Fixture fx;
     Player& p = fx.P();
@@ -129,18 +128,15 @@ TEST_CASE("G2: the 自白 is one-shot (once-key) — it never re-opens after rea
 
     Frame(fx.controller, fx.in);
     REQUIRE(fx.world.Dialog().Active());
-    CHECK(p.HasFlag(nccu::kFlagCh4ConfessedUgly));   // once-key set
+    CHECK(p.HasFlag(nccu::kFlagCh4ConfessedUgly));   // 單次鍵已設
     fx.world.Dialog().Close();
 
-    // Resolve to C; the confession must not fire a second time on the way.
+    // 結算到 C；前往途中自白不得再觸發第二次。
     Frame(fx.controller, fx.in);
     CHECK(fx.world.Semester().Current() == SemesterState::Ending_C);
 }
 
-// Direct unit on the helper: it opens the matching confession exactly once,
-// respects the gate precedence (cursed outranks ugly/true), and no-ops while
-// a dialog is already active / outside Ch4. Revert-verify: delete the
-// dialog.Open() calls and the Active() CHECKs fail.
+// 直接測試輔助函式：依優先序（詛咒高於醜傘／真傘）恰好開啟一次對應自白，且對話開啟中或非 Ch4 時為無操作。
 TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by precedence") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     EventBus::Instance().Clear();
@@ -159,7 +155,7 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
         CHECK(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter4_Finals));
         CHECK(d.Active());
-        CHECK(p.HasFlag(nccu::kFlagCh4ConfessedCursed));   // cursed chosen
+        CHECK(p.HasFlag(nccu::kFlagCh4ConfessedCursed));   // 選中詛咒
         CHECK_FALSE(p.HasFlag(nccu::kFlagCh4ConfessedUgly));
     }
     SUBCASE("never interrupts an open dialog; once-key blocks a re-open") {
@@ -167,22 +163,22 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         d.Open({"some other conversation"});
         CHECK_FALSE(nccu::TryOpenEndingConfession(
-            p, d, SemesterState::Chapter4_Finals));        // box up -> no-op
+            p, d, SemesterState::Chapter4_Finals));        // 對話框開著 -> 無操作
         d.Close();
         CHECK(nccu::TryOpenEndingConfession(
-            p, d, SemesterState::Chapter4_Finals));        // now opens
+            p, d, SemesterState::Chapter4_Finals));        // 現在會開啟
         d.Close();
         CHECK_FALSE(nccu::TryOpenEndingConfession(
-            p, d, SemesterState::Chapter4_Finals));        // once-key -> no-op
+            p, d, SemesterState::Chapter4_Finals));        // 單次鍵 -> 無操作
     }
     SUBCASE("reclaimed-true 自白 only BEFORE the finale (no double beat)") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagHasTrueUmbrella);
-        p.SetFlag(nccu::kFlagTaFinaleChoiceMade);              // gentle finale path
+        p.SetFlag(nccu::kFlagTaFinaleChoiceMade);              // 溫柔結局路徑
         CHECK_FALSE(nccu::TryOpenEndingConfession(
-            p, d, SemesterState::Chapter4_Finals));        // suppressed
+            p, d, SemesterState::Chapter4_Finals));        // 被抑制
         Player q{Vec2{0, 0}}; nccu::DialogState d2;
-        q.SetFlag(nccu::kFlagHasTrueUmbrella);                 // ground reclaim, no finale
+        q.SetFlag(nccu::kFlagHasTrueUmbrella);                 // 從地面撿回、未走結局選擇
         CHECK(nccu::TryOpenEndingConfession(
             q, d2, SemesterState::Chapter4_Finals));
         CHECK(q.HasFlag(nccu::kFlagCh4ConfessedTrue));

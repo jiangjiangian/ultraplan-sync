@@ -7,18 +7,22 @@
 #include "game/entities/Player.h"
 #include "engine/render/IRenderer.h"
 #include "game/gfx/UmbrellaGlyph.h"
-#include "game/dialog/DialogLayout.h"   // CellWidth — U2-T2 wrap assertions
+#include "game/dialog/DialogLayout.h"   // CellWidth — 換行斷言用
 
 #include <string>
 #include <vector>
 
-// Item 2: DrawInventory is a pure function of the InventoryRow DTO + the
-// cursor index — spy the injected renderer (same shape as
-// test_ending_card_render) and assert the panel + per-row lines + the
-// description panel without a GL context.
+/**
+ * @file test_inventory_view.cpp
+ * @brief 驗證物品欄：DrawInventory 的面板／逐列文字／選取游標／說明面板繪製，
+ *        BuildInventoryRows 彙整金幣、消耗品、手持傘與任務紙張，背包傘列依
+ *        手持傘種類而非結局旗標、各分類左側色塊、分頁視窗計算與長說明換行。
+ */
 
 namespace {
 
+// DrawInventory 是 InventoryRow 資料物件加游標索引的純函式 —— 以注入的攔截器
+// 觀察，在無 GL 環境下斷言面板、逐列文字與說明面板。
 struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     std::vector<nccu::engine::math::Color> rectColors;

@@ -1,24 +1,17 @@
-// Cycle 9.E.1 (audit D8 / SC 2.3.3): pin the reduced-motion
-// accessibility preference plumbed through World + the three pure
-// gate helpers in include/ReducedMotion.h. Three orthogonal subcases:
-//   (a) default: World::ReducedMotion() is false (existing behaviour
-//       is byte-equivalent to before, so the harness is unperturbed).
-//   (b) toggle: SetReducedMotion(true) flips each of the three
-//       animation gates — interlude marker sweep stops advancing,
-//       the ending-card alpha jumps to 1.0 on the first paint,
-//       the HUD toast fade-out collapses to a hard cut (factor 1.0
-//       throughout the lifetime, then early-return at TTL).
-//   (c) env-var path: UMBRELLA_REDUCED_MOTION=1 wired into the
-//       World ctor (engine-side trigger ahead of the pause-menu UI).
+/**
+ * @file test_reduced_motion.cpp
+ * @brief 驗證「減少動畫」無障礙偏好：World 上的旗標與三個純動畫閘函式
+ *        （幕間地標流動、結局卡淡入、HUD 提示淡出）在開啟時改為直接到位，
+ *        以及預設值、setter、環境變數 UMBRELLA_REDUCED_MOTION 的接線。
+ */
 //
-// Revert-verify (must FAIL without the M3 fix):
-//   * Remove World::ReducedMotion() / SetReducedMotion() → (b) won't
-//     compile.
-//   * Make the helpers ignore their bool arg → (b)'s helper checks
-//     fail (the sweep keeps advancing / alpha stays mid-ramp / the
-//     fade still ramps).
-//   * Drop the ctor env-var read in src/World.cpp → (c) fails because
-//     ReducedMotion() stays false even with the env var set.
+// 三個相互獨立的面向：
+//   (a) 預設：World::ReducedMotion() 為 false（與先前行為等價）。
+//   (b) 切換：SetReducedMotion(true) 使三個動畫閘各自改變 —— 幕間地標停止流動、
+//       結局卡 alpha 在首次繪製即跳到 1.0、HUD 提示淡出改為硬切（整個生命週期
+//       係數皆 1.0，到 TTL 才提前返回）。
+//   (c) 環境變數：UMBRELLA_REDUCED_MOTION=1 接進 World 建構子（引擎側觸發，
+//       早於暫停選單 UI）。
 
 #include "doctest/doctest.h"
 #include "ui/ReducedMotion.h"
@@ -30,10 +23,10 @@ using nccu::HudToastFadeT;
 using nccu::InterludeMarkerPhaseStep;
 using nccu::World;
 
+// 減少動畫：預設值與三個動畫閘函式的開關行為。
 TEST_CASE("D8 reduced-motion: defaults + helper gating") {
     SUBCASE("default flag is false") {
-        // Clear any env carry-over from a previous test process so the
-        // ctor reads "unset" → default off. unsetenv is POSIX.
+        // 清除前一個測試行程殘留的環境變數，使建構子讀到「未設定」→ 預設關閉。
         unsetenv("UMBRELLA_REDUCED_MOTION");
         World w("", /*loadSprites=*/false);
         CHECK_FALSE(w.ReducedMotion());
@@ -52,51 +45,47 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
     }
 
     SUBCASE("InterludeMarkerPhaseStep freezes when reduced") {
-        // dt of 1/60 s normally advances ~0.5 px (30 px/s * 1/60).
-        // With reduced motion on, the step is 0.0 — the dashed sweep
-        // halts in place (caller still draws the marker; only the
-        // animation is suppressed).
+        // dt 為 1/60 秒時，正常會前進約 0.5 px（30 px/s * 1/60）。開啟減少動畫後
+        // 步進為 0.0 — 虛線流動原地停止（呼叫端仍會繪製地標，只是抑制動畫）。
         constexpr float dt = 1.0f / 60.0f;
         CHECK(InterludeMarkerPhaseStep(dt, false) > 0.0f);
         CHECK(InterludeMarkerPhaseStep(dt, true)  == doctest::Approx(0.0f));
     }
 
     SUBCASE("EndingFadeAlphaStep jumps to 1.0 instantly when reduced") {
-        // Default path ramps 0 → 1 over ~one second of accumulated dt.
-        // Reduced-motion path returns 1.0 on the very first call,
-        // skipping the half-second luminance ramp.
+        // 預設路徑在累積約一秒的 dt 內由 0 漸增到 1。減少動畫路徑在第一次呼叫即
+        // 回傳 1.0，跳過約半秒的亮度漸變。
         constexpr float dt = 1.0f / 60.0f;
         const float ramp   = EndingFadeAlphaStep(0.0f, dt, false);
         CHECK(ramp > 0.0f);
-        CHECK(ramp < 1.0f);                // mid-ramp, not snapped
+        CHECK(ramp < 1.0f);                // 漸變途中，未跳到位
         CHECK(EndingFadeAlphaStep(0.0f, dt, true) == doctest::Approx(1.0f));
-        // Even from a mid-ramp value the reduced path still snaps.
+        // 即使從漸變途中的數值，減少動畫路徑仍會直接跳到位。
         CHECK(EndingFadeAlphaStep(0.4f, dt, true) == doctest::Approx(1.0f));
     }
 
     SUBCASE("HudToastFadeT holds opaque when reduced (hard cut at TTL)") {
-        // Default path: with kHudFade = 1.0, half-way through the fade
-        // window the factor is ~0.5 (mid-ramp).
+        // 預設路徑：kHudFade = 1.0 時，淡出視窗過半處係數約為 0.5（漸變途中）。
         const float ramp = HudToastFadeT(0.5f, 1.0f, false);
         CHECK(ramp > 0.4f);
         CHECK(ramp < 0.6f);
-        // Reduced: full opacity until the caller's TTL early-returns.
+        // 減少動畫：維持全不透明，直到呼叫端的 TTL 提前返回。
         CHECK(HudToastFadeT(0.5f, 1.0f, true) == doctest::Approx(1.0f));
         CHECK(HudToastFadeT(0.0f, 1.0f, true) == doctest::Approx(1.0f));
     }
 }
 
+// 環境變數 UMBRELLA_REDUCED_MOTION=1 會在建構時開啟旗標。
 TEST_CASE("D8 reduced-motion: UMBRELLA_REDUCED_MOTION=1 wires the flag on") {
-    // Plan P2 step 4: getenv moved into ReadWorldOptionsFromEnv(); World
-    // is now pure relative to its args. Test exercises both halves
-    // (env-reader + ctor honour).
+    // getenv 移到 ReadWorldOptionsFromEnv()，World 相對其引數即為純函式。
+    // 測試同時驗證兩半：環境變數讀取器 + 建構子是否遵循其結果。
     SUBCASE("env=1 turns the flag on at construction") {
         setenv("UMBRELLA_REDUCED_MOTION", "1", /*overwrite=*/1);
         const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
         CHECK(opts.reducedMotion);
         World w("", /*loadSprites=*/false, opts);
         CHECK(w.ReducedMotion());
-        unsetenv("UMBRELLA_REDUCED_MOTION");  // restore for siblings
+        unsetenv("UMBRELLA_REDUCED_MOTION");  // 還原，避免影響其他測試
     }
 
     SUBCASE("env=0 leaves the flag off (only '1' opts in)") {

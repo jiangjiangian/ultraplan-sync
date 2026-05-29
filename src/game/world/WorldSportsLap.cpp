@@ -5,12 +5,10 @@
 #include "engine/math/Vec2.h"
 #include <cmath>
 
-// P4 step 2: the 3 校慶運動會 sports-lap helpers lifted out of World.cpp
-// into their own TU — class members of World, IMPLEMENTATION only;
-// declarations + member access are unchanged. UpdateSportsLap is called
-// per-frame from SpawnSystem (sim pipeline) and reads/writes lap meter
-// state on the player; the two const accessors feed the HUD lap ring.
-// Zero behaviour change; the same atan2 + π wrap + lap-done flag write.
+// 校慶運動會的三個跑圈輔助函式，從 World.cpp 抽到獨立 TU——它們是 World 的成員，
+// 此處「只」放實作；宣告與成員存取皆未變動。UpdateSportsLap 由模擬管線每幀呼叫，
+// 讀寫玩家身上的跑圈進度狀態；兩個 const 取值器則餵給 HUD 的跑圈環。
+// 行為完全不變；仍是同樣的 atan2 + π 取最短角差 + 寫入跑圈完成旗標。
 
 namespace nccu {
 

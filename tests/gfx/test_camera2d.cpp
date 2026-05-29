@@ -2,9 +2,15 @@
 #include "engine/render/Camera2D.h"
 #include "engine/math/Vec2.h"
 
+/**
+ * @file test_camera2d.cpp
+ * @brief 驗證 Camera2D 的預設值、Follow 對位，以及 WithZoom/WithRotation 的流暢式設定器。
+ */
+
 using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
+// 預設值：offset/target/rotation 皆為零，zoom 為 1.0。
 TEST_CASE("Camera2D defaults: zero offset/target/rotation, zoom 1.0") {
     Camera2D c;
     CHECK(c.offset.x   == doctest::Approx(0.0f));
@@ -15,6 +21,7 @@ TEST_CASE("Camera2D defaults: zero offset/target/rotation, zoom 1.0") {
     CHECK(c.zoom       == doctest::Approx(1.0f));
 }
 
+// Follow 將 target 設為世界目標、offset 設為螢幕中心，並回傳 *this。
 TEST_CASE("Camera2D::Follow sets target = world target and offset = screen center") {
     Camera2D c;
     auto& ret = c.Follow(Vec2{1000.0f, 500.0f}, Vec2{400.0f, 225.0f});
@@ -25,6 +32,7 @@ TEST_CASE("Camera2D::Follow sets target = world target and offset = screen cente
     CHECK(c.offset.y == doctest::Approx(225.0f));
 }
 
+// WithZoom 與 WithRotation 為可串接的流暢式設定器。
 TEST_CASE("Camera2D::WithZoom + WithRotation are fluent setters") {
     Camera2D c;
     auto& ret = c.WithZoom(2.0f).WithRotation(45.0f);

@@ -1,74 +1,73 @@
-// Regression for the "single keypress leaks across blocking screens" bug:
-// the interactive title / character-select / help screens share the global
-// raylib key state, and the "pressed" edge survives until the next
-// EndDrawing poll. When one screen returned on Enter and the next began
-// before that poll, the same Enter fired twice — 遊戲說明 opened then shut
-// instantly, and 開始遊戲 skipped straight past character select.
+/**
+ * @file test_press_latch.cpp
+ * @brief 驗證 PressLatch 防止「單次按鍵跨越多個阻塞畫面而重複觸發」：
+ *        繼承自前一畫面的按鍵必須先被釋放、重新武裝後，下一次按下才會觸發。
+ */
 //
-// PressLatch (include/ui/PressLatch.h) fixes it by ignoring a press until
-// the key has been seen released since the latch armed. These cases pin
-// that contract; they are pure logic (no window / GL) so they run headless.
+// 標題／選角／說明這些互動畫面共用全域的 raylib 按鍵狀態，而「剛按下」這個邊緣
+// 訊號會持續到下一次輪詢。當某畫面在 Enter 上返回、下一個畫面卻在輪詢前就開始，
+// 同一個 Enter 會觸發兩次 —— 說明畫面開了又瞬間關、開始遊戲直接略過選角。
 //
-// Revert-verify: drop the `if (!down) armed_ = true;` line (or have Fired
-// ignore `down`) and the inherited-press cases below start firing.
+// PressLatch 的修正：在按鍵自武裝後被觀察到釋放之前，忽略任何按下。下列為純邏輯
+// 測試（無視窗／GL），可在無頭環境執行。
 
 #include "doctest/doctest.h"
 #include "ui/PressLatch.h"
 
 using nccu::PressLatch;
 
+// 從前一畫面延續按住的按鍵會被抑制；釋放後重新武裝，下一次新按下才觸發一次。
 TEST_CASE("PressLatch suppresses a press inherited held from a prior screen") {
     PressLatch l;
-    // Key already down when the latch is created (the Enter carried over
-    // from the previous screen). It must NOT fire, no matter how long it
-    // stays held.
-    CHECK_FALSE(l.Fired(/*down=*/true, /*pressed=*/true));   // entry frame
-    CHECK_FALSE(l.Fired(true, false));                       // still held
+    // 建立鎖存時按鍵已按下（Enter 由前一畫面延續）。無論按住多久都不該觸發。
+    CHECK_FALSE(l.Fired(/*down=*/true, /*pressed=*/true));   // 進入畫面那一幀
+    CHECK_FALSE(l.Fired(true, false));                       // 仍按住
     CHECK_FALSE(l.Fired(true, false));
 
-    // Release arms the latch; the next fresh press fires exactly once and
-    // does not auto-repeat while held.
-    CHECK_FALSE(l.Fired(false, false));                      // released → armed
-    CHECK(l.Fired(true, true));                              // fresh press fires
-    CHECK_FALSE(l.Fired(true, false));                       // held, no repeat
-    CHECK_FALSE(l.Fired(true, true));                        // no double-fire
+    // 釋放後鎖存武裝；下一次新按下恰好觸發一次，且按住期間不會自動重複。
+    CHECK_FALSE(l.Fired(false, false));                      // 釋放 → 武裝
+    CHECK(l.Fired(true, true));                              // 新按下，觸發
+    CHECK_FALSE(l.Fired(true, false));                       // 按住，不重複
+    CHECK_FALSE(l.Fired(true, true));                        // 不會重複觸發
 }
 
+// 當按鍵一開始就是釋放狀態時，第一次按下即觸發。
 TEST_CASE("PressLatch fires on the first press when the key starts released") {
     PressLatch l;
-    CHECK_FALSE(l.Fired(false, false));   // frame 1: key up → arms
-    CHECK(l.Fired(true, true));           // first real press fires
+    CHECK_FALSE(l.Fired(false, false));   // 第 1 幀：按鍵抬起 → 武裝
+    CHECK(l.Fired(true, true));           // 第一次真正按下，觸發
 }
 
+// 模擬「標題 -> 遊戲說明 -> 標題」這趟來回。
 TEST_CASE("PressLatch models the title -> 遊戲說明 -> title round trip") {
-    // One physical Enter must open help and NOT also dismiss it; and the
-    // held dismiss-Enter must not re-open help back at the title.
+    // 一次實體 Enter 必須只開啟說明、不會同時關閉它；而按住不放的關閉用 Enter
+    // 回到標題後也不可再次開啟說明。
     PressLatch titleConfirm;
-    CHECK_FALSE(titleConfirm.Fired(false, false));  // arrive, Enter up → armed
-    CHECK(titleConfirm.Fired(true, true));          // Enter on 遊戲說明 → open
+    CHECK_FALSE(titleConfirm.Fired(false, false));  // 抵達時 Enter 抬起 → 武裝
+    CHECK(titleConfirm.Fired(true, true));          // 在遊戲說明上按 Enter → 開啟
 
-    // Help page latch: the opening Enter is still down on entry.
+    // 說明畫面的鎖存：進入時開啟用的 Enter 仍按著。
     PressLatch helpDismiss;
-    CHECK_FALSE(helpDismiss.Fired(true, true));     // entry frame: suppressed
-    CHECK_FALSE(helpDismiss.Fired(true, false));    // still holding from title
-    CHECK_FALSE(helpDismiss.Fired(false, false));   // released → armed
-    CHECK(helpDismiss.Fired(true, true));           // fresh Enter → dismiss
+    CHECK_FALSE(helpDismiss.Fired(true, true));     // 進入畫面那一幀：被抑制
+    CHECK_FALSE(helpDismiss.Fired(true, false));    // 仍按著（由標題延續）
+    CHECK_FALSE(helpDismiss.Fired(false, false));   // 釋放 → 武裝
+    CHECK(helpDismiss.Fired(true, true));           // 新按下的 Enter → 關閉
 
-    // Back at the title with the dismiss-Enter still held: must NOT fire
-    // (titleConfirm already fired and stays disarmed until release).
-    CHECK_FALSE(titleConfirm.Fired(true, true));    // stale dismiss edge
+    // 回到標題、關閉用的 Enter 仍按著：不可觸發（titleConfirm 已觸發過，
+    // 在釋放前維持未武裝）。
+    CHECK_FALSE(titleConfirm.Fired(true, true));    // 殘留的關閉邊緣訊號
     CHECK_FALSE(titleConfirm.Fired(true, false));
-    CHECK_FALSE(titleConfirm.Fired(false, false));  // released → re-armed
-    CHECK(titleConfirm.Fired(true, true));          // a new press works again
+    CHECK_FALSE(titleConfirm.Fired(false, false));  // 釋放 → 重新武裝
+    CHECK(titleConfirm.Fired(true, true));          // 新的按下又能運作
 }
 
+// 模擬「標題開始遊戲 -> 選角」的交接。
 TEST_CASE("PressLatch models title 開始遊戲 -> character-select handoff") {
-    // The Enter that confirmed 開始遊戲 is still held when character select
-    // begins; its own latch must swallow that press so persona 0 is not
-    // auto-confirmed on frame 1.
+    // 確認開始遊戲的 Enter 在選角畫面開始時仍按著；選角自己的鎖存必須吞掉這次
+    // 按下，以免第 1 幀就自動確認第 0 個角色。
     PressLatch selectConfirm;
-    CHECK_FALSE(selectConfirm.Fired(true, true));   // inherited Enter: ignored
-    CHECK_FALSE(selectConfirm.Fired(true, false));  // navigating, still held
-    CHECK_FALSE(selectConfirm.Fired(false, false)); // released → armed
-    CHECK(selectConfirm.Fired(true, true));         // player confirms a persona
+    CHECK_FALSE(selectConfirm.Fired(true, true));   // 繼承的 Enter：忽略
+    CHECK_FALSE(selectConfirm.Fired(true, false));  // 移動中，仍按著
+    CHECK_FALSE(selectConfirm.Fired(false, false)); // 釋放 → 武裝
+    CHECK(selectConfirm.Fired(true, true));         // 玩家確認某個角色
 }

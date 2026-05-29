@@ -188,20 +188,19 @@ TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
     MessageCapture cap;
     cap.Attach();
 
-    // G4: ApplyConsumableEffect mirrors HotPack::Consume EXACTLY — +5 karma
-    // and -25 rain (no longer a full reset).
+    // ApplyConsumableEffect 與 HotPack::Consume 完全一致：karma +5、雨量 -25。
     nccu::ApplyConsumableEffect(EventBus::Instance(), p, "HotPack");
-    CHECK(p.GetKarma() == k0 + HotPack::kKarmaBonus);   // +5, same as Consume
+    CHECK(p.GetKarma() == k0 + HotPack::kKarmaBonus);   // +5，同 Consume
     CHECK(p.GetRainMeter() ==
-          doctest::Approx(60.0f - HotPack::kRainRelief));  // 35, same as Consume
+          doctest::Approx(60.0f - HotPack::kRainRelief));  // 35，同 Consume
     CHECK(cap.hits == 1);
     CHECK(cap.lastText == "用了暖暖包，烘乾了大半的雨水，心情也好了一些。");
 
-    // The controller spends one after applying — model it here.
+    // controller 在套用後會消耗一個，這裡模擬該行為。
     CHECK(p.ConsumeOne("HotPack"));
     CHECK(p.ConsumableCount("HotPack") == 1);
 
-    // EnergyDrink effect mirrors its Consume body too (+3 karma, -15 rain).
+    // 能量飲料的效果同樣對應其 Consume 內容（karma +3、雨量 -15）。
     Player q{nccu::engine::math::Vec2{0, 0}};
     q.ApplyRain(8.0f, /*lethal=*/false);       // +40
     const int qk = q.GetKarma();
@@ -214,12 +213,8 @@ TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
     CHECK(cap2.lastText == "喝完飲料，精神好多了，淋到的雨也擦乾了一些。");
 }
 
-// G4 — the dedicated rain-effect table for every usable consumable. Pins the
-// EXACT -units per item (the owner-set table) + the generic 小吃 path that
-// has no entity class, and the parity between the entity Consume body and
-// ApplyConsumableEffect. Revert-verify: drop the DrainRainBy calls and the
-// rain CHECKs fail; revert IsUsableConsumable's food set and the food CHECK
-// fails (the effect no-ops on a non-usable id).
+// 每個可使用消耗品的雨量緩解對照表：固定各道具的扣減量、涵蓋沒有實體類別的
+// 一般小吃路徑，並驗證實體 Consume 與 ApplyConsumableEffect 行為一致。
 TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
     struct Row { const char* id; float relief; bool usable; };
     const Row rows[] = {
@@ -229,7 +224,7 @@ TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
         {"EggCake",         15.0f, true},
         {"FlowerTea",       15.0f, true},
         {"Takoyaki",        15.0f, true},
-        {"Donation",         0.0f, false},   // charity gift — not usable, no rain
+        {"Donation",         0.0f, false},   // 捐贈：非可使用，無雨量效果
     };
     for (const Row& r : rows) {
         CHECK(nccu::IsUsableConsumable(r.id) == r.usable);
@@ -241,21 +236,22 @@ TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
         CHECK(p.GetRainMeter() == doctest::Approx(90.0f - r.relief));
     }
 
-    // Floor clamp: a small meter cannot go below 0 (no negative rain).
+    // 地板裁切：雨量計很低時不會低於 0（沒有負雨量）。
     Player low{nccu::engine::math::Vec2{0, 0}};
     low.ApplyRain(2.0f, /*lethal=*/false);             // +10
-    nccu::ApplyConsumableEffect(EventBus::Instance(), low, "WaterproofSpray");  // -35 -> clamp 0
+    nccu::ApplyConsumableEffect(EventBus::Instance(), low, "WaterproofSpray");  // -35 → 裁切為 0
     CHECK(low.GetRainMeter() == doctest::Approx(0.0f));
 
-    // DrainRainBy unit: fixed subtraction, clamped, no teleport.
+    // DrainRainBy 單元：固定扣減、會裁切、不會傳送。
     Player u{nccu::engine::math::Vec2{0, 0}};
     u.ApplyRain(10.0f, /*lethal=*/false);              // +50
     u.DrainRainBy(20.0f);
     CHECK(u.GetRainMeter() == doctest::Approx(30.0f));
-    u.DrainRainBy(100.0f);                             // over-drain -> clamp 0
+    u.DrainRainBy(100.0f);                             // 過量扣減 → 裁切為 0
     CHECK(u.GetRainMeter() == doctest::Approx(0.0f));
 }
 
+// IsUsableConsumable 對背包中各種道具的可使用分類。
 TEST_CASE("Item 2: IsUsableConsumable classifies the bag rows") {
     CHECK(nccu::IsUsableConsumable("HotPack"));
     CHECK(nccu::IsUsableConsumable("EnergyDrink"));

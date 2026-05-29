@@ -62,18 +62,15 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
 void LiftChapter1Clear(EventBus& bus, Player& player, SemesterState state,
                        const DialogState& dialog) {
     if (state != SemesterState::Chapter1_AddDrop) return;
-    if (!player.HasFlag(kFlagHasTrueUmbrella)) return;  // grant not done
-    if (dialog.Active()) return;                          // (d) still on screen
-    if (player.HasFlag(kFlagClearChapter1)) return;       // once
-    // The (d) 重逢致謝 exchange has played and closed — NOW clear Ch1.
-    // Publish in TrueUmbrella::BeClaimed's exact pair order — ShowMessage
-    // FIRST, UmbrellaClaimed SECOND — so the EventWiring chapter-clear toast
-    // wins the single Top HUD slot while the pickup line takes Bottom
-    // (reversing the pair re-introduces the Cycle 9.A.2 regression pinned by
-    // tests/quest/test_chapter_transitions.cpp). The UmbrellaClaimed(
-    // "TrueUmbrella") drives Ch1→Interlude (returnTo Ch2) via the
-    // EventWiring Ch1 sibling-if. The once-key makes this fire exactly once
-    // even though it is polled every non-dialog frame.
+    if (!player.HasFlag(kFlagHasTrueUmbrella)) return;  // 尚未授予
+    if (dialog.Active()) return;                          // (d) 對話仍在畫面上
+    if (player.HasFlag(kFlagClearChapter1)) return;       // 只觸發一次
+    // (d) 重逢致謝 對話已演完並關閉——「現在」才清第一章關。
+    // 以 TrueUmbrella::BeClaimed 的精確配對順序發布——ShowMessage「先」、
+    // UmbrellaClaimed「後」——使章節通關提示拿下唯一的 Top HUD 插槽，而拾取台詞落在
+    // Bottom（反轉此配對會重現由 tests/quest/test_chapter_transitions.cpp 固定的回歸）。
+    // UmbrellaClaimed("TrueUmbrella") 經事件接線的第一章兄弟 if 驅動第一章 → 插曲段
+    //（returnTo 第二章）。此一次性旗標使其即使每個非對話幀都輪詢，仍恰好觸發一次。
     player.SetFlag(kFlagClearChapter1);
     bus.Publish(Event{
         EventType::ShowMessage,

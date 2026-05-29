@@ -1,3 +1,7 @@
+/**
+ * @file test_ch4_finale.cpp
+ * @brief 驗證 Ch4 助教結算選單（體諒/質問/退出）的選項屬性、副作用，以及體諒走到 Ending A 的閘門延遲。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/Flags.h"
 #include "game/dialog/DialogOpener.h"
@@ -19,13 +23,14 @@ namespace {
 Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 constexpr auto kCh4 = SemesterState::Chapter4_Finals;
 
-// Step opener lines until the code-constructed 結算 menu appears.
+// 持續推進開場台詞，直到出現程式碼建構的結算選單。
 void StepToChoice(nccu::DialogState& d) {
     int guard = 0;
     while (d.Active() && !d.AtChoice() && guard++ < 64) d.Advance();
 }
 }  // namespace
 
+// 助教結算應呈現程式碼建構的「體諒／質問／退出」三選項；退出無任何副作用，體諒為 +15 並設 Ending A 鍵。
 TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問 menu") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
@@ -35,18 +40,17 @@ TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問
     REQUIRE(d.Active());
     StepToChoice(d);
     REQUIRE(d.AtChoice());
-    // 1c: the menu now carries a trailing no-commit exit (index 2). 體諒/質問
-    // keep indices 0/1 (appended LAST, vendor-decline contract), so the
-    // routing/karma CHECKs below are unchanged.
+    // 選單尾端帶有一個不提交的退出項（索引 2）。體諒／質問維持索引 0/1
+    //（退出固定附加在最後，沿用 vendor 拒買的契約），故以下路由／karma 斷言不變。
     REQUIRE(d.Choices().size() == 3);
     CHECK(d.Choices()[0].label == "體諒助教的辛勞");
     CHECK(d.Choices()[1].label == "質問／強硬索回");
     CHECK(d.Choices()[2].label == nccu::kDialogExitLabel);
-    // The exit option carries NO side effect at all.
+    // 退出選項完全沒有任何副作用。
     CHECK(d.Choices()[2].karmaDelta == 0);
     CHECK(d.Choices()[2].setsFlag.empty());
 
-    // 體諒 (index 0): +15 karma, sets Flag_ConsoledTA (Ending A key).
+    // 體諒（索引 0）：+15 karma，並設 Flag_ConsoledTA（Ending A 的鍵）。
     const nccu::DialogChoice* c = d.Advance();
     REQUIRE(c != nullptr);
     CHECK(c->label == "體諒助教的辛勞");
@@ -55,6 +59,7 @@ TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問
     CHECK(c->flagValue == true);
 }
 
+// 質問分支是 -5 karma、不設旗標的路徑。
 TEST_CASE("S5e-2d: 質問 branch is the -5 / no-flag path") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
@@ -70,14 +75,15 @@ TEST_CASE("S5e-2d: 質問 branch is the -5 / no-flag path") {
     CHECK(c->setsFlag.empty());
 }
 
+// 結算選擇已定案（Flag_TaFinaleChoiceMade）後，再對話只剩純台詞重述，不再出現選單。
 TEST_CASE("S5e-2d: Flag_TaFinaleChoiceMade -> line-only recap (one-shot)") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
-    p.SetFlag(nccu::kFlagTaFinaleChoiceMade);          // choice already made
+    p.SetFlag(nccu::kFlagTaFinaleChoiceMade);          // 選擇已定案
     nccu::DialogState d;
     nccu::OpenNpcDialog(d, p, "ta", kCh4);
     REQUIRE(d.Active());
-    // Recap never re-presents the menu — stepping just exhausts lines.
+    // 重述絕不會重新呈現選單——推進只會把台詞播完。
     int guard = 0;
     while (d.Active() && guard++ < 64) {
         CHECK_FALSE(d.AtChoice());
@@ -86,20 +92,21 @@ TEST_CASE("S5e-2d: Flag_TaFinaleChoiceMade -> line-only recap (one-shot)") {
     CHECK_FALSE(d.Active());
 }
 
+// 體諒選擇端到端走完 Ending A：閘門會延遲到收尾台詞關閉後才結算到 A。
 TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     EventBus::Instance().Clear();
     Player p = MakePlayer();
-    p.AddKarma(40);                                // ~90, pre-體諒
-    p.SetFlag(nccu::kFlagHasTrueUmbrella);             // re-claimed Ch4 True
+    p.AddKarma(40);                                // 約 90，體諒前
+    p.SetFlag(nccu::kFlagHasTrueUmbrella);             // 在 Ch4 重新取得真傘
 
     nccu::DialogState d;
     nccu::OpenNpcDialog(d, p, "ta", kCh4);
     StepToChoice(d);
     REQUIRE(d.AtChoice());
-    const nccu::DialogChoice* c = d.Advance();     // 體諒 (index 0)
+    const nccu::DialogChoice* c = d.Advance();     // 體諒（索引 0）
     REQUIRE(c != nullptr);
-    // Replicate GameController's ApplyDialogChoice (free fn, not exposed).
+    // 複製 GameController 的 ApplyDialogChoice（自由函式，未對外公開）。
     p.AddKarma(c->karmaDelta);
     if (!c->setsFlag.empty() && c->flagValue) p.SetFlag(c->setsFlag);
     CHECK(p.GetKarma() > 80);
@@ -107,12 +114,11 @@ TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
 
     nccu::SemesterStateMachine m;
     m.Transition(kCh4);
-    // G2: the 體諒 choice queued its closing nextLines, so `d` is STILL
-    // active here — and CheckEndingGates now DEFERS behind an active dialog
-    // (the player reads the 拿回你的傘 beat first). Confirm it defers, then
-    // close the box and re-poll: the (persistent) flags resolve to A.
+    // 體諒選擇排入了收尾台詞，因此此時 d 仍處於 active；CheckEndingGates 會
+    // 延遲到對話結束後才結算（讓玩家先讀完「拿回你的傘」這段）。先確認它延遲，
+    // 再關閉對話框重新輪詢：持久旗標便結算為 A。
     nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
-    CHECK(m.Current() == kCh4);                  // deferred while nextLines up
+    CHECK(m.Current() == kCh4);                  // 收尾台詞還在時延遲
     d.Close();
     nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
     CHECK(m.Current() == SemesterState::Ending_A);

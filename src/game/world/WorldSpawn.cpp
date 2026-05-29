@@ -24,30 +24,23 @@
 #include <string_view>
 #include <vector>
 
-// P4 step 1: SpawnChapterNpcs + the 4 self-gated MaybeSpawn helpers +
-// SpawnChapterQuestItems lifted out of World.cpp (847->220 LOC). These are
-// class members of World; only the IMPLEMENTATION lives here. The .h
-// declarations and every member access are unchanged — C++ permits per-
-// file partitioning of class implementations and CMake's GLOB picks
-// this TU up automatically. Zero behaviour change; all member-state
-// mutations (objects_, chapterRoster_, ch*Spawned_) are byte-for-byte
-// identical to the inline blocks they replaced.
+// SpawnChapterNpcs + 4 個自我閘控的 MaybeSpawn 輔助函式 + SpawnChapterQuestItems
+// 從 World.cpp 抽出（847->220 行）。它們是 World 的成員，此處「只」放實作。.h 的
+// 宣告與每個成員存取皆未變動——C++ 允許將類別實作依檔案分割，CMake 的 GLOB 也會自動
+// 納入此 TU。行為完全不變；所有成員狀態變動（objects_、chapterRoster_、ch*Spawned_）
+// 皆與它們所取代的內聯區塊逐位元相同。
 
 namespace nccu {
 
 void World::SpawnChapterNpcs(nccu::SemesterState state) {
-    // M7 (cycle9c): Ch4 「斥責學長後不出場」 ripple. chapter4.md L6 promises
-    // a player who scolded the suit_senior in Ch1 (Flag_ScoldedSenior) won't
-    // see him again at the finals — unless they later mended the
-    // relationship (Flag_HelpedSenior, the Ch2 callback note). Filter at
-    // spawn-time so the suit_senior is simply absent from objects_, which
-    // is identically how every other "NPC not in this chapter" case looks
-    // (e.g. librarian only in Ch2): the dialog opener cannot target him,
-    // the routing in Chapter4Quest sees nothing to scold/help further, and
-    // the chapterRoster_ sweep already handles teardown if he stays absent
-    // through the next Transition. Conditioning on player_ keeps the
-    // headless World unit tests (no Player) defensive even though the
-    // ctor caches player_ before the first respawn.
+    // 第四章「斥責學長後不出場」漣漪。劇情承諾：曾在第一章斥責 suit_senior 的玩家
+    //（Flag_ScoldedSenior）在期末不會再見到他——除非日後修補了關係（Flag_HelpedSenior，
+    // 第二章的回呼紙條）。在生成時就過濾，使 suit_senior 單純不出現在 objects_ 中，這與
+    // 其他每個「此章節沒有的 NPC」情形完全一致（例如圖書館員只在第二章）：對話開啟器無法
+    // 以他為目標，Chapter4Quest 的路由也找不到可進一步斥責／幫助的對象，而若他在下次
+    // Transition 仍缺席，chapterRoster_ 的清掃已能處理其拆除。以 player_ 為條件，使
+    // 無 Player 的 headless World 單元測試保持防禦性，即使建構式在首次重生前即已快取
+    // player_。
     const bool skipScoldedSenior =
         state == SemesterState::Chapter4_Finals &&
         player_ != nullptr &&
@@ -68,33 +61,25 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         objects_.push_back(std::move(npc));
     }
 
-    // Vendors are the price-table sibling of the NPC roster (their
-    // placement carries a VendorConfig, not a sprite path + npcId, so
-    // they get their own table). Tracked in chapterRoster_ so the next
-    // state change sweeps them exactly like an NPC. ChapterVendors() is
-    // empty for every state until S5b-3 transcribes the Interlude
-    // lineup, so today this loop is a no-op — it only proves the spawn
-    // MECHANISM, with zero behaviour change.
-    // REQUIREMENT #6: every market stall must be a DIFFERENT person.
-    // The old code passed the literal "vendor" + a single shop_auntie.png
-    // fallback for ALL stalls, so on a clean clone (PIPOYA pack absent →
-    // fallback path) the ten 攤主 rendered as ten clones of the same
-    // sprite. The per-stall selection rule now lives in one pure
-    // function (VendorSprite.h VendorSpriteFor) shared with its
-    // regression test, so the "ten distinct people" guarantee is
-    // exercised through the real production code path.
+    // 攤販是 NPC 名冊在價目表上的兄弟（其擺放帶的是 VendorConfig，而非 sprite 路徑
+    // + npcId，故自成一張表）。同樣記入 chapterRoster_，使下次狀態切換時與 NPC 一樣
+    // 被清掃。在尚未填入市集陣容前，ChapterVendors() 對每個狀態皆為空，故今日此迴圈是
+    // 空操作——它只證明生成「機制」，行為完全不變。
+    // 每個市集攤位都必須是「不同的人」。舊版對「所有」攤位都傳入字面值 "vendor" 加上
+    // 單一的 shop_auntie.png 退路，故在乾淨 clone（PIPOYA 資源包缺席 → 走退路）上，
+    // 十個攤主會渲染成同一張 sprite 的十個分身。如今每攤位的選圖規則集中在一個純函式
+    //（VendorSprite.h 的 VendorSpriteFor）中，並與其回歸測試共用，使「十個不同的人」
+    // 之保證透過真正的產線程式碼路徑被驗證。
     std::size_t vendorIdx = 0;
     for (const auto& vp : ChapterVendors(state)) {
         auto vendor = std::make_unique<Vendor>(vp.pos, vp.config);
-        // Gated by loadSprites_ exactly like the chapter NPCs above, so
-        // the headless World unit tests (loadSprites=false) skip the GPU
-        // upload. VendorSpriteFor keys off the stall's own unique 攤主/
-        // name and picks a distinct curated fallback per spawn index, so
-        // a clean clone still shows ten different people (not ten
-        // shop_auntie clones) and the PIPOYA path no longer collides.
+        // 與上方的章節 NPC 完全一樣，以 loadSprites_ 閘控，使無頭的 World 單元測試
+        //（loadSprites=false）略過 GPU 上傳。VendorSpriteFor 以攤位自己唯一的攤主／
+        // 名稱為鍵，並依生成索引挑選彼此分明的精選退路，故乾淨 clone 仍會顯示十個不同
+        // 的人（而非十個 shop_auntie 分身），PIPOYA 路徑也不再相撞。
         if (loadSprites_) {
-            // A spriteOverride (the 自動販賣機 machine art) renders as a
-            // whole static image; otherwise pick a distinct Pipoya person.
+            // spriteOverride（自動販賣機的機台美術）會整張當作靜態圖渲染；否則挑選一個
+            // 彼此分明的 Pipoya 人物。
             if (!vp.config.spriteOverride.empty()) {
                 vendor->LoadSprite(vp.config.spriteOverride);
                 vendor->SetStaticSprite(true);

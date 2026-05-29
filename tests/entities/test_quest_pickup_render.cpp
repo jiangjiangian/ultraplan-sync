@@ -8,10 +8,16 @@
 
 #include <vector>
 
+/**
+ * @file test_quest_pickup_render.cpp
+ * @brief 驗證 QuestFlagPickup::Render 的型別感知算繪：紙張類任務物件畫白色紙張，
+ *        苦主的透明傘畫共用的藍色雨傘圖形；且任務物件只畫矩形，不畫 sprite／文字。
+ */
+
 namespace {
 
-// Spy IRenderer: records every primitive instead of touching a GL context,
-// so the polymorphic Render() path is testable headless.
+// 間諜 IRenderer：記錄每個繪圖基元而不觸碰 GL 環境，讓多型的 Render() 路徑
+// 可在無視窗環境下測試。
 struct CountingRenderer final : nccu::engine::render::IRenderer {
     struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
@@ -38,29 +44,25 @@ bool HasColor(const CountingRenderer& s, nccu::engine::math::Color want) {
 
 } // namespace
 
-// The quest form used to have an empty Render() (mirrored CashPickup), so it
-// was invisible; then it drew ONE Yellow square for every quest item. T2
-// makes the marker TYPE-AWARE (the reported bug: the Ch1 transparent umbrella
-// read as a yellow square / 紙張). A PAPER quest item (申請書 / 筆記) now draws
-// a WHITE sheet; the 苦主 umbrella draws the shared BLUE umbrella glyph. Still
-// rect-only — an Item never draws a sprite or text (architecture rule).
+// 任務物件的算繪是型別感知的：紙張類（申請書／筆記）畫白色紙張，苦主的傘畫
+// 共用的藍色雨傘圖形。任務物件只畫矩形，絕不畫 sprite 或文字（架構規則）。
 TEST_CASE("QuestFlagPickup::Render: a paper quest item draws a WHITE sheet") {
     QuestFlagPickup form(nccu::engine::math::Vec2{120.0f, 80.0f}, nccu::kFlagFoundForm);
     CountingRenderer spy;
     form.Render(spy);
 
-    CHECK(spy.sprites == 0);          // placeholder marker, no sprite
-    CHECK(spy.texts == 0);            // an Item never draws text
+    CHECK(spy.sprites == 0);          // 佔位標記，無 sprite
+    CHECK(spy.texts == 0);            // 任務物件不畫文字
     REQUIRE(spy.rects.size() >= 1);
-    // The owner: 紙張請用白色 — the sheet's body is White (NOT the old Yellow).
+    // 紙張用白色：紙張本體為 White（不是舊的 Yellow）。
     CHECK(HasColor(spy, nccu::engine::math::Colors::White));
     CHECK_FALSE(HasColor(spy, nccu::engine::math::Colors::Yellow));
 }
 
+// 苦主的透明傘畫成藍色雨傘圖形。
 TEST_CASE("QuestFlagPickup::Render: the 苦主 umbrella draws the BLUE umbrella glyph") {
-    // The Ch1 victim transparent umbrella sets Flag_HasVictimUmbrella → it must
-    // render as the 真傘 (blue) umbrella, the SAME shared glyph the in-world
-    // umbrellas / ending card use — not a yellow square.
+    // Ch1 苦主的透明傘會設定 Flag_HasVictimUmbrella，必須算繪成真傘（藍色），
+    // 與世界中的雨傘／結局卡片所用的是同一個共用圖形，而非黃色方塊。
     QuestFlagPickup umb(nccu::engine::math::Vec2{200.0f, 300.0f},
                         nccu::kFlagHasVictimUmbrella,
                         "撿到一把眼熟的透明傘");
@@ -69,8 +71,8 @@ TEST_CASE("QuestFlagPickup::Render: the 苦主 umbrella draws the BLUE umbrella 
 
     CHECK(spy.sprites == 0);
     CHECK(spy.texts == 0);
-    REQUIRE(spy.rects.size() >= 3);   // a real umbrella silhouette
-    // Its signature colour is 真傘 blue (the shared look colour), never Yellow.
+    REQUIRE(spy.rects.size() >= 3);   // 真正的雨傘輪廓
+    // 它的標誌色是真傘藍（共用外觀色），絕不會是 Yellow。
     CHECK(HasColor(spy,
         nccu::game::gfx::UmbrellaLookColor(nccu::game::gfx::UmbrellaLook::TrueBlue)));
     CHECK_FALSE(HasColor(spy, nccu::engine::math::Colors::Yellow));

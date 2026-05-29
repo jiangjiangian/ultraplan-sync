@@ -5,10 +5,13 @@
 
 #include <string>
 
-// Covers the four pillars of Player's pure-data state: money, karma deltas
-// with clamping, the Flag system, and rain-meter accumulation with gate
-// respawn. Rendering / input are not exercised here.
+/**
+ * @file test_player_core.cpp
+ * @brief 驗證 Player 純資料狀態的四大支柱：金錢、會裁切的 karma 增減、旗標系統，
+ *        以及雨量計累積與滿值後傳送回正門。此檔不涉及算繪／輸入。
+ */
 
+// 全新 Player 的預設值：karma 50、money 100、未淋雨、未持傘、無旗標。
 TEST_CASE("Player: fresh defaults — karma 50, money 100, dry, umbrella-less, no flags") {
     Player p({0, 0});
     CHECK(p.GetKarma() == 50);
@@ -19,6 +22,7 @@ TEST_CASE("Player: fresh defaults — karma 50, money 100, dry, umbrella-less, n
     CHECK_FALSE(p.HasFlag(""));
 }
 
+// AddKarma 會裁切到 [-100, 100]，範圍內的增減則正常累積。
 TEST_CASE("Player::AddKarma clamps to [-100, 100] and ordinary deltas accumulate") {
     SUBCASE("positive delta within range") {
         Player p({0, 0});
@@ -28,7 +32,7 @@ TEST_CASE("Player::AddKarma clamps to [-100, 100] and ordinary deltas accumulate
     SUBCASE("negative delta does not over-clamp to -100") {
         Player p({0, 0});
         p.AddKarma(-100);
-        CHECK(p.GetKarma() == -50);  // 50 + (-100) = -50, in range
+        CHECK(p.GetKarma() == -50);  // 50 + (-100) = -50，仍在範圍內
     }
     SUBCASE("positive overflow clamps to 100") {
         Player p({0, 0});
@@ -44,17 +48,19 @@ TEST_CASE("Player::AddKarma clamps to [-100, 100] and ordinary deltas accumulate
     }
 }
 
+// decreaseKarma(amount) 等價於 AddKarma(-amount)。
 TEST_CASE("Player::decreaseKarma(amount) is equivalent to AddKarma(-amount)") {
     Player p({0, 0});
     p.decreaseKarma(10);
     CHECK(p.GetKarma() == 40);
 
-    // Compare against an AddKarma-driven twin to confirm semantic equivalence.
+    // 對照一個以 AddKarma 驅動的分身，確認語意等價。
     Player twin({0, 0});
     twin.AddKarma(-10);
     CHECK(twin.GetKarma() == p.GetKarma());
 }
 
+// 金錢：AddMoney 累加，DeductMoney 會防止透支。
 TEST_CASE("Player money: AddMoney accrues, DeductMoney guards against overdraft") {
     Player p({0, 0});
     p.AddMoney(50);
@@ -66,9 +72,10 @@ TEST_CASE("Player money: AddMoney accrues, DeductMoney guards against overdraft"
 
     const bool ok2 = p.DeductMoney(200);
     CHECK_FALSE(ok2);
-    CHECK(p.GetMoney() == 110);  // overdraft: balance untouched
+    CHECK(p.GetMoney() == 110);  // 透支：餘額不變
 }
 
+// 旗標：Set／Has／Clear 可往返；未設定的名稱回傳 false。
 TEST_CASE("Player flags: Set / Has / Clear round-trip; unset names return false") {
     Player p({0, 0});
     CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedTACh1));
@@ -79,11 +86,12 @@ TEST_CASE("Player flags: Set / Has / Clear round-trip; unset names return false"
     p.ClearFlag(nccu::kFlagHelpedTACh1);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHelpedTACh1));
 
-    // ClearFlag on an unset name is a no-op (no throw, still false).
+    // 對未設定的名稱呼叫 ClearFlag 是空操作（不丟例外，仍為 false）。
     p.ClearFlag("Flag_Never_Set");
     CHECK_FALSE(p.HasFlag("Flag_Never_Set"));
 }
 
+// ApplyRain 每秒累積 5 單位，持傘時為空操作，滿 100% 時傳送回正門並重設。
 TEST_CASE("Player::ApplyRain accumulates 5 units/sec, no-ops with umbrella, respawns at 100%") {
     SUBCASE("no umbrella: 0.5s of exposure adds 2.5 units") {
         Player p({0, 0});
@@ -106,14 +114,13 @@ TEST_CASE("Player::ApplyRain accumulates 5 units/sec, no-ops with umbrella, resp
             [&](const Event& e) { hits++; captured = e.text; });
 
         Player p({1234.0f, 5678.0f});
-        // Pre-soak to 99 via 19.8s of exposure (5 * 19.8 = 99).
+        // 先用 19.8 秒曝雨灌到 99（5 * 19.8 = 99）。
         p.ApplyRain(19.8f);
         CHECK(p.GetRainMeter() == doctest::Approx(99.0f));
 
-        p.ApplyRain(10.0f);  // would push to 99 + 50 = 149, clamps to 100
+        p.ApplyRain(10.0f);  // 原本會推到 99 + 50 = 149，裁切為 100
 
-        // Respawn side-effects: rainMeter zeroed, position back at gate,
-        // ShowMessage event delivered with the design-doc text.
+        // 傳送的副作用：雨量計歸零、位置回到正門、發出帶企劃文字的 ShowMessage。
         CHECK(p.GetRainMeter() == doctest::Approx(0.0f));
         CHECK(p.GetPosition().x == doctest::Approx(500.0f));
         CHECK(p.GetPosition().y == doctest::Approx(1860.0f));

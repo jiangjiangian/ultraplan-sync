@@ -12,8 +12,7 @@
 
 namespace {
 
-// Tiny helper so we don't reach for <sstream> just to glue together a price
-// line. Format: "<itemId> - <price> 元"
+// 小輔助函式，免得只為拼接一行價格就動用 <sstream>。格式："<itemId> - <price> 元"
 std::string FormatStockLine(const VendorItem& item) {
     namespace msg = nccu::vendor::msg;
     return item.itemId + std::string(msg::kStockLineSep)
@@ -23,15 +22,12 @@ std::string FormatStockLine(const VendorItem& item) {
 } // namespace
 
 std::vector<std::string> Vendor::BuildDialogLines(const VendorConfig& config) {
-    // Greeting first, then one line per stock entry. We keep this trivial:
-    // the goal is just to give NPC::Interact something to cycle through so
-    // the player can preview prices before invoking TryBuy.
+    // 先放招呼語，再每筆庫存品項一行。刻意保持簡單：目的只是給 NPC::Interact 一串可
+    // 循環翻看的內容，讓玩家在叫用 TryBuy 前先預覽價格。
     std::vector<std::string> lines;
-    // Parsed stalls carry a multi-line greeting (greetingLines); a
-    // hand-written 3-field literal carries the single `greeting`. Prefer
-    // the multi-line form when present, else fall back to the single
-    // line (this keeps the pinned test_vendor 2-line expectation: that
-    // config has no greetingLines, so it is greeting + 1 stock entry).
+    // 解析而來的攤位帶有多行招呼語（greetingLines）；手寫的 3 欄位字面值則只帶單一
+    // `greeting`。存在時優先採多行形式，否則退回單行（這維持了固定的 test_vendor 兩行
+    // 預期：該設定沒有 greetingLines，故為 招呼語 + 1 筆庫存品項）。
     if (!config.greetingLines.empty()) {
         lines.reserve(config.greetingLines.size() + config.stock.size());
         for (const auto& g : config.greetingLines) lines.push_back(g);
@@ -94,17 +90,14 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     nccu::events::Sink().Publish(Event{ EventType::ShowMessage, toast });
     nccu::events::Sink().Publish(Event{ EventType::PickupAcquired, item.itemId });
 
-    // S5b-3: the buy actually lands in the count inventory, the stall's
-    // karma hook fires (e.g. 募款箱 +1; default 0 = no-op, so the pinned
-    // test_vendor stall is unaffected), and a finite stock ticks down
-    // (-1 = unlimited, so the pinned stall never decrements).
+    // 購買確實會進入計數型物品欄，攤位的業力鉤子觸發（例如募款箱 +1；預設 0 = 空操作，
+    // 故固定的 test_vendor 攤位不受影響），且有限庫存會遞減（-1 = 無限，故固定攤位
+    // 永不遞減）。
     //
-    // B2.1: an umbrella buy (the 集英樓 醜傘) is a HELD umbrella, not a
-    // count-consumable — set the held kind (which also sets HasUmbrella so
-    // it auto-shelters and shows as the single bag umbrella row) and do NOT
-    // add it to the count map (that would draw a phantom second umbrella
-    // row and mis-classify it as a usable). Ending C's Flag_BoughtUglyUmbrella
-    // is still set via item.setsFlag below, untouched.
+    // 買傘（集英樓的醜傘）是「持有」型雨傘，而非計數型消耗品——設定持有種類（同時也設下
+    // HasUmbrella，使其自動遮雨並顯示為背包中唯一的雨傘列），且「不」加進計數表（否則會
+    // 畫出幻影般的第二列雨傘並誤判為可用品）。下方仍會經 item.setsFlag 設下結局 C 的
+    // Flag_BoughtUglyUmbrella，未受更動。
     if (const HeldUmbrella k = nccu::HeldUmbrellaForItemId(item.itemId);
         k != HeldUmbrella::None) {
         player->SetHeldUmbrella(k);
@@ -114,9 +107,8 @@ bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {
     if (config_.karmaOnInteract != 0)
         player->AddKarma(config_.karmaOnInteract);
     if (item.stockLeft > 0) --item.stockLeft;
-    // S5e-2b: an opt-in per-item flag (default "" = no-op, so every
-    // existing stall is unaffected). The 集英樓 ugly-umbrella sets
-    // Flag_BoughtUglyUmbrella → CheckEndingGates routes Ending C.
+    // 一個可選用的逐品項旗標（預設 "" = 空操作，故每個既有攤位皆不受影響）。集英樓的
+    // 醜傘會設下 Flag_BoughtUglyUmbrella → CheckEndingGates 路由至結局 C。
     if (!item.setsFlag.empty()) player->SetFlag(item.setsFlag);
     return true;
 }

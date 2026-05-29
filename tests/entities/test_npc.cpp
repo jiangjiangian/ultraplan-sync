@@ -5,6 +5,13 @@
 #include <string>
 #include <vector>
 
+/**
+ * @file test_npc.cpp
+ * @brief 驗證 NPC 對話基本行為：初始行索引與行數、Interact 發出當前台詞並推進索引、
+ *        末行後回繞、SetDialogLines 重設、以及無台詞時的安全空操作。
+ */
+
+// NPC 預設從第 0 行開始，且行數正確。
 TEST_CASE("NPC defaults: starts at line 0, has the expected line count") {
     NPC n(nccu::engine::math::Vec2{100, 100},
           std::vector<std::string>{"line 0", "line 1", "line 2"});
@@ -14,6 +21,7 @@ TEST_CASE("NPC defaults: starts at line 0, has the expected line count") {
     CHECK_FALSE(n.IsQuestGiver());
 }
 
+// Interact 會發出目前台詞，接著把行索引往後推進。
 TEST_CASE("NPC: Interact publishes the current line then advances index") {
     EventBus::Instance().Clear();
     int hits = 0;
@@ -34,19 +42,21 @@ TEST_CASE("NPC: Interact publishes the current line then advances index") {
     CHECK(n.CurrentLineIndex() == 2);
 }
 
+// 講完最後一行後，索引回繞到開頭。
 TEST_CASE("NPC: Interact wraps after the last line") {
     EventBus::Instance().Clear();
     NPC n(nccu::engine::math::Vec2{0, 0}, std::vector<std::string>{"a", "b"});
-    n.Interact(nullptr); // publishes "a", index -> 1
-    n.Interact(nullptr); // publishes "b", index -> 0
+    n.Interact(nullptr); // 發出 "a"，索引 → 1
+    n.Interact(nullptr); // 發出 "b"，索引 → 0
     CHECK(n.CurrentLineIndex() == 0);
 }
 
+// SetDialogLines 會替換對話內容並重設索引。
 TEST_CASE("NPC: SetDialogLines replaces dialog and resets index") {
     EventBus::Instance().Clear();
     NPC n(nccu::engine::math::Vec2{0, 0},
           std::vector<std::string>{"a", "b", "c"});
-    n.Interact(nullptr); // index -> 1
+    n.Interact(nullptr); // 索引 → 1
     CHECK(n.CurrentLineIndex() == 1);
 
     n.SetDialogLines(std::vector<std::string>{"new1", "new2"});
@@ -55,6 +65,7 @@ TEST_CASE("NPC: SetDialogLines replaces dialog and resets index") {
     CHECK(n.CurrentLineText() == "new1");
 }
 
+// 沒有任何台詞時，Interact 是安全的空操作。
 TEST_CASE("NPC: Interact with no dialog lines is a safe no-op") {
     EventBus::Instance().Clear();
     int hits = 0;

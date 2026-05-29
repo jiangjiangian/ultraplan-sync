@@ -1,7 +1,7 @@
 #include "ui/MessageView.h"
 #include "ui/ReducedMotion.h"
-#include "game/dialog/DialogLayout.h"   // WrapToCells / CellWidth — the project's
-                                   // EAW-aware wrap + measure (CJK = 2 cells)
+#include "game/dialog/DialogLayout.h"   // WrapToCells / CellWidth——本專案的 EAW
+                                   // 感知換行與量測（CJK 字寬計為 2 格）
 #include "engine/render/IRenderer.h"
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
@@ -18,30 +18,28 @@ using namespace nccu::engine::math;
 
 namespace {
 
-// Banner text size and the layout pad around it.
+// 橫幅文字大小，以及其周圍的版面內距。
 constexpr int   kFontSize = 18;
 constexpr float kPadX     = 18.0f;
 constexpr float kPadY     = 12.0f;
-constexpr float kLineH    = 24.0f;   // > kFontSize: a little leading
-constexpr float kMarginB  = 28.0f;   // gap from the screen bottom
+constexpr float kLineH    = 24.0f;   // > kFontSize：留一點行距
+constexpr float kMarginB  = 28.0f;   // 與螢幕底部的間隙
 
-// Pixels per EAW cell at kFontSize. The project's font-independent text
-// model (EndingView::CenteredX, ChapterCard, DialogLayout.h) advances a
-// full-width glyph ~`sz` px = 2 cells, so ~`sz/2` px per cell. Sharing
-// this with dialog::CellWidth keeps the toast measure identical to the
-// dialog box / ending card — one source of truth, not a private estimate.
+// kFontSize 下每個 EAW 字格的像素寬。本專案與字型無關的文字模型
+//（EndingView::CenteredX、ChapterCard、DialogLayout.h）將全形字形推進約
+//`sz` px = 2 格，故每格約 `sz/2` px。與 dialog::CellWidth 共用此值，使提示橫幅的
+// 量測與對話框／結局卡片完全一致——單一事實來源，而非各自私估。
 constexpr float kPxPerCell = static_cast<float>(kFontSize) * 0.5f;
 
-// Pixel width of `s` at kFontSize via the cell model.
+// 經字格模型算出 `s` 在 kFontSize 下的像素寬。
 float TextWidthPx(const std::string& s) {
     return static_cast<float>(nccu::dialog::CellWidth(s)) * kPxPerCell;
 }
 
-// UI-B-3: wrap the toast to a CELL budget (not a private pixel estimate)
-// using the project's EAW-aware nccu::dialog::WrapToCells, so a long
-// ShowMessage never spills the panel and a literal '\n' still forces a
-// break (WrapToCells honours '\n' exactly like the old WrapCjk did, and
-// like DialogView). maxWidth px → cells via the shared px/cell model.
+// 以「字格」為預算（而非私下的像素估計）來換行此提示，使用本專案 EAW 感知的
+// nccu::dialog::WrapToCells，使過長的 ShowMessage 不會溢出面板，且字面的 '\n'
+// 仍會強制斷行（WrapToCells 對 '\n' 的處理與舊版及 DialogView 完全相同）。
+// maxWidth（px）經共用的 px/格 模型換算為字格數。
 std::vector<std::string> WrapToBox(const std::string& s, float maxWidth) {
     const int maxCells =
         std::max(1, static_cast<int>(maxWidth / kPxPerCell));
@@ -53,15 +51,12 @@ std::vector<std::string> WrapToBox(const std::string& s, float maxWidth) {
 void DrawHudMessage(IRenderer& r, const std::string& message,
                     float age, float screenW, float screenH,
                     bool reducedMotion, HudSlot slot) {
-    if (message.empty() || age >= kHudTtl) return;  // nothing to show
+    if (message.empty() || age >= kHudTtl) return;  // 無內容可顯示
 
-    // Lifetime → alpha. Hold opaque, then ramp 1→0 across the final
-    // kHudFade seconds — the raylib-extras Timer idiom (a countdown
-    // remaining = lifetime - elapsed, gone at <= 0) recast as a fade.
-    // Audit D8 / SC 2.3.3: HudToastFadeT collapses the fade to a hard
-    // cut when reducedMotion is true (holds opaque until TTL boundary,
-    // then DrawHudMessage's early-return above hides the toast in
-    // one frame).
+    // 存活時間 → 透明度。先維持不透明，再於最後 kHudFade 秒內由 1→0 漸隱——把倒數
+    //（remaining = lifetime - elapsed，<= 0 時消失）的計時慣用法改寫成淡出。
+    // 當 reducedMotion 為真時，HudToastFadeT 會把漸隱塌縮成硬切（維持不透明直到
+    // TTL 邊界，再由上方 DrawHudMessage 的提前返回於一幀內隱藏提示）。
     const float remaining = kHudTtl - age;
     const float t = HudToastFadeT(remaining, kHudFade, reducedMotion);
     const auto  a = static_cast<unsigned char>(t * 255.0f);
@@ -69,17 +64,14 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     const float maxTextW = screenW * 0.72f;
     const std::vector<std::string> lines = WrapToBox(message, maxTextW);
 
-    // Banner box sized to the widest wrapped line, centred horizontally.
-    // Cycle 9.G — vertical anchor depends on slot:
-    //   Bottom -> screen-bottom - kMarginB - boxH (pre-9.G position).
-    //   Top    -> bottomBaseline - kSlotGap - boxH (a fixed visual band
-    //             above the bottom slot, sized for a 1-line bottom toast
-    //             so the Top band is stable even when only Top is live).
-    // The gap is a layout constant rather than reading the live Bottom
-    // height: the View calls Top BEFORE Bottom and the two are pure
-    // functions of their own state, so coupling them would force a
-    // measurement pass. ~25-30 px between bands keeps both lines
-    // legible without overlap; the GUI manual-verify confirms it.
+    // 橫幅方框寬度取最寬的換行行，水平置中。
+    // 垂直錨點取決於插槽：
+    //   Bottom -> 螢幕底部 - kMarginB - boxH。
+    //   Top    -> bottomBaseline - kSlotGap - boxH（位於底部插槽上方的固定視覺帶，
+    //             以單行底部提示的高度為準，使 Top 帶即使只有 Top 在顯示也穩定）。
+    // 此間隙採版面常數，而非讀取當前 Bottom 高度：View 先呼叫 Top 再呼叫 Bottom，
+    // 兩者皆為各自狀態的純函式，若彼此耦合會被迫多跑一趟量測。兩帶間約 25-30 px
+    // 可使兩行都清楚不重疊；GUI 人工驗證已確認。
     float widest = 0.0f;
     for (const std::string& ln : lines)
         widest = std::max(widest, TextWidthPx(ln));
@@ -88,8 +80,7 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
     const float boxH = static_cast<float>(lines.size()) * kLineH +
                        kPadY * 2.0f;
     const float boxX = (screenW - boxW) * 0.5f;
-    // Bottom-slot baseline: pre-9.G position. Top-slot floats above it
-    // by the fixed bottom-slot single-line height plus a 12 px gap.
+    // 底部插槽基準線。頂部插槽則浮在其上方，距離為固定的底部單行高度再加 12 px 間隙。
     const float bottomBaseline = screenH - kMarginB;
     constexpr float kSlotGap   = 12.0f;
     const float kSingleLineH   = kLineH + kPadY * 2.0f;  // 1-line tall
@@ -98,17 +89,15 @@ void DrawHudMessage(IRenderer& r, const std::string& message,
             ? bottomBaseline - kSingleLineH - kSlotGap - boxH
             : bottomBaseline - boxH;
 
-    // Backdrop carries the same alpha as the text so the whole toast
-    // fades as one (mirrors DrawEndingCard's self-contained fade).
+    // 背板採用與文字相同的 alpha，使整個提示一起淡出（與 DrawEndingCard 自成一體的
+    // 淡出一致）。
     r.DrawRect(Rect{boxX, boxY, boxW, boxH}, Color{20, 20, 20, a});
     r.DrawRect(Rect{boxX, boxY, boxW, 2.0f},
                Color{245, 245, 245, a});
 
-    // UI-B-3: CENTRE each wrapped row inside the box (was left-aligned at
-    // boxX+kPadX). The box hugs the widest row, so a multi-line toast like
-    // the DLC teaser (「DLC開發中」 over 「敬請期待」) reads as two balanced
-    // centred lines instead of a ragged left edge. Centre offset is per-row
-    // via the shared cell model, so it tracks each line's true width.
+    // 將每一換行行在方框內「置中」。方框緊貼最寬的一行，故多行提示（例如
+    //「DLC開發中」上、「敬請期待」下）會呈現為兩行平衡置中，而非參差的左緣。置中位移
+    // 逐行由共用字格模型算出，因此能跟隨每行的真實寬度。
     float y = boxY + kPadY;
     const float innerW = boxW - kPadX * 2.0f;
     for (const std::string& ln : lines) {

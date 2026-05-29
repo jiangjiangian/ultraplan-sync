@@ -1,27 +1,14 @@
-// Cycle 9.E (audit H2 / D5 / SC 2.2.2): pin the two skip-affordances
-// SC 2.2.2 "Pause, Stop, Hide" demands for auto-updating content:
+// 驗證兩個「跳過」操作（無障礙：可暫停、停止、隱藏自動更新內容）：
 //
-//   (a) HOLD-E to fast-advance dialog. The existing edge-IsPressed
-//       (mash-E) path is preserved; HOLDING E for >= 300 ms then
-//       auto-advances on a slow ~4-frame guard so a long-winded NPC
-//       can be skimmed without finger pain.
-//   (b) BACKSPACE to dismiss an on-screen HUD toast. Force-expires the
-//       banner immediately, so a player who has read the line is not
-//       forced to wait out the 4 s kHudTtl.
+//   (a) 長按 E 快速推進對話。原本的邊緣觸發（連點 E）路徑保留；長按 E 達
+//       300 ms 後，會以約 4 幀一次的慢速節流自動推進，讓囉嗦的 NPC 可被略讀
+//       而不傷手指。
+//   (b) 退格鍵關閉螢幕上的 HUD 提示。立即強制讓橫幅過期，已讀完該行的玩家
+//       不必空等 4 秒的 kHudTtl。
 //
-// The Backspace key was added to nccu::engine::input::Key for this; the World gained a
-// DismissHud() helper that snaps hudAge_ to kHudTtl (the same boundary
-// HudExpired() / MessageView early-return already gate on, so the
-// rendering contract is unchanged — the next View pass simply paints
-// nothing). GameController consults the world LargeTargets() flag for
-// the M2 site too; M2 is exercised by its own test (test_large_targets).
-//
-// Revert-verify (must FAIL without the H2 fix):
-//   * Remove the hold-E auto-advance branch from src/GameController.cpp
-//     → hold-E SUBCASE never advances (eHoldMs stays 0 effect).
-//   * Remove the Backspace early-expire from src/GameController.cpp →
-//     Backspace SUBCASE keeps hudAge < kHudTtl after the press.
-//   * Remove World::DismissHud() → does not compile.
+// 為此在 nccu::engine::input::Key 新增了 Backspace 鍵；World 新增 DismissHud()
+// 把 hudAge_ 直接跳到 kHudTtl（與 HudExpired() / MessageView 提早返回所依據的
+// 邊界相同，因此算繪行為不變——下一個 View 階段就只是不畫任何東西）。
 
 #include "doctest/doctest.h"
 #include "game/world/World.h"
@@ -42,14 +29,19 @@ using nccu::GameController;
 using nccu::World;
 using nccu::engine::input::Key;
 
+/**
+ * @file test_dialog_skip.cpp
+ * @brief 驗證兩個跳過操作：長按 E 超過 300 ms 自動快速推進對話（且連點 E 仍可用、
+ *        放開會重置計時），以及退格鍵立即關閉 HUD 提示（無提示時為空操作、且只認
+ *        退格鍵）。
+ */
+
 namespace {
 
-// Mirrors the tests/test_menu_help.cpp TestInput pattern — a thin
-// hand-driven InputSource so we can decouple key edges from a real
-// device. Hold(k) sets IsDown true (and emits one IsPressed frame the
-// first time it transitions); EndFrame() drops the per-frame pressed/
-// released sets but leaves IsDown intact. Tap(k) holds then auto-
-// releases on the next EndFrame for a single-frame press.
+// 一個輕量、手動驅動的 InputSource，讓我們能把按鍵邊緣與真實裝置解耦。
+// Hold(k) 設定 IsDown 為 true（並在首次轉態時送出一幀 IsPressed）；EndFrame()
+// 清掉每幀的 pressed／released 集合，但保留 IsDown。Tap(k) 先按住，再於下一次
+// EndFrame 自動放開，模擬單幀按下。
 class TestInput final : public nccu::engine::input::InputSource {
 public:
     void Hold(Key k)    { if (down_.insert(static_cast<int>(k)).second) pressed_.insert(static_cast<int>(k)); }
@@ -75,8 +67,9 @@ void Frame(GameController& c, TestInput& in) {
 
 }  // namespace
 
+// 長按 E 超過 300 ms 會快速推進對話；連點 E（邊緣觸發）仍然可用。
 TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
-    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);    // 60 fps deterministic
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);    // 固定 60 fps 以求決定性
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -84,10 +77,8 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
 
-    // Open a multi-line dialog programmatically — the World owns the
-    // DialogState directly, so we don't need to walk up to an NPC.
-    // Six lines is enough to observe the auto-advance stepping past
-    // multiple pages once the hold threshold fires.
+    // 以程式直接開啟多行對話——World 直接擁有 DialogState，因此不必走到某個
+    // NPC。六行足以觀察按住門檻觸發後自動推進跨越多頁。
     std::vector<std::string> lines{"L0", "L1", "L2", "L3", "L4", "L5"};
     world.Dialog().Open(lines);
     REQUIRE(world.Dialog().Active());
@@ -99,9 +90,8 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
         CHECK(world.Dialog().Active());
         CHECK(world.Dialog().CurrentLine() == "L1");
 
-        // A frame with no input does NOT advance — the held-E branch
-        // is OFF (IsDown is false). This pins the "tap-only" semantics
-        // for the prior behaviour: no eHoldMs leakage between presses.
+        // 沒有輸入的一幀不會推進——按住 E 的分支關閉（IsDown 為 false）。
+        // 這固定了先前的「只認單點」語意：按與按之間不會殘留按住計時。
         Frame(controller, in);
         CHECK(world.Dialog().CurrentLine() == "L1");
 
@@ -111,26 +101,21 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     }
 
     SUBCASE("hold-E for >= 300 ms then auto-advances on a frame guard") {
-        // Frame 0: press E (edge fires) -> L0 advances to L1. The first
-        // frame's press is the existing edge path; the hold timer starts
-        // accumulating from this frame onward (IsDown is true).
+        // 第 0 幀：按下 E（邊緣觸發）-> L0 推進到 L1。第一幀的按下走既有的邊緣
+        // 路徑；按住計時從這一幀起開始累積（IsDown 為 true）。
         in.Hold(Key::E);
-        Frame(controller, in);                       // edge: L0 -> L1
+        Frame(controller, in);                       // 邊緣：L0 -> L1
         CHECK(world.Dialog().CurrentLine() == "L1");
 
-        // Hold for 10 more frames (~167 ms total) — well below the 300
-        // ms threshold. No further advance happens; we're still on L1.
-        // (10 was picked to stay comfortably below threshold even
-        // accounting for float rounding on 1/60 s ticks.)
+        // 再按住 10 幀（共約 167 ms）——遠低於 300 ms 門檻。不會再推進，仍在 L1。
+        //（選 10 是為了即使考慮 1/60 秒 tick 的浮點捨入，也能穩穩低於門檻。）
         for (int f = 0; f < 10; ++f) {
             Frame(controller, in);
         }
         CHECK(world.Dialog().CurrentLine() == "L1");
 
-        // After another ~40 frames of hold (~833 ms total) the auto-
-        // advance branch has fired several times on its ~4-frame
-        // cooldown — at least once for sure, stepping past L1. The
-        // test asserts the OBSERVABLE outcome: not still on L1.
+        // 再按住約 40 幀（共約 833 ms）後，自動推進分支已在其約 4 幀的冷卻下
+        // 觸發數次——至少一定一次，跨越 L1。測試斷言可觀察的結果：已不在 L1。
         for (int f = 0; f < 40; ++f) {
             Frame(controller, in);
         }
@@ -141,28 +126,26 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     }
 
     SUBCASE("releasing E resets the hold timer; can't accumulate across presses") {
-        // Hold for 10 frames (~167 ms), release, then hold again — the
-        // timer must restart from 0, not pick up from where it left.
+        // 按住 10 幀（約 167 ms），放開，再按住——計時必須從 0 重新開始，
+        // 不可接續先前的累積。
         in.Hold(Key::E);
-        Frame(controller, in);                       // edge: L0 -> L1
+        Frame(controller, in);                       // 邊緣：L0 -> L1
         for (int f = 0; f < 9; ++f) {
             Frame(controller, in);
         }
         CHECK(world.Dialog().CurrentLine() == "L1");
 
         in.Release(Key::E);
-        Frame(controller, in);                       // timer resets
+        Frame(controller, in);                       // 計時重置
 
-        // Hold again for only 10 frames — total ACCUMULATED hold would
-        // be 20+ frames if the timer leaked, but we expect zero auto-
-        // advance because each press is < 300 ms in isolation.
+        // 再按住僅 10 幀——若計時外洩，累積按住會達 20 幀以上，但我們預期沒有
+        // 任何自動推進，因為單獨每次按下都 < 300 ms。
         in.Hold(Key::E);
-        Frame(controller, in);                       // edge: L1 -> L2
+        Frame(controller, in);                       // 邊緣：L1 -> L2
         for (int f = 0; f < 8; ++f) {
             Frame(controller, in);
         }
-        // Still on L2 — the held timer never crossed 300 ms after the
-        // release, so no auto-advance fired.
+        // 仍在 L2——放開後按住計時從未跨過 300 ms，因此沒有自動推進觸發。
         CHECK(world.Dialog().CurrentLine() == "L2");
         in.Release(Key::E);
         Frame(controller, in);
@@ -173,6 +156,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     EventBus::Instance().Clear();
 }
 
+// 退格鍵強制讓 HUD 提示過期（跳過提示）。
 TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -191,11 +175,9 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         in.Tap(Key::Backspace);
         Frame(controller, in);
 
-        // The Backspace path must have snapped the age to kHudTtl —
-        // HudExpired() (its guard) is now true. MessageView::Draw and
-        // the harness's HudExpired path both early-return at the same
-        // boundary, so this dismiss is observable to View and to
-        // state.jsonl alike.
+        // 退格鍵的路徑必須把年齡直接跳到 kHudTtl——其守門 HudExpired() 現在為
+        // true。MessageView::Draw 與 harness 的 HudExpired 路徑都在同一個邊界
+        // 提早返回，因此此關閉對 View 可觀察。
         CHECK(world.HudExpired());
         CHECK(world.HudAge() >= nccu::kHudTtl);
     }
@@ -207,8 +189,8 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         in.Tap(Key::Backspace);
         Frame(controller, in);
 
-        // hudMessage_ stays empty; the age was 0 (no message to tick),
-        // and DismissHud's guard refuses to write into an empty toast.
+        // hudMessage_ 維持空；年齡原本為 0（沒有訊息可計時），且 DismissHud 的
+        // 守門拒絕寫入空提示。
         CHECK(world.HudMessage().empty());
         CHECK(world.HudAge() == doctest::Approx(ageBefore));
         CHECK_FALSE(world.HudExpired());
@@ -226,7 +208,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         Frame(controller, in);
         CHECK_FALSE(world.HudExpired());
 
-        // Now Backspace finally dismisses.
+        // 現在退格鍵終於關閉提示。
         in.Tap(Key::Backspace);
         Frame(controller, in);
         CHECK(world.HudExpired());

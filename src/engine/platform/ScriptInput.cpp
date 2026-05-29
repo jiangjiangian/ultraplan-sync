@@ -17,7 +17,7 @@
 #include <string_view>
 
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出
 namespace {
 
 int KeyCode(std::string_view tok) {

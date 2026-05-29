@@ -18,27 +18,22 @@ void DrawQuestGiverIndicators(nccu::engine::render::IRenderer& r, const World& w
     using namespace nccu::engine::math;
     using nccu::queries::ForEachActive;
 
-    // Quest-giver "!" overlay (H4). Drawn AFTER the painter's-order
-    // pass but still inside the CameraScope so the icon follows the
-    // NPC in world space — and on top of buildings/sprites that might
-    // otherwise occlude a quest-giver tucked behind a footprint.
-    // QuestIndicatorVisible (quest layer) is the SINGLE decision point:
-    // it folds the roster's virtual IsQuestGiver() bit together with
-    // the per-chapter rules (Ch3 sequential A→B→C chain, Item 4a head
-    // light; Ch4 finale 助教-only `!`, Item 1b) so the View stays
-    // pure-render — no gameplay logic, no dynamic_cast. NB the Ch4
-    // finale NPC is isQuestGiver=false in the roster, so the decision
-    // can NO LONGER short-circuit on IsQuestGiver() alone; the predicate
-    // owns it. QuestGiverIndicator routes every primitive through
-    // IRenderer, keeping the helper headless-testable.
+    // 任務給予者的「!」提示。在畫家順序這一趟「之後」、但仍在 CameraScope 內繪製，
+    // 使圖示跟隨 NPC 位於世界座標空間——並疊在可能遮住躲在足跡後方之任務給予者的
+    // 建築／sprite「之上」。QuestIndicatorVisible（任務層）是「唯一」的決策點：它把
+    // 名冊的虛擬 IsQuestGiver() 位元與各章節規則（第三章依序 A→B→C 連鎖；第四章
+    // 終局只有助教顯示 `!`）合併，使 View 維持純渲染——不含玩法邏輯、不用 dynamic_cast。
+    // 注意第四章終局 NPC 在名冊中 isQuestGiver=false，故此決策「不能」再僅憑
+    // IsQuestGiver() 短路；改由該述詞掌管。QuestGiverIndicator 將每個繪圖原語都經
+    // IRenderer 送出，使該輔助函式可做 headless 測試。
     const Player* qgPlayer = world.GetPlayer();
     if (!qgPlayer) return;
     const nccu::SemesterState qgState = world.Semester().Current();
     ForEachActive(world.Objects(), [&](const GameObject& o) {
         if (!nccu::QuestIndicatorVisible(o.NpcId(), o.IsQuestGiver(),
                                          qgState, *qgPlayer)) return;
-        // The hit box lives at the NPC's feet; QuestGiverIndicator
-        // lifts the "!" above the bottom-anchored sprite top.
+        // 碰撞盒位於 NPC 的雙腳；QuestGiverIndicator 會把「!」抬到以底邊對齊的
+        // sprite 頂端之上。
         DrawQuestGiverIndicator(
             r,
             Rect{o.GetPosition().x, o.GetPosition().y,

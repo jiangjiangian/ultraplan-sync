@@ -1,28 +1,6 @@
-// Layout + #6 regression for the Interlude market stalls.
-//
-// Layout (player request, supersedes the old "正中間 tight cluster"
-//     REQUIREMENT #7): the ten 羅馬廣場 stalls form TWO ROWS OF FIVE — a
-//     north row and a south row — with a walkable middle aisle, all inside
-//     the r≈200 plaza disc and non-overlapping (24 px colliders).
-//     test_spawn_reachability separately proves every one is walkable +
-//     flood-reachable on the shipped mask.
-//
-// #6: every stall must be a DIFFERENT person — the per-stall sprite key
-//     (built from the stall's unique 攤主/name) and the curated
-//     per-index fallback list must yield DISTINCT sprites for all ten
-//     (the old code passed the literal "vendor" + one shop_auntie.png
-//     for every stall → ten clones on a clean clone).
-//
-// Revert-verify:
-//   * layout: collapse kPos back to one Y (or to the old centred bullseye)
-//     — the "exactly two rows of five" / aisle CHECKs fail.
-//   * #6: restore the single `PickNpcSprite("vendor", …, shop_auntie)`
-//     for every stall — the "10 distinct fallback sprites" CHECK fails
-//     (all ten identical).
-
 #include "doctest/doctest.h"
 #include "game/quest/ChapterVendors.h"
-#include "game/vendor/VendorSprite.h"      // the EXACT production selector (#6)
+#include "game/vendor/VendorSprite.h"      // 與正式產品完全相同的精靈選擇器
 #include "game/state/SemesterState.h"
 
 #include <cmath>
@@ -32,10 +10,17 @@
 #include <string>
 #include <vector>
 
+/**
+ * @file test_vendor_centred_cluster.cpp
+ * @brief 驗證 Interlude 市集攤位的版面與精靈：十攤排成「兩排各五」並留出可行走的中央走道，
+ *        全在廣場圓盤內且互不重疊；且每攤都對應到「不同」的精靈（避免十個分身）。
+ */
+
 #ifndef TEST_CONTENT_DIR
 #error "TEST_CONTENT_DIR must be defined by the build system"
 #endif
 
+// 市集十攤橫跨廣場排成兩排各五。
 TEST_CASE("market stalls form two rows of five across the plaza") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
@@ -43,25 +28,22 @@ TEST_CASE("market stalls form two rows of five across the plaza") {
         nccu::SemesterState::Interlude_Market);
     REQUIRE(m.size() == 10);
 
-    // Two rows (two distinct Y bands), five stalls each, with a walkable
-    // middle aisle the player walks down to shop either side.
+    // 兩排（兩個不同的 Y 帶），各五攤，中間留出可行走的走道，玩家可沿走道往下到任一側採買。
     std::map<float, int> rows;
     for (const auto& v : m) rows[v.pos.y]++;
     CHECK(rows.size() == 2);
     for (const auto& [y, n] : rows) CHECK(n == 5);
     const float y0 = rows.begin()->first;
     const float y1 = std::next(rows.begin())->first;
-    CHECK(std::fabs(y1 - y0) >= 60.0f);          // aisle wide enough to walk
+    CHECK(std::fabs(y1 - y0) >= 60.0f);          // 走道夠寬可通行
 
-    // Every stall sits inside the walkable 羅馬廣場 disc (centre
-    // ≈1088,960, the r≈200 stone circle), clear of the rim road junctions.
+    // 每攤都落在可行走的羅馬廣場圓盤內（中心約 1088,960，半徑約 200 的石圈），遠離邊緣路口。
     constexpr float kCx = 1088.0f, kCy = 960.0f;
     for (const auto& v : m)
         CHECK(std::hypot(v.pos.x - kCx, v.pos.y - kCy) <= 160.0f);
 
-    // No two stalls overlap: the Vendor collider is 24 px, so every
-    // pair must be > 24 px apart (30 px comfort floor; the two-row pitch
-    // is 66 px columns / 120 px rows, true minimum 66 px).
+    // 任兩攤互不重疊：Vendor 碰撞箱為 24 px，故每一對距離須 > 24 px（取 30 px 為舒適下限；
+    // 兩排的間距為欄距 66 px / 排距 120 px，真實最小值 66 px）。
     for (std::size_t i = 0; i < m.size(); ++i)
         for (std::size_t j = i + 1; j < m.size(); ++j) {
             const float d = std::hypot(m[i].pos.x - m[j].pos.x,
@@ -70,6 +52,7 @@ TEST_CASE("market stalls form two rows of five across the plaza") {
         }
 }
 
+// 每個市集攤位都對應到「不同」的精靈。
 TEST_CASE("REQ#6: every market stall maps to a DISTINCT sprite") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
@@ -77,27 +60,21 @@ TEST_CASE("REQ#6: every market stall maps to a DISTINCT sprite") {
         nccu::SemesterState::Interlude_Market);
     REQUIRE(m.size() == 10);
 
-    // (a) The per-stall sprite KEY (the EXACT production helper) is
-    //     unique per stall — built from the stall's own 攤主 (or name),
-    //     which interlude_market.md authors distinctly. If keys
-    //     collided, the PIPOYA path (pack present) would hash several
-    //     stalls onto the same sprite (the old "vendor"-for-all bug).
+    // (a) 每攤的精靈 KEY（與正式產品完全相同的 helper）逐攤唯一——由攤位自己的攤主（或
+    //     名稱）建出，內容作者撰寫時各不相同。若 key 相撞，有精靈包時會把多個攤位雜湊到
+    //     同一個精靈。
     std::set<std::string> keys;
     for (const auto& v : m)
         keys.insert(nccu::VendorSpriteKey(v.config.stallKeeper,
                                           v.config.name));
-    CHECK(keys.size() == m.size());          // all 10 keys distinct
+    CHECK(keys.size() == m.size());          // 十個 key 皆相異
 
-    // (b) The sprite the spawn ACTUALLY assigns each stall (the exact
-    //     World::SpawnChapterNpcs selector, VendorSpriteFor) is distinct
-    //     for all ten — on a clean clone (no PIPOYA pack) this is the
-    //     curated per-index fallback; the old single-sprite code made
-    //     ten identical clones here, so reverting World.cpp's use of
-    //     VendorSpriteFor (or collapsing the fallback list to one
-    //     sprite) fails this CHECK.
+    // (b) 生成時實際指派給每攤的精靈（與 World::SpawnChapterNpcs 完全相同的選擇器
+    //     VendorSpriteFor）對十攤皆相異——在乾淨環境（無精靈包）下這是精心安排的逐索引
+    //     後備清單；舊的單一精靈程式會在此產生十個相同分身。
     std::set<std::string> sprites;
     for (std::size_t i = 0; i < m.size(); ++i)
         sprites.insert(nccu::VendorSpriteFor(
             i, m[i].config.stallKeeper, m[i].config.name, m[i].pos));
-    CHECK(sprites.size() == m.size());       // 10 distinct sprites assigned
+    CHECK(sprites.size() == m.size());       // 指派出十個相異精靈
 }

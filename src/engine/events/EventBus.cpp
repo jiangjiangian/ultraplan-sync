@@ -1,7 +1,7 @@
 #include "engine/events/EventBus.h"
 
-#include <mutex>     // std::unique_lock — <shared_mutex> no longer pulls this
-                     // in transitively under newer libstdc++ (GCC 13+).
+#include <mutex>     // std::unique_lock——較新的 libstdc++（GCC 13+）下，
+                     // <shared_mutex> 已不再間接帶入此標頭。
 #include <utility>   // std::exchange
 
 EventBus& EventBus::Instance() {
@@ -36,13 +36,11 @@ void EventBus::Unsubscribe(std::uint64_t id) noexcept {
 }
 
 void EventBus::Publish(const Event& event) const {
-    // Hold the shared lock only while copying the per-type handler list,
-    // then drop it before dispatch. This (a) lets a handler call Subscribe
-    // / Clear / unsubscribe (Subscription dtor) without deadlocking on the
-    // shared mutex, and (b) keeps the snapshot stable even if writers
-    // mutate handlers_ mid-dispatch — synchronous bus + recursive publish
-    // on the live vector would be UB. A Subscription destroyed mid-
-    // dispatch therefore still fires this round but never again.
+    // 只在複製該事件型別的 handler 清單期間持有 shared lock，派送前即釋放。
+    // 如此 (a) 讓 handler 內可呼叫 Subscribe／Clear／取消訂閱（Subscription
+    // 解構）而不會在 shared mutex 上死鎖，(b) 即使有寫入者在派送途中改動
+    // handlers_，快照仍保持穩定——同步匯流排若直接對活向量遞迴 Publish 將是
+    // 未定義行為。因此派送途中被解構的 Subscription 本輪仍會觸發，但之後不再。
     std::vector<Handler> snapshot;
     {
         std::shared_lock lock(mutex_);
@@ -60,7 +58,7 @@ EventBus& EventBus::Clear() {
     return *this;
 }
 
-// --- EventBus::Subscription (RAII unsubscribe, H1) ---------------------
+// --- EventBus::Subscription（以 RAII 自動取消訂閱）---------------------
 
 EventBus::Subscription::Subscription(Subscription&& other) noexcept
     : bus_(std::exchange(other.bus_, nullptr)),
@@ -79,8 +77,8 @@ EventBus::Subscription::operator=(Subscription&& other) noexcept {
 EventBus::Subscription::~Subscription() { Reset(); }
 
 void EventBus::Subscription::Reset() noexcept {
-    // Take ownership away first so a re-entrant destruction (or a second
-    // Reset) is a no-op — exactly-once unsubscribe, no double removal.
+    // 先取走所有權，使重入式解構（或第二次 Reset）成為 no-op——
+    // 確保恰好取消訂閱一次，不會重複移除。
     if (EventBus* bus = std::exchange(bus_, nullptr)) {
         bus->Unsubscribe(std::exchange(id_, 0));
     }

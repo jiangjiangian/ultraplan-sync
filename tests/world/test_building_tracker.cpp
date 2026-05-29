@@ -6,6 +6,13 @@
 #include <string>
 #include <string_view>
 
+/**
+ * @file test_building_tracker.cpp
+ * @brief 驗證 BuildingTracker 的進出建築偵測：初始為 null、進入時發一次事件、停留同棟不再發、
+ *        走到另一棟發新事件、走進空地清除 Current() 且不發多餘事件；並以合成 fixture 驗證
+ *        NearestContaining 在重疊／平手時的消歧義（距離近者勝、平手依名稱字典序）。
+ */
+
 using nccu::BuildingTracker;
 using nccu::buildings::Building;
 using nccu::buildings::kAll;
@@ -23,11 +30,9 @@ void SubscribeBuilding(EventCapture& cap) {
         [&](const Event& e) { cap.hits++; cap.lastName = e.text; });
 }
 
-// Centre of the named building's trigger rect, looked up live in kAll so
-// the transition tests track Tiled re-placements instead of hardcoding
-// coordinates. Feeding a building's OWN centre also guarantees distance 0,
-// so it wins any overlap deterministically regardless of layout. Returns
-// {-1,-1} if absent — callers REQUIRE presence so a rename fails loudly.
+// 取得指定建築觸發矩形的中心，直接從 kAll 即時查找，使轉場測試能追蹤 Tiled 重新擺放而非寫死
+// 座標。餵入建築自己的中心也保證距離為 0，故不論版面如何，它都確定性地贏得任何重疊。若不存在
+// 回傳 {-1,-1}——呼叫端以 REQUIRE 要求其存在，使改名時大聲失敗。
 Vec2 CentreOf(std::string_view name) {
     for (const auto& b : kAll)
         if (b.name == name)
@@ -37,19 +42,21 @@ Vec2 CentreOf(std::string_view name) {
 }
 } // namespace
 
+// 初始的 Current() 為 null。
 TEST_CASE("BuildingTracker: initial Current() is null") {
     EventBus::Instance().Clear();
     BuildingTracker t;
     CHECK(t.Current() == nullptr);
 }
 
+// 進入操場發出一次事件。
 TEST_CASE("BuildingTracker: entering 操場 fires one event") {
     EventBus::Instance().Clear();
     EventCapture cap;
     SubscribeBuilding(cap);
 
     const Vec2 c = CentreOf("操場");
-    REQUIRE(c.x >= 0.0f);            // 操場 must exist in kAll
+    REQUIRE(c.x >= 0.0f);            // 操場必須存在於 kAll
 
     BuildingTracker t;
     t.Update(c);
@@ -60,6 +67,7 @@ TEST_CASE("BuildingTracker: entering 操場 fires one event") {
     CHECK(cap.lastName == "操場");
 }
 
+// 停留同一棟內不再發事件。
 TEST_CASE("BuildingTracker: staying inside same building fires no further events") {
     EventBus::Instance().Clear();
     EventCapture cap;
@@ -69,13 +77,14 @@ TEST_CASE("BuildingTracker: staying inside same building fires no further events
     REQUIRE(c.x >= 0.0f);
 
     BuildingTracker t;
-    t.Update(c);                              // enter 操場
-    t.Update(Vec2{c.x + 5.0f, c.y + 5.0f});   // still deep inside
-    t.Update(Vec2{c.x - 5.0f, c.y - 5.0f});   // still deep inside
+    t.Update(c);                              // 進入操場
+    t.Update(Vec2{c.x + 5.0f, c.y + 5.0f});   // 仍在深處
+    t.Update(Vec2{c.x - 5.0f, c.y - 5.0f});   // 仍在深處
 
     CHECK(cap.hits == 1);
 }
 
+// 從操場走進體育館發出新事件。
 TEST_CASE("BuildingTracker: walking from 操場 into 體育館 fires a new event") {
     EventBus::Instance().Clear();
     EventCapture cap;
@@ -95,6 +104,7 @@ TEST_CASE("BuildingTracker: walking from 操場 into 體育館 fires a new event
     CHECK(t.Current()->name == "體育館");
 }
 
+// 走進空地會清除 Current() 且不發多餘事件。
 TEST_CASE("BuildingTracker: leaving into empty space clears Current() with no spurious event") {
     EventBus::Instance().Clear();
     EventCapture cap;
@@ -103,40 +113,39 @@ TEST_CASE("BuildingTracker: leaving into empty space clears Current() with no sp
     const Vec2 c = CentreOf("操場");
     REQUIRE(c.x >= 0.0f);
 
-    // The map's top-left corner holds no trigger rect in any sane layout;
-    // assert that precondition so a future regression fails loudly here
-    // rather than as a confusing spurious-event miscount below.
+    // 地圖左上角在任何合理版面下都不含觸發矩形；先斷言此前提，使未來的迴歸在此大聲失敗，而非
+    // 在下方化為令人困惑的多餘事件計數錯誤。
     const Vec2 empty{50.0f, 50.0f};
     for (const auto& bld : kAll) REQUIRE_FALSE(bld.triggerRect.Contains(empty));
 
     BuildingTracker t;
-    t.Update(c);          // enter 操場
-    t.Update(empty);      // walk off into nothing
+    t.Update(c);          // 進入操場
+    t.Update(empty);      // 走進空無一物之處
 
     CHECK(t.Current() == nullptr);
-    CHECK(cap.hits == 1); // only the entry into 操場
+    CHECK(cap.hits == 1); // 只有進入操場那次
 }
 
-// The overlap / tie-break disambiguation is a property of the algorithm,
-// not of the campus layout, so it is exercised against fixed synthetic
-// fixtures via the extracted nccu::detail::NearestContaining helper —
-// independent of Buildings.h and immune to Tiled regeneration.
+// 重疊／平手的消歧義是演算法（而非校園版面）的性質，故對固定的合成 fixture，透過抽出的
+// nccu::detail::NearestContaining helper 演練——與 Buildings.h 無關，且不受 Tiled 重新產生影響。
 
+// NearestContaining：矩形重疊時，中心較近者勝。
 TEST_CASE("NearestContaining: overlapping rects — nearer centre wins") {
     const std::array<Building, 2> fix = {{
-        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // centre (100,100)
-        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // centre (200,200)
+        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // 中心 (100,100)
+        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // 中心 (200,200)
     }};
-    // (140,140) is in both rects; nearer A's centre (≈56.6 vs ≈84.9).
+    // (140,140) 同時落在兩矩形內；離 A 中心較近（約 56.6 對 約 84.9）。
     const Building* b = NearestContaining(Vec2{140.0f, 140.0f}, fix);
     REQUIRE(b != nullptr);
     CHECK(b->name == "A");
 }
 
+// 同樣的重疊，相反的點選到相反的建築。
 TEST_CASE("NearestContaining: same overlap, opposite points pick opposite buildings") {
     const std::array<Building, 2> fix = {{
-        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // centre (100,100)
-        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // centre (200,200)
+        {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // 中心 (100,100)
+        {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // 中心 (200,200)
     }};
     const Building* near_a = NearestContaining(Vec2{120.0f, 120.0f}, fix);
     const Building* near_b = NearestContaining(Vec2{180.0f, 180.0f}, fix);
@@ -146,12 +155,11 @@ TEST_CASE("NearestContaining: same overlap, opposite points pick opposite buildi
     CHECK(near_b->name == "B");
 }
 
+// 完全等距的平手依名稱字典序決定。
 TEST_CASE("NearestContaining: exact equidistant tie breaks lexicographically by name") {
-    // Centres (50,50) and (150,50); (100,50) sits on their perpendicular
-    // bisector → identical squared distance (2500). Rects are widened so
-    // (100,50) is strictly interior to BOTH (Rect::Contains is half-open,
-    // so a shared edge would not count). UTF-8 first byte: 法 0xE6 < 行
-    // 0xE8, so 法學院 must win regardless of array order.
+    // 兩中心 (50,50) 與 (150,50)；(100,50) 落在其垂直平分線上 -> 距離平方相同 (2500)。矩形
+    // 加寬，使 (100,50) 嚴格落在兩者內部（Rect::Contains 為半開，共用邊不算）。UTF-8 首位
+    // 元組：法 0xE6 < 行 0xE8，故不論陣列順序，法學院都應勝出。
     const Building admin{"行政大樓", {-20.0f, 0.0f, 140.0f, 100.0f}, false, false};
     const Building law  {"法學院",   { 80.0f, 0.0f, 140.0f, 100.0f}, false, false};
     const Vec2 mid{100.0f, 50.0f};

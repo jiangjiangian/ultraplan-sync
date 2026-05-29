@@ -1,35 +1,16 @@
-// Regression guard for BUGLEDGER I6 — the harness `interact <id>` plan
-// verb could never press E, so every plan-driven playthrough soft-locked
-// in Ch1 (no NPC dialog, no flags, no ending).
-//
-// Root cause (verified from source, not a guess): for a BlocksMovement()
-// NPC the movement collider is a player-sized box AT the NPC origin and
-// physics::ResolveMove (include/Physics.h:50-52, Rect::Intersects strict)
-// halts the player EXACTLY flush against it — touching, never strictly
-// overlapping. The pre-fix Verb::Interact aimed travel at npos.x-8 (the
-// NPC's NEAR side, i.e. the far side of that wall) and only pressed E
-// when AxisKeyToward returned -1 (arrived within epsilon). The player
-// flush-stops ~24 px away from that target, so AxisKeyToward returns the
-// approach key FOREVER, the press-E line is never reached, the watchdog
-// abandons the step and the dialog never opens.
-//
-// The fix mirrors GameController's landed I3 condition: drive straight at
-// the NPC ORIGIN and gate the E press on the SAME inflated-AABB overlap
-// test (kInteractReach = 8) GameController.cpp:293-300 uses, so a
-// wall-blocked walked-up player still talks — exactly the human-play
-// geometry I3 relies on.
-//
-// Revert-verify (this test MUST FAIL without the production fix): restore
-// Verb::Interact's travel target to `npos.x - 8` and gate the E press on
-// `AxisKeyToward(...) < 0` (the pre-I6 logic) — "interact victim" then
-// never opens the dialog (the player flush-stops ~24 px short of the
-// near-side target, AxisKeyToward never returns -1, E is never pressed).
-//
-// Driven through the EXACT path the harness uses: ScriptInput is the
-// nccu::engine::input::Input source and the per-frame loop mirrors Harness
-// (Advance + ResolvePlan against the previous frame's World snapshot,
-// then controller.Update) so this exercises the production seam, not a
-// unit shim. Headless, deterministic, no GL.
+/**
+ * @file test_i6_interact_reach.cpp
+ * @brief 驗證 harness 的 `interact <id>` 計畫動詞能真正按下 E 並開啟 NPC 對話。
+ *
+ * 對會擋路（BlocksMovement）的 NPC，其移動碰撞箱是位於 NPC 原點、玩家大小的箱，physics
+ * 會讓玩家恰好貼齊停住（碰到但不嚴格重疊）。本動詞必須朝 NPC 原點直行，並以 GameController
+ * 採用的同一個充氣 AABB 觸及測試（kInteractReach）來判定何時按 E，使被牆／碰撞箱貼齊擋住、
+ * 走近的玩家仍能對話——正是人類遊玩時所依賴的幾何。
+ *
+ * 驅動方式與 harness 完全相同：ScriptInput 為 Input source，每格的迴圈對應 Harness
+ *（Advance + 對前一格的 World 快照 ResolvePlan，再 controller.Update），故走的是正式產品
+ * 接縫，而非單元替身。無頭、確定性、無 GL。
+ */
 
 #include "doctest/doctest.h"
 #include "engine/platform/ScriptInput.h"
@@ -63,9 +44,8 @@ const GameObject* FindNpc(const World& w, const char* id) {
     return nullptr;
 }
 
-// One observable per frame: did the dialog open, and where did the player
-// end up. Mirrors Harness::BeginFrame/EndFrame ordering exactly (the plan
-// resolves against the World captured at the PREVIOUS frame's EndFrame).
+// 每格一筆觀察值：對話是否開啟、玩家最終在哪。對應 Harness::BeginFrame/EndFrame 的順序
+//（計畫動詞是對「前一格 EndFrame 時擷取的 World」解析）。
 struct Outcome {
     bool  dialogOpened = false;
     std::string npc;
@@ -74,15 +54,10 @@ struct Outcome {
     float startX = 0.0f;
 };
 
-// 善有善報 redesign: the Ch1 苦主 moved from the (380,1860) spawn row to
-// 綜合院館 (1660,1010), north of the south-campus wall. The harness
-// `interact <id>` verb is a pure X-then-Y axis driver (NOT a path-finder),
-// so it can no longer drive straight up to the victim — it must first be
-// routed through the single gap column (BUGLEDGER I7's routing model). This
-// gap route (auto-derived + mask-verified via
-// `.claude/tools/map_registry.py --route "500,1860 1660,1120"`) stages the
-// player just south of the victim on the clear x=1660 column; the final
-// `interact victim` then does the flush-approach + E that I6 guards.
+// Ch1 苦主從 (380,1860) 生成列移到了綜合院館 (1660,1010)，位於南側校園牆以北。harness 的
+// `interact <id>` 動詞是純粹的「先 X 後 Y」軸向驅動器（非尋路），無法直接往上走到苦主——必須
+// 先經由唯一的缺口列繞行。此繞行路線把玩家停在苦主正南方、淨空的 x=1660 列上；最後的
+// `interact victim` 才做貼齊靠近 + E。
 const char* const kRouteToVictimStaging =
     "goto 1040 1712\n" "goto 1048 1704\n" "goto 1264 1632\n"
     "goto 1280 1624\n" "goto 1296 1616\n" "goto 1312 1608\n"
@@ -115,7 +90,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
     const Player* p0 = world.GetPlayer();
     out.startX = p0 ? p0->GetPosition().x : 0.0f;
 
-    const World* snapshot = nullptr;     // null on frame 0, like the harness
+    const World* snapshot = nullptr;     // 第 0 格為 null，與 harness 相同
     for (int f = 0; f < maxFrames; ++f) {
         in.Advance();
         in.ResolvePlan(snapshot);
@@ -143,15 +118,10 @@ Outcome RunInteract(const char* npcId, int maxFrames,
 
 }  // namespace
 
-// The headline I6 lock. The Ch1 苦主 is a BlocksMovement() NPC; `interact
-// victim` walks the player into it, the movement collider flush-stops the
-// player TOUCHING the NPC (never overlapping), and the verb MUST still
-// press E so the conversation opens. Pre-fix this soft-locks: the press-E
-// line is unreachable and the dialog never opens (the whole A/B/C spine
-// dies here in Ch1). 善有善報: the victim is now at 綜合院館 (1660,1010);
-// RunInteract first routes through the gap to a staging point just SOUTH
-// of him on the clear x=1660 column, so the final flush-approach is along
-// the Y axis (northward), aligned on X.
+// 核心鎖定點。Ch1 苦主是會擋路的 NPC；`interact victim` 把玩家走進它，移動碰撞箱讓玩家
+// 「碰到」苦主貼齊停住（不重疊），動詞必須仍能按 E 使對話開啟。苦主現位於綜合院館
+// (1660,1010)；RunInteract 先經缺口繞到他正南方、淨空的 x=1660 列上，故最後的貼齊靠近是
+// 沿 Y 軸（往北）、X 對齊。
 TEST_CASE("I6: harness `interact victim` opens the NPC dialog (flush-blocked)") {
     World probe("", /*loadSprites=*/false);
     const GameObject* v = FindNpc(probe, "victim");
@@ -161,36 +131,30 @@ TEST_CASE("I6: harness `interact victim` opens the NPC dialog (flush-blocked)") 
 
     const Outcome o = RunInteract("victim", 3000);
 
-    // The verb actually pressed E and the game opened the 苦主 dialog —
-    // the exact thing the pre-fix code could never do.
-    CHECK(o.dialogOpened);                            // <-- the I6 lock
+    // 動詞確實按了 E，遊戲也開啟了苦主對話。
+    CHECK(o.dialogOpened);                            // <-- 互動鎖定點
     CHECK(o.npc == "victim");
     CHECK(o.openedAtFrame >= 0);
 
-    // It reached the NPC the way a human walks up: flush against (never
-    // through) the 24x24 movement collider on the approach axis (Y here),
-    // aligned on the other (X). Proves the press fired from the I3-mirrored
-    // reach geometry, not from teleporting onto the NPC. The staging point
-    // is south of the victim, so the player ends BELOW him (endY >= vy).
-    CHECK(o.endY >= vy);                              // never walked through
-    CHECK(std::fabs(o.endY - vy) <= 24.0f + 8.0f);    // within reach margin
-    // Aligned on X to within the goto arrive-epsilon (the staging hop lands
-    // within ~2 px of the x=1660 column, then the origin-seeking drive holds
-    // it there); pre-redesign this was 0 only because the victim sat exactly
-    // on the spawn row (no staging hop).
-    CHECK(std::fabs(o.endX - vx) <= 2.0f);            // Y-axis approach column
+    // 它以人類走近的方式抵達 NPC：在靠近軸（此處為 Y）上貼齊（非穿過）24x24 移動碰撞箱，
+    // 在另一軸（X）對齊。證明按下是來自觸及範圍的幾何，而非傳送到 NPC 上。停留點在苦主
+    // 南方，故玩家最終在他下方（endY >= vy）。
+    CHECK(o.endY >= vy);                              // 從未穿過
+    CHECK(std::fabs(o.endY - vy) <= 24.0f + 8.0f);    // 在觸及範圍內
+    // X 對齊到 goto 抵達誤差內（停留跳躍落在 x=1660 列約 2 px 內，原點朝向的驅動再把它
+    // 維持在該列）。
+    CHECK(std::fabs(o.endX - vx) <= 2.0f);            // Y 軸靠近的列
 }
 
-// Companion: the routed approach + origin-seeking drive is a pure function
-// of (plan step, World snapshot), so two runs of the SAME gap route +
-// `interact victim` produce a byte-identical trace (open frame, end pos).
+// 配套：繞行靠近 + 朝原點驅動是 (計畫步驟, World 快照) 的純函式，故同一缺口路線 +
+// `interact victim` 跑兩次會得到逐位元相同的軌跡（開啟格、最終位置）。
 TEST_CASE("I6: `interact` opens dialog deterministically (two runs identical)") {
     const Outcome a = RunInteract("victim", 3000);
     const Outcome b = RunInteract("victim", 3000);
 
     CHECK(a.dialogOpened);
     CHECK(b.dialogOpened);
-    // Pure function of (plan step, World snapshot): byte-identical trace.
+    // (計畫步驟, World 快照) 的純函式：逐位元相同的軌跡。
     CHECK(a.dialogOpened   == b.dialogOpened);
     CHECK(a.npc            == b.npc);
     CHECK(a.openedAtFrame  == b.openedAtFrame);

@@ -9,10 +9,12 @@
 
 #include <string>
 
-// S5b-3: the buy now actually lands in the Player count-inventory, the
-// stall karma hook fires, and a finite stock is enforced. test_vendor.cpp
-// (the pinned base contract) is untouched — these are additive cases on
-// the extended fields, all defaulted so the old stall behaves identically.
+/**
+ * @file test_vendor_inventory.cpp
+ * @brief 驗證 Vendor 購買的延伸欄位：商品確實落入 Player 的計數背包、攤位的業力鉤子會觸發、
+ *        有限庫存（stockLeft）會被強制執行並售罄，以及購買提示顯示中文名稱 + 花費 + 餘額。
+ *        既有的基本契約（test_vendor.cpp）不受影響——這些是新增、且全部有預設值的案例。
+ */
 
 namespace {
 
@@ -28,6 +30,7 @@ struct MsgCapture {
 
 }  // namespace
 
+// Player 計數背包的加入 / 查詢 / 消耗。
 TEST_CASE("Player: count inventory add / query / consume") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(p.ConsumableCount("HotPack") == 0);
@@ -41,17 +44,18 @@ TEST_CASE("Player: count inventory add / query / consume") {
     CHECK(p.ConsumableCount("HotPack") == 1);
     CHECK(p.ConsumeOne("HotPack"));
     CHECK(p.ConsumableCount("HotPack") == 0);
-    CHECK_FALSE(p.ConsumeOne("HotPack"));          // none left -> false
-    CHECK_FALSE(p.ConsumeOne("NeverHad"));         // unknown -> false
+    CHECK_FALSE(p.ConsumeOne("HotPack"));          // 已無剩餘 -> false
+    CHECK_FALSE(p.ConsumeOne("NeverHad"));         // 未知 -> false
 }
 
+// TryBuy 會把商品放進計數背包。
 TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
 
     VendorConfig cfg;
     cfg.name  = "測試攤";
-    cfg.stock = {{"HotPack", 10}};                 // stockLeft -1 (unlimited)
+    cfg.stock = {{"HotPack", 10}};                 // stockLeft -1（無限）
 
     Vendor v({0, 0}, cfg);
     REQUIRE(p.GetMoney() >= 20);
@@ -60,6 +64,7 @@ TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
     CHECK(p.ConsumableCount("HotPack") == 2);
 }
 
+// TryBuy 會套用 karmaOnInteract（募款箱的業力閥）。
 TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
@@ -72,9 +77,9 @@ TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
 
     Vendor v({0, 0}, donate);
     CHECK(v.TryBuy(&p, 0));
-    CHECK(p.GetKarma() == karma0 + 1);             // karma valve fired
+    CHECK(p.GetKarma() == karma0 + 1);             // 業力閥觸發
 
-    // A default stall (karmaOnInteract 0) must NOT move karma.
+    // 一般攤位（karmaOnInteract 0）不得改變業力。
     Player q{nccu::engine::math::Vec2{0, 0}};
     const int qk = q.GetKarma();
     VendorConfig plain;
@@ -85,6 +90,7 @@ TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
     CHECK(q.GetKarma() == qk);
 }
 
+// TryBuy 會強制有限的 stockLeft，售完後售罄。
 TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     MsgCapture cap;
@@ -105,18 +111,17 @@ TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
     CHECK(p.ConsumableCount("Ring") == 2);
     CHECK(p.GetMoney() == m0 - 10);
 
-    // Third buy: sold out — no charge, no inventory gain, kSoldOut toast.
+    // 第三次購買：售罄——不扣錢、不增背包、顯示 kSoldOut 提示。
     CHECK_FALSE(v.TryBuy(&p, 0));
     CHECK(p.ConsumableCount("Ring") == 2);
     CHECK(p.GetMoney() == m0 - 10);
     CHECK(cap.lastMsg == std::string(nccu::vendor::msg::kSoldOut));
 }
 
-// Item 5b: the Ch4 集英樓 ugly-umbrella stall (the exact item the owner
-// "didn't see deduct money") now shows the 中文 catalog name + price spent
-// + remaining balance, via the SAME TryBuy path the market uses.
+// Ch4 集英樓醜傘攤位的購買提示顯示中文 catalog 名稱 + 花費 + 餘額，走的是與市集相同的
+// TryBuy 路徑。
 TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance") {
-    Player p{nccu::engine::math::Vec2{0, 0}};            // starts with 100 元
+    Player p{nccu::engine::math::Vec2{0, 0}};            // 起始有 100 元
     MsgCapture cap;
     cap.Attach();
 
@@ -128,13 +133,13 @@ TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance"
     REQUIRE(p.GetMoney() == 100);
     CHECK(v.TryBuy(&p, 0));
     CHECK(p.GetMoney() == 0);                   // 100 - 100
-    // The 中文 name (not "UglyUmbrella"), the price, and the 0 balance.
+    // 中文名稱（非 "UglyUmbrella"）、售價、以及 0 餘額。
     CHECK(cap.lastMsg == "買了螢光綠醜傘，花了 100 元（剩 0 元）");
-    CHECK(p.HasFlag(nccu::kFlagBoughtUglyUmbrella)); // Ending C seed still set
+    CHECK(p.HasFlag(nccu::kFlagBoughtUglyUmbrella)); // 結局 C 的種子旗標仍設定
 }
 
-// Every itemId a vendor sells must resolve to a 中文 catalog name so no
-// purchase toast / bag row ever prints a raw English id.
+// 攤位販售的每個 itemId 都必須能解析到中文 catalog 名稱，使購買提示／背包列絕不印出原始
+// 英文 id。
 TEST_CASE("Item 2d/5b: every market itemId has a 中文 catalog name") {
     const char* ids[] = {"HotPack", "EnergyDrink", "WaterproofSpray",
                          "EggCake", "FlowerTea", "Takoyaki", "Donation",
@@ -142,7 +147,7 @@ TEST_CASE("Item 2d/5b: every market itemId has a 中文 catalog name") {
                          "TransparentUmbrella"};
     for (const char* id : ids) {
         const std::string name{nccu::ItemInfoFor(id).displayName};
-        CHECK(name != id);                      // not the raw English id
+        CHECK(name != id);                      // 不是原始英文 id
         CHECK_FALSE(name.empty());
     }
 }

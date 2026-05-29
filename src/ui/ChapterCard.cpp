@@ -4,14 +4,14 @@
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"
 #include "game/gfx/UmbrellaGlyph.h"
-#include "game/dialog/DialogLayout.h"   // CellWidth — the project text-measure helper
+#include "game/dialog/DialogLayout.h"   // CellWidth——本專案的文字量測輔助函式
 #include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace nccu {
-using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
+using namespace nccu::game::gfx;  // game/gfx 輔助函式
 
 using namespace nccu::engine::render;
 using namespace nccu::engine::math;

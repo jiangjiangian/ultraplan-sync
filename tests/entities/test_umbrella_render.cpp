@@ -9,10 +9,16 @@
 #include <tuple>
 #include <vector>
 
+/**
+ * @file test_umbrella_render.cpp
+ * @brief 驗證四種雨傘的算繪外觀必須明顯不同：各 UmbrellaStyle 畫出不同的輪廓
+ *        （矩形指紋與數量相異），且每把傘的傘面色調彼此相距夠遠，不會被混淆。
+ */
+
 namespace {
 
-// Spy IRenderer: records every primitive instead of touching a GL context,
-// so the polymorphic Render() path is testable headless.
+// 間諜 IRenderer：記錄每個繪圖基元而不觸碰 GL 環境，讓多型的 Render() 路徑
+// 可在無視窗環境下測試。
 struct CountingRenderer final : nccu::engine::render::IRenderer {
     struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
@@ -32,9 +38,8 @@ struct CountingRenderer final : nccu::engine::render::IRenderer {
     }
 };
 
-// A canonical fingerprint of the whole glyph (every rect's geometry +
-// colour, in draw order). Two umbrella styles are "the same" iff this
-// matches — the pre-#9 defect (all four identical but for tint).
+// 整個圖形的標準指紋（依繪製順序記下每個矩形的幾何與顏色）。兩種雨傘款式
+// 「相同」的充要條件就是此指紋相符。
 std::vector<std::tuple<float,float,float,float,int,int,int,int>>
 Fingerprint(const CountingRenderer& spy) {
     std::vector<std::tuple<float,float,float,float,int,int,int,int>> fp;
@@ -54,53 +59,42 @@ CountingRenderer DrawOf() {
 
 } // namespace
 
-// REQUIREMENT #9: the umbrellas must look CLEARLY different. The old
-// contract (one shared 3-rect skeleton, only the tint differs) WAS the
-// defect — four near-identical pale glyphs. The new contract: each
-// UmbrellaStyle draws its own distinct silhouette in its own bold,
-// well-separated tint, while staying a pure rect-only vector glyph
-// (no sprite/text — MVC: View renders off the object's own data).
-//
-// Revert-verify: collapsing Render() back to one shared rect set (or
-// restoring the near-identical pale tints) makes the "all four
-// fingerprints distinct" / "tints well separated" CHECKs fail.
+// 四種雨傘必須看起來明顯不同。每個 UmbrellaStyle 都畫出自己獨特的輪廓、配上
+// 自己鮮明且彼此分得開的色調，同時維持純矩形的向量圖形（無 sprite／文字——
+// 符合 MVC：View 依物件自身的資料算繪）。
 TEST_CASE("REQ#9: the four umbrellas each render a DISTINCT glyph") {
     const CountingRenderer t = DrawOf<TrueUmbrella>();
     const CountingRenderer f = DrawOf<FragileUmbrella>();
     const CountingRenderer p = DrawOf<ProfessorTrapUmbrella>();
     const CountingRenderer c = DrawOf<CursedUmbrella>();
 
-    // Still a pure vector glyph for every style (no sprite, no text).
+    // 每種款式都仍是純向量圖形（無 sprite、無文字）。
     for (const CountingRenderer* s : {&t, &f, &p, &c}) {
         CHECK(s->sprites == 0);
         CHECK(s->texts == 0);
-        CHECK(s->rects.size() >= 3);          // a real, drawn umbrella
+        CHECK(s->rects.size() >= 3);          // 真正畫出來的雨傘
     }
 
-    // The decisive #9 assertion: all FOUR full glyph fingerprints are
-    // pairwise different (geometry and/or colour) — not "same shape,
-    // different tint". A std::set of the fingerprints must hold 4.
+    // 關鍵斷言：四個完整圖形指紋兩兩相異（幾何與／或顏色），而非「同形狀、
+    // 不同色調」。把指紋放入 std::set 必須得到 4 個。
     using FP = std::vector<std::tuple<float,float,float,float,int,int,int,int>>;
     std::set<FP> distinct{Fingerprint(t), Fingerprint(f),
                           Fingerprint(p), Fingerprint(c)};
     CHECK(distinct.size() == 4);
 
-    // And the SHAPES differ too (not merely a recolour of one skeleton):
-    // the rect COUNT differs across the styles, so the silhouettes are
-    // genuinely different, not just tinted.
+    // 形狀也不同（不只是替同一骨架換色）：各款式的矩形數量相異，因此輪廓
+    // 是真的不同，而非只是上色。
     std::set<std::size_t> rectCounts{
         t.rects.size(), f.rects.size(), p.rects.size(), c.rects.size()};
-    CHECK(rectCounts.size() >= 3);            // >=3 of 4 silhouettes differ in rect count
+    CHECK(rectCounts.size() >= 3);            // 4 種中至少 3 種矩形數量不同
 }
 
-// The bold per-umbrella tints must be FAR apart (the pre-#9 tints were
-// all pale near-blue: |Δ| of ~10–30 per channel — visually the same).
-// Assert every pair of canopy tints differs by a large channel sum so
-// they cannot be confused on the map.
+// 每把傘鮮明的色調必須相距夠遠。驗證每一對傘面色調的通道差總和夠大，
+// 在地圖上才不會被混淆。
 TEST_CASE("REQ#9: umbrella canopy tints are boldly separated") {
     auto canopy = [](const CountingRenderer& s) {
-        // rects[0] is the topmost canopy slab for every style — its
-        // colour is that umbrella's signature tint.
+        // 對每種款式而言，rects[0] 都是最上方的傘面色塊，其顏色就是
+        // 該把傘的標誌色調。
         return s.rects.at(0).c;
     };
     const nccu::engine::math::Color ct = canopy(DrawOf<TrueUmbrella>());
@@ -112,8 +106,7 @@ TEST_CASE("REQ#9: umbrella canopy tints are boldly separated") {
         auto d = [](int x, int y) { return x > y ? x - y : y - x; };
         return d(a.r, b.r) + d(a.g, b.g) + d(a.b, b.b);
     };
-    // Manhattan colour distance ≥ 120 for every pair — the old pale set
-    // (e.g. {180,230,255} vs {200,220,235}) summed only ~45, well under.
+    // 每一對的曼哈頓色距 ≥ 120：才能確保四把傘的傘面色調彼此分得夠開。
     const nccu::engine::math::Color all[] = {ct, cf, cp, cc};
     for (int i = 0; i < 4; ++i)
         for (int j = i + 1; j < 4; ++j)

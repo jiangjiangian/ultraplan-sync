@@ -1,25 +1,16 @@
-// Item 1c regression ("能退出的選項"): the Ch4 助教 結算 menu must carry a
+/**
+ * @file test_ch4_finale_exit.cpp
+ * @brief 驗證 Ch4 助教結算選單的退出項：選退出零副作用、不上自鎖旗標，且選單之後仍可重新開啟。
+ */
 #include "game/quest/Flags.h"
-// trailing no-commit exit. Picking it closes the conversation with ZERO
-// state change — NO Flag_TaFinaleChoiceMade, NO Flag_ConsoledTA, NO karma
-// applied — so the player can walk off and re-approach 助教 to decide the
-// finale later. This is the moral-choice analogue of the vendor "先不買"
-// decline (test_vendor_decline.cpp) and the gate against a soft-lock: the
-// finale menu self-locks via Flag_TaFinaleChoiceMade, so an accidental
-// commit would foreclose Ending A forever.
+// Ch4 助教結算選單必須帶有一個不提交的退出項。選它會以零狀態變動關閉對話
+//（不設 Flag_TaFinaleChoiceMade、不設 Flag_ConsoledTA、不套用 karma），
+// 玩家因此可以先走開、稍後再回來找助教決定結局。這等同於 vendor 的「先不買」
+// 拒絕，也是防卡關的閘門：結算選單會以 Flag_TaFinaleChoiceMade 自鎖，
+// 一旦誤觸提交就會永久關閉 Ending A 的可能。
 //
-// Driven through the REAL GameController::Update() loop via the nccu::engine::input::Input
-// choke point (the exact production confirm path), not a unit shim — the
-// decisive guard is `exitChoice` in GameController.cpp's choice-confirm
-// branch.
-//
-// Revert-verify (this test MUST FAIL without the production fix):
-//   * Drop the trailing kDialogExitLabel choice in DialogOpener's 助教
-//     menu — the menu-tail CHECKs fail.
-//   * OR remove the `!exitChoice &&` guard on the Flag_TaFinaleChoiceMade
-//     set in GameController — declining then sets the self-lock flag, so
-//     CHECK_FALSE(HasFlag(nccu::kFlagTaFinaleChoiceMade)) fails and the menu
-//     is no longer re-presentable.
+// 透過真正的 GameController::Update() 迴圈、經由輸入層這個咽喉點來驅動
+//（即正式版確認路徑），而非單元墊片，以確保涵蓋實際的確認分支。
 
 #include "doctest/doctest.h"
 #include "game/controller/GameController.h"
@@ -76,7 +67,7 @@ const GameObject* FindNpc(const World& w, const char* id) {
     return nullptr;
 }
 
-// Mash E until the dialog reaches choice mode (opener lines exhausted).
+// 連按 E，直到對話進入選擇模式（開場台詞播完）。
 void AdvanceToChoice(nccu::GameController& c, TestInput& in, World& w) {
     for (int f = 0; f < 24 && !w.Dialog().AtChoice(); ++f) {
         in.Tap(Key::E);
@@ -86,6 +77,7 @@ void AdvanceToChoice(nccu::GameController& c, TestInput& in, World& w) {
 
 }  // namespace
 
+// 對助教結局選退出（我再想想…）不應改動任何狀態，且之後仍可重新開啟相同選單。
 TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & re-opens") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
@@ -97,23 +89,22 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     world.Semester().Transition(SemesterState::Chapter4_Finals);
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
-    Frame(controller, in);                              // settle Ch4 roster
+    Frame(controller, in);                              // 讓 Ch4 名冊就緒
 
     const GameObject* ta = FindNpc(world, "ta");
     REQUIRE(ta != nullptr);
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Pre-state baseline: high karma + the Ch4-reclaimed TrueUmbrella so a
-    // 體諒 commit WOULD reach Ending A — proving the exit really withholds
-    // that outcome, not that the conditions were merely unmet.
-    p->AddKarma(40);                                    // ~90
+    // 前置基準：高 karma + Ch4 重新取得的真傘，使得「體諒」提交本可抵達
+    // Ending A——藉此證明退出是真的把該結局擋下，而非只是條件本來就不滿足。
+    p->AddKarma(40);                                    // 約 90
     p->SetFlag(nccu::kFlagHasTrueUmbrella);
     const int karma0 = p->GetKarma();
     REQUIRE_FALSE(p->HasFlag(nccu::kFlagTaFinaleChoiceMade));
     REQUIRE_FALSE(p->HasFlag(nccu::kFlagConsoledTA));
 
-    // Walk onto the 助教 and open the 結算 menu.
+    // 走到助教身邊並開啟結算選單。
     p->SetPosition(nccu::engine::math::Vec2{ta->GetPosition().x - 8.0f,
                                    ta->GetPosition().y});
     in.Tap(Key::E);
@@ -122,30 +113,28 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     AdvanceToChoice(controller, in, world);
     REQUIRE(world.Dialog().AtChoice());
 
-    // The menu is 體諒 / 質問 / exit — the exit is LAST.
+    // 選單為 體諒 / 質問 / 退出——退出固定在最後。
     const std::size_t n = world.Dialog().Choices().size();
     REQUIRE(n == 3);
     CHECK(world.Dialog().Choices().back().label == nccu::kDialogExitLabel);
 
-    // Move the cursor down onto the exit entry and confirm.
+    // 把游標往下移到退出項並確認。
     for (std::size_t i = 0; i + 1 < n; ++i) {
         in.Tap(Key::Down);
         Frame(controller, in);
     }
     CHECK(world.Dialog().ChoiceCursor() == static_cast<int>(n) - 1);
-    in.Tap(Key::E);                                     // confirm DECLINE
+    in.Tap(Key::E);                                     // 確認「退出」
     Frame(controller, in);
 
-    // Nothing committed: dialog closed, the finale is NOT made, no karma
-    // moved, Ending A did NOT fire, the spine is still in Ch4.
+    // 沒有任何提交：對話關閉、結局未定案、karma 未動、Ending A 未觸發，主幹仍在 Ch4。
     CHECK_FALSE(world.Dialog().Active());
     CHECK_FALSE(p->HasFlag(nccu::kFlagTaFinaleChoiceMade));
     CHECK_FALSE(p->HasFlag(nccu::kFlagConsoledTA));
     CHECK(p->GetKarma() == karma0);
     CHECK(world.Semester().Current() == SemesterState::Chapter4_Finals);
 
-    // And the finale is still re-approachable — re-open and the menu (with
-    // the same three options) comes back, so the decision was only deferred.
+    // 而且結局仍可重新接觸——再次開啟時，相同的三個選項會回來，代表這個決定只是被延後。
     p->SetPosition(nccu::engine::math::Vec2{ta->GetPosition().x - 8.0f,
                                    ta->GetPosition().y});
     in.Tap(Key::E);

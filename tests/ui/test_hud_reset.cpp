@@ -1,18 +1,16 @@
-// Cycle 9.B L9 — HudExpired() lets non-View consumers (the autoplay
-// harness writing state.jsonl) stop echoing a toast that has aged out.
+/**
+ * @file test_hud_reset.cpp
+ * @brief 驗證 HudExpired()：當 HUD 提示存活時間超過 kHudTtl 時轉為已過期，
+ *        讓 View 以外的消費者（輸出 state.jsonl 的自動遊玩工具）停止回報過時的
+ *        提示；同時固定「重新發佈會重置存活時間」與「空訊息不算過期」。
+ */
 //
-// Before this fix, SetHudMessage() overwrote the buffer and TickHud
-// aged hudAge_ past kHudTtl but never cleared the string — so the
-// View correctly stopped drawing (DrawHudMessage early-returns above
-// the TTL) but the state.jsonl harness kept emitting `"hud":"…"` with
-// the same stale text for the rest of the run. The diagnostic playtest
-// caught this: every frame from a chapter clear onwards reported the
-// umbrella line in HUD until the next ShowMessage landed (sometimes
-// minutes later).
+// 在此修正前，SetHudMessage() 會覆寫緩衝，而 TickHud 雖讓 hudAge_ 超過 kHudTtl
+// 卻從不清空字串 —— 因此 View 已正確停止繪製（DrawHudMessage 在超過 TTL 時提前
+// 返回），但 state.jsonl 工具仍在整段執行期間持續輸出同一段過時文字。
 //
-// HudExpired() is a pure read-only predicate (no state mutation) so
-// the View's fade-out animation contract — which still observes the
-// raw hudMessage_ / hudAge_ — stays byte-identical.
+// HudExpired() 是個唯讀述詞（不改變狀態），故 View 的淡出動畫契約 —— 仍觀察原始
+// 的 hudMessage_ / hudAge_ —— 維持逐位元不變。
 
 #include "doctest/doctest.h"
 #include "ui/MessageView.h"     // kHudTtl
@@ -20,65 +18,58 @@
 
 #include <string>
 
+// 當 hudAge_ 超過 kHudTtl 後，HudExpired 轉為 true。
 TEST_CASE("HudExpired flips to true once hudAge_ crosses kHudTtl") {
     nccu::World w{"", /*loadSprites=*/false};
 
-    // Fresh world: no toast set yet, so HudExpired() is false (a
-    // never-set HUD is not "expired" — it has no content to expire).
+    // 全新世界：尚未設定任何提示，故 HudExpired() 為 false（從未設定的 HUD
+    // 不算「過期」—— 它沒有內容可過期）。
     CHECK_FALSE(w.HudExpired());
     CHECK(w.HudMessage().empty());
 
     w.SetHudMessage("章節清關");
-    CHECK_FALSE(w.HudExpired());           // just published, age = 0
+    CHECK_FALSE(w.HudExpired());           // 剛發佈，存活時間 = 0
     CHECK(w.HudMessage() == "章節清關");
 
-    // 40 ticks of 0.1s ≈ 4.0s; the brief specifies this cadence but
-    // float accumulation may leave hudAge_ a hair below kHudTtl (40 *
-    // 0.1f sums to 3.99999... on some libm builds). Add one extra
-    // tick past 4 seconds so we land cleanly above kHudTtl regardless
-    // of rounding — the on-screen TTL is the contract, not exact
-    // 0.1f-multiplication equality. The boundary is inclusive
-    // (DrawHudMessage early-returns on age >= kHudTtl so the View has
-    // already gone blank). HudExpired matches that boundary so the
-    // harness and View agree on "no longer visible".
+    // 40 次 0.1s 約為 4.0s；但浮點累加在某些 libm 上會讓 hudAge_ 略低於 kHudTtl
+    // （40 * 0.1f 可能加成 3.99999...）。多加一次跳過 4 秒，確保不論捨入皆穩定
+    // 落在 kHudTtl 之上 —— 契約是畫面上的 TTL，而非 0.1f 乘法的精確相等。邊界
+    // 為包含式（DrawHudMessage 在 age >= kHudTtl 時提前返回，View 已轉空白），
+    // HudExpired 對齊此邊界，使工具與 View 對「不再可見」的判定一致。
     for (int i = 0; i < 41; ++i) w.TickHud(0.1f);
 
     CHECK(w.HudExpired());
-    // The View's fade animation depends on the message + age staying
-    // around for the final kHudFade seconds; we intentionally do NOT
-    // clear hudMessage_ here. HudExpired() is the only signal the
-    // harness reads.
+    // View 的淡出動畫需要訊息與存活時間在最後 kHudFade 秒內持續存在；此處刻意
+    // 不清空 hudMessage_。HudExpired() 是工具唯一讀取的訊號。
     CHECK(w.HudMessage() == "章節清關");
     CHECK(w.HudAge() >= nccu::kHudTtl);
 }
 
+// 重新呼叫 SetHudMessage 會重置存活時間並清除過期狀態。
 TEST_CASE("A fresh SetHudMessage resets age and clears expiry") {
     nccu::World w{"", /*loadSprites=*/false};
 
     w.SetHudMessage("first");
-    // Age past TTL so HudExpired = true.
+    // 讓存活時間超過 TTL，使 HudExpired = true。
     w.TickHud(nccu::kHudTtl + 0.5f);
     REQUIRE(w.HudExpired());
 
-    // A new ShowMessage publish (via SetHudMessage) re-anchors the
-    // banner: age resets to 0 and HudExpired flips back to false. The
-    // production wiring (WireHudMessageSubscriber) calls SetHudMessage
-    // on every EventType::ShowMessage so a chapter / karma / vendor
-    // toast cleanly takes over from a stale string.
+    // 新的一次發佈（透過 SetHudMessage）會重新錨定橫幅：存活時間歸零、HudExpired
+    // 轉回 false。正式接線（WireHudMessageSubscriber）會在每個 EventType::ShowMessage
+    // 呼叫 SetHudMessage，使章節／業力／商人提示乾淨地接替過時字串。
     w.SetHudMessage("second");
     CHECK_FALSE(w.HudExpired());
     CHECK(w.HudMessage() == "second");
     CHECK(w.HudAge() == doctest::Approx(0.0f));
 }
 
+// 空的訊息緩衝不算過期。
 TEST_CASE("HudExpired ignores an empty message buffer") {
-    // A World that has never seen a toast (or whose message was
-    // explicitly cleared) is not "expired" — there is nothing to
-    // expire. This guarantees the harness emits "" both when the HUD
-    // legitimately holds nothing AND when an expired toast has been
-    // suppressed; the two cases collapse to the same wire format.
+    // 從未顯示過提示（或訊息已被明確清除）的 World 不算「過期」—— 沒有東西可
+    // 過期。這保證工具在 HUD 確實無內容、以及過期提示被抑制這兩種情況下都輸出
+    // 空字串；兩種情況收斂為相同的輸出格式。
     nccu::World w{"", /*loadSprites=*/false};
-    w.TickHud(nccu::kHudTtl + 100.0f);   // way past TTL, but no message
+    w.TickHud(nccu::kHudTtl + 100.0f);   // 遠超 TTL，但無訊息
     CHECK_FALSE(w.HudExpired());
     CHECK(w.HudMessage().empty());
 }

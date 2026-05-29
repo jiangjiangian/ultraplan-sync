@@ -17,11 +17,10 @@ void DrawRainVignette(nccu::engine::render::IRenderer& r,
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // Rain "pressure" vignette — PURE render derived only from
-    // GetRainMeter() (no sim/state/input touched: MVC §5). The rain is
-    // non-lethal this cycle; the feedback is purely visual. Screen-edge
-    // darkening in two tiers (≥60 subtle, ≥85 stronger) drawn as four
-    // border bands (cheap, no full-screen texture/alloc, deterministic).
+    // 雨勢「壓力」暈影——純 View 繪製，僅由 GetRainMeter() 推導，不碰
+    // 模擬／狀態／輸入（遵守 MVC §5）。此處雨勢不致命，回饋純為視覺。
+    // 螢幕邊緣依雨量分兩段加深（≥60 微弱、≥85 較強），以四條邊框帶繪出
+    // （成本低、不需全螢幕貼圖或配置記憶體，且結果具決定性）。
     const Player* p = world.GetPlayer();
     if (!p) return;
 
@@ -34,11 +33,11 @@ void DrawRainVignette(nccu::engine::render::IRenderer& r,
     const Color v{0, 0, 0, va};
     const float W = screenW;
     const float H = screenH;
-    const float b = std::min(W, H) * 0.12f;  // band thickness
-    r.DrawRect(Rect{0.0f, 0.0f, W, b}, v);          // top
-    r.DrawRect(Rect{0.0f, H - b, W, b}, v);         // bottom
-    r.DrawRect(Rect{0.0f, 0.0f, b, H}, v);          // left
-    r.DrawRect(Rect{W - b, 0.0f, b, H}, v);         // right
+    const float b = std::min(W, H) * 0.12f;  // 邊框帶厚度
+    r.DrawRect(Rect{0.0f, 0.0f, W, b}, v);          // 上
+    r.DrawRect(Rect{0.0f, H - b, W, b}, v);         // 下
+    r.DrawRect(Rect{0.0f, 0.0f, b, H}, v);          // 左
+    r.DrawRect(Rect{W - b, 0.0f, b, H}, v);         // 右
 }
 
 }  // namespace nccu

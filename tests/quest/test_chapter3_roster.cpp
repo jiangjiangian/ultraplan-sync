@@ -1,3 +1,7 @@
+/**
+ * @file test_chapter3_roster.cpp
+ * @brief 驗證 Ch3 名冊為 8 個 NPC（5 原型＋3 個物物交換鏈節點），新 npcId 能解析到 chapter3.md。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/ChapterSpawns.h"
 #include "game/dialog/DialogSource.h"
@@ -13,9 +17,10 @@
 
 using nccu::SemesterState;
 
-// S5d-1: Ch3 校慶運動會 has a real roster — the 5 archetypes + the 3
-// 物物交換鏈 nodes — and the new npcIds resolve to chapter3.md sections.
+// Ch3 校慶運動會擁有完整名冊：5 個原型 NPC 加上 3 個物物交換鏈節點，
+// 且新的 npcId 都能解析到 chapter3.md 對應段落。
 
+// Ch3 名冊應為 8 個 NPC，其中只有 3 個物物交換鏈節點是任務給予者。
 TEST_CASE("ChapterNpcSpawns: Ch3 is the 8 chapter3.md NPCs") {
     const auto& ch3 = nccu::ChapterNpcSpawns(SemesterState::Chapter3_SportsDay);
     REQUIRE(ch3.size() == 8);
@@ -31,31 +36,32 @@ TEST_CASE("ChapterNpcSpawns: Ch3 is the 8 chapter3.md NPCs") {
                            "loudspeaker_b", "senior_c"})
         CHECK(ids.count(id) == 1);
 
-    // The 3 物物交換鏈 nodes drive the main quest; the 5 archetypes
-    // are ripple / optional (isQuestGiver=false, same stance as Ch2).
+    // 3 個物物交換鏈節點推進主線任務；5 個原型 NPC 屬於漣漪／選擇性內容
+    // （isQuestGiver=false，與 Ch2 的立場一致）。
     CHECK(questGivers == std::set<std::string>{
         "vendor_sausage_a", "loudspeaker_b", "senior_c"});
 }
 
+// 3 個交換鏈 npcId 都應能解析到 chapter3.md 並具備開場 (a) 對話。
 TEST_CASE("DialogSource: the 3 Ch3 chain npcIds resolve to chapter3.md") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     for (const char* id : {"vendor_sausage_a", "loudspeaker_b", "senior_c"}) {
         const auto& subs =
             nccu::dialog::Entries(id, SemesterState::Chapter3_SportsDay);
-        REQUIRE_FALSE(subs.empty());                 // section found + parsed
+        REQUIRE_FALSE(subs.empty());                 // 有找到段落並完成解析
 
         const nccu::dialog::SubEntry* a = nullptr;
         for (const auto& s : subs) if (s.subState == 0) a = &s;
         REQUIRE(a != nullptr);
-        CHECK_FALSE(a->lines.empty());               // (a) opener has lines
+        CHECK_FALSE(a->lines.empty());               // (a) 開場有對白
     }
 
-    // The 5 archetypes still resolve in Ch3 (shared section names).
+    // 5 個原型 NPC 在 Ch3 仍能解析（段落名稱共用）。
     CHECK_FALSE(nccu::dialog::Entries(
         "suit_senior", SemesterState::Chapter3_SportsDay).empty());
 
-    // A Ch3-only npcId degrades to empty in an ending file (no section).
+    // Ch3 專屬的 npcId 在結局檔（無對應段落）應退化為空。
     CHECK(nccu::dialog::Entries(
         "senior_c", SemesterState::Ending_A).empty());
 }

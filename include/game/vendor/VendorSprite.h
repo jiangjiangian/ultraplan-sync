@@ -7,24 +7,23 @@
 
 namespace nccu {
 
-// REQUIREMENT #6: every market stall must be a DIFFERENT person. This is
-// the single pure selection rule World::SpawnChapterNpcs uses for a
-// Vendor's sprite, factored out so it is exercised by the production
-// path AND directly unit-testable (revert-verifiable) without a GL
-// context / the optional PIPOYA asset pack.
-//
-//   * The PickNpcSprite KEY is the stall's own 攤主 (or, if none, its
-//     name) — interlude_market.md authors these distinctly, so the
-//     per-stall hashes differ instead of every stall colliding on the
-//     old literal "vendor" (which made the PIPOYA path pick ONE sprite
-//     for all ten).
-//   * The fallback (returned verbatim by PickNpcSprite when the PIPOYA
-//     pack is absent — i.e. on a clean clone / the grading rebuild) is a
-//     curated, visually-distinct sprite chosen by spawn INDEX, cycling
-//     over the sprites that actually ship (school_uniform_3/* + the
-//     three npc/* keepers — NO new art, CLAUDE.md §5). The old code used
-//     ONE shop_auntie.png for every stall, so a clean clone rendered ten
-//     identical clones — exactly the reported defect.
+/**
+ * @file VendorSprite.h
+ * @brief 攤販 sprite 的純選圖規則：每個市集攤位都對應到不同的人。
+ *
+ * 這是 World::SpawnChapterNpcs 為攤販挑選 sprite 時使用的唯一純規則，抽出後
+ * 既走正式產線、又可直接做單元測試（可驗證回歸），不需 GL 環境或選用的 PIPOYA
+ * 美術資源包。
+ *
+ *   - PickNpcSprite 的「鍵」是攤位自己的攤主（若無則用其名稱）——這些字串各自相異，
+ *     故各攤位的雜湊不同，不會像舊版那樣全部撞在字面值 "vendor" 上（那會讓 PIPOYA
+ *     路徑為十個攤位挑出同一張 sprite）。
+ *   - 退路（PIPOYA 資源包缺席時——即乾淨 clone／評分重建——由 PickNpcSprite 原樣
+ *     回傳）是依生成索引挑選、外觀彼此分明的精選 sprite，在實際隨附的 sprite
+ *     （school_uniform_3/* 與三個 npc/* 角色，不新增美術）間循環取用。舊版對每個
+ *     攤位都用同一張 shop_auntie.png，故乾淨 clone 會畫出十個一模一樣的分身——正是
+ *     回報的缺陷。
+ */
 inline const char* const kVendorFallbackSprites[] = {
     "resources/assets/sprites/npc/shop_auntie.png",
     "resources/assets/sprites/npc/suit_senior.png",
@@ -40,15 +39,28 @@ inline const char* const kVendorFallbackSprites[] = {
 inline constexpr std::size_t kVendorFallbackCount =
     sizeof(kVendorFallbackSprites) / sizeof(kVendorFallbackSprites[0]);
 
-// The per-stall sprite-selection key (unique per stall by construction).
+/**
+ * @brief 每個攤位的 sprite 選圖鍵（依建構方式保證各攤位唯一）。
+ * @param stallKeeper 攤主名稱（可為空）。
+ * @param name        攤位名稱（攤主為空時改用之）。
+ * @return 形如 "vendor:<攤主或攤位名>" 的選圖鍵。
+ */
 inline std::string VendorSpriteKey(const std::string& stallKeeper,
                                    const std::string& name) {
     return "vendor:" + (stallKeeper.empty() ? name : stallKeeper);
 }
 
-// The sprite a stall at spawn `index` gets: a distinct curated fallback
-// per index (clean clone), or a PIPOYA pick keyed off the unique stall
-// string (when the pack is present). Deterministic & stable per stall.
+/**
+ * @brief 取得生成索引為 `index` 的攤位所用的 sprite。
+ * @param index       攤位的生成索引。
+ * @param stallKeeper 攤主名稱（可為空）。
+ * @param name        攤位名稱（攤主為空時改用之）。
+ * @param pos         攤位的世界座標位置。
+ * @return sprite 資源路徑。
+ *
+ * 依索引給出彼此分明的精選退路（乾淨 clone），或在資源包存在時，以攤位唯一字串為鍵
+ * 取得 PIPOYA 選圖。每個攤位皆具決定性且穩定。
+ */
 inline std::string VendorSpriteFor(std::size_t index,
                                    const std::string& stallKeeper,
                                    const std::string& name,

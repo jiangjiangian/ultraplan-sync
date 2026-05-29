@@ -1,17 +1,17 @@
-// RAII / scoped-unsubscribe regression for EventBus (BUGLEDGER H1).
-//
-// EventBus::ScopedSubscribe(...) returns a movable, non-copyable
-// Subscription whose destructor removes EXACTLY its handler. This proves:
-//   (a) a Subscription going out of scope unsubscribes — later publishes
-//       no longer call it;
-//   (b) the B1/B2 dangling-capture use-after-free is prevented when the
-//       handler is owned by a scoped Subscription (the capture and the
-//       subscription die together, so the bus never invokes a handler
-//       over a destroyed capture);
-//   (c) move semantics transfer ownership without double-unsubscribe.
-//
-// The eventbus_isolation listener Clears the bus at every test/subcase
-// boundary, so each case below starts from a clean bus.
+/**
+ * @file test_eventbus_scoped.cpp
+ * @brief 驗證 EventBus 的 RAII 作用域取消訂閱（ScopedSubscribe / Subscription）。
+ *
+ * EventBus::ScopedSubscribe(...) 回傳一個可移動、不可複製的 Subscription，其解構會
+ * 「精確」移除自己那個 handler。本檔證明：
+ *   (a) Subscription 離開作用域即取消訂閱——之後的 Publish 不再呼叫它；
+ *   (b) 當 handler 由作用域 Subscription 持有時，可避免懸空捕捉造成的 use-after-free
+ *      （捕捉物與訂閱同生共死，匯流排絕不會對已銷毀的捕捉物呼叫 handler）；
+ *   (c) 移動語意會轉移所有權，不會發生重複取消訂閱。
+ *
+ * eventbus_isolation listener 會在每個測試／subcase 邊界 Clear 匯流排，故以下每個
+ * 案例都從乾淨的匯流排開始。
+ */
 
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
@@ -27,6 +27,7 @@ Event Msg(std::string text) {
 
 } // namespace
 
+// Subscription 離開作用域後即取消訂閱，之後不再被派送。
 TEST_CASE("Subscription out of scope unsubscribes (no later delivery)") {
     int hits = 0;
 
@@ -36,51 +37,49 @@ TEST_CASE("Subscription out of scope unsubscribes (no later delivery)") {
         CHECK(sub.Active());
 
         EventBus::Instance().Publish(Msg("in-scope"));
-        CHECK(hits == 1);   // delivered while the token is alive
-    }   // sub dtor -> exactly this handler removed
+        CHECK(hits == 1);   // token 存活期間有被派送
+    }   // sub 解構 -> 恰好移除此 handler
 
     EventBus::Instance().Publish(Msg("after-scope"));
-    CHECK(hits == 1);       // NOT called again — proves the unsubscribe
+    CHECK(hits == 1);       // 不再被呼叫——證明已取消訂閱
 }
 
+// 作用域 Subscription 可避免懸空捕捉造成的 use-after-free。
 TEST_CASE("Scoped Subscription prevents the B1/B2 dangling-capture UAF") {
-    // Reconstruct the B1/B2 footgun: a handler captures caller-owned
-    // state by reference; that state then dies. With the OLD raw
-    // Subscribe + manual-Clear model, forgetting Clear() before the
-    // capture dies => use-after-free on the next Publish. Holding the
-    // handler in a scoped Subscription destroys the subscription in
-    // lock-step with the captured state, so the bus can never invoke a
-    // handler over freed memory.
+    // 重現懸空捕捉的陷阱：handler 以參考捕捉呼叫端擁有的狀態，而該狀態之後被銷毀。
+    // 在舊的「raw Subscribe + 手動 Clear」模型下，若忘了在捕捉物銷毀前 Clear()，下一次
+    // Publish 就會 use-after-free。將 handler 交給作用域 Subscription，可使訂閱與被捕捉
+    // 狀態同步銷毀，匯流排便絕不會對已釋放的記憶體呼叫 handler。
     int observed = 0;
 
     {
-        // Heap-owned "caller state" so a real UAF (not just out-of-scope)
-        // would be detectable by sanitizers if the unsubscribe failed.
+        // 用堆積配置的「呼叫端狀態」，這樣若取消訂閱失敗，sanitizer 能偵測到真正的
+        // UAF（而非僅是離開作用域）。
         auto captured = std::make_unique<int>(0);
 
         EventBus::Subscription sub = EventBus::Instance().ScopedSubscribe(
             EventType::ShowMessage,
             [ptr = captured.get(), &observed](const Event&) {
-                *ptr += 1;          // dereferences the captured state
+                *ptr += 1;          // 解參考被捕捉的狀態
                 observed = *ptr;
             });
 
         EventBus::Instance().Publish(Msg("alive"));
-        CHECK(observed == 1);       // safe: capture + sub both alive
+        CHECK(observed == 1);       // 安全：捕捉物與 sub 皆存活
 
-        // Destroy the subscription FIRST (RAII: it owns the handler that
-        // captured `ptr`), THEN free the captured state. Order here mirrors
-        // the safe teardown the RAII handle guarantees automatically.
+        // 先銷毀訂閱（RAII：它持有捕捉了 `ptr` 的 handler），再釋放被捕捉狀態。此處
+        // 的順序對應 RAII handle 自動保證的安全拆解順序。
         sub.Reset();
         CHECK_FALSE(sub.Active());
-        captured.reset();           // backing memory freed
+        captured.reset();           // 釋放底層記憶體
     }
 
-    // Publishing after the captured state is gone must NOT touch it.
+    // 被捕捉狀態消失後再 Publish，絕不得碰觸它。
     EventBus::Instance().Publish(Msg("dangling"));
-    CHECK(observed == 1);           // handler never ran again -> no UAF
+    CHECK(observed == 1);           // handler 不再執行 -> 無 UAF
 }
 
+// 移動 Subscription 會轉移所有權，不會重複取消訂閱。
 TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
     int hits = 0;
 
@@ -89,14 +88,14 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
             EventType::ShowMessage, [&](const Event&) { ++hits; });
 
         EventBus::Subscription b(std::move(a));
-        CHECK_FALSE(a.Active());     // moved-from owns nothing
+        CHECK_FALSE(a.Active());     // 被移走者不再擁有任何東西
         CHECK(b.Active());
 
         EventBus::Instance().Publish(Msg("x"));
-        CHECK(hits == 1);            // exactly one live handler
+        CHECK(hits == 1);            // 恰好一個存活的 handler
 
-        // a's destruction must be a no-op (no double-unsubscribe / no
-        // removal of b's handler). b still owns the live subscription.
+        // a 的解構必須是 no-op（不得重複取消訂閱，也不得移除 b 的 handler）。b 仍持有
+        // 存活的訂閱。
     }
 
     SUBCASE("move-assign over a live subscription") {
@@ -106,15 +105,15 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
         EventBus::Subscription b = EventBus::Instance().ScopedSubscribe(
             EventType::ShowMessage, [&](const Event&) { ++otherHits; });
 
-        // Move-assign must Reset b's old handler (otherHits frozen) then
-        // take over a's, leaving exactly one live handler (hits).
+        // 移動指派必須先 Reset b 原本的 handler（otherHits 不再增加），再接管 a 的，
+        // 最後恰好剩一個存活的 handler（hits）。
         b = std::move(a);
         CHECK_FALSE(a.Active());
         CHECK(b.Active());
 
         EventBus::Instance().Publish(Msg("y"));
-        CHECK(hits == 1);            // a's handler, now owned by b
-        CHECK(otherHits == 0);       // b's old handler was unsubscribed
+        CHECK(hits == 1);            // a 的 handler，現由 b 持有
+        CHECK(otherHits == 0);       // b 原本的 handler 已被取消訂閱
     }
 
     SUBCASE("destroying both copies removes the handler exactly once") {
@@ -124,12 +123,13 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
             EventBus::Subscription b(std::move(a));
             EventBus::Instance().Publish(Msg("z1"));
             CHECK(hits == 1);
-        }   // both a (no-op) and b (real) destruct here
+        }   // a（no-op）與 b（真正移除）都在此解構
         EventBus::Instance().Publish(Msg("z2"));
-        CHECK(hits == 1);            // gone after the single owner died
+        CHECK(hits == 1);            // 唯一擁有者銷毀後便不再被派送
     }
 }
 
+// ScopedSubscribe 與 raw Subscribe / Clear 可並存。
 TEST_CASE("ScopedSubscribe coexists with raw Subscribe / Clear") {
     int rawHits    = 0;
     int scopedHits = 0;
@@ -143,19 +143,18 @@ TEST_CASE("ScopedSubscribe coexists with raw Subscribe / Clear") {
         EventBus::Instance().Publish(Msg("a"));
         CHECK(rawHits == 1);
         CHECK(scopedHits == 1);
-    }   // scoped handler removed; raw handler untouched
+    }   // 作用域 handler 被移除；raw handler 不受影響
 
     EventBus::Instance().Publish(Msg("b"));
-    CHECK(rawHits == 2);             // raw subscriber still alive
-    CHECK(scopedHits == 1);          // scoped one gone
+    CHECK(rawHits == 2);             // raw 訂閱者仍存活
+    CHECK(scopedHits == 1);          // 作用域那個已消失
 
-    // Clear() still nukes everything (backward-compatible), and a
-    // Subscription whose handler Clear() already removed destructs
-    // harmlessly (Unsubscribe is a no-op when the id is gone).
+    // Clear() 仍會清掉全部（向後相容），且一個其 handler 已被 Clear() 移除的
+    // Subscription 解構時無害（id 已不存在時 Unsubscribe 為 no-op）。
     auto sub = EventBus::Instance().ScopedSubscribe(
         EventType::ShowMessage, [&](const Event&) { ++scopedHits; });
     EventBus::Instance().Clear();
     EventBus::Instance().Publish(Msg("c"));
     CHECK(rawHits == 2);
     CHECK(scopedHits == 1);
-}   // sub dtor here: Unsubscribe(id) is a safe no-op post-Clear
+}   // sub 在此解構：Clear 後 Unsubscribe(id) 是安全的 no-op

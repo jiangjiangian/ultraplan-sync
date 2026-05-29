@@ -86,14 +86,13 @@ TEST_CASE("Interlude-visit latch lifecycle: reset on entry, fire on cross") {
     auto sub = SubscribeToAll(texts);
     bool latched = false;
 
-    // First visit: cross the band once.
+    // 第一次造訪：跨越帶狀區一次。
     CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 1);
 
-    // Player leaves the Interlude, then comes back: GameController resets
-    // the latch in the Interlude-arrival branch. Mimic that reset and
-    // verify the next zone entry fires again exactly once.
-    latched = false;                                 // GC's reset
+    // 玩家離開幕間後再回來：GameController 會在「抵達幕間」分支重置鎖存。
+    // 模擬該重置，並驗證下次進入區域時又恰好觸發一次。
+    latched = false;                                 // 模擬 GameController 的重置
     CHECK(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
     CHECK(Count(texts, nccu::kInterludeExitPrep) == 2);
     CHECK_FALSE(nccu::MaybeAnnounceInterludeExit(EventBus::Instance(), latched));
@@ -102,11 +101,11 @@ TEST_CASE("Interlude-visit latch lifecycle: reset on entry, fire on cross") {
     EventBus::Instance().Clear();
 }
 
+// 抵達幕間的提示經完整路徑送達 HUD 訂閱者。
 TEST_CASE("Interlude arrival hint reaches the HUD subscriber") {
-    // Full path: a ShowMessage publish containing the arrival hint lands
-    // on World::HudMessage(), which the View reads. The hint string is
-    // the contract — GameController's Interlude-arrival branch publishes
-    // exactly this text right after RespawnChapterRoster.
+    // 完整路徑：含抵達提示的 ShowMessage 事件最終寫入 World::HudMessage()，
+    // 供 View 讀取。此提示字串即契約 — GameController 在 RespawnChapterRoster
+    // 之後正是發佈這段文字。
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     nccu::WireHudMessageSubscriber(EventBus::Instance(), w);

@@ -7,14 +7,20 @@
 #error "TEST_FIXTURES_DIR must be defined by the build system"
 #endif
 
+/**
+ * @file test_dialog_loader.cpp
+ * @brief 驗證 DialogLoader::LoadChapter 能把 markdown 樣本解析成預期的 NPC 與子狀態
+ *        結構：NPC 區段切分、子狀態升序排列、台詞內容、空子區塊保留，以及未標註
+ *        時各 metadata 欄位的預設值。
+ */
+
 namespace {
 
 std::string FixturePath(const char* name) {
     return std::string(TEST_FIXTURES_DIR) + "/" + name;
 }
 
-// Look up an NPC's SubEntry by subState int (a=0, b=1, c=2, d=3). Returns
-// nullptr if absent.
+// 依 subState 整數（a=0, b=1, c=2, d=3）查找某 NPC 的 SubEntry，找不到回傳 nullptr。
 const nccu::dialog::SubEntry* Find(
     const std::vector<nccu::dialog::SubEntry>& subs, int subState) {
     for (const auto& s : subs) {
@@ -25,19 +31,19 @@ const nccu::dialog::SubEntry* Find(
 
 }  // namespace
 
+// LoadChapter 把樣本解析成預期的 NPC 與子狀態結構。
 TEST_CASE("DialogLoader: parses fixture into expected NPC + substate layout") {
     const auto chapter =
         nccu::dialog::LoadChapter(FixturePath("dialog_sample.md"));
 
-    // Two NPCs: 學長 and 學妹. Pre-NPC headings (`## 章節 metadata`,
-    // `## 場景旁白`) and the post-NPC `## 章節結尾` heading must reset
-    // the active NPC and therefore be excluded.
+    // 兩位 NPC：學長與學妹。NPC 之前的標題（## 章節 metadata、## 場景旁白）
+    // 與 NPC 之後的 ## 章節結尾 標題都會重置目前 NPC，因此會被排除。
     REQUIRE(chapter.npcs.size() == 2);
     REQUIRE(chapter.npcs.count("學長") == 1);
     REQUIRE(chapter.npcs.count("學妹") == 1);
 
-    // 學長: substates a (subState 0, 2 lines, ASCII quotes), b (subState 1,
-    // 1 line). Entries are in ascending subState order.
+    // 學長：子狀態 a（subState 0，2 行，ASCII 引號）、b（subState 1，1 行）。
+    // 各項目依 subState 升序排列。
     const auto& senior = chapter.npcs.at("學長");
     REQUIRE(senior.size() == 2);
     CHECK(senior[0].subState == 0);
@@ -54,10 +60,9 @@ TEST_CASE("DialogLoader: parses fixture into expected NPC + substate layout") {
     REQUIRE(sb->lines.size() == 1);
     CHECK(sb->lines[0] == "又見面了。");
 
-    // The fixture headings carry no 「…」 override and no trailing （…）
-    // parenthetical, so choiceLabel is the heading text verbatim. The
-    // fixture exercises no `// karma` or `Flag_X =` notes, so the metadata
-    // fields stay at their defaults (the chapter1 parity test covers those).
+    // 樣本的標題沒有 「…」 覆寫，也沒有結尾的 （…） 括註，因此 choiceLabel
+    // 就是標題文字本身。樣本未使用任何 karma 或 Flag_X = 標註，所以 metadata
+    // 欄位維持預設值（那些由 chapter1 的對照測試涵蓋）。
     CHECK(sa->choiceLabel == "初次接觸");
     CHECK(sa->karmaDelta == 0);
     CHECK(sa->setsFlag == "");
@@ -67,10 +72,9 @@ TEST_CASE("DialogLoader: parses fixture into expected NPC + substate layout") {
     CHECK(sb->setsFlag == "");
     CHECK(sb->flagValue == false);
 
-    // 學妹: substate a (subState 0) uses CJK “…” quotes, and substate c
-    // (subState 2) is a header with NO `- "line"` items — it must still
-    // produce a SubEntry with an empty `lines` list (LoadChapter preserves
-    // empty sub-blocks).
+    // 學妹：子狀態 a（subState 0）用 CJK 引號 “…”，而子狀態 c（subState 2）
+    // 是一個沒有任何 - "line" 項目的標題——它仍必須產生一個 lines 為空的
+    // SubEntry（LoadChapter 會保留空的子區塊）。
     const auto& junior = chapter.npcs.at("學妹");
     REQUIRE(junior.size() == 2);
     CHECK(junior[0].subState == 0);

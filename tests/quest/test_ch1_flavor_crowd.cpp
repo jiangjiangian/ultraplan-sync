@@ -20,26 +20,24 @@
 using nccu::SemesterState;
 using nccu::World;
 
-// G-1/G-2 regressions. The Ch1 加退選搶課 crowd + stationary flavor NPCs are
-// ADDITIVE colour: a batch of wandering ambient students (no npcId, no `!`,
-// non-blocking) + a few stationary flavor NPCs whose chapter1.md line pool
-// cycles DETERMINISTICALLY one line per talk. They must NOT touch the
-// hard-gated 苦主→學長→苦主 spine (no quest flag), must keep
-// objects_.front()==Player, and must stay off the spine anchors.
+// Ch1 加退選搶課的人潮與靜態風味 NPC 都是「加味」用的附加內容：一批四處遊走的
+// 路人學生（無 npcId、無「!」、不擋路），加上幾個靜態風味 NPC，其 chapter1.md
+// 台詞池每次對話會以確定性的方式循環播放一行。它們不得碰到硬性關卡的
+// 苦主→學長→苦主 主線（不帶任務旗標），必須維持 objects_.front()==Player，
+// 也必須避開主線錨點。
 
 namespace {
 
 std::size_t CountCh1Crowd(const World& w) {
-    // The Ch1 crowd wanders with an empty npcId from EXACTLY the
-    // Chapter1CrowdSpawns coords. Count empty-npcId NPCs sitting on one of
-    // those spawn points (positions only change once Update() ticks, and
-    // RespawnChapterRoster does not tick) — precise, so it never confuses the
-    // Ch1 crowd with the Interlude/Ch3 crowds or the south ambient students.
+    // Ch1 人潮以空 npcId 從 Chapter1CrowdSpawns 的座標出發遊走。計算正坐落於
+    // 這些生成點上、且 npcId 為空的 NPC（位置要等 Update() 推進才會變，而
+    // RespawnChapterRoster 不會推進）——這樣才精準，不會把 Ch1 人潮和
+    // 幕間／Ch3 人潮或南側路人學生搞混。
     std::size_t n = 0;
     for (const auto& o : w.Objects()) {
         if (!o->NpcId().empty()) continue;
         const auto* npc = dynamic_cast<const NPC*>(o.get());
-        if (npc == nullptr) continue;                 // skip Player / pickups
+        if (npc == nullptr) continue;                 // 略過 Player／撿取物
         const auto p = o->GetPosition();
         for (const auto& s : nccu::Chapter1CrowdSpawns())
             if (p.x == s.pos.x && p.y == s.pos.y) { ++n; break; }

@@ -7,18 +7,15 @@
 namespace nccu {
 
 const std::vector<QuestHook>& InteractQuestHooks() {
-    // Built once on first use (function-local static — thread-safe init,
-    // same idiom as the EventBus singleton). The order below is EXACTLY
-    // the original inline E-interact call sequence in
-    // GameController::Update; it is load-bearing and must not be reordered
-    // (a later hook may read a flag an earlier hook set, e.g.
-    // TryMeetLibrarian's Flag_MetLibrarian gating downstream librarian
-    // beats). Each adapter lambda drops the args its underlying free
-    // function ignores, so the table stays homogeneous.
+    // 首次使用時建構一次（函式區域 static——具執行緒安全初始化，與 EventBus
+    // 單例同一手法）。下方順序「完全等同」原本 GameController::Update 中內聯的
+    // E 互動呼叫序列；此順序具關鍵作用，不得重排（後面的 hook 可能讀取前面
+    // hook 設下的旗標，例如 TryMeetLibrarian 設的 Flag_MetLibrarian 會閘控
+    // 後續圖書館員劇情）。每個轉接 lambda 會丟棄其底層自由函式用不到的參數，
+    // 使整張表維持同質簽章。
     //
-    // Plan P2 step 2: each lambda now takes EventBus& bus as its first
-    // parameter (uniform signature). Publishing hooks forward it; non-
-    // publishing hooks ignore it.
+    // 每個 lambda 的第一個參數統一為 EventBus& bus（簽章一致）：會發布事件的
+    // hook 將其往下傳遞，不發布的 hook 則忽略它。
     static const std::vector<QuestHook> kHooks = [] {
         std::vector<QuestHook> v;
         v.push_back({"TryReturnVictimUmbrella",

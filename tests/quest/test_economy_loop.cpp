@@ -1,3 +1,7 @@
+/**
+ * @file test_economy_loop.cpp
+ * @brief 驗證迴圈經濟：金錢軟上限、消耗品清空、各章金幣表，以及金幣確實生成於世界。
+ */
 #include "doctest/doctest.h"
 #include "game/quest/ChapterPickups.h"
 #include "game/entities/CashPickup.h"
@@ -9,29 +13,31 @@
 using nccu::SemesterState;
 using nccu::World;
 
-// S5b-4 loop economy: money soft-cap, the "consumables 當章用完" wipe,
-// the per-chapter CashPickup table, and proof the coins actually spawn.
+// 迴圈經濟系統：金錢軟上限、「消耗品當章用完」的清空、各章 CashPickup 表，
+// 以及驗證金幣確實會被生成到世界中。
 
+// AddMoney 只在 300 軟上限封頂，不設下限；負數扣款與 DeductMoney 不受上限影響。
 TEST_CASE("Player::AddMoney clamps at the 300 soft cap, never the floor") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     REQUIRE(p.GetMoney() == 100);
 
     p.AddMoney(150);
     CHECK(p.GetMoney() == 250);
-    p.AddMoney(100);                       // 350 -> clamped
+    p.AddMoney(100);                       // 350 -> 封頂
     CHECK(p.GetMoney() == Player::kMoneySoftCap);
     CHECK(p.GetMoney() == 300);
-    p.AddMoney(50);                        // already at cap, stays
+    p.AddMoney(50);                        // 已達上限，維持不變
     CHECK(p.GetMoney() == 300);
 
-    // A negative amount still subtracts (the cap is a ceiling only).
+    // 負數金額仍會扣減（上限只是天花板）。
     p.AddMoney(-120);
     CHECK(p.GetMoney() == 180);
-    // DeductMoney is unaffected by the cap.
+    // DeductMoney 不受上限影響。
     CHECK(p.DeductMoney(80));
     CHECK(p.GetMoney() == 100);
 }
 
+// ClearConsumables 應清空整個消耗品背包（章節結束時的「當章用完」行為）。
 TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.AddConsumable("HotPack").AddConsumable("HotPack");
@@ -44,6 +50,7 @@ TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
     CHECK_FALSE(p.ConsumeOne("HotPack"));
 }
 
+// 各章 CashPickup 金額表：Ch1 共 50、Ch2 共 40（防卡關下限 >35），其餘章節為空。
 TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
     const auto& ch1 = nccu::ChapterPickups(SemesterState::Chapter1_AddDrop);
     REQUIRE(ch1.size() == 5);
@@ -51,11 +58,9 @@ TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
     for (const auto& p : ch1) total += p.value;
     CHECK(total == 50);
 
-    // Ch2 funds the 35-money EnergyDrink for a player who arrives broke
-    // (the anti-softlock floor chapter2.md §五.3 promises): 10+10+20 = 40.
-    // The `> 35` check is the invariant — it must stay above the
-    // 圖書館地下室自販機 price (ChapterVendors Chapter2Vendors) so a future
-    // tweak can't silently re-introduce the wake-學霸 soft-lock.
+    // Ch2 必須足以讓身無分文進場的玩家買到 35 元的 EnergyDrink（防卡關下限）：
+    // 10+10+20 = 40。`> 35` 是不變量——金額必須高於圖書館地下室自販機的售價，
+    // 以免日後調整時悄悄重新引入「叫醒學霸」的卡關。
     const auto& ch2 = nccu::ChapterPickups(SemesterState::Chapter2_Midterms);
     REQUIRE(ch2.size() == 3);
     int ch2total = 0;
@@ -68,6 +73,7 @@ TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
     CHECK(nccu::ChapterPickups(SemesterState::Chapter4_Finals).empty());
 }
 
+// World 應確實生成 Ch1 的 5 枚金幣（總值 50），證明經濟迴圈有接上世界生成。
 TEST_CASE("World actually spawns the Ch1 CashPickups (loop is wired)") {
     World w("", /*loadSprites=*/false);
     int coins = 0;

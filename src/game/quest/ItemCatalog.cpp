@@ -228,17 +228,13 @@ HeldUmbrella HeldUmbrellaForItemId(std::string_view itemId) {
     return HeldUmbrella::None;
 }
 
-// B2.1: any umbrella itemId is a HELD-over-head umbrella, surfaced by the
-// held-kind row — NOT a count-consumable. So BuildInventoryRows EXCLUDES it
-// from the consumable-count loop (the Ch4 集英樓 vendor adds "UglyUmbrella"
-// to the count map; without this filter the bag drew TWO umbrella rows —
-// one from the count, one from the held-kind), and InventoryView uses it to
-// classify a row as the Umbrella kind. The 苦主's carried transparent
-// umbrella is a FLAG, not a count entry, so it is unaffected. Substring
-// match keeps it robust to both the English vendor ids ("UglyUmbrella"/
-// "CursedUmbrella"/"TransparentUmbrella") and any future umbrella stock
-// line. Hoisted out of the anonymous namespace (review MINOR) so
-// InventoryView shares this one definition instead of re-implementing it.
+// 任何雨傘類 itemId 都是「拿在頭頂」的傘，由「持有種類」那一列呈現——並非計數型
+// 消耗品。故 BuildInventoryRows 會把它「排除」於計數消耗品迴圈之外（第四章集英樓的
+// 攤販會把 "UglyUmbrella" 加進計數表；若無此過濾，背包會畫出「兩」列雨傘——一列來自
+// 計數、一列來自持有種類），InventoryView 則用它把某列歸類為雨傘種類。苦主身上帶的
+// 透明傘是一個「旗標」、而非計數項目，故不受影響。以子字串比對使其對英文攤販 id
+//（"UglyUmbrella"/"CursedUmbrella"/"TransparentUmbrella"）與任何未來的雨傘庫存品項
+// 皆穩健適用。將其自匿名命名空間提出，使 InventoryView 共用這唯一定義，而非各自重寫。
 bool IsUmbrellaItemId(std::string_view id) {
     return id.find("Umbrella") != std::string_view::npos ||
            id.find("umbrella") != std::string_view::npos;

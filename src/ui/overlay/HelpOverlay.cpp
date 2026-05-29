@@ -18,23 +18,21 @@ void DrawHelpOverlay(nccu::engine::render::IRenderer& r,
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // REQUIREMENT #9 + U2-T4: the in-game 說明 (how-to-play) overlay —
-    // drawn ABOVE the menu (which is still up behind it). Pure function of
-    // World::HelpOpen() + World::HelpPage(); the same shared GameHelp text
-    // the title screen uses, so the two never drift. A near-full-screen
-    // panel showing one PAGE of the (now-paged) help; ←/→ flip the page,
-    // M/E/Enter (all handled in GameController) dismiss it back to the menu
-    // (ESC quits the program).
+    // 遊戲內說明（玩法說明）疊層——畫在選單「之上」（選單仍在其後方）。為
+    // World::HelpOpen() + World::HelpPage() 的純函式；與標題畫面使用同一份共用的
+    // GameHelp 文字，故兩者不會走樣。一個近全螢幕的面板，顯示（現已分頁的）說明中的
+    // 一「頁」；←/→ 翻頁，M/E/Enter（皆於 GameController 處理）將其關閉並退回選單
+    //（ESC 結束程式）。
     if (!(world.MenuOpen() && world.HelpOpen())) return;
 
     const float W = screenW;
     const float H = screenH;
-    // Full-screen scrim ON TOP of the paused menu (overlay-only — the
-    // title screen Clears instead, so this stays at the call site).
+    // 蓋在暫停選單「之上」的全螢幕遮罩（僅疊層用——標題畫面改為 Clear，故此處留在
+    // 呼叫點）。
     r.DrawRect(Rect{0.0f, 0.0f, W, H}, Color{0, 0, 0, 205});
-    // Shared 遊戲說明 page body (review MINOR de-dup): same panel/title/
-    // paged body/indicator/返回 chip the title screen draws. The overlay
-    // values: 245α panel, light indicator, "M / E 返回選單" chip at -58.
+    // 共用的「遊戲說明」頁面主體（去重）：與標題畫面所繪的面板／標題／分頁主體／頁碼
+    // 指示／返回小標相同。此疊層採用的值：245 alpha 面板、淺色指示、位於 -58 的
+    //「M / E 返回選單」小標。
     nccu::ui::DrawHelpPage(
         [&r](Rect rect, Color c) { r.DrawRect(rect, c); },
         nccu::ui::HelpPageStyle{
