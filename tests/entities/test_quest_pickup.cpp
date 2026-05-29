@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "entities/QuestFlagPickup.h"
-#include "entities/Player.h"
+#include "game/quest/Flags.h"
+#include "game/entities/QuestFlagPickup.h"
+#include "game/entities/Player.h"
 #include "engine/math/Vec2.h"
 
 TEST_CASE("QuestFlagPickup sets its flag on the player and deactivates") {

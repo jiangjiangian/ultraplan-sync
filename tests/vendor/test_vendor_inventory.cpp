@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 #include "engine/events/EventBus.h"
-#include "entities/Player.h"
-#include "vendor/Vendor.h"
-#include "vendor/VendorConfig.h"
-#include "vendor/VendorMessages.h"
-#include "quest/ItemCatalog.h"
+#include "game/entities/Player.h"
+#include "game/vendor/Vendor.h"
+#include "game/vendor/VendorConfig.h"
+#include "game/vendor/VendorMessages.h"
+#include "game/quest/ItemCatalog.h"
 
 #include <string>
 

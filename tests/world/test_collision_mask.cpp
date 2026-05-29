@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "world/CollisionMask.h"
-#include "world/Physics.h"
+#include "game/world/CollisionMask.h"
+#include "game/world/Physics.h"
 
 using nccu::CollisionMask;
 using nccu::gfx::Rect;

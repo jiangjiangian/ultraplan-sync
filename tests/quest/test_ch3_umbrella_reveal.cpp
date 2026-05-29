@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "world/World.h"
-#include "entities/Player.h"
-#include "entities/TrueUmbrella.h"
-#include "quest/Chapter3Quest.h"
+#include "game/quest/Flags.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
+#include "game/entities/TrueUmbrella.h"
+#include "game/quest/Chapter3Quest.h"
 #include "engine/events/EventBus.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include "engine/math/Vec2.h"
 
 #include <cstddef>

@@ -3,9 +3,9 @@
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Color.h"
-#include "gfx/UmbrellaGlyph.h"
-#include "quest/ItemCatalog.h"   // kItem* category sentinels
-#include "dialog/DialogLayout.h" // WrapToCells — CJK-aware description wrap
+#include "game/gfx/UmbrellaGlyph.h"
+#include "game/quest/ItemCatalog.h"   // kItem* category sentinels
+#include "game/dialog/DialogLayout.h" // WrapToCells — CJK-aware description wrap
 
 #include <algorithm>
 #include <string>

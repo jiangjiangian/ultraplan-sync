@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/WalkCycle.h"
+#include "game/gfx/WalkCycle.h"
 
 using nccu::gfx::Vec2;
 using nccu::gfx::WalkColumn;

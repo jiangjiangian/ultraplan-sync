@@ -15,11 +15,11 @@
 //    decay checks break (karma stays at the pre-decay value).
 
 #include "doctest/doctest.h"
-#include "entities/CursedUmbrella.h"
-#include "entities/Player.h"
+#include "game/entities/CursedUmbrella.h"
+#include "game/entities/Player.h"
 #include "engine/events/EventBus.h"
 #include "engine/math/Vec2.h"
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 
 using nccu::gfx::Vec2;
 

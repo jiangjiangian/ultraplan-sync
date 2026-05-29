@@ -17,11 +17,11 @@
 // global EventBus singleton.
 
 #include "doctest/doctest.h"
-#include "entities/CursedUmbrella.h"
+#include "game/entities/CursedUmbrella.h"
 #include "engine/events/EventBus.h"
-#include "controller/EventWiring.h"
-#include "entities/Player.h"
-#include "world/World.h"
+#include "game/controller/EventWiring.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
 #include "engine/math/Vec2.h"
 
 #include <string>

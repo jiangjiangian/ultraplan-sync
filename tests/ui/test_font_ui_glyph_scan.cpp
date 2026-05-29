@@ -3,9 +3,9 @@
 #include "ui/EndingView.h"
 #include "ui/ChapterCard.h"
 #include "ui/GameHelp.h"
-#include "quest/ItemCatalog.h"
-#include "quest/QuestObjective.h"
-#include "vendor/VendorMessages.h"
+#include "game/quest/ItemCatalog.h"
+#include "game/quest/QuestObjective.h"
+#include "game/vendor/VendorMessages.h"
 #include <algorithm>
 #include <iomanip>
 #include <string>

@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "state/InterludeExitMarker.h"
-#include "state/InterludeExit.h"
+#include "game/state/InterludeExitMarker.h"
+#include "game/state/InterludeExit.h"
 #include "engine/render/IRenderer.h"
 
 #include <string>

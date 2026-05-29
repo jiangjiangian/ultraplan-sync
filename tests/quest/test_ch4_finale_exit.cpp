@@ -1,5 +1,5 @@
 // Item 1c regression ("能退出的選項"): the Ch4 助教 結算 menu must carry a
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 // trailing no-commit exit. Picking it closes the conversation with ZERO
 // state change — NO Flag_TaFinaleChoiceMade, NO Flag_ConsoledTA, NO karma
 // applied — so the player can walk off and re-approach 助教 to decide the
@@ -22,14 +22,14 @@
 //     is no longer re-presentable.
 
 #include "doctest/doctest.h"
-#include "controller/GameController.h"
-#include "world/World.h"
-#include "entities/Player.h"
+#include "game/controller/GameController.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
 #include "engine/core/GameObject.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogSource.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogSource.h"
 #include "engine/events/EventBus.h"
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include "engine/platform/Time.h"

@@ -1,6 +1,6 @@
 #ifndef INVENTORY_VIEW_H_
 #define INVENTORY_VIEW_H_
-#include "quest/ItemCatalog.h"   // nccu::InventoryRow DTO
+#include "game/quest/ItemCatalog.h"   // nccu::InventoryRow DTO
 #include <vector>
 
 namespace nccu {

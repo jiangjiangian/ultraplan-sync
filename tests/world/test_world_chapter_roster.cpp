@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
-#include "quest/ChapterSpawns.h"
+#include "game/quest/ChapterSpawns.h"
 #include "engine/core/GameObject.h"
-#include "entities/NPC.h"
-#include "entities/Player.h"
-#include "world/World.h"
+#include "game/entities/NPC.h"
+#include "game/entities/Player.h"
+#include "game/world/World.h"
 #include <cmath>
 #include <set>
 #include <string>

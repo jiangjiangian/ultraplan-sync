@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "quest/ChapterSpawns.h"
+#include "game/quest/Flags.h"
+#include "game/quest/ChapterSpawns.h"
 #include "engine/core/GameObject.h"
-#include "entities/NPC.h"
-#include "entities/Player.h"
-#include "state/SemesterState.h"
-#include "world/World.h"
+#include "game/entities/NPC.h"
+#include "game/entities/Player.h"
+#include "game/state/SemesterState.h"
+#include "game/world/World.h"
 
 #include <string>
 #include <string_view>

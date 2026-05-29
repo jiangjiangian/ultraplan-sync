@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
-#include "dialog/DialogLayout.h"
-#include "dialog/DialogState.h"
-#include "dialog/DialogView.h"
-#include "dialog/DialogLoader.h"
+#include "game/dialog/DialogLayout.h"
+#include "game/dialog/DialogState.h"
+#include "game/dialog/DialogView.h"
+#include "game/dialog/DialogLoader.h"
 #include "engine/render/IRenderer.h"
 #include <string>
 #include <vector>

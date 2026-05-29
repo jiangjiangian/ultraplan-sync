@@ -1,7 +1,7 @@
 #ifndef UI_HUD_OBJECTIVE_BAR_H_
 #define UI_HUD_OBJECTIVE_BAR_H_
 
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 
 namespace nccu {
 

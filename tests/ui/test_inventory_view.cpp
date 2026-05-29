@@ -1,13 +1,13 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 #include "ui/InventoryView.h"
-#include "quest/ItemCatalog.h"
-#include "quest/Chapter1Quest.h"
-#include "quest/Chapter2Quest.h"
-#include "entities/Player.h"
+#include "game/quest/ItemCatalog.h"
+#include "game/quest/Chapter1Quest.h"
+#include "game/quest/Chapter2Quest.h"
+#include "game/entities/Player.h"
 #include "engine/render/IRenderer.h"
-#include "gfx/UmbrellaGlyph.h"
-#include "dialog/DialogLayout.h"   // CellWidth — U2-T2 wrap assertions
+#include "game/gfx/UmbrellaGlyph.h"
+#include "game/dialog/DialogLayout.h"   // CellWidth — U2-T2 wrap assertions
 
 #include <string>
 #include <vector>

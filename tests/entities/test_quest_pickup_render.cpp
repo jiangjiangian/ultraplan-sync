@@ -1,10 +1,10 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "entities/QuestFlagPickup.h"
-#include "entities/Player.h"
+#include "game/quest/Flags.h"
+#include "game/entities/QuestFlagPickup.h"
+#include "game/entities/Player.h"
 #include "engine/render/IRenderer.h"
-#include "gfx/UmbrellaGlyph.h"
-#include "quest/Chapter1Quest.h"
+#include "game/gfx/UmbrellaGlyph.h"
+#include "game/quest/Chapter1Quest.h"
 
 #include <vector>
 

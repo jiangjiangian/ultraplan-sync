@@ -1,9 +1,9 @@
 #include "engine/platform/ScriptInput.h"
 
-#include "world/World.h"
-#include "entities/Player.h"
+#include "game/world/World.h"
+#include "game/entities/Player.h"
 #include "engine/core/GameObject.h"
-#include "dialog/DialogState.h"
+#include "game/dialog/DialogState.h"
 #include "engine/input/Key.h"
 #include "engine/math/Vec2.h"
 #include "engine/math/Rect.h"

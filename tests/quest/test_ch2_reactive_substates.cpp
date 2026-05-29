@@ -1,5 +1,5 @@
 // B5 regression: the four Ch2 reactive beats that USED to be inline
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 // `*（若 Flag_X = true）*` lines the DialogLoader silently dropped are
 // now re-authored as genuine flag-gated SEPARATE substates in
 // chapter2.md and routed by ResolveOpenerSubState. These cases prove
@@ -9,11 +9,11 @@
 // routing/line CHECKs fail (the line is dropped / the default (a) opens
 // instead).
 #include "doctest/doctest.h"
-#include "dialog/DialogOpener.h"
-#include "dialog/DialogSource.h"
-#include "dialog/DialogState.h"
-#include "entities/Player.h"
-#include "quest/Chapter2Quest.h"
+#include "game/dialog/DialogOpener.h"
+#include "game/dialog/DialogSource.h"
+#include "game/dialog/DialogState.h"
+#include "game/entities/Player.h"
+#include "game/quest/Chapter2Quest.h"
 #include "engine/math/Vec2.h"
 
 #ifndef TEST_CONTENT_DIR

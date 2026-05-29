@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "dialog/DialogLoader.h"
+#include "game/dialog/DialogLoader.h"
 
 #include <string>
 

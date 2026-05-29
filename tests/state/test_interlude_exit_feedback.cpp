@@ -1,9 +1,9 @@
 #include "doctest/doctest.h"
 #include "ui/ChapterToast.h"
 #include "engine/events/EventBus.h"
-#include "controller/EventWiring.h"
-#include "state/InterludeExit.h"
-#include "world/World.h"
+#include "game/controller/EventWiring.h"
+#include "game/state/InterludeExit.h"
+#include "game/world/World.h"
 #include "engine/math/Vec2.h"
 #include <string>
 #include <vector>

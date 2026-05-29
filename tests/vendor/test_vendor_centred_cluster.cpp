@@ -21,9 +21,9 @@
 //     (all ten identical).
 
 #include "doctest/doctest.h"
-#include "quest/ChapterVendors.h"
-#include "vendor/VendorSprite.h"      // the EXACT production selector (#6)
-#include "state/SemesterState.h"
+#include "game/quest/ChapterVendors.h"
+#include "game/vendor/VendorSprite.h"      // the EXACT production selector (#6)
+#include "game/state/SemesterState.h"
 
 #include <cmath>
 #include <iterator>

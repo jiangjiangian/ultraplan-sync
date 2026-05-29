@@ -1,10 +1,10 @@
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
-#include "quest/Flags.h"
-#include "state/EndingGate.h"
-#include "state/SemesterStateMachine.h"
-#include "dialog/DialogState.h"
-#include "entities/Player.h"
+#include "game/quest/Flags.h"
+#include "game/state/EndingGate.h"
+#include "game/state/SemesterStateMachine.h"
+#include "game/dialog/DialogState.h"
+#include "game/entities/Player.h"
 #include "ui/EndingView.h"   // IsEndingState (G1 TOTAL proof)
 #include "engine/math/Vec2.h"
 using nccu::SemesterStateMachine;

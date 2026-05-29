@@ -1,6 +1,6 @@
 #ifndef CHAPTER_CARD_H_
 #define CHAPTER_CARD_H_
-#include "state/SemesterState.h"
+#include "game/state/SemesterState.h"
 #include <string>
 #include <string_view>
 #include <vector>

@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
-#include "quest/Flags.h"
-#include "dialog/DialogSource.h"
-#include "state/SemesterState.h"
+#include "game/quest/Flags.h"
+#include "game/dialog/DialogSource.h"
+#include "game/state/SemesterState.h"
 
 #include <vector>
 

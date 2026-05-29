@@ -1,6 +1,6 @@
 #include "doctest/doctest.h"
-#include "gfx/SpriteStrip.h"
-#include "gfx/Decorations.h"
+#include "game/gfx/SpriteStrip.h"
+#include "game/gfx/Decorations.h"
 #include <cmath>
 #include <limits>
 #include <vector>

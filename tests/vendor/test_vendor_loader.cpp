@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
-#include "vendor/VendorLoader.h"
-#include "quest/ChapterVendors.h"
-#include "state/SemesterState.h"
+#include "game/vendor/VendorLoader.h"
+#include "game/quest/ChapterVendors.h"
+#include "game/state/SemesterState.h"
 
 #include <string>
 #include <vector>

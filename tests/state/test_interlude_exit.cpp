@@ -1,11 +1,11 @@
 #include "doctest/doctest.h"
 #include "engine/events/EventBus.h"
-#include "quest/Flags.h"
-#include "state/InterludeExit.h"
-#include "quest/ChapterGate.h"
-#include "state/SemesterStateMachine.h"
-#include "dialog/DialogState.h"
-#include "entities/Player.h"
+#include "game/quest/Flags.h"
+#include "game/state/InterludeExit.h"
+#include "game/quest/ChapterGate.h"
+#include "game/state/SemesterStateMachine.h"
+#include "game/dialog/DialogState.h"
+#include "game/entities/Player.h"
 #include "engine/math/Vec2.h"
 
 using nccu::SemesterStateMachine;

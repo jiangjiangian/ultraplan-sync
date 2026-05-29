@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "gfx/Bounds.h"
+#include "game/gfx/Bounds.h"
 #include "engine/math/Vec2.h"
 
 using namespace nccu::gfx;

@@ -1,5 +1,5 @@
 // Items 1b + 4a + 4b regression for the quest `!` decision layer.
-#include "quest/Flags.h"
+#include "game/quest/Flags.h"
 //
 // QuestIndicatorVisible is the single source of truth the View consults
 // (ui/View.cpp) to decide whether an NPC paints a quest `!`. It folds the
@@ -17,12 +17,12 @@
 // Revert-verify: see the inline notes per case.
 
 #include "doctest/doctest.h"
-#include "quest/QuestIndicator.h"
-#include "quest/Chapter1Quest.h"
-#include "quest/Chapter2Quest.h"
-#include "quest/Chapter4Quest.h"
-#include "quest/Chapter3Quest.h"
-#include "entities/Player.h"
+#include "game/quest/QuestIndicator.h"
+#include "game/quest/Chapter1Quest.h"
+#include "game/quest/Chapter2Quest.h"
+#include "game/quest/Chapter4Quest.h"
+#include "game/quest/Chapter3Quest.h"
+#include "game/entities/Player.h"
 #include "engine/math/Vec2.h"
 
 using nccu::SemesterState;

@@ -1,7 +1,7 @@
 #include "ui/world/SportsLapTrack.h"
 
-#include "quest/Chapter3Quest.h"
-#include "world/World.h"
+#include "game/quest/Chapter3Quest.h"
+#include "game/world/World.h"
 #include "engine/render/IRenderer.h"
 #include "engine/math/Color.h"
 #include "engine/math/Rect.h"

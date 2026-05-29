@@ -1,5 +1,5 @@
 #include "doctest/doctest.h"
-#include "entities/Player.h"
+#include "game/entities/Player.h"
 
 TEST_CASE("Player starts with karma 50 and no umbrella") {
     Player p({0, 0});
