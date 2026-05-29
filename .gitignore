@@ -49,3 +49,6 @@ tools/__pycache__/
 tools/*.bak.*
 tools/_plot_mask_preview.png
 tools/world.tmj
+
+# Sanitizer build tree (gitignored alongside build/ + build_*/)
+build-asan/
