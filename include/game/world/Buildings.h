@@ -8,7 +8,7 @@ namespace nccu::buildings {
 
 struct Building {
     std::string_view name;
-    nccu::gfx::Rect  triggerRect;
+    nccu::engine::math::Rect  triggerRect;
     // Mirror flags emitted by tools/tiled_to_world.py from the Tiled
     // flip bits. Defaulted so any legacy 2-field initializer still
     // compiles; the regenerated block carries the real flip state.

@@ -38,15 +38,15 @@ enum class UmbrellaLook {
 // The canonical signature colour of each look — the value the in-world
 // umbrellas, the pickup and the ending card all share. Exposed so callers
 // (e.g. a HUD swatch) can match the glyph without re-deriving it.
-[[nodiscard]] constexpr Color UmbrellaLookColor(UmbrellaLook look) noexcept {
+[[nodiscard]] constexpr nccu::engine::math::Color UmbrellaLookColor(UmbrellaLook look) noexcept {
     switch (look) {
-        case UmbrellaLook::TrueBlue:      return Color{ 40, 120, 235, 255};
-        case UmbrellaLook::FragileBroken: return Color{170, 170, 175, 255};
-        case UmbrellaLook::CursedPurple:  return Color{ 90,  40, 120, 255};
-        case UmbrellaLook::UglyGreen:     return Color{120, 255,  40, 255};
-        case UmbrellaLook::ProfessorTrap: return Color{235,  70,  40, 255};
+        case UmbrellaLook::TrueBlue:      return nccu::engine::math::Color{ 40, 120, 235, 255};
+        case UmbrellaLook::FragileBroken: return nccu::engine::math::Color{170, 170, 175, 255};
+        case UmbrellaLook::CursedPurple:  return nccu::engine::math::Color{ 90,  40, 120, 255};
+        case UmbrellaLook::UglyGreen:     return nccu::engine::math::Color{120, 255,  40, 255};
+        case UmbrellaLook::ProfessorTrap: return nccu::engine::math::Color{235,  70,  40, 255};
     }
-    return Color{255, 255, 255, 255};
+    return nccu::engine::math::Color{255, 255, 255, 255};
 }
 
 // Draw the umbrella glyph for `look` scaled to fill `bounds`. All geometry is
@@ -58,24 +58,24 @@ enum class UmbrellaLook {
 // ending card fades in via its own alpha) can draw the glyph at the matching
 // strength. Defaults to fully opaque for the in-world / pickup callers, which
 // never fade — so their behaviour is byte-unchanged.
-inline void DrawUmbrellaGlyph(IRenderer& r, UmbrellaLook look, Rect bounds,
+inline void DrawUmbrellaGlyph(IRenderer& r, UmbrellaLook look, nccu::engine::math::Rect bounds,
                               unsigned char alpha = 255) {
-    namespace C = Colors;
+    namespace C = nccu::engine::math::Colors;
     const float x = bounds.x;
     const float y = bounds.y;
     const float w = bounds.width;
     const float h = bounds.height;
     // Pre-scale a colour's alpha by the glyph alpha (255 ⇒ unchanged).
-    auto fade = [alpha](Color col) {
+    auto fade = [alpha](nccu::engine::math::Color col) {
         return alpha == 255 ? col
             : col.WithAlpha(static_cast<unsigned char>(
                   static_cast<int>(col.a) * static_cast<int>(alpha) / 255));
     };
     // rc(fx,fy,fw,fh): a rect placed/sized in box fractions, alpha-scaled.
-    auto rc = [&](float fx, float fy, float fw, float fh, Color col) {
-        r.DrawRect(Rect{x + fx * w, y + fy * h, fw * w, fh * h}, fade(col));
+    auto rc = [&](float fx, float fy, float fw, float fh, nccu::engine::math::Color col) {
+        r.DrawRect(nccu::engine::math::Rect{x + fx * w, y + fy * h, fw * w, fh * h}, fade(col));
     };
-    const Color t = UmbrellaLookColor(look);
+    const nccu::engine::math::Color t = UmbrellaLookColor(look);
 
     switch (look) {
         case UmbrellaLook::TrueBlue: {

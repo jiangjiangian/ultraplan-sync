@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 namespace {
 

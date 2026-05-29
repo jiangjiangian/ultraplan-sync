@@ -2,7 +2,7 @@
 #include "engine/math/Vec2.h"
 #include <cmath>
 
-using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 TEST_CASE("Vec2: default-constructs to (0,0)") {
     constexpr Vec2 v;

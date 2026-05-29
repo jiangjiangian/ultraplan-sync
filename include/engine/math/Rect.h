@@ -2,7 +2,7 @@
 #define GFX_RECT_H_
 #include "engine/math/Vec2.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::math {
 
 struct Rect {
     float x{0.0f};
@@ -23,6 +23,6 @@ struct Rect {
     }
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::math
 
 #endif // GFX_RECT_H_

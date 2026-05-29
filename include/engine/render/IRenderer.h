@@ -17,11 +17,11 @@ class Texture; // forward decl — raylib must NOT leak into this header
 class IRenderer {
 public:
     virtual ~IRenderer() = default;
-    virtual void DrawRect(Rect r, Color c) = 0;
-    virtual void DrawSprite(const Texture& tex, Rect src, Rect dest,
-                            Color tint = Colors::White) = 0;
-    virtual void DrawText(std::string_view text, Vec2 pos, int size,
-                          Color c) = 0;
+    virtual void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) = 0;
+    virtual void DrawSprite(const Texture& tex, nccu::engine::math::Rect src, nccu::engine::math::Rect dest,
+                            nccu::engine::math::Color tint = nccu::engine::math::Colors::White) = 0;
+    virtual void DrawText(std::string_view text, nccu::engine::math::Vec2 pos, int size,
+                          nccu::engine::math::Color c) = 0;
 };
 
 } // namespace nccu::gfx

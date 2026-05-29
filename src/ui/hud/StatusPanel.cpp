@@ -18,6 +18,7 @@ namespace nccu {
 
 void DrawStatusPanel(nccu::gfx::IRenderer& r, const World& world) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // Top-left status: WASD hint, karma/umbrella, optional building,
     // chapter name, rain meter. Previously plain DarkGray/Blue text drawn

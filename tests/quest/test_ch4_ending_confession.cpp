@@ -23,7 +23,7 @@
 using nccu::World;
 using nccu::SemesterState;
 using nccu::engine::input::Key;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 // G2 — the ending must NOT be abrupt: every Ch4 ending TRIGGER is deferred
 // behind a brief inner-monologue (自白). These cases drive the REAL

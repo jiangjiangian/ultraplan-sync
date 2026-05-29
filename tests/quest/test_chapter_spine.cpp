@@ -19,7 +19,7 @@ using nccu::SemesterState;
 TEST_CASE("chapter spine: Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
     EventBus::Instance().Clear();
     SemesterStateMachine m;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
     std::string name;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, name);
@@ -71,7 +71,7 @@ TEST_CASE("chapter spine: Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
 
 TEST_CASE("chapter spine: re-entry does not instantly exit (flag consumed)") {
     SemesterStateMachine m;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
 
     m.SetInterludeReturnTo(SemesterState::Chapter3_SportsDay);
@@ -90,7 +90,7 @@ TEST_CASE("chapter spine: re-entry does not instantly exit (flag consumed)") {
 
 TEST_CASE("chapter spine: gate closes a still-active dialog on transition") {
     SemesterStateMachine m;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
 
     m.Transition(SemesterState::Chapter2_Midterms);
@@ -104,7 +104,7 @@ TEST_CASE("chapter spine: gate closes a still-active dialog on transition") {
 
 TEST_CASE("chapter spine: no flags -> no transition at any chapter") {
     SemesterStateMachine m;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
 
     nccu::CheckChapterGates(EventBus::Instance(), p, m, d);                 // Ch1: no sibling-if

@@ -48,7 +48,7 @@
 using nccu::World;
 using nccu::SemesterState;
 using nccu::engine::input::Key;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 namespace {
 
@@ -267,7 +267,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
     // (3) Step INSIDE a building (its trigger rect centre) — only here
     //     does the meter DRAIN, strictly downward, to 0, no teleport.
     const auto& b = nccu::buildings::kAll[0];   // 大勇樓
-    p->SetPosition(nccu::gfx::Vec2{
+    p->SetPosition(nccu::engine::math::Vec2{
         b.triggerRect.x + b.triggerRect.width  * 0.5f,
         b.triggerRect.y + b.triggerRect.height * 0.5f});
     Frame(controller, in);                      // BuildingTracker latches

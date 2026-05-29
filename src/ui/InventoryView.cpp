@@ -15,6 +15,7 @@
 namespace nccu {
 
 using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 // ---- U2-T1: paging window math (pure, header-declared, unit-tested) ------
 int InventoryPageCount(int rowCount) noexcept {

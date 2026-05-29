@@ -154,7 +154,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // change. Spawned at chapter entry (ungated).
     if (state == SemesterState::Chapter4_Finals) {
         auto umb = GameObjectFactory::Create(
-            ObjectType::TrueUmbrella, nccu::gfx::Vec2{1640.0f, 375.0f});
+            ObjectType::TrueUmbrella, nccu::engine::math::Vec2{1640.0f, 375.0f});
         chapterRoster_.push_back(umb.get());
         objects_.push_back(std::move(umb));
 
@@ -164,7 +164,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         // the teaser. Re-readable, no gameplay effect (no flag/karma/money).
         // Roster-tracked, so it is swept the moment Ch4 ends like every other
         // chapter object. Present only for the open-explore Chapter4_Finals.
-        auto dlc = std::make_unique<DlcSign>(nccu::gfx::Vec2{1305.0f, 88.0f});
+        auto dlc = std::make_unique<DlcSign>(nccu::engine::math::Vec2{1305.0f, 88.0f});
         chapterRoster_.push_back(dlc.get());
         objects_.push_back(std::move(dlc));
     }
@@ -204,12 +204,12 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             "resources/assets/sprites/school_uniform_3/female_11.png",
             "resources/assets/sprites/school_uniform_3/female_12.png",
         };
-        const nccu::gfx::Vec2 trackC{kSportsTrackCx, kSportsTrackCy};
+        const nccu::engine::math::Vec2 trackC{kSportsTrackCx, kSportsTrackCy};
         const float trackR = 150.0f;   // runners circle ~on the stadium track
         for (int i = 0; i < 5; ++i) {                 // runners
             const float a0 = static_cast<float>(i) * 1.25664f;   // 72° apart
             auto run = std::make_unique<NPC>(
-                nccu::gfx::Vec2{trackC.x + trackR * std::cos(a0),
+                nccu::engine::math::Vec2{trackC.x + trackR * std::cos(a0),
                                 trackC.y + trackR * std::sin(a0)},
                 std::vector<std::string>{}, false, std::string_view{});
             run->EnableCircularRun(trackC, trackR,
@@ -218,7 +218,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
             chapterRoster_.push_back(run.get());
             objects_.push_back(std::move(run));
         }
-        static const nccu::gfx::Vec2 kIdle[10] = {
+        static const nccu::engine::math::Vec2 kIdle[10] = {
             {1500.0f, 640.0f}, {1620.0f, 600.0f}, {1760.0f, 640.0f},
             {1860.0f, 700.0f}, {1560.0f, 800.0f}, {1700.0f, 820.0f},
             {1820.0f, 800.0f}, {1480.0f, 720.0f}, {1640.0f, 700.0f},
@@ -378,7 +378,7 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
     // south of the 中正圖書館 rect bottom (y=509). It is the librarian's own
     // Ch1/Ch2 desk apron, so it reads as "return it to her counter".
     auto npc = std::make_unique<NPC>(
-        nccu::gfx::Vec2{820.0f, 560.0f}, std::vector<std::string>{},
+        nccu::engine::math::Vec2{820.0f, 560.0f}, std::vector<std::string>{},
         /*isQuestGiver=*/false, std::string_view{kNpcLibrarianReturn});
     if (loadSprites_)
         npc->LoadSprite("resources/assets/sprites/school_uniform_3/female_01.png");

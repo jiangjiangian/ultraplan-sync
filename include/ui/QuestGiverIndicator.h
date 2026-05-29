@@ -17,8 +17,8 @@ namespace nccu {
 // bottom-anchored on the hitBox, 32-tall, so its top is hitBox.y - 8 in
 // world coords). The "!" glyph sits in the middle of the square.
 struct QuestGiverIndicatorLayout {
-    gfx::Rect panel;     // background square
-    gfx::Vec2 textPos;   // top-left of "!" within the panel
+    nccu::engine::math::Rect panel;     // background square
+    nccu::engine::math::Vec2 textPos;   // top-left of "!" within the panel
     int       textSize;  // font size for "!"
 };
 
@@ -26,7 +26,7 @@ struct QuestGiverIndicatorLayout {
 // Extracted from DrawQuestGiverIndicator so the test can spot-check the
 // geometry without mocking the renderer.
 [[nodiscard]] inline QuestGiverIndicatorLayout
-LayoutQuestGiverIndicator(gfx::Rect hitBox) noexcept {
+LayoutQuestGiverIndicator(nccu::engine::math::Rect hitBox) noexcept {
     constexpr float kSize    = 16.0f;
     constexpr float kLiftPx  = 20.0f;  // gap between sprite top & icon bottom
     constexpr float kSpriteH = 32.0f;  // Pipoya cell; NPC::Render anchor
@@ -37,27 +37,27 @@ LayoutQuestGiverIndicator(gfx::Rect hitBox) noexcept {
     const float iconY      = spriteTopY - kLiftPx - kSize;
     const float iconX      = hitBox.x + (hitBox.width - kSize) * 0.5f;
     QuestGiverIndicatorLayout out{};
-    out.panel    = gfx::Rect{iconX, iconY, kSize, kSize};
+    out.panel    = nccu::engine::math::Rect{iconX, iconY, kSize, kSize};
     out.textSize = 14;
     // raylib's bitmap font: "!" is ~3 px wide at size 14, ~10 px tall.
     // Nudge into the panel so the glyph reads as centred.
-    out.textPos  = gfx::Vec2{iconX + 6.0f, iconY + 1.0f};
+    out.textPos  = nccu::engine::math::Vec2{iconX + 6.0f, iconY + 1.0f};
     return out;
 }
 
 // Paint the indicator through the injected IRenderer. The panel is
 // drawn with a slight shadow underneath so it pops on bright tiles.
 inline void DrawQuestGiverIndicator(gfx::IRenderer& r,
-                                    gfx::Rect hitBox) {
+                                    nccu::engine::math::Rect hitBox) {
     const QuestGiverIndicatorLayout L = LayoutQuestGiverIndicator(hitBox);
     // Drop shadow: same rect nudged 2 px SE, dark translucent.
-    r.DrawRect(gfx::Rect{L.panel.x + 2.0f, L.panel.y + 2.0f,
+    r.DrawRect(nccu::engine::math::Rect{L.panel.x + 2.0f, L.panel.y + 2.0f,
                          L.panel.width, L.panel.height},
-               gfx::Color{0, 0, 0, 140});
+               nccu::engine::math::Color{0, 0, 0, 140});
     // Gold square — readable on any tile.
-    r.DrawRect(L.panel, gfx::Color{255, 200, 61, 255});
+    r.DrawRect(L.panel, nccu::engine::math::Color{255, 200, 61, 255});
     // Black "!" glyph centred in the square.
-    r.DrawText("!", L.textPos, L.textSize, gfx::Colors::Black);
+    r.DrawText("!", L.textPos, L.textSize, nccu::engine::math::Colors::Black);
 }
 
 } // namespace nccu

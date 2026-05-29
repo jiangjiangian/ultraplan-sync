@@ -14,7 +14,7 @@
 using nccu::SemesterState;
 
 namespace {
-Player MakePlayer() { return Player{nccu::gfx::Vec2{0.0f, 0.0f}}; }
+Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 constexpr auto kCh2 = SemesterState::Chapter2_Midterms;
 }  // namespace
 

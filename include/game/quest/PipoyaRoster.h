@@ -48,7 +48,7 @@ inline const std::vector<std::string>& PipoyaRoster() {
 // fallbackPath is returned verbatim when the PIPOYA pack is absent, so
 // callers stay correct on a clean checkout.
 inline std::string PickNpcSprite(const std::string& npcId,
-                                 nccu::gfx::Vec2 pos,
+                                 nccu::engine::math::Vec2 pos,
                                  const std::string& fallbackPath) {
     const auto& roster = PipoyaRoster();
     if (roster.empty()) return fallbackPath;

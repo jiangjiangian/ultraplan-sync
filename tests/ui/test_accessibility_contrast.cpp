@@ -26,8 +26,8 @@
 #include "engine/math/Color.h"
 #include <cmath>
 
-using nccu::gfx::Color;
-namespace Colors = nccu::gfx::Colors;
+using nccu::engine::math::Color;
+namespace Colors = nccu::engine::math::Colors;
 
 namespace {
 

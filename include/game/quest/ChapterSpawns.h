@@ -46,17 +46,17 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     // .claude/tools/map_registry.py, whose Ch2 expectation checks pin
     // librarian↔中正圖書館 and bookworm↔羅馬廣場.
     static const std::vector<NpcSpawn> kChapter2 = {
-        {gfx::Vec2{ 720,  560}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {nccu::engine::math::Vec2{ 720,  560}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
-        {gfx::Vec2{1220,  775}, "resources/assets/sprites/npc/suit_senior.png",
+        {nccu::engine::math::Vec2{1220,  775}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        {gfx::Vec2{1088, 1100}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        {nccu::engine::math::Vec2{1088, 1100}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
-        {gfx::Vec2{ 900,  545}, "resources/assets/sprites/npc/ta.png",
+        {nccu::engine::math::Vec2{ 900,  545}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
-        {gfx::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
+        {nccu::engine::math::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
-        {gfx::Vec2{ 820,  545}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {nccu::engine::math::Vec2{ 820,  545}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "librarian", true},
     };
     // Ch3 校慶運動會. The 5 archetypes (ripple / optional,
@@ -87,21 +87,21 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     // All coords mask-verified STRICTLY walkable + flood-reachable
     // (map_registry.py; test_spawn_reachability).
     static const std::vector<NpcSpawn> kChapter3 = {
-        {gfx::Vec2{1620,  920}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {nccu::engine::math::Vec2{1620,  920}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
-        {gfx::Vec2{1430,  910}, "resources/assets/sprites/npc/suit_senior.png",
+        {nccu::engine::math::Vec2{1430,  910}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        {gfx::Vec2{ 900,  545}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        {nccu::engine::math::Vec2{ 900,  545}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
-        {gfx::Vec2{1530,  930}, "resources/assets/sprites/npc/ta.png",
+        {nccu::engine::math::Vec2{1530,  930}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
-        {gfx::Vec2{1100,  860}, "resources/assets/sprites/npc/shop_auntie.png",
+        {nccu::engine::math::Vec2{1100,  860}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
-        {gfx::Vec2{ 980, 1000}, "resources/assets/sprites/npc/shop_auntie.png",
+        {nccu::engine::math::Vec2{ 980, 1000}, "resources/assets/sprites/npc/shop_auntie.png",
          "vendor_sausage_a", true},
-        {gfx::Vec2{1150, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {nccu::engine::math::Vec2{1150, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "loudspeaker_b", true},
-        {gfx::Vec2{1060, 1120}, "resources/assets/sprites/school_uniform_3/female_01.png",
+        {nccu::engine::math::Vec2{1060, 1120}, "resources/assets/sprites/school_uniform_3/female_01.png",
          "senior_c", true},
     };
     // Ch4 期末考終焉 (S5e-1). chapter4.md has 5 ## NPC：sections —
@@ -133,15 +133,15 @@ inline const std::vector<NpcSpawn>& ChapterNpcSpawns(SemesterState state) {
     // All isQuestGiver=false (the finale is gate-driven). All coords
     // mask-verified STRICTLY walkable + flood-reachable.
     static const std::vector<NpcSpawn> kChapter4 = {
-        {gfx::Vec2{1010, 1700}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {nccu::engine::math::Vec2{1010, 1700}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", false},
-        {gfx::Vec2{1220,  775}, "resources/assets/sprites/npc/suit_senior.png",
+        {nccu::engine::math::Vec2{1220,  775}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
-        {gfx::Vec2{ 900,  545}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        {nccu::engine::math::Vec2{ 900,  545}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
-        {gfx::Vec2{ 980, 1560}, "resources/assets/sprites/npc/ta.png",
+        {nccu::engine::math::Vec2{ 980, 1560}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
-        {gfx::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
+        {nccu::engine::math::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
     };
     static const std::vector<NpcSpawn> kEndingA;       // TODO(S5e): chapter roster

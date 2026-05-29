@@ -16,6 +16,7 @@ void DrawHelpOverlay(nccu::gfx::IRenderer& r,
                      float screenW,
                      float screenH) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // REQUIREMENT #9 + U2-T4: the in-game 說明 (how-to-play) overlay —
     // drawn ABOVE the menu (which is still up behind it). Pure function of

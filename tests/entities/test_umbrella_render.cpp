@@ -14,20 +14,20 @@ namespace {
 // Spy IRenderer: records every primitive instead of touching a GL context,
 // so the polymorphic Render() path is testable headless.
 struct CountingRenderer final : nccu::gfx::IRenderer {
-    struct RectCall { nccu::gfx::Rect r; nccu::gfx::Color c; };
+    struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
     int sprites = 0;
     int texts = 0;
 
-    void DrawRect(nccu::gfx::Rect r, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         rects.push_back({r, c});
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {
         ++sprites;
     }
-    void DrawText(std::string_view, nccu::gfx::Vec2, int,
-                  nccu::gfx::Color) override {
+    void DrawText(std::string_view, nccu::engine::math::Vec2, int,
+                  nccu::engine::math::Color) override {
         ++texts;
     }
 };
@@ -46,7 +46,7 @@ Fingerprint(const CountingRenderer& spy) {
 
 template <class U>
 CountingRenderer DrawOf() {
-    U u{nccu::gfx::Vec2{100.0f, 200.0f}};
+    U u{nccu::engine::math::Vec2{100.0f, 200.0f}};
     CountingRenderer spy;
     u.Render(spy);
     return spy;
@@ -103,18 +103,18 @@ TEST_CASE("REQ#9: umbrella canopy tints are boldly separated") {
         // colour is that umbrella's signature tint.
         return s.rects.at(0).c;
     };
-    const nccu::gfx::Color ct = canopy(DrawOf<TrueUmbrella>());
-    const nccu::gfx::Color cf = canopy(DrawOf<FragileUmbrella>());
-    const nccu::gfx::Color cp = canopy(DrawOf<ProfessorTrapUmbrella>());
-    const nccu::gfx::Color cc = canopy(DrawOf<CursedUmbrella>());
+    const nccu::engine::math::Color ct = canopy(DrawOf<TrueUmbrella>());
+    const nccu::engine::math::Color cf = canopy(DrawOf<FragileUmbrella>());
+    const nccu::engine::math::Color cp = canopy(DrawOf<ProfessorTrapUmbrella>());
+    const nccu::engine::math::Color cc = canopy(DrawOf<CursedUmbrella>());
 
-    auto dist = [](nccu::gfx::Color a, nccu::gfx::Color b) {
+    auto dist = [](nccu::engine::math::Color a, nccu::engine::math::Color b) {
         auto d = [](int x, int y) { return x > y ? x - y : y - x; };
         return d(a.r, b.r) + d(a.g, b.g) + d(a.b, b.b);
     };
     // Manhattan colour distance ≥ 120 for every pair — the old pale set
     // (e.g. {180,230,255} vs {200,220,235}) summed only ~45, well under.
-    const nccu::gfx::Color all[] = {ct, cf, cp, cc};
+    const nccu::engine::math::Color all[] = {ct, cf, cp, cc};
     for (int i = 0; i < 4; ++i)
         for (int j = i + 1; j < 4; ++j)
             CHECK(dist(all[i], all[j]) >= 120);

@@ -143,12 +143,12 @@ TEST_CASE("Factory creates EnergyDrink with correct dynamic type") {
 // effect is deferred to USE-from-bag. Pre-change OnPickup/Interact fired
 // Consume() (karma + message) on the spot.
 TEST_CASE("Item 2a: ConsumableItem pickup adds to the bag, applies NO effect") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
     MessageCapture cap;
     cap.Attach();
 
-    HotPack pack{nccu::gfx::Vec2{0, 0}};
+    HotPack pack{nccu::engine::math::Vec2{0, 0}};
     REQUIRE(p.ConsumableCount("HotPack") == 0);
     pack.OnPickup(&p);
 
@@ -163,7 +163,7 @@ TEST_CASE("Item 2a: ConsumableItem pickup adds to the bag, applies NO effect") {
     CHECK(p.ConsumableCount("HotPack") == 1);
 
     // Interact() routes through the same Collect path.
-    EnergyDrink drink{nccu::gfx::Vec2{0, 0}};
+    EnergyDrink drink{nccu::engine::math::Vec2{0, 0}};
     drink.Interact(&p);
     CHECK(p.ConsumableCount("EnergyDrink") == 1);
     CHECK(p.GetKarma() == k0);                 // still no effect on pickup
@@ -174,7 +174,7 @@ TEST_CASE("Item 2a: ConsumableItem pickup adds to the bag, applies NO effect") {
 // the caller decrements the count. ApplyConsumableEffect is the shared
 // effect; ConsumeOne is the spend.
 TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.ApplyRain(12.0f, /*lethal=*/false);      // +60, above the -25 dry
     REQUIRE(p.GetRainMeter() == doctest::Approx(60.0f));
@@ -197,7 +197,7 @@ TEST_CASE("Item 2b: use-from-bag applies the effect + the catalog message") {
     CHECK(p.ConsumableCount("HotPack") == 1);
 
     // EnergyDrink effect mirrors its Consume body too (+3 karma, -15 rain).
-    Player q{nccu::gfx::Vec2{0, 0}};
+    Player q{nccu::engine::math::Vec2{0, 0}};
     q.ApplyRain(8.0f, /*lethal=*/false);       // +40
     const int qk = q.GetKarma();
     MessageCapture cap2;
@@ -228,7 +228,7 @@ TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
     };
     for (const Row& r : rows) {
         CHECK(nccu::IsUsableConsumable(r.id) == r.usable);
-        Player p{nccu::gfx::Vec2{0, 0}};
+        Player p{nccu::engine::math::Vec2{0, 0}};
         p.ApplyRain(18.0f, /*lethal=*/false);          // +90 (clamped <100)
         REQUIRE(p.GetRainMeter() == doctest::Approx(90.0f));
         MessageCapture cap; cap.Attach();
@@ -237,13 +237,13 @@ TEST_CASE("G4: consumable rain-relief table (use-from-bag)") {
     }
 
     // Floor clamp: a small meter cannot go below 0 (no negative rain).
-    Player low{nccu::gfx::Vec2{0, 0}};
+    Player low{nccu::engine::math::Vec2{0, 0}};
     low.ApplyRain(2.0f, /*lethal=*/false);             // +10
     nccu::ApplyConsumableEffect(EventBus::Instance(), low, "WaterproofSpray");  // -35 -> clamp 0
     CHECK(low.GetRainMeter() == doctest::Approx(0.0f));
 
     // DrainRainBy unit: fixed subtraction, clamped, no teleport.
-    Player u{nccu::gfx::Vec2{0, 0}};
+    Player u{nccu::engine::math::Vec2{0, 0}};
     u.ApplyRain(10.0f, /*lethal=*/false);              // +50
     u.DrainRainBy(20.0f);
     CHECK(u.GetRainMeter() == doctest::Approx(30.0f));

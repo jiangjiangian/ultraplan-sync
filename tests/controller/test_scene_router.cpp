@@ -120,7 +120,7 @@ TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
 
     // Pre-state: pretend the player wandered far from the IL entry,
     // carries a Ch1 consumable, and the south-band latch fired earlier.
-    p->SetPosition(nccu::gfx::Vec2{100.0f, 100.0f});
+    p->SetPosition(nccu::engine::math::Vec2{100.0f, 100.0f});
     p->AddConsumable("EnergyDrink");
     p->AddConsumable("EnergyDrink");
     r.InterludeExitLatchMut() = true;
@@ -139,7 +139,7 @@ TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
 
     // Cursor stamped so a re-call is a no-op.
     CHECK(r.LastRosterState() == SemesterState::Interlude_Market);
-    p->SetPosition(nccu::gfx::Vec2{42.0f, 42.0f});
+    p->SetPosition(nccu::engine::math::Vec2{42.0f, 42.0f});
     r.SettleSideEffects(w);                            // idempotent
     CHECK(p->GetPosition().x == doctest::Approx(42.0f));
 
@@ -256,7 +256,7 @@ TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
     CHECK(latestHud == nccu::kInterludeArrivalHint);
 
     // Both halves idempotent on a repeat call.
-    p->SetPosition(nccu::gfx::Vec2{7.0f, 8.0f});
+    p->SetPosition(nccu::engine::math::Vec2{7.0f, 8.0f});
     latestHud.clear();
     r.SettleRoster(w);
     r.SettleSideEffects(w);

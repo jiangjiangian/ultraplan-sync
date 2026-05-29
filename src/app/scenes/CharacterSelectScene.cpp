@@ -22,9 +22,9 @@ constexpr int kFrameSize = 32;  // Pipoya cell
 constexpr int kIdleCol   = 1;   // middle column of the 3-frame walk strip
 constexpr int kDownRow   = 0;   // first row faces the camera
 
-constexpr nccu::gfx::Color kHighlight{255, 153,   0, 255};
-constexpr nccu::gfx::Color kPanel    { 20,  22,  30, 210};
-constexpr nccu::gfx::Color kDim      {170, 170, 170, 255};
+constexpr nccu::engine::math::Color kHighlight{255, 153,   0, 255};
+constexpr nccu::engine::math::Color kPanel    { 20,  22,  30, 210};
+constexpr nccu::engine::math::Color kDim      {170, 170, 170, 255};
 
 constexpr int kCount = static_cast<int>(nccu::kPersonas.size());
 constexpr int kTile = 96;
@@ -33,8 +33,8 @@ constexpr int kRowW = kCount * kTile + (kCount - 1) * kGap;
 constexpr int kRowX = (kWinW - kRowW) / 2;
 constexpr int kRowY = 150;
 
-nccu::gfx::Rect IdleSrc() {
-    return nccu::gfx::Rect{
+nccu::engine::math::Rect IdleSrc() {
+    return nccu::engine::math::Rect{
         static_cast<float>(kIdleCol * kFrameSize),
         static_cast<float>(kDownRow * kFrameSize),
         static_cast<float>(kFrameSize),
@@ -97,6 +97,7 @@ SceneCommand CharacterSelectScene::Update(float /*dt*/) {
 
 void CharacterSelectScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
     Renderer r;
     r.Clear(Colors::RayWhite);
 

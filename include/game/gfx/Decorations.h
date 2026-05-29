@@ -35,7 +35,7 @@ namespace nccu::gfx {
 // "he's resting under the chiikawa monument" tableau (owner: 把吉伊卡哇移
 // 近學霸). Still purely cosmetic — never a GameObject, never collides, never
 // in state.jsonl (the harness serialises World::Objects(), not this).
-inline constexpr Vec2 kRomaPlazaStatue{1088.0f, 1040.0f};
+inline constexpr nccu::engine::math::Vec2 kRomaPlazaStatue{1088.0f, 1040.0f};
 
 // A-T2: the Ch3 cat's drawn CENTRE. The 操場 field is rect (1384,541,
 // 621x399) but the 綜合院館 building (rect 1681,677,371x326) OVERLAPS the
@@ -46,7 +46,7 @@ inline constexpr Vec2 kRomaPlazaStatue{1088.0f, 1040.0f};
 // clearly-open western field (x1530, mask-verified strictly walkable +
 // well inside the 1384–2005 field), keeping the same track row (y740) so
 // it still reads as a cat on the 操場. No longer occluded by 綜院.
-inline constexpr Vec2 kSportsCatPos{1530.0f, kSportsTrackCy};
+inline constexpr nccu::engine::math::Vec2 kSportsCatPos{1530.0f, kSportsTrackCy};
 
 // The decoration table. Indexed only by the View; order is irrelevant.
 //   chiikawa — Ch2 期中考 (Chapter2_Midterms): a pulsing "statue" at the

@@ -1,8 +1,8 @@
 #include "doctest/doctest.h"
 #include "game/world/Physics.h"
 
-using nccu::gfx::Rect;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Rect;
+using nccu::engine::math::Vec2;
 using nccu::physics::ResolveMove;
 
 TEST_CASE("ResolveMove: no colliders -> desired position accepted") {

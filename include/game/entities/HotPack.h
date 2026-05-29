@@ -16,7 +16,7 @@ public:
     // full reset).
     static constexpr float kRainRelief = 25.0f;
 
-    explicit HotPack(nccu::gfx::Vec2 position)
+    explicit HotPack(nccu::engine::math::Vec2 position)
         : ConsumableItem(position, "HotPack", kPrice) {}
 
     void Consume(Player* player) override;

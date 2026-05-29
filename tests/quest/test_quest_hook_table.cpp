@@ -45,7 +45,7 @@ TEST_CASE("InteractQuestHooks: every entry carries a callable") {
 TEST_CASE("RunInteractHooks: a non-matching (npcId, state) mutates nothing") {
     // In Ch1 with an unknown npcId none of the hooks' (state, npcId) guards
     // fire, so the whole table is a no-op — karma / money / flags untouched.
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int    karma0 = p.GetKarma();
     const int    money0 = p.GetMoney();
     const bool   umb0   = p.HasUmbrella();

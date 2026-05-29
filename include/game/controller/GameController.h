@@ -66,9 +66,9 @@ private:
 
     World&                                               world_;
     EventBus&                                            bus_;  // Plan P2: injected
-    std::vector<nccu::gfx::Rect>                         frameColliders_;
-    nccu::gfx::Vec2                                       worldSize_;
-    nccu::gfx::Vec2                                       playerSize_;
+    std::vector<nccu::engine::math::Rect>                         frameColliders_;
+    nccu::engine::math::Vec2                                       worldSize_;
+    nccu::engine::math::Vec2                                       playerSize_;
     // Cycle 10.P0a: roster-respawn cursor + interlude-exit latch live
     // on the SceneRouter now. lastRosterState_ and
     // interludeExitZoneLatched_ used to be inline members here.

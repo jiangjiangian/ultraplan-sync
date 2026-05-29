@@ -36,7 +36,7 @@
 using nccu::HudSlot;
 using nccu::SemesterState;
 using nccu::World;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 TEST_CASE("World::SetHudMessage routes by slot, no cross-channel leak") {
     World w("", /*loadSprites=*/false);

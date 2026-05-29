@@ -60,7 +60,7 @@ TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
                                           nccu::kFlagFoundNote3};
     const std::vector<std::string> msgs = {"first", "second", "third"};
     auto makeNote = [&](const char* flag) {
-        return QuestFlagPickup(nccu::gfx::Vec2{0, 0}, flag, "fallback",
+        return QuestFlagPickup(nccu::engine::math::Vec2{0, 0}, flag, "fallback",
                                set, 3, msgs);
     };
 
@@ -68,7 +68,7 @@ TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
     // must follow the COUNT held (1st->first, 2nd->second, 3rd->third),
     // NOT the note identity — this is the exact bug: grabbing note3 first
     // used to print the "last page" line.
-    Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
+    Player p{nccu::engine::math::Vec2{0.0f, 0.0f}};
     auto n3 = makeNote(nccu::kFlagFoundNote3);
     auto n2 = makeNote(nccu::kFlagFoundNote2);
     auto n1 = makeNote(nccu::kFlagFoundNote1);
@@ -80,7 +80,7 @@ TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
     CHECK(lastMsg == "third");     // 3rd collected -> third line
 
     // A different order (note2 first) lands the same count-keyed lines.
-    Player q{nccu::gfx::Vec2{0.0f, 0.0f}};
+    Player q{nccu::engine::math::Vec2{0.0f, 0.0f}};
     auto m2 = makeNote(nccu::kFlagFoundNote2);
     auto m1 = makeNote(nccu::kFlagFoundNote1);
     m2.OnPickup(&q);
@@ -98,23 +98,23 @@ TEST_CASE("QuestFlagPickup: empty countMessages keeps the single message") {
         EventType::ShowMessage,
         [&lastMsg](const Event& e) { lastMsg = e.text; });
 
-    Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
-    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundForm, "撿到申請書");
+    Player p{nccu::engine::math::Vec2{0.0f, 0.0f}};
+    QuestFlagPickup form(nccu::engine::math::Vec2{0, 0}, nccu::kFlagFoundForm, "撿到申請書");
     form.OnPickup(&p);
     CHECK(lastMsg == "撿到申請書");   // single-message path unchanged
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
-    Player p{nccu::gfx::Vec2{0.0f, 0.0f}};
+    Player p{nccu::engine::math::Vec2{0.0f, 0.0f}};
     const std::vector<std::string> set = {nccu::kFlagFoundNote1,
                                           nccu::kFlagFoundNote2,
                                           nccu::kFlagFoundNote3};
-    QuestFlagPickup n1(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundNote1,
+    QuestFlagPickup n1(nccu::engine::math::Vec2{0, 0}, nccu::kFlagFoundNote1,
                        "a", set, 3);
-    QuestFlagPickup n2(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundNote2,
+    QuestFlagPickup n2(nccu::engine::math::Vec2{0, 0}, nccu::kFlagFoundNote2,
                        "b", set, 3);
-    QuestFlagPickup n3(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundNote3,
+    QuestFlagPickup n3(nccu::engine::math::Vec2{0, 0}, nccu::kFlagFoundNote3,
                        "c", set, 3);
 
     const int k0 = p.GetKarma();
@@ -126,9 +126,9 @@ TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
     CHECK(p.GetKarma() == k0 + 3);      // last one closes it -> +3 once
 
     // The default (2-arg) ctor still works and grants no bonus.
-    Player q{nccu::gfx::Vec2{0.0f, 0.0f}};
+    Player q{nccu::engine::math::Vec2{0.0f, 0.0f}};
     const int qk = q.GetKarma();
-    QuestFlagPickup form(nccu::gfx::Vec2{0, 0}, nccu::kFlagFoundForm);
+    QuestFlagPickup form(nccu::engine::math::Vec2{0, 0}, nccu::kFlagFoundForm);
     form.OnPickup(&q);
     CHECK(q.HasFlag(nccu::kFlagFoundForm));
     CHECK(q.GetKarma() == qk);

@@ -11,6 +11,7 @@ namespace nccu {
 
 void DrawDialog(nccu::gfx::IRenderer& r, const DialogState& d) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
     using namespace nccu::dialog;
     if (!d.Active()) return;
 

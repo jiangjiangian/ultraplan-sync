@@ -45,7 +45,7 @@ std::vector<std::string> Vendor::BuildDialogLines(const VendorConfig& config) {
     return lines;
 }
 
-Vendor::Vendor(nccu::gfx::Vec2 position, VendorConfig config)
+Vendor::Vendor(nccu::engine::math::Vec2 position, VendorConfig config)
     : NPC(position, BuildDialogLines(config), /*isQuestGiver=*/false),
       config_(std::move(config)) {}
 

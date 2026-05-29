@@ -16,6 +16,7 @@ void DrawMenuAffordance(nccu::gfx::IRenderer& r,
                         float screenW,
                         float /*screenH*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // Top-right affordance: a small always-on hint that an in-game menu
     // exists ("M 選單"). Panel-backed so it stays legible on any tile;

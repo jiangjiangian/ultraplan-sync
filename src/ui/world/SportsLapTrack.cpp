@@ -12,6 +12,7 @@ namespace nccu {
 
 void DrawSportsLapTrack(nccu::gfx::IRenderer& r, const World& world) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // 操場 校慶 lap track — a dotted STADIUM outline (running-track
     // shape: top + bottom straights joined by left + right semicircles)

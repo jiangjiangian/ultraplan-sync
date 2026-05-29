@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "game/gfx/WalkCycle.h"
 
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 using nccu::gfx::WalkColumn;
 using nccu::gfx::WalkRowForFacing;
 using nccu::gfx::kWalkColumns;

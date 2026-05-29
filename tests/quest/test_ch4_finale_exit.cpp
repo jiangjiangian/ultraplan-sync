@@ -114,7 +114,7 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
     REQUIRE_FALSE(p->HasFlag(nccu::kFlagConsoledTA));
 
     // Walk onto the 助教 and open the 結算 menu.
-    p->SetPosition(nccu::gfx::Vec2{ta->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{ta->GetPosition().x - 8.0f,
                                    ta->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
@@ -146,7 +146,7 @@ TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & r
 
     // And the finale is still re-approachable — re-open and the menu (with
     // the same three options) comes back, so the decision was only deferred.
-    p->SetPosition(nccu::gfx::Vec2{ta->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{ta->GetPosition().x - 8.0f,
                                    ta->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);

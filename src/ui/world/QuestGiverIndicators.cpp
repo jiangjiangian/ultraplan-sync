@@ -15,6 +15,7 @@ namespace nccu {
 
 void DrawQuestGiverIndicators(nccu::gfx::IRenderer& r, const World& world) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
     using nccu::queries::ForEachActive;
 
     // Quest-giver "!" overlay (H4). Drawn AFTER the painter's-order

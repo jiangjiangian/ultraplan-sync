@@ -11,7 +11,7 @@
 // stock index after the player picks a line.
 class Vendor final : public NPC {
 public:
-    Vendor(nccu::gfx::Vec2 position, VendorConfig config);
+    Vendor(nccu::engine::math::Vec2 position, VendorConfig config);
 
     // Attempts to sell stock_[stockIndex] to player.
     //   - out-of-range stockIndex  -> false, no events

@@ -21,19 +21,19 @@ namespace {
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
     int sprites = 0;
-    std::vector<nccu::gfx::Color> rectColors;
+    std::vector<nccu::engine::math::Color> rectColors;
     std::vector<std::string> texts;
     std::vector<float>       textX;
     std::vector<int>         textSize;
 
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color c) override {
         ++rects;
         rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override { ++sprites; }
-    void DrawText(std::string_view t, nccu::gfx::Vec2 p, int sz,
-                  nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }
+    void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
+                  nccu::engine::math::Color) override {
         texts.emplace_back(t);
         textX.push_back(p.x);
         textSize.push_back(sz);
@@ -56,8 +56,8 @@ int CountWith(const Spy& s, std::string_view needle) {
 
 // True if any captured rect uses RGB == want (ignoring alpha, which the card
 // fade scales). The umbrella glyph's signature colour is its top canopy slab.
-bool HasRectRGB(const Spy& s, nccu::gfx::Color want) {
-    for (const nccu::gfx::Color& c : s.rectColors)
+bool HasRectRGB(const Spy& s, nccu::engine::math::Color want) {
+    for (const nccu::engine::math::Color& c : s.rectColors)
         if (c.r == want.r && c.g == want.g && c.b == want.b) return true;
     return false;
 }

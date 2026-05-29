@@ -28,7 +28,7 @@ namespace nccu {
 // inside the gym footprint as the old (1640,375) spot was. Mask-verified
 // box-walkable AND flood-reachable from the 操場 centre (map probe). The
 // Ch4 hidden-behind-gym umbrella is unrelated and stays at (1640,375).
-inline constexpr nccu::gfx::Vec2 kChapter3UmbrellaPos{1320.0f, 520.0f};
+inline constexpr nccu::engine::math::Vec2 kChapter3UmbrellaPos{1320.0f, 520.0f};
 
 // 操場 校慶 lap geometry — one source of truth for the crowd runners
 // (World spawn), the lap-progress tracking (World::UpdateSportsLap) and

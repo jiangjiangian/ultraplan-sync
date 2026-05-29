@@ -26,8 +26,8 @@ bool IsUmbrellaFlag(std::string_view flag) {
 }  // namespace
 
 void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
-    using nccu::gfx::Rect;
-    namespace C = nccu::gfx::Colors;
+    using nccu::engine::math::Rect;
+    namespace C = nccu::engine::math::Colors;
 
     // Type-aware ground marker so the player reads what the item IS while
     // exploring (the reported bug: the Ch1 transparent umbrella showed as a
@@ -49,7 +49,7 @@ void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
     const float y = hitBox_.y;
     const float w = hitBox_.width;
     const float h = hitBox_.height;
-    auto rc = [&](float fx, float fy, float fw, float fh, nccu::gfx::Color col) {
+    auto rc = [&](float fx, float fy, float fw, float fh, nccu::engine::math::Color col) {
         renderer.DrawRect(Rect{x + fx * w, y + fy * h, fw * w, fh * h}, col);
     };
     rc(0.18f, 0.10f, 0.64f, 0.80f, C::White);          // the sheet
@@ -58,7 +58,7 @@ void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
     rc(0.30f, 0.56f, 0.40f, 0.06f, C::DarkGray);       // text rule
 }
 
-QuestFlagPickup::QuestFlagPickup(nccu::gfx::Vec2 position,
+QuestFlagPickup::QuestFlagPickup(nccu::engine::math::Vec2 position,
                                  std::string flagName,
                                  std::string message,
                                  std::vector<std::string> completionFlags,
@@ -67,7 +67,7 @@ QuestFlagPickup::QuestFlagPickup(nccu::gfx::Vec2 position,
     // Direct base is WithRoles<QuestFlagPickup, Item>; its `using Base::Base`
     // inherits Item's ctor so this 3-arg form still resolves.
     : WithRoles(position,
-           nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f},
+           nccu::engine::math::Rect{position.x, position.y, 16.0f, 16.0f},
            "QuestItem"),
       flagName_(std::move(flagName)),
       message_(std::move(message)),

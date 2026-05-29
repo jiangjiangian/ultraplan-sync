@@ -19,7 +19,7 @@ namespace nccu {
 // per-(npcId, SemesterState) lines at talk time, so dialog is no longer
 // hard-coded here. "" = no dialog (ambient pedestrians).
 struct NpcSpawn {
-    gfx::Vec2   pos;
+    nccu::engine::math::Vec2   pos;
     const char* spritePath;
     const char* npcId;
     bool        isQuestGiver;
@@ -36,28 +36,28 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
         // 4 neighbours 100%, in no building trigger) and flood-reachable
         // from the (500,1860) spawn via the gap column (map_registry.py
         // --route). Quest-giver `!` marks him as the first stop.
-        {gfx::Vec2{1660, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
+        {nccu::engine::math::Vec2{1660, 1010}, "resources/assets/sprites/school_uniform_3/male_02.png",
          "victim", true},
         // 西裝學長 — at 集英樓 (rect 1524,1353,224x192), the building the
         // 苦主 says he "拿著透明傘往集英樓方向跑" toward (chapter1.md 苦主
         // (a)). (1620,1560) is just south of the 集英樓 rect, mask-verified
         // STRICTLY walkable (100%, all 4 neighbours 100%) and flood-
         // reachable; the victim's-umbrella pickup sits nearby at (1450,1450).
-        {gfx::Vec2{1620, 1560}, "resources/assets/sprites/npc/suit_senior.png",
+        {nccu::engine::math::Vec2{1620, 1560}, "resources/assets/sprites/npc/suit_senior.png",
          "suit_senior", false},
         // 學霸 — at the 中正圖書館 (rect 698,254,382x255) front, matching
         // chapter1.md「場景：中正圖書館 1 樓入口附近，抱著一疊厚厚的講義」.
         // (820,545) sits just south of the library rect (bottom y=509) on the
         // entrance apron, mask-verified STRICTLY walkable (100%, all 4
         // neighbours 100%) and flood-reachable from the (500,1860) spawn.
-        {gfx::Vec2{820, 545}, "resources/assets/sprites/school_uniform_3/female_03.png",
+        {nccu::engine::math::Vec2{820, 545}, "resources/assets/sprites/school_uniform_3/female_03.png",
          "bookworm", false},
         // 助教 — at the 行政大樓 (rect 1057,598,240x156) front, matching
         // chapter1.md「場景：行政大樓 1 樓走廊，手持一疊加退選資料夾」.
         // (1220,775) is just south of the rect (bottom y=754) on the open
         // apron east of the central campus, mask-verified STRICTLY walkable
         // (100%, all 4 neighbours 100%) and flood-reachable.
-        {gfx::Vec2{1220, 775}, "resources/assets/sprites/npc/ta.png",
+        {nccu::engine::math::Vec2{1220, 775}, "resources/assets/sprites/npc/ta.png",
          "ta", false},
         // 福利社阿姨 — at 樂活小舖 (rect 1388,1578,309x205), matching
         // chapter1.md「場景：樂活小舖內，正在整理飲料架」. (1560,1560) sits just
@@ -65,7 +65,7 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
         // front, mask-verified STRICTLY walkable (100%, all 4 neighbours
         // 100%) and flood-reachable; it stays 122 px clear of the Ch1 spine
         // route's east corridor so the I7 reachability spine is unaffected.
-        {gfx::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
+        {nccu::engine::math::Vec2{1560, 1560}, "resources/assets/sprites/npc/shop_auntie.png",
          "shop_auntie", false},
     };
     return kAll;
@@ -77,15 +77,15 @@ inline const std::vector<NpcSpawn>& DefaultNpcSpawns() {
 // EnableWander(). Spawn points sit on open road clear of footprints.
 inline const std::vector<NpcSpawn>& AmbientStudentSpawns() {
     static const std::vector<NpcSpawn> kAll = {
-        {gfx::Vec2{ 700, 1880}, "resources/assets/sprites/school_uniform_3/male_01.png",   "", false, true},
-        {gfx::Vec2{1080, 1870}, "resources/assets/sprites/school_uniform_3/female_01.png", "", false, true},
-        {gfx::Vec2{1500, 1880}, "resources/assets/sprites/school_uniform_3/male_03.png",   "", false, true},
+        {nccu::engine::math::Vec2{ 700, 1880}, "resources/assets/sprites/school_uniform_3/male_01.png",   "", false, true},
+        {nccu::engine::math::Vec2{1080, 1870}, "resources/assets/sprites/school_uniform_3/female_01.png", "", false, true},
+        {nccu::engine::math::Vec2{1500, 1880}, "resources/assets/sprites/school_uniform_3/male_03.png",   "", false, true},
         // female_02 / male_02 were embedded in 商學院 / 資訊大樓 wall bases
         // (read in-game as "someone stuck in the wall"); moved onto the
         // open central campus, verified walkable + reachable.
-        {gfx::Vec2{ 980, 1640}, "resources/assets/sprites/school_uniform_3/female_02.png", "", false, true},
-        {gfx::Vec2{1450, 1620}, "resources/assets/sprites/school_uniform_3/male_02.png",   "", false, true},
-        {gfx::Vec2{ 980, 1500}, "resources/assets/sprites/school_uniform_3/female_03.png", "", false, true},
+        {nccu::engine::math::Vec2{ 980, 1640}, "resources/assets/sprites/school_uniform_3/female_02.png", "", false, true},
+        {nccu::engine::math::Vec2{1450, 1620}, "resources/assets/sprites/school_uniform_3/male_02.png",   "", false, true},
+        {nccu::engine::math::Vec2{ 980, 1500}, "resources/assets/sprites/school_uniform_3/female_03.png", "", false, true},
     };
     return kAll;
 }
@@ -107,14 +107,14 @@ inline const std::vector<NpcSpawn>& AmbientStudentSpawns() {
 // the chapterRoster_ sweep, exactly like the Ch3 操場 crowd).
 inline const std::vector<NpcSpawn>& Chapter1CrowdSpawns() {
     static const std::vector<NpcSpawn> kAll = {
-        {gfx::Vec2{1000,  900}, "resources/assets/sprites/school_uniform_3/male_04.png",   "", false, true},
-        {gfx::Vec2{ 900,  950}, "resources/assets/sprites/school_uniform_3/female_04.png", "", false, true},
-        {gfx::Vec2{ 960, 1080}, "resources/assets/sprites/school_uniform_3/male_05.png",   "", false, true},
-        {gfx::Vec2{1140, 1140}, "resources/assets/sprites/school_uniform_3/female_05.png", "", false, true},
-        {gfx::Vec2{ 840,  860}, "resources/assets/sprites/school_uniform_3/male_07.png",   "", false, true},
-        {gfx::Vec2{1240,  980}, "resources/assets/sprites/school_uniform_3/female_06.png", "", false, true},
-        {gfx::Vec2{1000, 1180}, "resources/assets/sprites/school_uniform_3/male_08.png",   "", false, true},
-        {gfx::Vec2{ 880, 1120}, "resources/assets/sprites/school_uniform_3/female_07.png", "", false, true},
+        {nccu::engine::math::Vec2{1000,  900}, "resources/assets/sprites/school_uniform_3/male_04.png",   "", false, true},
+        {nccu::engine::math::Vec2{ 900,  950}, "resources/assets/sprites/school_uniform_3/female_04.png", "", false, true},
+        {nccu::engine::math::Vec2{ 960, 1080}, "resources/assets/sprites/school_uniform_3/male_05.png",   "", false, true},
+        {nccu::engine::math::Vec2{1140, 1140}, "resources/assets/sprites/school_uniform_3/female_05.png", "", false, true},
+        {nccu::engine::math::Vec2{ 840,  860}, "resources/assets/sprites/school_uniform_3/male_07.png",   "", false, true},
+        {nccu::engine::math::Vec2{1240,  980}, "resources/assets/sprites/school_uniform_3/female_06.png", "", false, true},
+        {nccu::engine::math::Vec2{1000, 1180}, "resources/assets/sprites/school_uniform_3/male_08.png",   "", false, true},
+        {nccu::engine::math::Vec2{ 880, 1120}, "resources/assets/sprites/school_uniform_3/female_07.png", "", false, true},
     };
     return kAll;
 }
@@ -137,9 +137,9 @@ inline const std::vector<NpcSpawn>& Chapter1CrowdSpawns() {
 // chapter exit with the rest of the Ch1 roster.
 inline const std::vector<NpcSpawn>& Chapter1FlavorSpawns() {
     static const std::vector<NpcSpawn> kAll = {
-        {gfx::Vec2{1010, 1100}, "resources/assets/sprites/school_uniform_3/male_09.png",   "ch1_flavor_grab", false, false},
-        {gfx::Vec2{ 900, 1000}, "resources/assets/sprites/school_uniform_3/female_08.png", "ch1_flavor_rain", false, false},
-        {gfx::Vec2{1150, 1050}, "resources/assets/sprites/school_uniform_3/male_11.png",   "ch1_flavor_bag",  false, false},
+        {nccu::engine::math::Vec2{1010, 1100}, "resources/assets/sprites/school_uniform_3/male_09.png",   "ch1_flavor_grab", false, false},
+        {nccu::engine::math::Vec2{ 900, 1000}, "resources/assets/sprites/school_uniform_3/female_08.png", "ch1_flavor_rain", false, false},
+        {nccu::engine::math::Vec2{1150, 1050}, "resources/assets/sprites/school_uniform_3/male_11.png",   "ch1_flavor_bag",  false, false},
     };
     return kAll;
 }

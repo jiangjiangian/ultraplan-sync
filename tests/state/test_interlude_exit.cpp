@@ -10,7 +10,7 @@
 
 using nccu::SemesterStateMachine;
 using nccu::SemesterState;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 // S5b-2: the Interlude exit is the GDD-sanctioned south 觸發區 (decision
 // F.1-board=C), not a board NPC. These pin the pure geometry and the

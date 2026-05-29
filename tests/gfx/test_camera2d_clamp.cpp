@@ -3,6 +3,7 @@
 #include "engine/math/Vec2.h"
 
 using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 TEST_CASE("Camera2D::ClampToWorld: target near centre is unchanged") {
     Camera2D c;

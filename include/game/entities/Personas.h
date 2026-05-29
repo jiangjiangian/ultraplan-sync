@@ -29,7 +29,7 @@ struct Persona {
     std::string_view label;     // CJK persona name shown in the picker
     std::string_view blurb;     // one-line flavour shown under the name
     std::string_view spritePath;// resource-relative Pipoya sheet
-    gfx::Color        tint;      // draw-time colour modulate (RGBA)
+    nccu::engine::math::Color        tint;      // draw-time colour modulate (RGBA)
 };
 
 // The five personas. Order is the menu order (index 0..4). Fixed at
@@ -38,19 +38,19 @@ struct Persona {
 inline constexpr std::array<Persona, 5> kPersonas{{
     {"夜貓子", "通宵 K 書，黑眼圈是勳章",
      "resources/assets/sprites/school_uniform_3/female_03.png",
-     gfx::Color{150, 170, 255, 255}},   // cool indigo
+     nccu::engine::math::Color{150, 170, 255, 255}},   // cool indigo
     {"social咖", "系上活動的開心果",
      "resources/assets/sprites/school_uniform_3/male_02.png",
-     gfx::Color{255, 175, 90, 255}},    // warm orange
+     nccu::engine::math::Color{255, 175, 90, 255}},    // warm orange
     {"邊緣人", "圖書館角落的常駐住民",
      "resources/assets/sprites/school_uniform_3/female_01.png",
-     gfx::Color{170, 220, 180, 255}},   // muted green
+     nccu::engine::math::Color{170, 220, 180, 255}},   // muted green
     {"卷王", "GPA 4.3，行事曆排到深夜",
      "resources/assets/sprites/school_uniform_3/male_03.png",
-     gfx::Color{255, 150, 170, 255}},   // rose
+     nccu::engine::math::Color{255, 150, 170, 255}},   // rose
     {"佛系生", "隨緣修課，傘丟了也不急",
      "resources/assets/sprites/school_uniform_3/female_02.png",
-     gfx::Color{210, 200, 120, 255}},   // amber
+     nccu::engine::math::Color{210, 200, 120, 255}},   // amber
 }};
 
 // Per-run persona selection — the value the CharacterSelectScene
@@ -58,7 +58,7 @@ inline constexpr std::array<Persona, 5> kPersonas{{
 // constructs one directly from UMBRELLA_SPRITE.
 struct CharacterSelectResult {
     std::string spritePath;
-    gfx::Color  tint{255, 255, 255, 255};
+    nccu::engine::math::Color  tint{255, 255, 255, 255};
     bool        closed{false};
 };
 

@@ -2,7 +2,7 @@
 #define GFX_COLOR_H_
 #include <cstdint>
 
-namespace nccu::gfx {
+namespace nccu::engine::math {
 
 struct Color {
     std::uint8_t r{0};
@@ -33,6 +33,6 @@ inline constexpr Color Gold      {255, 203,   0, 255};
 inline constexpr Color Magenta   {255,   0, 255, 255};
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::math
 
 #endif // GFX_COLOR_H_

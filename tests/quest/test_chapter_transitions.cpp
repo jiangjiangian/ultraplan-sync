@@ -22,7 +22,7 @@
 using nccu::SemesterState;
 using nccu::SemesterStateMachine;
 using nccu::World;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 // H2 (cycle9): every chapter / interlude / ending transition now publishes
 // a ShowMessage so the player sees the FSM advance. Before this, the

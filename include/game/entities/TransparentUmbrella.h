@@ -42,10 +42,10 @@ LookForStyle(UmbrellaStyle style) noexcept {
 class TransparentUmbrella : public WithRoles<TransparentUmbrella, Item>,
                             public IDrawable, public IInteractable {
 public:
-    TransparentUmbrella(nccu::gfx::Vec2 position, std::string name,
-                        nccu::gfx::Color tint,
+    TransparentUmbrella(nccu::engine::math::Vec2 position, std::string name,
+                        nccu::engine::math::Color tint,
                         UmbrellaStyle style = UmbrellaStyle::Domed)
-        : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
+        : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
           umbrellaTint_(tint), style_(style) {}
 
     void Render(nccu::gfx::IRenderer& renderer) const override; // per-style glyph via IRenderer (Template Method)
@@ -63,7 +63,7 @@ public:
     virtual void beClaimed(Player* player) = 0;
 
 protected:
-    nccu::gfx::Color umbrellaTint_;
+    nccu::engine::math::Color umbrellaTint_;
     UmbrellaStyle    style_{UmbrellaStyle::Domed};
 };
 

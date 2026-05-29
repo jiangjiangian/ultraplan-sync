@@ -19,7 +19,7 @@ namespace nccu {
 // predicate is unit-testable without the GUI / baked terrain mask;
 // actual walk-reachability of the band is a manual-verify item.
 
-inline constexpr nccu::gfx::Vec2 kInterludeEntry{500.0f, 1500.0f};
+inline constexpr nccu::engine::math::Vec2 kInterludeEntry{500.0f, 1500.0f};
 
 // South band across the walkable 四維道 corridor. The player ctor-spawns
 // at y=1860 and ambient students walk y~1880 on this road, so y>=1900 is
@@ -29,7 +29,7 @@ inline constexpr float kInterludeExitMaxX = 1950.0f;
 inline constexpr float kInterludeExitMinY = 1900.0f;
 inline constexpr float kInterludeExitMaxY = 2048.0f;  // == world::kSize
 
-[[nodiscard]] inline bool InInterludeExitZone(nccu::gfx::Vec2 centre) noexcept {
+[[nodiscard]] inline bool InInterludeExitZone(nccu::engine::math::Vec2 centre) noexcept {
     return centre.x >= kInterludeExitMinX && centre.x <= kInterludeExitMaxX &&
            centre.y >= kInterludeExitMinY && centre.y <= kInterludeExitMaxY;
 }

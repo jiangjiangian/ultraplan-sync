@@ -196,12 +196,12 @@ TEST_CASE("I7: the shipped mask's south wall has exactly the x≈880-1042 gap") 
     CHECK(gapClear);
     // The wall-north corridor y=1750 is clear of mask AND every Ch1 NPC
     // from the gap (x=1041) west to the x=380 climb column.
-    std::vector<nccu::gfx::Rect> npc;
+    std::vector<nccu::engine::math::Rect> npc;
     for (const auto& n : nccu::DefaultNpcSpawns())
         npc.push_back({n.pos.x, n.pos.y, B, B});
     bool corridorClear = true;
     for (float x = 1041.f; x >= 380.f; x -= 2.f) {
-        nccu::gfx::Rect a{x, 1750.f, B, B};
+        nccu::engine::math::Rect a{x, 1750.f, B, B};
         bool hit = m.BlockedBox(x, 1750.f, B, B);
         for (const auto& r : npc) if (a.Intersects(r)) hit = true;
         if (hit) { corridorClear = false; break; }

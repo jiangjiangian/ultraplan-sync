@@ -26,7 +26,7 @@ enum class ObjectType {
 
 class GameObjectFactory {
 public:
-    static std::unique_ptr<GameObject> Create(ObjectType type, nccu::gfx::Vec2 position);
+    static std::unique_ptr<GameObject> Create(ObjectType type, nccu::engine::math::Vec2 position);
 };
 
 #endif // GAME_OBJECT_FACTORY_H_

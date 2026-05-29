@@ -13,22 +13,22 @@ namespace {
 // every primitive so the View-side helper is testable headless (no GL
 // context, no raylib draw call escapes into the world).
 struct Spy final : nccu::gfx::IRenderer {
-    struct RectCall { nccu::gfx::Rect r; nccu::gfx::Color c; };
-    struct TextCall { std::string s; nccu::gfx::Vec2 pos; int size;
-                      nccu::gfx::Color c; };
+    struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
+    struct TextCall { std::string s; nccu::engine::math::Vec2 pos; int size;
+                      nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
     std::vector<TextCall> texts;
     int sprites = 0;
 
-    void DrawRect(nccu::gfx::Rect r, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         rects.push_back({r, c});
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {
         ++sprites;
     }
-    void DrawText(std::string_view text, nccu::gfx::Vec2 pos, int size,
-                  nccu::gfx::Color c) override {
+    void DrawText(std::string_view text, nccu::engine::math::Vec2 pos, int size,
+                  nccu::engine::math::Color c) override {
         texts.push_back({std::string{text}, pos, size, c});
     }
 };

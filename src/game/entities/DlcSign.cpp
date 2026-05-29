@@ -7,14 +7,14 @@
 
 #include <string>
 
-DlcSign::DlcSign(nccu::gfx::Vec2 position)
+DlcSign::DlcSign(nccu::engine::math::Vec2 position)
     // Direct base is WithRoles<DlcSign, GameObject>; its `using Base::Base`
     // inherits GameObject's (position, hitBox) ctor. A 28x28 hitbox — a touch
     // bigger than the 16x16 pickups so the bold "?" reads as a standee and is
     // comfortably reachable by the E-probe (inflated to ±8 px in
     // GameController) from a flush-blocked approach.
     : WithRoles(position,
-           nccu::gfx::Rect{position.x, position.y, 28.0f, 28.0f}),
+           nccu::engine::math::Rect{position.x, position.y, 28.0f, 28.0f}),
       // B2 / UI-B-3: literal '\n' is honoured by MessageView::WrapCjk (it
       // breaks the toast at the newline) AND each wrapped row is now centred
       // in the toast box, so the teaser reads as two tidy centred lines:
@@ -26,8 +26,8 @@ DlcSign::DlcSign(nccu::gfx::Vec2 position)
       message_("DLC開發中\n敬請期待") {}
 
 void DlcSign::Render(nccu::gfx::IRenderer& renderer) const {
-    using nccu::gfx::Rect;
-    namespace C = nccu::gfx::Colors;
+    using nccu::engine::math::Rect;
+    namespace C = nccu::engine::math::Colors;
 
     // A bold "?" drawn rect-only (Item/scenery must not call DrawText/
     // DrawTexture — the architecture rule; no raylib), in the same
@@ -38,16 +38,16 @@ void DlcSign::Render(nccu::gfx::IRenderer& renderer) const {
     const float y = hitBox_.y;
     const float w = hitBox_.width;
     const float h = hitBox_.height;
-    auto rc = [&](float fx, float fy, float fw, float fh, nccu::gfx::Color col) {
+    auto rc = [&](float fx, float fy, float fw, float fh, nccu::engine::math::Color col) {
         renderer.DrawRect(Rect{x + fx * w, y + fy * h, fw * w, fh * h}, col);
     };
 
     // Backing plate (full hitbox) — a dark signboard.
-    rc(0.00f, 0.00f, 1.00f, 1.00f, nccu::gfx::Color{30, 32, 40, 220});
+    rc(0.00f, 0.00f, 1.00f, 1.00f, nccu::engine::math::Color{30, 32, 40, 220});
 
     // "?" strokes, gold. Top hook + the curve down to the centre, a gap,
     // then the dot — a chunky, unmistakable question mark.
-    const nccu::gfx::Color q = C::Gold;
+    const nccu::engine::math::Color q = C::Gold;
     rc(0.28f, 0.14f, 0.44f, 0.12f, q);   // top bar of the hook
     rc(0.62f, 0.14f, 0.16f, 0.30f, q);   // right descent of the hook
     rc(0.40f, 0.40f, 0.30f, 0.12f, q);   // sweep in toward the stem

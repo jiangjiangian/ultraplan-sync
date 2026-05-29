@@ -36,7 +36,7 @@ enum class HeldUmbrella { None, True, Cursed, Ugly, Victim, Fragile,
 class Player final : public WithRoles<Player, Character>,
                      public IUpdatable, public IDrawable, public IMortal {
 public:
-    explicit Player(nccu::gfx::Vec2 position);
+    explicit Player(nccu::engine::math::Vec2 position);
 
     void Update(float deltaTime) override;
     void Render(nccu::gfx::IRenderer& renderer) const override;
@@ -162,8 +162,8 @@ public:
     // (the default, also what the autoplay harness uses). Not gameplay
     // state — purely cosmetic, reset on a fresh World like everything
     // else (Restart builds a new Player).
-    Player& SetTint(nccu::gfx::Color t) noexcept { tint_ = t; return *this; }
-    [[nodiscard]] nccu::gfx::Color GetTint() const noexcept { return tint_; }
+    Player& SetTint(nccu::engine::math::Color t) noexcept { tint_ = t; return *this; }
+    [[nodiscard]] nccu::engine::math::Color GetTint() const noexcept { return tint_; }
 
     [[nodiscard]] int   GetKarma()      const noexcept { return karma_; }
     [[nodiscard]] float GetRainMeter()  const noexcept { return rainMeter_; }
@@ -240,8 +240,8 @@ private:
     std::unordered_map<std::string, int>  consumables_;
 
     std::optional<nccu::gfx::Texture> sprite_;
-    nccu::gfx::Color tint_{255, 255, 255, 255};  // persona colour modulate
-    nccu::gfx::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down
+    nccu::engine::math::Color tint_{255, 255, 255, 255};  // persona colour modulate
+    nccu::engine::math::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down
     float animTimer_{0.0f};
     int   animStep_{0};                       // 0..3 -> column 1,0,1,2
 };

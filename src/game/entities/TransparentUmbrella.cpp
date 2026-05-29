@@ -43,6 +43,6 @@ void TransparentUmbrella::Render(nccu::gfx::IRenderer& renderer) const {
     // needs it). Rect-only, no sprite/text — MVC clean (the View renders
     // off the object's own data; no sim/state touched).
     nccu::gfx::DrawUmbrellaGlyph(renderer, LookForStyle(style_),
-                                 nccu::gfx::Rect{position_.x, position_.y,
+                                 nccu::engine::math::Rect{position_.x, position_.y,
                                                  20.0f, 20.0f});
 }

@@ -98,7 +98,7 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
 // on its presence fails.
 TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
     DialogState d;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
     nccu::OpenNpcDialog(d, p, "shop_auntie", SemesterState::Chapter1_AddDrop);
     for (int i = 0; i < 4; ++i) d.Advance();          // (a) opener lines
@@ -125,7 +125,7 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
 // already satisfied is inert). The inert (b)/(c) flavour choices (karma
 // +0 / no flag) stay re-pickable — verified they don't move karma either.
 TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
     // First visit: pick coffee -> +5, flag set.
@@ -175,7 +175,7 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
 
 TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // fresh
     p.SetFlag(nccu::kFlagFoundForm);
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 1);   // reward
@@ -185,7 +185,7 @@ TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
 
 TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) fresh
     p.SetFlag(nccu::kFlagPromisedVictim);
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 1);  // (b) promised
@@ -197,7 +197,7 @@ TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") 
 
 TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
     p.SetFlag(nccu::kFlagFoundForm);
     p.SetFlag(nccu::kFlagPromisedVictim);
@@ -206,7 +206,7 @@ TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
 
 TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagFoundForm);
     const int k0 = p.GetKarma();
     DialogState d;
@@ -226,7 +226,7 @@ TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
 
 TEST_CASE("Player overload: ta with no flag is the line-only intro") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p2{nccu::gfx::Vec2{0, 0}};
+    Player p2{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p2.GetKarma();
     DialogState d2;
     nccu::OpenNpcDialog(d2, p2, "ta", Ch1);
@@ -239,7 +239,7 @@ TEST_CASE("Player overload: ta with no flag is the line-only intro") {
 
 TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     DialogState d;
     nccu::OpenNpcDialog(d, p, "victim", Ch1);
     CHECK(d.Active());
@@ -251,7 +251,7 @@ TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
 
 TEST_CASE("Player overload: victim with promise flag is line-only recap") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagPromisedVictim);
     const int k0 = p.GetKarma();
     DialogState d;
@@ -280,7 +280,7 @@ TEST_CASE("Player overload: victim with promise flag is line-only recap") {
 TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     DialogState d;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
     // A1 (hard-gate): the 西裝學長 only presents his choice menu AFTER the
@@ -326,11 +326,11 @@ TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {
     // DialogOpener.cpp:101 was a read with no setter. After F2 the (b)
     // 斥責 path lands the flag and this branch fires.
     const auto Ch2 = SemesterState::Chapter2_Midterms;
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagScoldedSenior);
     CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, p) == 2);   // (c)
 
-    Player q{nccu::gfx::Vec2{0, 0}};
+    Player q{nccu::engine::math::Vec2{0, 0}};
     // No flag → (a) opener — the default. (Mirror sanity check; if this
     // ever changes, the audit-F2 routing is no longer the only path.)
     CHECK(nccu::ResolveOpenerSubState("suit_senior", Ch2, q) == 0);

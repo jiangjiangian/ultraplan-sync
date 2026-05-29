@@ -10,28 +10,29 @@ namespace nccu::gfx {
 
 class Renderer {
 public:
-    Renderer& Clear(Color c) noexcept {
+    Renderer& Clear(nccu::engine::math::Color c) noexcept {
         ::ClearBackground(::Color{c.r, c.g, c.b, c.a});
         return *this;
     }
 
     // Inside the class, the method name `Rect` shadows the namespace type
-    // `nccu::gfx::Rect`, so we use the elaborated form `struct Rect` to
-    // refer to the type in the parameter list.
-    Renderer& Rect(struct Rect r, Color c) noexcept {
+    // `nccu::engine::math::Rect`, so we use the elaborated form
+    // `struct nccu::engine::math::Rect` to refer to the type in the
+    // parameter list.
+    Renderer& Rect(struct nccu::engine::math::Rect r, nccu::engine::math::Color c) noexcept {
         ::DrawRectangleRec(::Rectangle{r.x, r.y, r.width, r.height},
                            ::Color{c.r, c.g, c.b, c.a});
         return *this;
     }
 
-    Renderer& RectLines(struct Rect r, Color c, float thickness = 1.0f) noexcept {
+    Renderer& RectLines(struct nccu::engine::math::Rect r, nccu::engine::math::Color c, float thickness = 1.0f) noexcept {
         ::DrawRectangleLinesEx(::Rectangle{r.x, r.y, r.width, r.height},
                                thickness,
                                ::Color{c.r, c.g, c.b, c.a});
         return *this;
     }
 
-    Renderer& Pixel(Vec2 p, Color c) noexcept {
+    Renderer& Pixel(nccu::engine::math::Vec2 p, nccu::engine::math::Color c) noexcept {
         ::DrawPixelV(::Vector2{p.x, p.y}, ::Color{c.r, c.g, c.b, c.a});
         return *this;
     }
@@ -40,8 +41,8 @@ public:
     // class scope, so we use the elaborated form `class Texture` in the
     // parameter list (mirrors the Rect pattern above).
     Renderer& Texture(const class Texture& tex,
-                      Vec2 pos,
-                      Color tint = Colors::White) noexcept {
+                      nccu::engine::math::Vec2 pos,
+                      nccu::engine::math::Color tint = nccu::engine::math::Colors::White) noexcept {
         ::DrawTextureV(tex.Raw(),
                        ::Vector2{pos.x, pos.y},
                        ::Color{tint.r, tint.g, tint.b, tint.a});
@@ -53,9 +54,9 @@ public:
     // used by sprite-sheet frame slicing and by the character-select grid's
     // upscaled previews.
     Renderer& TextureRect(const class Texture& tex,
-                          struct Rect src,
-                          struct Rect dest,
-                          Color tint = Colors::White) noexcept {
+                          struct nccu::engine::math::Rect src,
+                          struct nccu::engine::math::Rect dest,
+                          nccu::engine::math::Color tint = nccu::engine::math::Colors::White) noexcept {
         ::DrawTexturePro(tex.Raw(),
                          ::Rectangle{src.x,  src.y,  src.width,  src.height},
                          ::Rectangle{dest.x, dest.y, dest.width, dest.height},

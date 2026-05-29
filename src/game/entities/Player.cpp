@@ -22,7 +22,7 @@ constexpr std::array<int, 4> kWalkColumns = {1, 0, 1, 2};
 constexpr float kFrameDuration = 0.15f;
 
 // Pipoya row order: 0=down, 1=left, 2=right, 3=up.
-int RowForFacing(nccu::gfx::Vec2 facing) {
+int RowForFacing(nccu::engine::math::Vec2 facing) {
     const float ax = std::fabs(facing.x);
     const float ay = std::fabs(facing.y);
     if (ax > ay) return facing.x < 0.0f ? 1 : 2;
@@ -31,11 +31,11 @@ int RowForFacing(nccu::gfx::Vec2 facing) {
 
 } // namespace
 
-Player::Player(nccu::gfx::Vec2 position)
+Player::Player(nccu::engine::math::Vec2 position)
     // 180 px/sec ≈ original 3 px/frame at 60 FPS, frame-rate independent.
     // Direct base is WithRoles<Player, Character>; its `using Base::Base`
     // inherits Character's ctor so this 3-arg form still resolves.
-    : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
+    : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 24.0f, 24.0f}, 180.0f),
       rainMeter_(0.0f), karma_(50), hasUmbrella_(false), money_(100) {}
 
 void Player::LoadSprite(const std::string& path) {
@@ -62,9 +62,9 @@ void Player::Update(float deltaTime) {
 }
 
 void Player::Render(nccu::gfx::IRenderer& renderer) const {
-    using nccu::gfx::Rect;
+    using nccu::engine::math::Rect;
     if (!sprite_ || !sprite_->IsValid()) {
-        renderer.DrawRect(hitBox_, nccu::gfx::Colors::Blue);
+        renderer.DrawRect(hitBox_, nccu::engine::math::Colors::Blue);
         return;
     }
     const int col = kWalkColumns[animStep_];
@@ -87,7 +87,7 @@ void Player::Render(nccu::gfx::IRenderer& renderer) const {
 void Player::HandleInput(float deltaTime) {
     using nccu::engine::input::Input;
     using nccu::engine::input::Key;
-    nccu::gfx::Vec2 dir{0.0f, 0.0f};
+    nccu::engine::math::Vec2 dir{0.0f, 0.0f};
     if (Input::IsDown(Key::W)) dir.y -= 1.0f;
     if (Input::IsDown(Key::S)) dir.y += 1.0f;
     if (Input::IsDown(Key::A)) dir.x -= 1.0f;
@@ -189,7 +189,7 @@ Player& Player::ApplyRainSheltered(float dt, bool lethal) {
 
 void Player::RespawnAtGate() {
     // 正門 gate spawn — half-day passes, no karma penalty per design doc.
-    position_ = nccu::gfx::Vec2{500.0f, 1860.0f};
+    position_ = nccu::engine::math::Vec2{500.0f, 1860.0f};
     hitBox_.x = position_.x;
     hitBox_.y = position_.y;
     resetRainMeter();

@@ -22,17 +22,17 @@ namespace {
 // wrap (no card row spills the box) is assertable.
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
-    std::vector<nccu::gfx::Color> rectColors;
+    std::vector<nccu::engine::math::Color> rectColors;
     std::vector<std::string> texts;
     std::vector<float>       textX;
     std::vector<int>         textSize;
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color c) override {
         ++rects; rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {}
-    void DrawText(std::string_view t, nccu::gfx::Vec2 p, int sz,
-                  nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {}
+    void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
+                  nccu::engine::math::Color) override {
         texts.emplace_back(t);
         textX.push_back(p.x);
         textSize.push_back(sz);
@@ -43,7 +43,7 @@ bool Has(const Spy& s, std::string_view needle) {
         if (t.find(needle) != std::string::npos) return true;
     return false;
 }
-bool HasRectRGB(const Spy& s, nccu::gfx::Color want) {
+bool HasRectRGB(const Spy& s, nccu::engine::math::Color want) {
     for (const auto& c : s.rectColors)
         if (c.r == want.r && c.g == want.g && c.b == want.b) return true;
     return false;

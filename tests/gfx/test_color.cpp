@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "engine/math/Color.h"
 
-using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 TEST_CASE("Color: default-constructs to opaque black") {
     constexpr Color c;

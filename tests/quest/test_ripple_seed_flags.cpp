@@ -15,10 +15,10 @@
 
 TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
     EventBus::Instance().Clear();
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasProfessorTrap));
 
-    ProfessorTrapUmbrella trap{nccu::gfx::Vec2{0, 0}};
+    ProfessorTrapUmbrella trap{nccu::engine::math::Vec2{0, 0}};
     trap.beClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagHasProfessorTrap));
     CHECK(p.HasUmbrella());
@@ -33,12 +33,12 @@ TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)
     // the karma cost off the pickup and onto per-chapter ApplyCursedTaintDecay
     // (SceneRouter Ch2/3/4 entry). The flag + the ending-B path stay intact.
     EventBus::Instance().Clear();
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
     CHECK_FALSE(p.HasFlag(nccu::kFlagTookCursedUmbrella));
     CHECK(p.GetCursedTaint() == 0);
 
-    CursedUmbrella cursed{nccu::gfx::Vec2{0, 0}};
+    CursedUmbrella cursed{nccu::engine::math::Vec2{0, 0}};
     cursed.beClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));
     CHECK(p.GetCursedTaint() == 1);          // P2: taint bumped, not karma
@@ -63,9 +63,9 @@ TEST_CASE("TrueUmbrella::beClaimed is idempotent (no double UmbrellaClaimed)") {
     int claimed = 0;
     EventBus::Instance().Subscribe(EventType::UmbrellaClaimed,
         [&claimed](const Event& e) { if (e.text == "TrueUmbrella") ++claimed; });
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
 
-    TrueUmbrella good{nccu::gfx::Vec2{0, 0}};
+    TrueUmbrella good{nccu::engine::math::Vec2{0, 0}};
     good.beClaimed(&p);
     CHECK(p.HasUmbrella());
     CHECK_FALSE(good.IsActive());            // marked for the sweep
@@ -81,9 +81,9 @@ TEST_CASE("FragileUmbrella::beClaimed is idempotent (no double UmbrellaClaimed)"
     int claimed = 0;
     EventBus::Instance().Subscribe(EventType::UmbrellaClaimed,
         [&claimed](const Event& e) { if (e.text == "FragileUmbrella") ++claimed; });
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
 
-    FragileUmbrella fragile{nccu::gfx::Vec2{0, 0}};
+    FragileUmbrella fragile{nccu::engine::math::Vec2{0, 0}};
     fragile.beClaimed(&p);
     CHECK(p.HasUmbrella());
     CHECK_FALSE(fragile.IsActive());
@@ -96,15 +96,15 @@ TEST_CASE("FragileUmbrella::beClaimed is idempotent (no double UmbrellaClaimed)"
 
 TEST_CASE("The good/fragile umbrellas do NOT seed the ripple flags") {
     EventBus::Instance().Clear();
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
 
-    TrueUmbrella good{nccu::gfx::Vec2{0, 0}};
+    TrueUmbrella good{nccu::engine::math::Vec2{0, 0}};
     good.beClaimed(&p);
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasProfessorTrap));
     CHECK_FALSE(p.HasFlag(nccu::kFlagTookCursedUmbrella));
 
-    Player q{nccu::gfx::Vec2{0, 0}};
-    FragileUmbrella fragile{nccu::gfx::Vec2{0, 0}};
+    Player q{nccu::engine::math::Vec2{0, 0}};
+    FragileUmbrella fragile{nccu::engine::math::Vec2{0, 0}};
     fragile.beClaimed(&q);
     CHECK_FALSE(q.HasFlag(nccu::kFlagHasProfessorTrap));
     CHECK_FALSE(q.HasFlag(nccu::kFlagTookCursedUmbrella));

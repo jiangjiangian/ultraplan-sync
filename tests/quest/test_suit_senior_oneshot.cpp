@@ -12,7 +12,7 @@
 #endif
 
 using nccu::SemesterState;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 // C.3(b): 西裝學長 is the ripple-critical choice-opener. Once a choice
 // has been committed (GameController sets Flag_SuitSeniorChoiceMade),

@@ -52,7 +52,7 @@ inline std::string VendorSpriteKey(const std::string& stallKeeper,
 inline std::string VendorSpriteFor(std::size_t index,
                                    const std::string& stallKeeper,
                                    const std::string& name,
-                                   nccu::gfx::Vec2 pos) {
+                                   nccu::engine::math::Vec2 pos) {
     return PickNpcSprite(
         VendorSpriteKey(stallKeeper, name), pos,
         kVendorFallbackSprites[index % kVendorFallbackCount]);

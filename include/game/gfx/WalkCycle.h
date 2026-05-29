@@ -35,7 +35,7 @@ inline constexpr std::array<int, 4> kWalkColumns = {1, 0, 1, 2};
 // Dominant axis wins (|x| vs |y|); ties resolve to the vertical axis so a
 // perfect diagonal still faces up/down (matches Player.cpp:24-29). A zero
 // vector returns row 0 (down) — the canonical "face the camera" rest pose.
-[[nodiscard]] constexpr int WalkRowForFacing(Vec2 facing) noexcept {
+[[nodiscard]] constexpr int WalkRowForFacing(nccu::engine::math::Vec2 facing) noexcept {
     const float ax = facing.x < 0.0f ? -facing.x : facing.x;
     const float ay = facing.y < 0.0f ? -facing.y : facing.y;
     if (ax > ay) return facing.x < 0.0f ? 1 : 2;

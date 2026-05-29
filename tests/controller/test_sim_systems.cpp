@@ -33,10 +33,10 @@ namespace {
 // each frame (the two geometry constants + a reused scratch collider list).
 struct Fixture {
     World                          w{"", /*loadSprites=*/false};
-    std::vector<nccu::gfx::Rect>   colliders;
+    std::vector<nccu::engine::math::Rect>   colliders;
     SimContext ctx() {
-        return SimContext{w, nccu::gfx::Vec2{2048.0f, 2048.0f},
-                          nccu::gfx::Vec2{24.0f, 24.0f}, colliders, {}};
+        return SimContext{w, nccu::engine::math::Vec2{2048.0f, 2048.0f},
+                          nccu::engine::math::Vec2{24.0f, 24.0f}, colliders, {}};
     }
 };
 
@@ -97,7 +97,7 @@ TEST_CASE("SurvivalSystem: no rain tick in the market interlude") {
 TEST_CASE("MovementSystem captures the pre-tick player position into the ctx") {
     Fixture f;
     Player* p = f.w.GetPlayer();
-    p->SetPosition(nccu::gfx::Vec2{123.0f, 456.0f});
+    p->SetPosition(nccu::engine::math::Vec2{123.0f, 456.0f});
     MovementSystem sys;
     SimContext c = f.ctx();
     sys.Run(c, 0.016f);
@@ -111,7 +111,7 @@ TEST_CASE("CollisionSystem clamps an out-of-bounds player back into the world") 
     Player* p = f.w.GetPlayer();
     // Park the player past the right/bottom edge; the clamp must pull it
     // back to worldSize - playerSize on each axis.
-    p->SetPosition(nccu::gfx::Vec2{9000.0f, 9000.0f});
+    p->SetPosition(nccu::engine::math::Vec2{9000.0f, 9000.0f});
     CollisionSystem sys;
     SimContext c = f.ctx();
     c.prevPlayerPos = p->GetPosition();      // Movement would have set this
@@ -143,7 +143,7 @@ TEST_CASE("SweepSystem removes a deactivated object, keeps the Player at front")
     REQUIRE(p != nullptr);
     REQUIRE(f.w.Objects().front().get() == static_cast<GameObject*>(p));
     // Append a dead NPC at the back, then sweep.
-    auto npc = std::make_unique<NPC>(nccu::gfx::Vec2{50, 50},
+    auto npc = std::make_unique<NPC>(nccu::engine::math::Vec2{50, 50},
                                      std::vector<std::string>{"hi"});
     npc->Deactivate();
     f.w.Objects().push_back(std::move(npc));

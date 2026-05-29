@@ -21,16 +21,16 @@ struct Spy final : nccu::gfx::IRenderer {
     std::vector<std::string>   texts;
     std::vector<float>         textX;
     int                        fontSize = 0;
-    nccu::gfx::Rect            backdrop{0, 0, 0, 0};   // widest rect seen
+    nccu::engine::math::Rect            backdrop{0, 0, 0, 0};   // widest rect seen
 
-    void DrawRect(nccu::gfx::Rect r, nccu::gfx::Color) override {
+    void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color) override {
         ++rects;
         if (r.width > backdrop.width) backdrop = r;     // the box is widest
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override { ++sprites; }
-    void DrawText(std::string_view t, nccu::gfx::Vec2 p, int sz,
-                  nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }
+    void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
+                  nccu::engine::math::Color) override {
         texts.emplace_back(t);
         textX.push_back(p.x);
         fontSize = sz;

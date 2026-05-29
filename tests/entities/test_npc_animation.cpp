@@ -18,7 +18,7 @@ constexpr float kDt = 1.0f / 60.0f;   // the harness fixed step
 }
 
 TEST_CASE("Stationary archetype NPC always renders the idle cell (col 1, row 0)") {
-    NPC npc(nccu::gfx::Vec2{500.0f, 500.0f},
+    NPC npc(nccu::engine::math::Vec2{500.0f, 500.0f},
             std::vector<std::string>{"hi"}, /*isQuestGiver=*/true, "ta");
     // Before any Update.
     CHECK(npc.CurrentRenderCell().col == 1);
@@ -31,10 +31,10 @@ TEST_CASE("Stationary archetype NPC always renders the idle cell (col 1, row 0)"
 }
 
 TEST_CASE("校慶 circular runner walk-animates and faces its motion") {
-    NPC npc(nccu::gfx::Vec2{1000.0f, 1000.0f}, {});
+    NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});
     // Centre below the start point so the first tangential step heads a
     // known way; angularSpeed positive => counter-clockwise.
-    npc.EnableCircularRun(nccu::gfx::Vec2{1000.0f, 1100.0f},
+    npc.EnableCircularRun(nccu::engine::math::Vec2{1000.0f, 1100.0f},
                           /*radius=*/100.0f, /*angularSpeed=*/1.5f,
                           /*startAngle=*/ -1.5707963f /* -pi/2: top of circle */);
 
@@ -59,7 +59,7 @@ TEST_CASE("校慶 circular runner walk-animates and faces its motion") {
 }
 
 TEST_CASE("Ambient wanderer leaves the idle pose once it actually moves") {
-    NPC npc(nccu::gfx::Vec2{1000.0f, 1000.0f}, {});
+    NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});
     npc.EnableWander(/*speed=*/40.0f, /*seed=*/12345u);  // deterministic PRNG
     // No wander mask set => it moves freely (open ground), so it WILL
     // displace on most frames and the walk cycle advances. Drive a couple of
@@ -102,7 +102,7 @@ TEST_CASE("Ambient wanderer leaves the idle pose once it actually moves") {
 // that changes), and PASSES on the fix (row pinned to the stable heading).
 TEST_CASE("A-T1: a wall-sliding wanderer holds ONE stable facing row (no jitter)") {
     constexpr float kEdge = 2048.0f - 24.0f;   // kSize - kPlayerHeight
-    NPC npc(nccu::gfx::Vec2{1500.0f, kEdge}, {});   // flush against the floor
+    NPC npc(nccu::engine::math::Vec2{1500.0f, kEdge}, {});   // flush against the floor
     npc.EnableWander(/*speed=*/40.0f, /*seed=*/51u);  // first heading {1,1}
 
     std::set<int> movingRows;
@@ -111,10 +111,10 @@ TEST_CASE("A-T1: a wall-sliding wanderer holds ONE stable facing row (no jitter)
     // NPC slides right along the floor the whole time, so inspect a window
     // well inside that single constant-heading leg.
     for (int i = 0; i < 50; ++i) {
-        const nccu::gfx::Vec2 before = npc.GetPosition();
+        const nccu::engine::math::Vec2 before = npc.GetPosition();
         npc.Update(kDt);
-        const nccu::gfx::Vec2 after = npc.GetPosition();
-        const nccu::gfx::Vec2 step{after.x - before.x, after.y - before.y};
+        const nccu::engine::math::Vec2 after = npc.GetPosition();
+        const nccu::engine::math::Vec2 step{after.x - before.x, after.y - before.y};
         if (step.x != 0.0f || step.y != 0.0f) {
             ++movingFrames;
             movingRows.insert(npc.CurrentRenderCell().row);
@@ -136,13 +136,13 @@ TEST_CASE("A paused wanderer (no displacement) shows the idle column") {
     // Force a stall: seed a wanderer, but only inspect frames where the net
     // move was zero — those must render the idle column (Update resets
     // animStep_ to 0 when moving_ is false).
-    NPC npc(nccu::gfx::Vec2{1000.0f, 1000.0f}, {});
+    NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});
     npc.EnableWander(/*speed=*/40.0f, /*seed=*/777u);
     int idleFramesChecked = 0;
     for (int i = 0; i < 600; ++i) {
-        const nccu::gfx::Vec2 before = npc.GetPosition();
+        const nccu::engine::math::Vec2 before = npc.GetPosition();
         npc.Update(kDt);
-        const nccu::gfx::Vec2 after = npc.GetPosition();
+        const nccu::engine::math::Vec2 after = npc.GetPosition();
         if (before.x == after.x && before.y == after.y) {
             CHECK(npc.CurrentRenderCell().col == 1);   // idle column
             ++idleFramesChecked;

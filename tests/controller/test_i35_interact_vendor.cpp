@@ -144,7 +144,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     // is position-independent, so place the player just SOUTH of the victim
     // on the clear x=1660 column and walk UP into him — the same flush-block
     // + E-probe geometry, exercised on the Y axis instead of the X axis.
-    world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
+    world.GetPlayer()->SetPosition(nccu::engine::math::Vec2{vx, vy + 90.0f});
 
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
@@ -189,7 +189,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     // 善有善報: place the player just SOUTH of the victim (1660,1010) on the
     // clear column and shove UP into him — same no-pass-through guarantee on
     // the Y axis (the victim is no longer on the spawn row).
-    world.GetPlayer()->SetPosition(nccu::gfx::Vec2{vx, vy + 90.0f});
+    world.GetPlayer()->SetPosition(nccu::engine::math::Vec2{vx, vy + 90.0f});
 
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
@@ -249,7 +249,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
 
     // Teleport adjacent (this test targets the BUY wiring, not pathing;
     // the I3 cases already prove walk-up+E reaches the dialog).
-    p->SetPosition(nccu::gfx::Vec2{vx - 8.0f, vy});
+    p->SetPosition(nccu::engine::math::Vec2{vx - 8.0f, vy});
 
     in.Tap(Key::E);                                    // open the buy menu
     Frame(controller, in);
@@ -331,7 +331,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     // --- Buy the EnergyDrink at the Ch2 自動販賣機 vendor. ---
     const GameObject* vend = FindVendor(world);
     REQUIRE(vend != nullptr);
-    p->SetPosition(nccu::gfx::Vec2{vend->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{vend->GetPosition().x - 8.0f,
                                    vend->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
@@ -351,7 +351,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     // tap E to fire the real TryMeetLibrarian hook. ---
     const GameObject* lib = FindNpc(world, "librarian");
     REQUIRE(lib != nullptr);
-    p->SetPosition(nccu::gfx::Vec2{lib->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{lib->GetPosition().x - 8.0f,
                                    lib->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
@@ -366,7 +366,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     // step: waking is what starts the note quest. ---
     const GameObject* bw = FindNpc(world, "bookworm");
     REQUIRE(bw != nullptr);
-    p->SetPosition(nccu::gfx::Vec2{bw->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{bw->GetPosition().x - 8.0f,
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);
@@ -382,7 +382,7 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
 
     // --- Talk to 學霸, PHASE 2: notes are in (pre-set above) -> exchange:
     // Flag_BookwormRecovered. No further drink consumed. ---
-    p->SetPosition(nccu::gfx::Vec2{bw->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{bw->GetPosition().x - 8.0f,
                                    bw->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);

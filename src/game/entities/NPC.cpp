@@ -19,14 +19,14 @@ constexpr int   kCell     = nccu::gfx::kPipoyaCell;
 constexpr float kFrameDur = nccu::gfx::kWalkFrameDuration;
 }  // namespace
 
-NPC::NPC(nccu::gfx::Vec2 position,
+NPC::NPC(nccu::engine::math::Vec2 position,
          std::vector<std::string> dialogLines,
          bool isQuestGiver,
          std::string_view npcId)
     // Direct base is WithRoles<NPC, Character>; its `using Base::Base`
     // inherits Character's ctor so this 3-arg form still resolves.
     : WithRoles(position,
-                nccu::gfx::Rect{position.x, position.y, 24.0f, 24.0f},
+                nccu::engine::math::Rect{position.x, position.y, 24.0f, 24.0f},
                 0.0f /* archetype NPCs are stationary; EnableWander() opts in */),
       dialogLines_(std::move(dialogLines)),
       currentLineIndex_(0),
@@ -46,7 +46,7 @@ NPC& NPC::EnableWander(float speed, unsigned seed) noexcept {
     return *this;
 }
 
-NPC& NPC::EnableCircularRun(nccu::gfx::Vec2 center, float radius,
+NPC& NPC::EnableCircularRun(nccu::engine::math::Vec2 center, float radius,
                             float angularSpeed, float startAngle) noexcept {
     circular_     = true;
     circleCenter_ = center;
@@ -58,12 +58,12 @@ NPC& NPC::EnableCircularRun(nccu::gfx::Vec2 center, float radius,
 
 void NPC::Update(float deltaTime) {
     if (circular_) {  // 校慶 crowd runner: glide the fixed track + animate
-        const nccu::gfx::Vec2 prev = position_;
+        const nccu::engine::math::Vec2 prev = position_;
         circleAngle_ += circleSpeed_ * deltaTime;
-        SetPosition(nccu::gfx::Vec2{
+        SetPosition(nccu::engine::math::Vec2{
             circleCenter_.x + circleRadius_ * std::cos(circleAngle_),
             circleCenter_.y + circleRadius_ * std::sin(circleAngle_)});
-        const nccu::gfx::Vec2 d{position_.x - prev.x, position_.y - prev.y};
+        const nccu::engine::math::Vec2 d{position_.x - prev.x, position_.y - prev.y};
         if (d.x != 0.0f || d.y != 0.0f) facing_ = d;
         animTimer_ += deltaTime;
         if (animTimer_ >= kFrameDur) {
@@ -78,7 +78,7 @@ void NPC::Update(float deltaTime) {
     if (retargetTimer_ <= 0.0f) {
         // xorshift32 — one of 8 compass headings, or idx 8 = pause.
         rng_ ^= rng_ << 13; rng_ ^= rng_ >> 17; rng_ ^= rng_ << 5;
-        static constexpr nccu::gfx::Vec2 kDirs[9] = {
+        static constexpr nccu::engine::math::Vec2 kDirs[9] = {
             {0, -1}, {0, 1}, {-1, 0}, {1, 0},
             {-1, -1}, {1, -1}, {-1, 1}, {1, 1}, {0, 0}};
         wanderDir_ = kDirs[rng_ % 9u];
@@ -86,20 +86,20 @@ void NPC::Update(float deltaTime) {
         retargetTimer_ = 1.0f + static_cast<float>(rng_ % 2000u) / 1000.0f;
     }
 
-    const nccu::gfx::Vec2 prev = position_;
+    const nccu::engine::math::Vec2 prev = position_;
     Move(wanderDir_, deltaTime);  // Character::Move integrates + syncs hitBox_
 
     const float kMaxXY = ::world::kSize - ::world::kPlayerWidth;
-    nccu::gfx::Vec2 p = position_;
+    nccu::engine::math::Vec2 p = position_;
     p.x = std::clamp(p.x, 0.0f, kMaxXY);
     p.y = std::clamp(p.y, 0.0f, kMaxXY);
     SetPosition(p);
 
     if (wanderMask_) {
-        static const std::vector<nccu::gfx::Rect> kNoDynamic;
-        const nccu::gfx::Vec2 resolved = nccu::physics::ResolveMove(
+        static const std::vector<nccu::engine::math::Rect> kNoDynamic;
+        const nccu::engine::math::Vec2 resolved = nccu::physics::ResolveMove(
             prev, position_,
-            nccu::gfx::Vec2{::world::kPlayerWidth, ::world::kPlayerHeight},
+            nccu::engine::math::Vec2{::world::kPlayerWidth, ::world::kPlayerHeight},
             kNoDynamic, wanderMask_);
         if (resolved.x != position_.x || resolved.y != position_.y) {
             // Bumped a wall — turn away within a beat instead of grinding.
@@ -131,7 +131,7 @@ void NPC::Update(float deltaTime) {
     //
     // Render reads moving_/facing_/animStep_ — none of which is serialised
     // (state.jsonl stays byte-identical; verified vs baseline md5).
-    const nccu::gfx::Vec2 step{position_.x - prev.x, position_.y - prev.y};
+    const nccu::engine::math::Vec2 step{position_.x - prev.x, position_.y - prev.y};
     moving_ = (step.x != 0.0f || step.y != 0.0f);
     if (moving_) {
         // Stable facing from the constant retarget heading. Guard the
@@ -151,9 +151,9 @@ void NPC::Update(float deltaTime) {
 }
 
 void NPC::Render(nccu::gfx::IRenderer& renderer) const {
-    using nccu::gfx::Rect;
+    using nccu::engine::math::Rect;
     if (!sprite_ || !sprite_->IsValid()) {
-        renderer.DrawRect(hitBox_, nccu::gfx::Colors::Green);
+        renderer.DrawRect(hitBox_, nccu::engine::math::Colors::Green);
         return;
     }
     // Static full-image sprite (e.g. a 自動販賣機): draw the WHOLE texture

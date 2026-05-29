@@ -28,8 +28,8 @@ struct HelpPageStyle {
     float                  w;             // viewport / window width
     float                  h;             // viewport / window height
     int                    page;          // 0-based page to draw (clamped)
-    nccu::gfx::Color       panelColor;    // overlay 245α vs title 200α
-    nccu::gfx::Color       indicatorColor;// overlay light vs title dim grey
+    nccu::engine::math::Color       panelColor;    // overlay 245α vs title 200α
+    nccu::engine::math::Color       indicatorColor;// overlay light vs title dim grey
     std::string_view       chipLabel;     // "M / E 返回選單" vs "Enter / E 返回"
     float                  chipLabelXOffset; // -58 (overlay) vs -56 (title)
 };
@@ -39,8 +39,8 @@ struct HelpPageStyle {
 // The caller is responsible for any backdrop drawn BEFORE this (the
 // overlay's full-screen scrim / the title screen's Clear) — those differ
 // and stay at the call site.
-void DrawHelpPage(const std::function<void(nccu::gfx::Rect,
-                                           nccu::gfx::Color)>& fillRect,
+void DrawHelpPage(const std::function<void(nccu::engine::math::Rect,
+                                           nccu::engine::math::Color)>& fillRect,
                   const HelpPageStyle& style);
 
 } // namespace nccu::ui

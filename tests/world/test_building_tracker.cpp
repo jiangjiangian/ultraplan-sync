@@ -10,7 +10,7 @@ using nccu::BuildingTracker;
 using nccu::buildings::Building;
 using nccu::buildings::kAll;
 using nccu::detail::NearestContaining;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 namespace {
 struct EventCapture {

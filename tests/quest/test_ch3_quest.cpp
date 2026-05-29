@@ -16,7 +16,7 @@
 using nccu::SemesterState;
 
 namespace {
-Player MakePlayer() { return Player{nccu::gfx::Vec2{0.0f, 0.0f}}; }
+Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 constexpr auto kCh3 = SemesterState::Chapter3_SportsDay;
 }  // namespace
 
@@ -192,7 +192,7 @@ TEST_CASE("World::UpdateSportsLap: a full 操場 lap sets Flag_SportsLapDone") {
     constexpr float kTwoPi = 6.2831853f;
     for (int i = 0; i <= 40; ++i) {
         const float a = static_cast<float>(i) * (kTwoPi / 40.0f);
-        p->SetPosition(nccu::gfx::Vec2{cx + r * std::cos(a),
+        p->SetPosition(nccu::engine::math::Vec2{cx + r * std::cos(a),
                                        cy + r * std::sin(a)});
         w.UpdateSportsLap();
     }
@@ -204,7 +204,7 @@ TEST_CASE("World::UpdateSportsLap: a full 操場 lap sets Flag_SportsLapDone") {
     w2.Semester().Transition(kCh3);
     Player* p2 = w2.GetPlayer();
     for (int i = 0; i < 40; ++i) {
-        p2->SetPosition(nccu::gfx::Vec2{cx, cy});   // dead centre
+        p2->SetPosition(nccu::engine::math::Vec2{cx, cy});   // dead centre
         w2.UpdateSportsLap();
     }
     CHECK_FALSE(p2->HasFlag(nccu::kFlagSportsLapDone));
