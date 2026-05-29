@@ -72,7 +72,7 @@ void CollisionSystem::Run(SimContext& ctx, float /*dt*/) {
     if (!player) return;
 
     const nccu::engine::math::Vec2 clamped =
-        nccu::gfx::ClampToWorld(player->GetPosition(), ctx.playerSize,
+        nccu::game::gfx::ClampToWorld(player->GetPosition(), ctx.playerSize,
                                 ctx.worldSize);
     if (clamped.x != player->GetPosition().x ||
         clamped.y != player->GetPosition().y) {

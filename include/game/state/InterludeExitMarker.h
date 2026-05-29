@@ -89,7 +89,7 @@ LayoutInterludeExitMarker(float phase = 0.0f) {
 // drop shadow (2 px SE) and the gold body — the same two-pass idiom the
 // quest-giver indicator uses, so the line stays readable on the bright
 // road tiles south of the market.
-inline void DrawInterludeExitMarker(gfx::IRenderer& r, float phase = 0.0f) {
+inline void DrawInterludeExitMarker(nccu::engine::render::IRenderer& r, float phase = 0.0f) {
     const InterludeExitMarkerLayout L = LayoutInterludeExitMarker(phase);
     for (const InterludeExitMarkerDash& d : L.dashes) {
         r.DrawRect(nccu::engine::math::Rect{d.rect.x + 2.0f, d.rect.y + 2.0f,

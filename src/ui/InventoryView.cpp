@@ -13,8 +13,9 @@
 #include <vector>
 
 namespace nccu {
+using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
 
-using namespace nccu::gfx;
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 // ---- U2-T1: paging window math (pure, header-declared, unit-tested) ------
@@ -57,7 +58,7 @@ RowKind KindOf(const InventoryRow& row) {
 }
 
 // U2-T3: the umbrella look for an umbrella row, so the bag swatch matches
-// the in-world / ending glyph (the same shared gfx::DrawUmbrellaGlyph).
+// the in-world / ending glyph (the same shared nccu::game::gfx::DrawUmbrellaGlyph).
 // Previously only cursed/ugly were mapped and EVERYTHING else fell to
 // TrueBlue — so the 破傘 / 陷阱傘 the player can now hold drew the wrong
 // (intact blue) canopy. Map every held-umbrella sentinel to its true look:

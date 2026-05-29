@@ -4,7 +4,7 @@
 #include "game/world/HudTiming.h"   // kHudTtl + kHudFade (game-side)
 #include <string>
 
-namespace nccu { namespace gfx { class IRenderer; } }
+namespace nccu::engine::render { class IRenderer; }
 
 namespace nccu {
 
@@ -30,7 +30,7 @@ namespace nccu {
 // they coexist on the same frame. The slot is a pure visual offset —
 // the fade / TTL / wrap logic are identical for both, and the spy
 // tests in test_message_view check both with no extra surface.
-void DrawHudMessage(nccu::gfx::IRenderer& r, const std::string& message,
+void DrawHudMessage(nccu::engine::render::IRenderer& r, const std::string& message,
                     float age, float screenW, float screenH,
                     bool reducedMotion = false,
                     HudSlot slot = HudSlot::Bottom);

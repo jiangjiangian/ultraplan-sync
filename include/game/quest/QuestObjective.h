@@ -24,7 +24,7 @@
 // enumerates EVERY one for the glyph-coverage scan — the owner reported `?`
 // (tofu) in objective text (綜合院館 / 集英樓 / 羅馬廣場 / 操場 / 校慶 /
 // 期末考終焉…). The scan FAILS the build on any glyph here not baked into
-// gfx::Font.h, so a future objective edit can't silently reintroduce tofu.
+// nccu::engine::render::Font.h, so a future objective edit can't silently reintroduce tofu.
 namespace nccu {
 
 namespace objective {

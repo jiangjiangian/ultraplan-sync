@@ -2,7 +2,7 @@
 #define GFX_BOUNDS_H_
 #include "engine/math/Vec2.h"
 
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 // Clamp `pos` so an AABB of `size` anchored at `pos` stays inside the
 // [0, worldSize] box. If `size` exceeds `worldSize` on an axis, pos pins
@@ -20,6 +20,6 @@ inline nccu::engine::math::Vec2 ClampToWorld(nccu::engine::math::Vec2 pos, nccu:
     };
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_BOUNDS_H_

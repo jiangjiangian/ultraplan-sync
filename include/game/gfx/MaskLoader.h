@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 // Loads the terrain walkability PNG into a raylib-free CollisionMask.
 // Blueprint Phase 4 R5: the raylib::Image lifetime + decode are
@@ -23,10 +23,10 @@ namespace nccu::gfx {
 // collision degrades visibly instead of failing silently.
 inline CollisionMask LoadCollisionMask(const std::string& primary,
                                        const std::string& fallback) {
-    DecodedImage img = LoadRgba8Image(primary);
+    nccu::engine::render::DecodedImage img = nccu::engine::render::LoadRgba8Image(primary);
     const char* used = primary.c_str();
     if (img.Empty()) {
-        img  = LoadRgba8Image(fallback);
+        img  = nccu::engine::render::LoadRgba8Image(fallback);
         used = fallback.c_str();
     }
     if (img.Empty()) {
@@ -56,6 +56,6 @@ inline CollisionMask LoadCollisionMask(const std::string& primary,
     return CollisionMask{w, h, std::move(solid)};
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_MASK_LOADER_H_

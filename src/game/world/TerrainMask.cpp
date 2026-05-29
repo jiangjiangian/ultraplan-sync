@@ -4,7 +4,7 @@
 namespace nccu {
 
 CollisionMask LoadTerrainMask() {
-    return gfx::LoadCollisionMask(
+    return nccu::game::gfx::LoadCollisionMask(
         "resources/assets/maps/collision_mask.png",
         "resources/assets/maps/collision_mask_base.png");
 }

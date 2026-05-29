@@ -56,7 +56,7 @@ void CharacterSelectScene::Enter() {
     // the pre-Phase-3 lifetime.
     previews_.reserve(static_cast<std::size_t>(kCount));
     for (int i = 0; i < kCount; ++i)
-        previews_.push_back(nccu::gfx::Texture::Load(
+        previews_.push_back(nccu::engine::render::Texture::Load(
             std::string{nccu::kPersonas[static_cast<std::size_t>(i)]
                             .spritePath}));
 }
@@ -95,8 +95,8 @@ SceneCommand CharacterSelectScene::Update(float /*dt*/) {
     return {};
 }
 
-void CharacterSelectScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
-    using namespace nccu::gfx;
+void CharacterSelectScene::Draw(nccu::engine::render::IRenderer& /*renderer*/) {
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
     Renderer r;
     r.Clear(Colors::RayWhite);

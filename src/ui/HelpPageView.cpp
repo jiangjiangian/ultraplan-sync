@@ -9,7 +9,7 @@
 
 namespace nccu::ui {
 
-using namespace nccu::gfx;   // Color / Colors / Rect / Vec2 / TextBuilder
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 void DrawHelpPage(const std::function<void(Rect, Color)>& fillRect,

@@ -13,12 +13,12 @@
 
 namespace nccu {
 
-void DrawObjectiveBar(nccu::gfx::IRenderer& r,
+void DrawObjectiveBar(nccu::engine::render::IRenderer& r,
                       const World& world,
                       SemesterState st,
                       float screenW,
                       float /*screenH*/) {
-    using namespace nccu::gfx;
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // Quest objective: a panel-backed one-liner, top-centre but BELOW

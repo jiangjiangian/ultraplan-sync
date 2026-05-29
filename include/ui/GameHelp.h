@@ -10,7 +10,7 @@ namespace nccu {
 // play) text, shared by BOTH the title-screen help page and the in-game
 // pause-menu 說明 overlay so the two never drift. Pure data — no raylib,
 // no input — the View/TitleScreen draw these lines. Every CJK glyph here
-// is baked into gfx::Font.h UiLiteralChars() (the #10 atlas lesson) so
+// is baked into nccu::engine::render::Font.h UiLiteralChars() (the #10 atlas lesson) so
 // the panel never tofus to `?`; the 5c glyph-scan test enumerates this
 // array and FAILS the build on any uncovered glyph.
 //
@@ -19,7 +19,7 @@ namespace nccu {
 // Tab：物品欄 and M：選單 apart); each 目標 sentence and each ending sits
 // on its own logical line. A 【雨傘外觀】 section names the four umbrella
 // looks so the player can tell them apart in the world (真傘藍 / 破傘剩
-// 手柄 / 詛咒傘暗紫 / 醜傘綠 — the same looks gfx::DrawUmbrellaGlyph draws).
+// 手柄 / 詛咒傘暗紫 / 醜傘綠 — the same looks nccu::game::gfx::DrawUmbrellaGlyph draws).
 // Every line stays within the help panel's ~24 full-width-cell width.
 //
 // U2-T4: the help text grew past one screenful (a 【道具須知】 economy /
@@ -61,7 +61,7 @@ inline constexpr std::array<std::string_view, 13> kGameHelpPage1 = {
 // --- Page 2: 雨傘外觀 + 道具須知 + 三種結局 ------------------------------
 inline constexpr std::array<std::string_view, 18> kGameHelpPage2 = {
     // T4b: the four umbrella looks so the player can identify them in the
-    // world / bag / ending — the SAME looks gfx::DrawUmbrellaGlyph paints.
+    // world / bag / ending — the SAME looks nccu::game::gfx::DrawUmbrellaGlyph paints.
     "【雨傘外觀】",
     "真傘：藍色，傘面完整。",
     "破傘：只剩手柄與斷骨。",

@@ -12,7 +12,7 @@ namespace {
 
 // Spy IRenderer: records every primitive instead of touching a GL context,
 // so the polymorphic Render() path is testable headless.
-struct CountingRenderer final : nccu::gfx::IRenderer {
+struct CountingRenderer final : nccu::engine::render::IRenderer {
     struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
     int sprites = 0;
@@ -21,7 +21,7 @@ struct CountingRenderer final : nccu::gfx::IRenderer {
     void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         rects.push_back({r, c});
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {
         ++sprites;
     }
@@ -72,6 +72,6 @@ TEST_CASE("QuestFlagPickup::Render: the 苦主 umbrella draws the BLUE umbrella 
     REQUIRE(spy.rects.size() >= 3);   // a real umbrella silhouette
     // Its signature colour is 真傘 blue (the shared look colour), never Yellow.
     CHECK(HasColor(spy,
-        nccu::gfx::UmbrellaLookColor(nccu::gfx::UmbrellaLook::TrueBlue)));
+        nccu::game::gfx::UmbrellaLookColor(nccu::game::gfx::UmbrellaLook::TrueBlue)));
     CHECK_FALSE(HasColor(spy, nccu::engine::math::Colors::Yellow));
 }

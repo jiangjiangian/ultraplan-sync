@@ -47,7 +47,7 @@ LayoutQuestGiverIndicator(nccu::engine::math::Rect hitBox) noexcept {
 
 // Paint the indicator through the injected IRenderer. The panel is
 // drawn with a slight shadow underneath so it pops on bright tiles.
-inline void DrawQuestGiverIndicator(gfx::IRenderer& r,
+inline void DrawQuestGiverIndicator(nccu::engine::render::IRenderer& r,
                                     nccu::engine::math::Rect hitBox) {
     const QuestGiverIndicatorLayout L = LayoutQuestGiverIndicator(hitBox);
     // Drop shadow: same rect nudged 2 px SE, dark translucent.

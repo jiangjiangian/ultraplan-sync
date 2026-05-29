@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace nccu::gfx { class IRenderer; class Window; }
+namespace nccu::engine::render { class IRenderer; class Window; }
 namespace nccu { class Harness; }
 
 namespace nccu::app {
@@ -21,8 +21,8 @@ namespace nccu::app {
 // land the matching scenes so main.cpp shrinks to "compose + push
 // initial".
 //
-// Run() is the integration of: gfx::Window's per-frame poll +
-// gfx::DrawScope + Harness BeginFrame/EndFrame + the scene's
+// Run() is the integration of: nccu::engine::render::Window's per-frame poll +
+// nccu::engine::render::DrawScope + Harness BeginFrame/EndFrame + the scene's
 // Update/Draw + deferred-command apply. It returns RunOutcome so
 // the composition root can decide between Restart (rebuild the
 // scene stack from scratch — back to title in Phase 3.2+) and
@@ -56,11 +56,11 @@ public:
     // The one app loop. Returns when the active scene emits
     // SceneCommand{Quit} or {Restart}, or when the Window/Harness
     // asks to exit. Window is borrowed (not owned) so main.cpp keeps
-    // the GL lifetime discipline; renderer is the gfx::IRenderer the
+    // the GL lifetime discipline; renderer is the nccu::engine::render::IRenderer the
     // scenes paint through; harness wraps each frame's Begin/EndFrame
     // — its lifetime spans the program, not the run.
-    [[nodiscard]] RunOutcome Run(nccu::gfx::Window& window,
-                                 nccu::gfx::IRenderer& renderer,
+    [[nodiscard]] RunOutcome Run(nccu::engine::render::Window& window,
+                                 nccu::engine::render::IRenderer& renderer,
                                  nccu::Harness& harness);
 
     [[nodiscard]] bool Empty() const noexcept { return stack_.empty(); }

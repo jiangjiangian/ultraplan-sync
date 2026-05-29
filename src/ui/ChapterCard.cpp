@@ -11,8 +11,9 @@
 #include <vector>
 
 namespace nccu {
+using namespace nccu::game::gfx;  // Phase 4 §B: game/gfx helpers
 
-using namespace nccu::gfx;
+using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 namespace {

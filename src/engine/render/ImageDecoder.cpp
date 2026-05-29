@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 DecodedImage LoadRgba8Image(const std::string& path) {
     ::Image img = ::LoadImage(path.c_str());
@@ -27,4 +27,4 @@ DecodedImage LoadRgba8Image(const std::string& path) {
     return out;
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render

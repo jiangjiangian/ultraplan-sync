@@ -15,7 +15,7 @@ namespace {
 // asserted without a GL context. UI-B-3 also captures each text's draw
 // X and the widest backdrop rect, so the centring + within-box wrap can
 // be asserted (the draw position is the only observable of "centred").
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     int sprites = 0;
     std::vector<std::string>   texts;
@@ -27,7 +27,7 @@ struct Spy final : nccu::gfx::IRenderer {
         ++rects;
         if (r.width > backdrop.width) backdrop = r;     // the box is widest
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }
     void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int sz,
                   nccu::engine::math::Color) override {

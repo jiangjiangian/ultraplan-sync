@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // 操場 校慶 lap track ground decal (P1 step 7f — extracted from
 // View::RenderWorld). A dotted STADIUM outline (running-track shape:
@@ -20,7 +20,7 @@ namespace gfx { class IRenderer; }
 // when the lap is inactive.
 //
 // Render-only (MVC §5). Read-only world.
-void DrawSportsLapTrack(nccu::gfx::IRenderer& r, const World& world);
+void DrawSportsLapTrack(nccu::engine::render::IRenderer& r, const World& world);
 
 }  // namespace nccu
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 namespace detail { class TextureCache; }  // owns each cached texture once
 
@@ -148,7 +148,7 @@ inline void PreloadTexture(const std::string& path) {
 }
 
 // Tear the cache down. Call from main() BEFORE ~Window/::CloseWindow (while
-// GL is alive) — mirrors gfx::ShutdownFont. Idempotent (clearing an empty
+// GL is alive) — mirrors nccu::engine::render::ShutdownFont. Idempotent (clearing an empty
 // map is a no-op), so a normal-exit path that never preloaded is fine too.
 inline void ShutdownTextureCache() noexcept { detail::Textures().Clear(); }
 
@@ -161,6 +161,6 @@ inline Texture Texture::Load(const std::string& path) {
     return detail::Textures().Acquire(path);
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_TEXTURE_H_

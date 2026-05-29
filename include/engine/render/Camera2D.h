@@ -2,7 +2,7 @@
 #define GFX_CAMERA2_D_H_
 #include "engine/math/Vec2.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 // Adapter for raylib's ::Camera2D. Field names mirror raylib so the mapping
 // is obvious. Fluent setters allow in-frame chaining:
@@ -37,6 +37,6 @@ struct Camera2D {
     }
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_CAMERA2_D_H_

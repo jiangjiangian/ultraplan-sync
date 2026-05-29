@@ -8,7 +8,7 @@ namespace nccu {
 // The interactive title, character-select and help screens each run their
 // own blocking draw-loop and read the SAME global key state. raylib's
 // "pressed" edge is true for exactly one input poll, and the only poll is
-// EndDrawing (gfx::DrawScope's dtor). When one screen returns on an Enter
+// EndDrawing (nccu::engine::render::DrawScope's dtor). When one screen returns on an Enter
 // press and the next screen starts before the next EndDrawing, the new
 // screen sees the very same Enter edge — so a single physical press would
 // drive two transitions: opening 遊戲說明 would instantly close it again,

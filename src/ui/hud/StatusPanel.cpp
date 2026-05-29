@@ -16,8 +16,8 @@
 
 namespace nccu {
 
-void DrawStatusPanel(nccu::gfx::IRenderer& r, const World& world) {
-    using namespace nccu::gfx;
+void DrawStatusPanel(nccu::engine::render::IRenderer& r, const World& world) {
+    using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
     // Top-left status: WASD hint, karma/umbrella, optional building,

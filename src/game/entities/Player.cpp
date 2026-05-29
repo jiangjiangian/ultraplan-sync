@@ -39,7 +39,7 @@ Player::Player(nccu::engine::math::Vec2 position)
       rainMeter_(0.0f), karma_(50), hasUmbrella_(false), money_(100) {}
 
 void Player::LoadSprite(const std::string& path) {
-    sprite_ = nccu::gfx::Texture::Load(path);
+    sprite_ = nccu::engine::render::Texture::Load(path);
 }
 
 void Player::Update(float deltaTime) {
@@ -61,7 +61,7 @@ void Player::Update(float deltaTime) {
     }
 }
 
-void Player::Render(nccu::gfx::IRenderer& renderer) const {
+void Player::Render(nccu::engine::render::IRenderer& renderer) const {
     using nccu::engine::math::Rect;
     if (!sprite_ || !sprite_->IsValid()) {
         renderer.DrawRect(hitBox_, nccu::engine::math::Colors::Blue);

@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // In-game 說明 (how-to-play) overlay (P1 step 7d — extracted from
 // View::RenderOverlays).
@@ -19,7 +19,7 @@ namespace gfx { class IRenderer; }
 // through the injected IRenderer + the shared `nccu::ui::DrawHelpPage`
 // helper used by the title screen, so the overlay can never drift from
 // the splash-screen 說明 view.
-void DrawHelpOverlay(nccu::gfx::IRenderer& r,
+void DrawHelpOverlay(nccu::engine::render::IRenderer& r,
                      const World& world,
                      float screenW,
                      float screenH);

@@ -10,13 +10,13 @@ namespace {
 // Spy IRenderer — mirrors the proven CountingRenderer pattern from
 // test_umbrella_render.cpp, but also captures the text strings so we can
 // assert the line / choice content without a GL context.
-struct Spy final : nccu::gfx::IRenderer {
+struct Spy final : nccu::engine::render::IRenderer {
     int rects = 0;
     int sprites = 0;
     std::vector<std::string> texts;
 
     void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color) override { ++rects; }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override { ++sprites; }
     void DrawText(std::string_view t, nccu::engine::math::Vec2, int,
                   nccu::engine::math::Color) override { texts.emplace_back(t); }

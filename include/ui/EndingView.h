@@ -9,13 +9,13 @@
 #include <vector>
 
 namespace nccu {
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // 5c — every literal string the ending screen can render, across ALL
 // three endings and every deciding-condition branch, returned from the
 // SAME constexpr tables DrawEndingCard draws. The glyph-coverage test
 // scans this so a new reason line / condition label whose glyph is not
-// baked into gfx::Font.h fails the build's atlas check automatically (no
+// baked into nccu::engine::render::Font.h fails the build's atlas check automatically (no
 // silent tofu drift). Pure data — no raylib, no GL.
 [[nodiscard]] std::vector<std::string> EndingCardStrings();
 
@@ -62,7 +62,7 @@ struct EndingSummary {
 // title, caption, reason copy, condition labels and menu labels as
 // constexpr tables. menuCursor defaults to 0 (回首頁) for callers/tests
 // that don't drive the menu.
-void DrawEndingCard(nccu::gfx::IRenderer& r, const EndingSummary& summary,
+void DrawEndingCard(nccu::engine::render::IRenderer& r, const EndingSummary& summary,
                     std::string_view title, float alpha,
                     float screenW, float screenH, int menuCursor = 0);
 } // namespace nccu

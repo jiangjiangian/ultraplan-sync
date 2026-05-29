@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 class Window {
 public:
@@ -55,6 +55,6 @@ private:
     bool owns_{false};
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_WINDOW_H_

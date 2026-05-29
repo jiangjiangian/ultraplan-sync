@@ -6,7 +6,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // Quest objective bar (P1 step 7e — extracted from View::RenderHud).
 // A panel-backed one-liner, top-centre but BELOW the left status panel
@@ -21,7 +21,7 @@ namespace gfx { class IRenderer; }
 // Render-only (MVC §5): reads World const, never mutates. Width is
 // measured exactly via TextBuilder::Measure() so the backing panel
 // grows and shrinks with the objective text.
-void DrawObjectiveBar(nccu::gfx::IRenderer& r,
+void DrawObjectiveBar(nccu::engine::render::IRenderer& r,
                       const World& world,
                       SemesterState st,
                       float screenW,

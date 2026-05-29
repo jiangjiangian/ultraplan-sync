@@ -60,7 +60,7 @@ public:
 
     void Enter() override;
     [[nodiscard]] SceneCommand Update(float dt) override;
-    void Draw(nccu::gfx::IRenderer& renderer) override;
+    void Draw(nccu::engine::render::IRenderer& renderer) override;
     void Exit() override;
     [[nodiscard]] const nccu::World*
     WorldForHarnessOrNull() const noexcept override { return &world_; }

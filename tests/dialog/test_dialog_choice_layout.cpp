@@ -25,11 +25,11 @@ using nccu::dialog::kBoxY;
 
 namespace {
 
-struct PosSpy final : nccu::gfx::IRenderer {
+struct PosSpy final : nccu::engine::render::IRenderer {
     struct T { std::string text; float y; };
     std::vector<T> texts;
     void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color) override {}
-    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+    void DrawSprite(const nccu::engine::render::Texture&, nccu::engine::math::Rect,
                     nccu::engine::math::Rect, nccu::engine::math::Color) override {}
     void DrawText(std::string_view t, nccu::engine::math::Vec2 p, int,
                   nccu::engine::math::Color) override {

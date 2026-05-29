@@ -25,7 +25,7 @@ bool IsUmbrellaFlag(std::string_view flag) {
 }
 }  // namespace
 
-void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
+void QuestFlagPickup::Render(nccu::engine::render::IRenderer& renderer) const {
     using nccu::engine::math::Rect;
     namespace C = nccu::engine::math::Colors;
 
@@ -38,7 +38,7 @@ void QuestFlagPickup::Render(nccu::gfx::IRenderer& renderer) const {
         // The 苦主's transparent umbrella — drawn with the SAME shared glyph
         // the in-world umbrellas and the ending card use, in 真傘 blue, so
         // it is unmistakably "the umbrella you came to find".
-        nccu::gfx::DrawUmbrellaGlyph(renderer, nccu::gfx::UmbrellaLook::TrueBlue,
+        nccu::game::gfx::DrawUmbrellaGlyph(renderer, nccu::game::gfx::UmbrellaLook::TrueBlue,
                                      hitBox_);
         return;
     }

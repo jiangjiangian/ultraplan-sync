@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 class TextBuilder {
 public:
@@ -65,6 +65,6 @@ private:
     struct nccu::engine::math::Color        color_{0, 0, 0, 255};
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_TEXT_BUILDER_H_

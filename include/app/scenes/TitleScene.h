@@ -33,7 +33,7 @@ public:
     explicit TitleScene(NextSceneFactory startGame);
 
     [[nodiscard]] SceneCommand Update(float dt) override;
-    void Draw(nccu::gfx::IRenderer& renderer) override;
+    void Draw(nccu::engine::render::IRenderer& renderer) override;
 
 private:
     NextSceneFactory startGame_;

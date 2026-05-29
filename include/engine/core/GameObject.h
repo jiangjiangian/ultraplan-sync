@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace nccu::gfx { class IRenderer; }
+namespace nccu::engine::render { class IRenderer; }
 class Player; // forward decl — avoids circular include from the role hooks
 
 class GameObject {

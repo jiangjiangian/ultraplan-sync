@@ -111,7 +111,7 @@ SceneCommand GameplayScene::Update(float /*dt*/) {
     return SceneCommand{SceneCommand::Kind::None, {}};
 }
 
-void GameplayScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
+void GameplayScene::Draw(nccu::engine::render::IRenderer& /*renderer*/) {
     // The View renders straight through raylib via its existing
     // pipeline; Phase 3 step 1 keeps that intact — routing through
     // the abstract IRenderer is a step 2 concern (it lets a doctest

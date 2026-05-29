@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // Top-right "M 選單" affordance hint (P1 step 7c — extracted from
 // View::RenderOverlays). A small panel-backed "M 選單" chip that
@@ -21,7 +21,7 @@ namespace gfx { class IRenderer; }
 //
 // `screenW` / `screenH` are the framebuffer dimensions; the chip
 // anchors to the top-right corner (6 px inset).
-void DrawMenuAffordance(nccu::gfx::IRenderer& r,
+void DrawMenuAffordance(nccu::engine::render::IRenderer& r,
                         const World& world,
                         float screenW,
                         float screenH);

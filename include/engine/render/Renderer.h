@@ -6,7 +6,7 @@
 #include "engine/render/Texture.h"
 #include "engine/math/Vec2.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 class Renderer {
 public:
@@ -37,7 +37,7 @@ public:
         return *this;
     }
 
-    // Method name `Texture` shadows the type nccu::gfx::Texture inside the
+    // Method name `Texture` shadows the type nccu::engine::render::Texture inside the
     // class scope, so we use the elaborated form `class Texture` in the
     // parameter list (mirrors the Rect pattern above).
     Renderer& Texture(const class Texture& tex,
@@ -66,6 +66,6 @@ public:
     }
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_RENDERER_H_

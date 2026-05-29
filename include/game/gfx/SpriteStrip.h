@@ -21,7 +21,7 @@
 // Everything here is constexpr / pure, so the frame logic is unit-tested
 // headless with no GL context — exactly like Camera2D::ClampToWorld.
 
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 // FrameAt: the PING-PONG (triangle-wave) frame index at elapsed time `t`
 // (seconds) for an `n`-frame strip advancing at `fps` frames/second.
@@ -111,6 +111,6 @@ struct DecorationDef {
     return nccu::engine::math::Rect{d.center.x - w * 0.5f, d.center.y - h * 0.5f, w, h};
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_SPRITE_STRIP_H_

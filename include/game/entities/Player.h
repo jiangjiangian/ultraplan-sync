@@ -39,7 +39,7 @@ public:
     explicit Player(nccu::engine::math::Vec2 position);
 
     void Update(float deltaTime) override;
-    void Render(nccu::gfx::IRenderer& renderer) const override;
+    void Render(nccu::engine::render::IRenderer& renderer) const override;
 
     void HandleInput(float deltaTime);
 
@@ -239,7 +239,7 @@ private:
     std::unordered_map<std::string, bool> flags_;
     std::unordered_map<std::string, int>  consumables_;
 
-    std::optional<nccu::gfx::Texture> sprite_;
+    std::optional<nccu::engine::render::Texture> sprite_;
     nccu::engine::math::Color tint_{255, 255, 255, 255};  // persona colour modulate
     nccu::engine::math::Vec2 lastFacing_{0.0f, 1.0f};  // start facing down
     float animTimer_{0.0f};

@@ -17,19 +17,19 @@ enum class UmbrellaStyle {
     Drooping  // Cursed — sagging dark canopy + black handle (wrong)
 };
 
-// Map a subclass's UmbrellaStyle to the shared gfx::UmbrellaLook (the single
+// Map a subclass's UmbrellaStyle to the shared nccu::game::gfx::UmbrellaLook (the single
 // source of truth for the silhouette + signature colour). One mapping used by
 // BOTH the in-world Render here AND any other surface that wants the same
 // look (kept inline next to the styles so the two never drift).
-[[nodiscard]] constexpr nccu::gfx::UmbrellaLook
+[[nodiscard]] constexpr nccu::game::gfx::UmbrellaLook
 LookForStyle(UmbrellaStyle style) noexcept {
     switch (style) {
-        case UmbrellaStyle::Domed:    return nccu::gfx::UmbrellaLook::TrueBlue;
-        case UmbrellaStyle::Broken:   return nccu::gfx::UmbrellaLook::FragileBroken;
-        case UmbrellaStyle::Spiked:   return nccu::gfx::UmbrellaLook::ProfessorTrap;
-        case UmbrellaStyle::Drooping: return nccu::gfx::UmbrellaLook::CursedPurple;
+        case UmbrellaStyle::Domed:    return nccu::game::gfx::UmbrellaLook::TrueBlue;
+        case UmbrellaStyle::Broken:   return nccu::game::gfx::UmbrellaLook::FragileBroken;
+        case UmbrellaStyle::Spiked:   return nccu::game::gfx::UmbrellaLook::ProfessorTrap;
+        case UmbrellaStyle::Drooping: return nccu::game::gfx::UmbrellaLook::CursedPurple;
     }
-    return nccu::gfx::UmbrellaLook::TrueBlue;
+    return nccu::game::gfx::UmbrellaLook::TrueBlue;
 }
 
 // ISP roles: IDrawable + IInteractable. The old Update body was an empty
@@ -48,7 +48,7 @@ public:
         : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 20.0f, 20.0f}, std::move(name)),
           umbrellaTint_(tint), style_(style) {}
 
-    void Render(nccu::gfx::IRenderer& renderer) const override; // per-style glyph via IRenderer (Template Method)
+    void Render(nccu::engine::render::IRenderer& renderer) const override; // per-style glyph via IRenderer (Template Method)
 
     [[nodiscard]] UmbrellaStyle Style() const noexcept { return style_; }
     // Both pick-up paths route through the same quest gate (defined in

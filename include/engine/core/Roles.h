@@ -20,7 +20,7 @@
 // returns a static_cast'd pointer — no dynamic_cast, no per-call type
 // check. See docs/architecture-roles.md for the rationale.
 
-namespace nccu::gfx { class IRenderer; }
+namespace nccu::engine::render { class IRenderer; }
 class Player;  // role hooks take a Player* initiator; full type not needed here
 
 // ── The three role interfaces (independent; none derives GameObject) ──
@@ -31,7 +31,7 @@ struct IUpdatable {
 
 struct IDrawable {
     virtual ~IDrawable() = default;
-    virtual void Render(nccu::gfx::IRenderer& renderer) const = 0;
+    virtual void Render(nccu::engine::render::IRenderer& renderer) const = 0;
 };
 
 struct IInteractable {

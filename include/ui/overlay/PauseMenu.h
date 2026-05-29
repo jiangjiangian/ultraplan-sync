@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // In-game pause menu overlay (P1 step 7b — extracted from
 // View::RenderOverlays).
@@ -22,7 +22,7 @@ namespace gfx { class IRenderer; }
 //
 // `screenW` / `screenH` are the framebuffer dimensions; the dim and
 // the panel centre on them.
-void DrawPauseMenu(nccu::gfx::IRenderer& r,
+void DrawPauseMenu(nccu::engine::render::IRenderer& r,
                    const World& world,
                    float screenW,
                    float screenH);

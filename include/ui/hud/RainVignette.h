@@ -4,7 +4,7 @@
 namespace nccu {
 
 class World;
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // Rain "pressure" vignette (P1 step 7e — extracted from View::RenderHud).
 // Screen-edge darkening in two tiers driven by the active player's
@@ -18,7 +18,7 @@ namespace gfx { class IRenderer; }
 // the meter is below 60. Safe to call every frame.
 //
 // Render-only (MVC §5): reads World const, never mutates.
-void DrawRainVignette(nccu::gfx::IRenderer& r,
+void DrawRainVignette(nccu::engine::render::IRenderer& r,
                       const World& world,
                       float screenW,
                       float screenH);

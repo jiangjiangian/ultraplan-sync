@@ -26,7 +26,7 @@ public:
         std::string_view npcId = {});
 
     void Update(float deltaTime) override;
-    void Render(nccu::gfx::IRenderer& renderer) const override;
+    void Render(nccu::engine::render::IRenderer& renderer) const override;
     void Interact(Player* initiator) override;
 
     // Dialog lookup key — GameController builds the per-(npcId,
@@ -91,7 +91,7 @@ public:
 
     // Test inspection (U1-T3): the {column, row} of the 96x128 Pipoya sheet
     // Render() would blit THIS frame — the exact integration of the
-    // animated-vs-idle decision with the shared gfx::WalkCycle maths.
+    // animated-vs-idle decision with the shared nccu::game::gfx::WalkCycle maths.
     // Exposed because Render()'s textured blit is GL-gated (a headless test
     // has no valid Texture, so Render() early-returns the fallback rect and
     // never reaches the cell selection). Pure read of already-simulated
@@ -105,7 +105,7 @@ private:
     bool                     isQuestGiver_;
     std::string              npcId_;
 
-    std::optional<nccu::gfx::Texture> sprite_;
+    std::optional<nccu::engine::render::Texture> sprite_;
     bool                              staticSprite_ = false;
 
     bool                                       wander_;

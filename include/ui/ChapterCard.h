@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace nccu {
-namespace gfx { class IRenderer; }
+namespace engine::render { class IRenderer; }
 
 // U1-T2 — the chapter BOOKEND big card: a large, centred, brief
 // full-attention beat distinct from the small transient HUD toast
@@ -44,7 +44,7 @@ enum class ChapterCardKind { None, Lost, Found };
 
 // The big headline for a card. For Lost it depends on `to` (Ch1 gets the
 // inciting 「傘，不見了」; Ch2-4 get 「傘又掉了」). For Found it is always
-// 「找到傘了」. Empty for None. Every glyph is baked into gfx::Font.h
+// 「找到傘了」. Empty for None. Every glyph is baked into nccu::engine::render::Font.h
 // UiLiteralChars() (the glyph-scan test covers ChapterCardStrings()).
 [[nodiscard]] std::string_view ChapterCardHeadline(
     ChapterCardKind kind, SemesterState to) noexcept;
@@ -55,7 +55,7 @@ enum class ChapterCardKind { None, Lost, Found };
 [[nodiscard]] std::string ChapterCardSubtitle(
     ChapterCardKind kind, SemesterState to);
 
-// Every literal string a card can render, for the gfx::Font glyph-scan
+// Every literal string a card can render, for the nccu::engine::render::Font glyph-scan
 // test (so a headline/subtitle glyph missing from the atlas fails the
 // build's coverage check, never silently tofus). Pure data.
 [[nodiscard]] std::vector<std::string> ChapterCardStrings();
@@ -111,7 +111,7 @@ private:
 // Found -> the 真傘 blue canopy, "you got it back"), the whole card fading
 // with Alpha(). Self-contained and spy-testable like DrawEndingCard /
 // DrawHudMessage. reducedMotion forwards to Alpha().
-void DrawChapterCard(nccu::gfx::IRenderer& r, const ChapterCardState& card,
+void DrawChapterCard(nccu::engine::render::IRenderer& r, const ChapterCardState& card,
                      float screenW, float screenH,
                      bool reducedMotion = false);
 

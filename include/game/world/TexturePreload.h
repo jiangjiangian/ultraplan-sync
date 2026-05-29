@@ -1,7 +1,7 @@
 #ifndef GFX_TEXTURE_PRELOAD_H_
 #define GFX_TEXTURE_PRELOAD_H_
 #include "engine/render/Texture.h"
-#include "game/gfx/Decorations.h"          // kDecorations — ambient strips
+#include "game/gfx/Decorations.h"          // nccu::game::gfx::kDecorations — ambient strips
 #include "game/entities/Personas.h"   // kPersonas — player + preview sheets
 #include "game/world/Buildings.h"          // kAll — building art
 #include "game/world/Obstacles.h"          // kBuildingCollisionSkip
@@ -33,7 +33,7 @@
 // while it runs is gated to the human path only by the caller (main.cpp),
 // since the harness skips the title/select screens for a byte-identical
 // state.jsonl.
-namespace nccu::gfx {
+namespace nccu::game::world {
 
 // The single worldmap base texture (largest single upload). Mirrors the
 // path View::View passes to Texture::Load (ui/View.cpp).
@@ -81,39 +81,39 @@ inline std::string BuildingTexturePath(std::string_view name) {
 // this with the live window, exactly like EnsureFont.
 inline void PreloadGameTextures() {
     // 1. The world base map (one big texture).
-    PreloadTexture(std::string(kWorldmapBasePath));
+    nccu::engine::render::PreloadTexture(std::string(kWorldmapBasePath));
 
     // 2. Building art — mirror View::View's skip set + path build.
     const auto& skip = obstacles::kBuildingCollisionSkip;
     for (const auto& b : buildings::kAll) {
         if (std::find(skip.begin(), skip.end(), b.name) != skip.end())
             continue;                       // open-ground baked into the base
-        PreloadTexture(BuildingTexturePath(b.name));
+        nccu::engine::render::PreloadTexture(BuildingTexturePath(b.name));
     }
 
     // 3. Ambient decoration strips (cosmetic) — same defs the View loads.
-    for (const auto& d : kDecorations)
-        PreloadTexture(std::string(d.stripPath));
+    for (const auto& d : nccu::game::gfx::kDecorations)
+        nccu::engine::render::PreloadTexture(std::string(d.stripPath));
 
     // 4. The five persona sheets (player sprite + character-select previews).
     for (const auto& p : kPersonas)
-        PreloadTexture(std::string(p.spritePath));
+        nccu::engine::render::PreloadTexture(std::string(p.spritePath));
 
     // 5. The vendor fallback roster (clean-clone stall sprites).
     for (std::size_t i = 0; i < kVendorFallbackCount; ++i)
-        PreloadTexture(std::string(kVendorFallbackSprites[i]));
+        nccu::engine::render::PreloadTexture(std::string(kVendorFallbackSprites[i]));
 
     // 6. The curated story-NPC / extra uniform sheets.
     for (const auto& s : kCuratedSprites)
-        PreloadTexture(std::string(s));
+        nccu::engine::render::PreloadTexture(std::string(s));
 
     // 7. The varied NPC roster (PIPOYA pack) — directory-enumerated, so it
     // is empty (and this loop a no-op) on a clean clone, and warms the whole
     // crowd when the optional pack is present.
     for (const auto& s : PipoyaRoster())
-        PreloadTexture(s);
+        nccu::engine::render::PreloadTexture(s);
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::world
 
 #endif // GFX_TEXTURE_PRELOAD_H_

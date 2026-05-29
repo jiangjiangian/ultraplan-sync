@@ -4,8 +4,8 @@
 
 // NB: do NOT `using namespace nccu::gfx;` here — raylib.h (pulled in via
 // gfx/Texture.h) declares a global C `Texture` struct, so an unqualified
-// `Texture` would be ambiguous against nccu::gfx::Texture. Fully qualify.
-namespace ng = nccu::gfx;
+// `Texture` would be ambiguous against nccu::engine::render::Texture. Fully qualify.
+namespace ng = nccu::engine::render;
 
 // UI-C-1 regression: the load-once texture cache. These run HEADLESS (no GL
 // context under ctest), so raylib's ::LoadTexture returns Texture2D{0} for

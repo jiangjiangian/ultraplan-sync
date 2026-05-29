@@ -5,7 +5,7 @@
 #include "engine/math/Vec2.h"
 #include <string_view>
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 class Texture; // forward decl — raylib must NOT leak into this header
 
@@ -24,6 +24,6 @@ public:
                           nccu::engine::math::Color c) = 0;
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_I_RENDERER_H_

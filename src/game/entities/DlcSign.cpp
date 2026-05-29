@@ -22,10 +22,10 @@ DlcSign::DlcSign(nccu::engine::math::Vec2 position)
       //   敬請期待
       // (the 【…】 brackets / … ellipsis were dropped per UI-B-3 so the two
       // lines balance cleanly when centred). 敬 is baked into the font atlas
-      // (gfx::Font.h UiLiteralChars), enforced by test_font_ui_literal_scan.
+      // (nccu::engine::render::Font.h UiLiteralChars), enforced by test_font_ui_literal_scan.
       message_("DLC開發中\n敬請期待") {}
 
-void DlcSign::Render(nccu::gfx::IRenderer& renderer) const {
+void DlcSign::Render(nccu::engine::render::IRenderer& renderer) const {
     using nccu::engine::math::Rect;
     namespace C = nccu::engine::math::Colors;
 

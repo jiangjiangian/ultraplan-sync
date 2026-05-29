@@ -40,7 +40,7 @@ public:
                     int completionKarma = 0,
                     std::vector<std::string> countMessages = {});
 
-    void Render(nccu::gfx::IRenderer& renderer) const override;
+    void Render(nccu::engine::render::IRenderer& renderer) const override;
     void Interact(Player* initiator) override { OnPickup(initiator); }
     void OnPickup(Player* player) override;
 

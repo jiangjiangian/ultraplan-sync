@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "engine/render/Camera2D.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::render {
 
 // RAII: BeginMode2D in the ctor, EndMode2D in the dtor. Must be created
 // INSIDE a DrawScope and destroyed BEFORE the DrawScope ends — calling
@@ -30,6 +30,6 @@ public:
     CameraScope& operator=(CameraScope&&)      = delete;
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::render
 
 #endif // GFX_CAMERA_SCOPE_H_

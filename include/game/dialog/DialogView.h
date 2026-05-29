@@ -2,7 +2,7 @@
 #define DIALOG_VIEW_H_
 #include "game/dialog/DialogState.h"
 
-namespace nccu { namespace gfx { class IRenderer; } }
+namespace nccu::engine::render { class IRenderer; }
 
 namespace nccu {
 
@@ -11,7 +11,7 @@ namespace nccu {
 // current line as one text. Choice mode -> one text per option, the
 // selected one prefixed "> ". Placeholder framing; swap to a
 // resources/assets/ui/ sprite when that art lands.
-void DrawDialog(nccu::gfx::IRenderer& r, const DialogState& d);
+void DrawDialog(nccu::engine::render::IRenderer& r, const DialogState& d);
 
 } // namespace nccu
 #endif // DIALOG_VIEW_H_

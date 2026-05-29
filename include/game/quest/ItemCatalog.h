@@ -72,7 +72,7 @@ inline constexpr const char* kItemLoudspeaker   = "__quest_loudspeaker__";
 
 // 5c/T5 — every catalog displayName + description string, for the
 // glyph-coverage scan (these names/descriptions render in the bag rows and
-// the vendor purchase toast, so every glyph must be baked into gfx::Font.h).
+// the vendor purchase toast, so every glyph must be baked into nccu::engine::render::Font.h).
 // Pure data; flattens the internal catalog table. Order is unspecified.
 [[nodiscard]] std::vector<std::string> CatalogStrings();
 

@@ -13,7 +13,7 @@
 // no raylib, no GL, no sim state — so the cell selection is unit-testable
 // headlessly even though NPC::Render's textured blit is not (a headless
 // test has no GL context, so Texture::IsValid() is false there).
-namespace nccu::gfx {
+namespace nccu::game::gfx {
 
 // One Pipoya cell is 32x32; a sheet is 3 columns (walk frames) x 4 rows
 // (facing). The walk strip cycles idle(1) -> left-foot(0) -> idle(1) ->
@@ -42,6 +42,6 @@ inline constexpr std::array<int, 4> kWalkColumns = {1, 0, 1, 2};
     return facing.y < 0.0f ? 3 : 0;
 }
 
-} // namespace nccu::gfx
+} // namespace nccu::game::gfx
 
 #endif // GFX_WALK_CYCLE_H_
