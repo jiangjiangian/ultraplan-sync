@@ -13,13 +13,24 @@
 namespace {
 
 // Helper: subscribe a capture for ShowMessage and return the latest text.
+//
+// Phase 5 ASan finding: the pre-existing pattern captured `this` into a
+// Subscribe lambda and relied on Attach() Clear()-ing the bus on the
+// NEXT case to drop the stale handler. Between the destructor and the
+// next Attach(), the lambda's `this` is dangling — any cross-case
+// Publish (e.g. global EventBus::Instance() reuse from a sibling test)
+// dereferences it (stack-use-after-scope). Switch to ScopedSubscribe
+// so the handler lifetime is tied to the capture's own scope (the
+// existing H1/B2 discipline used everywhere else in tests).
 struct MessageCapture {
     int hits = 0;
     std::string lastText;
+    EventBus::Subscription sub;
 
     void Attach() {
         EventBus::Instance().Clear();
-        EventBus::Instance().Subscribe(EventType::ShowMessage,
+        sub = EventBus::Instance().ScopedSubscribe(
+            EventType::ShowMessage,
             [this](const Event& e) { hits++; lastText = e.text; });
     }
 };
