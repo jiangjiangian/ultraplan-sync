@@ -125,6 +125,26 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/resources")
     copy_resources_to_target(${PROJECT_NAME})
 endif()
 
+# Copy docs/content (the runtime-loaded dialog Markdown) next to the
+# executable too, so the game finds it regardless of launch directory
+# (Finder / IDE / run-from-build). The Font + DialogLoader probes are
+# CWD-relative, and EnsureAssetWorkingDir() chdirs the process here when
+# launched from elsewhere — both then resolve docs/content/*.md, so the
+# safe content-present font-atlas path is taken instead of the oversized
+# fallback. Mirrors copy_resources_to_target.
+function(copy_content_to_target TARGET_NAME)
+    if(EXISTS "${CMAKE_SOURCE_DIR}/docs/content")
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_SOURCE_DIR}/docs/content"
+                    "$<TARGET_FILE_DIR:${TARGET_NAME}>/docs/content"
+            COMMENT "Copying dialog content to output directory")
+    endif()
+endfunction()
+if(EXISTS "${CMAKE_SOURCE_DIR}/docs/content")
+    copy_content_to_target(${PROJECT_NAME})
+endif()
+
 # Blueprint Phase 4 §A — Doxygen architecture-audit target. Generates
 # the class hierarchy + per-directory dependency graphs into
 # build/doxygen/html/ (gitignored). Optional build-dep (graphviz +

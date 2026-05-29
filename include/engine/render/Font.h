@@ -264,18 +264,32 @@ inline std::vector<int> CollectCodepoints() {
     add_utf8(UiLiteralChars());
 
     if (!any_content) {
-        // Content unreadable: bake a broad common-CJK block so the bulk
-        // of Traditional Chinese still renders. CJK Unified Ideographs
-        // (U+4E00..U+9FFF) + common punctuation already covered by the
-        // literal/ASCII sets above.
-        for (int c = 0x4E00; c <= 0x9FFF; ++c) cps.insert(c);
+        // Content unreadable (a CWD with no docs/content — Finder / IDE /
+        // double-click, or run-from-build before EnsureAssetWorkingDir
+        // fixes it). Do NOT bake the whole U+4E00..U+9FFF block here: that
+        // is ~20k glyphs, and LoadFontEx at 32 px packs them into an
+        // ~8192-wide atlas that exceeds GL_MAX_TEXTURE_SIZE on Intel / older
+        // Macs, yielding a broken texture and a crash in the first
+        // DrawTextEx (the title/select screen — the reported "進去選角 crash").
+        // Crucially, when content is unreadable the dialog loader (same
+        // files) loads nothing either, so no runtime text needs those
+        // ideographs; the curated UiLiteralChars() set already covers every
+        // code-built UI string. So the fallback bakes only the small
+        // punctuation ranges, keeping the atlas at the same safe ~2048²
+        // size as the normal (content-present) path.
         for (int c = 0x3000; c <= 0x303F; ++c) cps.insert(c);  // CJK punct
         for (int c = 0xFF00; c <= 0xFFEF; ++c) cps.insert(c);  // fullwidth
     }
 
     std::vector<int> out(cps.begin(), cps.end());
-    // Defensive cap: a runaway set would blow up the glyph atlas.
-    constexpr std::size_t kMaxCodepoints = 16384;
+    // Hard safety cap on the atlas size. At 32 px a glyph cell is ~36 px, so
+    // N glyphs pack into roughly a sqrt(N)*36 square: 4096 codepoints → a
+    // ~2304² atlas, comfortably inside the 4096 GL_MAX_TEXTURE_SIZE floor
+    // every GPU since ~2008 guarantees. The normal content-present set is
+    // ~1500–2100 codepoints, so this never trims real use — it only bounds a
+    // pathological/runaway set so the atlas can never reach a size a driver
+    // refuses to allocate (the historical startup-crash vector).
+    constexpr std::size_t kMaxCodepoints = 4096;
     if (out.size() > kMaxCodepoints) out.resize(kMaxCodepoints);
     return out;
 }

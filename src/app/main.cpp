@@ -12,6 +12,7 @@
 #include "app/scenes/LoadingScene.h"
 #include "ui/CharacterSelect.h"
 #include "engine/platform/Harness.h"
+#include "engine/platform/WorkingDir.h"
 #include "engine/render/Window.h"
 #include "engine/render/Font.h"
 #include "engine/render/RaylibRenderer.h"
@@ -48,6 +49,14 @@ int main() {
                    .Size(kWinW, kWinH)
                    .Fps(60)
                    .Open();
+
+    // Normalise the working directory FIRST (before any asset load) so the
+    // game's relative resources/ + docs/content/ paths resolve no matter how
+    // it was launched (Finder / IDE / run-from-build). This is what keeps
+    // EnsureFont on its safe content-present atlas path instead of the
+    // oversized fallback that crashed on some GPUs. No-op when already run
+    // from a directory that has the assets (project root / ctest / harness).
+    nccu::engine::platform::EnsureAssetWorkingDir();
 
     // raylib's default font is ASCII-only; load the CJK font now that the
     // GL context exists, before any text (title / select / HUD) draws.
