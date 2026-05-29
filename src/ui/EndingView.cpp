@@ -14,6 +14,7 @@
 namespace nccu {
 
 using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 bool IsEndingState(SemesterState s) noexcept {
     return s == SemesterState::Ending_A ||

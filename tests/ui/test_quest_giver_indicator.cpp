@@ -12,22 +12,22 @@ namespace {
 // primitive so the polymorphic Render() path is testable headless (no GL
 // context, no raylib draw call escapes into the world).
 struct Spy final : nccu::gfx::IRenderer {
-    struct RectCall { nccu::gfx::Rect r; nccu::gfx::Color c; };
-    struct TextCall { std::string s; nccu::gfx::Vec2 pos; int size;
-                      nccu::gfx::Color c; };
+    struct RectCall { nccu::engine::math::Rect r; nccu::engine::math::Color c; };
+    struct TextCall { std::string s; nccu::engine::math::Vec2 pos; int size;
+                      nccu::engine::math::Color c; };
     std::vector<RectCall> rects;
     std::vector<TextCall> texts;
     int sprites = 0;
 
-    void DrawRect(nccu::gfx::Rect r, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         rects.push_back({r, c});
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {
         ++sprites;
     }
-    void DrawText(std::string_view text, nccu::gfx::Vec2 pos, int size,
-                  nccu::gfx::Color c) override {
+    void DrawText(std::string_view text, nccu::engine::math::Vec2 pos, int size,
+                  nccu::engine::math::Color c) override {
         texts.push_back({std::string{text}, pos, size, c});
     }
 };
@@ -43,7 +43,7 @@ struct Spy final : nccu::gfx::IRenderer {
 TEST_CASE("QuestGiverIndicator: draws a panel + glyph for a quest-giver") {
     Spy spy;
     // 24x24 hitbox at world (400, 1860) — mirrors the 苦主 spawn coord.
-    const nccu::gfx::Rect hb{400.0f, 1860.0f, 24.0f, 24.0f};
+    const nccu::engine::math::Rect hb{400.0f, 1860.0f, 24.0f, 24.0f};
     nccu::DrawQuestGiverIndicator(spy, hb);
 
     // The helper paints exactly two rects (drop shadow + gold panel) and
@@ -71,7 +71,7 @@ TEST_CASE("QuestGiverIndicator: layout floats above the NPC sprite top") {
     // NPC::Render bottom-anchors a 32-tall sprite on the 24-tall hitbox:
     // spriteTopY = hitBox.y + hitBox.height - 32. The indicator must sit
     // strictly ABOVE that y, with a clear gap (no overlap with the head).
-    const nccu::gfx::Rect hb{100.0f, 200.0f, 24.0f, 24.0f};
+    const nccu::engine::math::Rect hb{100.0f, 200.0f, 24.0f, 24.0f};
     const auto L = nccu::LayoutQuestGiverIndicator(hb);
 
     const float spriteTopY = hb.y + hb.height - 32.0f;  // = 192
@@ -94,9 +94,9 @@ TEST_CASE("QuestGiverIndicator: layout tracks the hitbox in world space") {
     // must produce world coordinates — moving the NPC must move the icon
     // by the same delta on both axes.
     const auto A = nccu::LayoutQuestGiverIndicator(
-        nccu::gfx::Rect{100.0f, 200.0f, 24.0f, 24.0f});
+        nccu::engine::math::Rect{100.0f, 200.0f, 24.0f, 24.0f});
     const auto B = nccu::LayoutQuestGiverIndicator(
-        nccu::gfx::Rect{160.0f, 260.0f, 24.0f, 24.0f});
+        nccu::engine::math::Rect{160.0f, 260.0f, 24.0f, 24.0f});
 
     CHECK(B.panel.x - A.panel.x == doctest::Approx(60.0f));
     CHECK(B.panel.y - A.panel.y == doctest::Approx(60.0f));
@@ -110,11 +110,11 @@ TEST_CASE("NPC::IsQuestGiver routes through GameObject virtual dispatch") {
     // IsQuestGiver() through the virtual base. A NPC flagged true at
     // spawn must answer true through that base reference — otherwise the
     // "!" overlay would silently never fire for any NPC (H4 root cause).
-    NPC giver(nccu::gfx::Vec2{400, 1860},
+    NPC giver(nccu::engine::math::Vec2{400, 1860},
               std::vector<std::string>{"hi"},
               /*isQuestGiver=*/true,
               "victim");
-    NPC bystander(nccu::gfx::Vec2{500, 1860},
+    NPC bystander(nccu::engine::math::Vec2{500, 1860},
                   std::vector<std::string>{"hi"},
                   /*isQuestGiver=*/false,
                   "bookworm");
@@ -132,8 +132,8 @@ TEST_CASE("Plain GameObject defaults IsQuestGiver to false") {
     // its Update/Render/Interact pure-virtuals — those are now opt-in role
     // interfaces), so a bare subclass plays no roles and needs no overrides.
     struct StubObj final : GameObject {
-        StubObj() : GameObject(nccu::gfx::Vec2{0, 0},
-                               nccu::gfx::Rect{0, 0, 1, 1}) {}
+        StubObj() : GameObject(nccu::engine::math::Vec2{0, 0},
+                               nccu::engine::math::Rect{0, 0, 1, 1}) {}
     };
     StubObj o;
     const GameObject& base = o;

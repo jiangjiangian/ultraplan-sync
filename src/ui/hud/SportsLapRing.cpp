@@ -14,6 +14,7 @@ void DrawSportsLapRing(nccu::gfx::IRenderer& r,
                        float screenW,
                        float /*screenH*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // 操場 校慶 lap progress ring (HUD, screen space) — fills clockwise as
     // the lap completes; the screen companion to the ground track.

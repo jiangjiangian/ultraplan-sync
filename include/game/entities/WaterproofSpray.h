@@ -13,7 +13,7 @@ public:
     // (it IS the waterproofing item), but still below a full 100 reset.
     static constexpr float kRainRelief = 35.0f;
 
-    explicit WaterproofSpray(nccu::gfx::Vec2 position)
+    explicit WaterproofSpray(nccu::engine::math::Vec2 position)
         : ConsumableItem(position, "WaterproofSpray", kPrice) {}
 
     void Consume(Player* player) override;

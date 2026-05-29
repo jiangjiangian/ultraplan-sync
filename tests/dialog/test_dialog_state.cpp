@@ -106,7 +106,7 @@ TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)
 }
 
 TEST_CASE("ApplyDialogChoice mutates player karma and flag") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     const int before = p.GetKarma();
     nccu::DialogChoice c{"accept", -5, nccu::kFlagScoldedSenior, false};
     nccu::ApplyDialogChoice(p, c);

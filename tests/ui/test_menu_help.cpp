@@ -77,7 +77,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
     Frame(controller, in);                       // settle (roster, etc.)
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
-    const nccu::gfx::Vec2 pos0 = p->GetPosition();
+    const nccu::engine::math::Vec2 pos0 = p->GetPosition();
     const float rain0 = p->GetRainMeter();
 
     // The menu is a 6-item menu now (REQUIREMENT #9 + Cycle 9.E.3 added
@@ -227,7 +227,7 @@ TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim froz
     Frame(controller, in);                       // settle
     Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);
-    const nccu::gfx::Vec2 pos0 = p->GetPosition();
+    const nccu::engine::math::Vec2 pos0 = p->GetPosition();
     const float rain0 = p->GetRainMeter();
 
     // Open menu → 說明 (index 1) → Enter opens help on page 0.

@@ -17,8 +17,8 @@
 // is valid for each leaf since they all IS-A ConsumableItem.
 class ConsumableItem : public WithRoles<ConsumableItem, Item>, public IInteractable {
 public:
-    ConsumableItem(nccu::gfx::Vec2 position, std::string name, int price)
-        : WithRoles(position, nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f}, std::move(name)),
+    ConsumableItem(nccu::engine::math::Vec2 position, std::string name, int price)
+        : WithRoles(position, nccu::engine::math::Rect{position.x, position.y, 16.0f, 16.0f}, std::move(name)),
           price_(price) {}
 
     // Item 2(a) — hold-and-use bag: picking a consumable up off the world

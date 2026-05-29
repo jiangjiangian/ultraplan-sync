@@ -28,7 +28,7 @@ using nccu::SemesterState;
 
 namespace {
 
-Player MakePlayer() { return Player{nccu::gfx::Vec2{0.0f, 0.0f}}; }
+Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 
 // Captures every UmbrellaClaimed payload + the LAST ShowMessage. A scoped
 // subscription keyed on free locals (the test_chapter_transitions idiom).
@@ -170,7 +170,7 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
     // Cursed claim is QuestGate-d on the promise (TransparentUmbrella), so
     // promise first, then claim (this mirrors the in-game gate).
     p.SetFlag(nccu::kFlagPromisedVictim);
-    CursedUmbrella cursed{nccu::gfx::Vec2{0.0f, 0.0f}};
+    CursedUmbrella cursed{nccu::engine::math::Vec2{0.0f, 0.0f}};
     cursed.beClaimed(&p);
 
     CHECK(p.HasUmbrella());

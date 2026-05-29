@@ -21,15 +21,15 @@ namespace {
 
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
-    std::vector<nccu::gfx::Color> rectColors;
+    std::vector<nccu::engine::math::Color> rectColors;
     std::vector<std::string> texts;
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color c) override {
+    void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color c) override {
         ++rects; rectColors.push_back(c);
     }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {}
-    void DrawText(std::string_view t, nccu::gfx::Vec2, int,
-                  nccu::gfx::Color) override { texts.emplace_back(t); }
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {}
+    void DrawText(std::string_view t, nccu::engine::math::Vec2, int,
+                  nccu::engine::math::Color) override { texts.emplace_back(t); }
 };
 
 bool Has(const std::vector<std::string>& v, const std::string& s) {
@@ -37,8 +37,8 @@ bool Has(const std::vector<std::string>& v, const std::string& s) {
     return false;
 }
 
-bool HasRectRGB(const Spy& s, nccu::gfx::Color want) {
-    for (const nccu::gfx::Color& c : s.rectColors)
+bool HasRectRGB(const Spy& s, nccu::engine::math::Color want) {
+    for (const nccu::engine::math::Color& c : s.rectColors)
         if (c.r == want.r && c.g == want.g && c.b == want.b) return true;
     return false;
 }
@@ -132,7 +132,7 @@ const nccu::InventoryRow* Find(const std::vector<nccu::InventoryRow>& rows,
 }  // namespace
 
 TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella + quest") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     // Default Player: only 金幣 (100), empty bag, no flags.
     {
         const auto rows = nccu::BuildInventoryRows(p);
@@ -200,7 +200,7 @@ TEST_CASE("Item 2c: BuildInventoryRows aggregates money + consumable + umbrella 
 TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags") {
     // Ugly held → ugly row (even though Flag_BoughtUglyUmbrella is the
     // Ending C marker; here it is the held kind that drives the row).
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetHeldUmbrella(HeldUmbrella::Ugly);
     {
         const auto rows = nccu::BuildInventoryRows(p);
@@ -208,7 +208,7 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
         CHECK(Find(rows, nccu::kItemTrueUmbrella) == nullptr);
     }
     // The cursed held umbrella → 詛咒傘 row.
-    Player q{nccu::gfx::Vec2{0, 0}};
+    Player q{nccu::engine::math::Vec2{0, 0}};
     q.SetHeldUmbrella(HeldUmbrella::Cursed);
     {
         const auto rows = nccu::BuildInventoryRows(q);
@@ -219,7 +219,7 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
     // The carried 苦主's umbrella (mid-quest, before the return grant) is a
     // CARRIED quest item (flag-driven, NO shelter) — still shown, but it is
     // not a held-over-head umbrella, so HasUmbrella stays false.
-    Player v{nccu::gfx::Vec2{0, 0}};
+    Player v{nccu::engine::math::Vec2{0, 0}};
     v.SetFlag(nccu::kFlagHasVictimUmbrella);
     {
         const auto rows = nccu::BuildInventoryRows(v);
@@ -233,7 +233,7 @@ TEST_CASE("B2.1: bag umbrella row reflects the HELD umbrella, not ending flags")
 // 傘再度失蹤 / a per-chapter「傘又掉了」reset — clears the held kind, so the
 // umbrella row disappears and no stale row lingers.
 TEST_CASE("B2.1: SetHasUmbrella(false) removes the umbrella row though the ending flag persists") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     // Hold the cursed umbrella + the persistent Ending B marker (as
     // CursedUmbrella::beClaimed sets them together).
     p.SetHeldUmbrella(HeldUmbrella::Cursed).SetFlag(nccu::kFlagTookCursedUmbrella);
@@ -264,7 +264,7 @@ TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
         {HeldUmbrella::Loaner,        nccu::kItemLoanerUmbrella},
     };
     for (const auto& c : cases) {
-        Player p{nccu::gfx::Vec2{0, 0}};
+        Player p{nccu::engine::math::Vec2{0, 0}};
         p.SetHeldUmbrella(c.kind);
         const auto rows = nccu::BuildInventoryRows(p);
         const nccu::InventoryRow* r = Find(rows, c.item);
@@ -274,7 +274,7 @@ TEST_CASE("B2.1: each HeldUmbrella kind maps to its catalog row") {
         CHECK_FALSE(r->usable);            // umbrellas are view-only
     }
     // None / Victim → no held-kind umbrella row.
-    Player none{nccu::gfx::Vec2{0, 0}};
+    Player none{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::HeldUmbrellaCatalogId(none.HeldUmbrellaKind()) == nullptr);
     CHECK(nccu::HeldUmbrellaCatalogId(HeldUmbrella::Victim) == nullptr);
 }
@@ -488,9 +488,9 @@ TEST_CASE("U2-T3: fragile→破傘 and proftrap→陷阱傘 swatches are correct
 // consumable.
 TEST_CASE("U2-T3: Ch3 trade items are non-usable food-swatch rows") {
     // The distinct food swatch colour DrawSwatch uses for RowKind::Food.
-    const nccu::gfx::Color kFoodParcel{225, 140, 55, 255};
+    const nccu::engine::math::Color kFoodParcel{225, 140, 55, 255};
     // The teal consumable-flask body — the Ch3 items must NOT draw this.
-    const nccu::gfx::Color kConsumableFlask{60, 200, 180, 255};
+    const nccu::engine::math::Color kConsumableFlask{60, 200, 180, 255};
 
     for (const char* id : {nccu::kItemSausage, nccu::kItemLoudspeaker}) {
         Spy r;

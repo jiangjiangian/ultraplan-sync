@@ -13,7 +13,7 @@ using nccu::World;
 // the per-chapter CashPickup table, and proof the coins actually spawn.
 
 TEST_CASE("Player::AddMoney clamps at the 300 soft cap, never the floor") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     REQUIRE(p.GetMoney() == 100);
 
     p.AddMoney(150);
@@ -33,7 +33,7 @@ TEST_CASE("Player::AddMoney clamps at the 300 soft cap, never the floor") {
 }
 
 TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.AddConsumable("EnergyDrink");
     REQUIRE(p.ConsumableCount("HotPack") == 2);

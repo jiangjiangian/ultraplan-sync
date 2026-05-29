@@ -20,7 +20,7 @@ using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of n
 void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
     using nccu::engine::input::Input;
     using nccu::engine::input::Key;
-    using nccu::gfx::Rect;
+    using nccu::engine::math::Rect;
     using nccu::queries::ForEachActiveExcept;
     Player* player = world.GetPlayer();
     if (Input::IsPressed(Key::E) && player) {

@@ -14,9 +14,9 @@ namespace {
 constexpr int kWinW = 800;
 constexpr int kWinH = 450;
 
-constexpr nccu::gfx::Color kBackdrop{ 14,  16,  22, 255};
-constexpr nccu::gfx::Color kLabel   {235, 235, 240, 255};
-constexpr nccu::gfx::Color kHint    {150, 150, 160, 255};
+constexpr nccu::engine::math::Color kBackdrop{ 14,  16,  22, 255};
+constexpr nccu::engine::math::Color kLabel   {235, 235, 240, 255};
+constexpr nccu::engine::math::Color kHint    {150, 150, 160, 255};
 
 constexpr int kLabelSize = 34;
 constexpr int kHintSize  = 16;
@@ -59,6 +59,7 @@ SceneCommand LoadingScene::Update(float /*dt*/) {
 
 void LoadingScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
     Renderer r;
     r.Clear(kBackdrop);
 

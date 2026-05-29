@@ -13,17 +13,17 @@ namespace nccu::gfx {
 // own every ::Draw* call. Stateless and cheap to construct per draw.
 class RaylibRenderer final : public IRenderer {
 public:
-    void DrawRect(Rect r, Color c) override {
+    void DrawRect(nccu::engine::math::Rect r, nccu::engine::math::Color c) override {
         Renderer{}.Rect(r, c);
     }
 
-    void DrawSprite(const Texture& tex, Rect src, Rect dest,
-                    Color tint = Colors::White) override {
+    void DrawSprite(const Texture& tex, nccu::engine::math::Rect src, nccu::engine::math::Rect dest,
+                    nccu::engine::math::Color tint = nccu::engine::math::Colors::White) override {
         Renderer{}.TextureRect(tex, src, dest, tint);
     }
 
-    void DrawText(std::string_view text, Vec2 pos, int size,
-                  Color c) override {
+    void DrawText(std::string_view text, nccu::engine::math::Vec2 pos, int size,
+                  nccu::engine::math::Color c) override {
         TextBuilder{std::string{text}}.At(pos).Size(size).Color(c).Draw();
     }
 };

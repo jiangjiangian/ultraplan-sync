@@ -31,7 +31,7 @@ namespace nccu {
 
 // One dash rectangle in world coordinates. Pure geometry; no draw call.
 struct InterludeExitMarkerDash {
-    gfx::Rect rect;
+    nccu::engine::math::Rect rect;
 };
 
 // Layout output for the whole marker: every dash that lies inside the
@@ -48,10 +48,10 @@ inline constexpr float kInterludeMarkerThickness = 4.0f;
 inline constexpr float kInterludeMarkerDashLen   = 40.0f;
 inline constexpr float kInterludeMarkerGapLen    = 20.0f;
 // Gold #FFC83D, matches the H4 quest-giver indicator panel.
-inline constexpr gfx::Color kInterludeMarkerGold{255, 200, 61, 255};
+inline constexpr nccu::engine::math::Color kInterludeMarkerGold{255, 200, 61, 255};
 // Drop-shadow tint, translucent so it never punches a solid hole on the
 // underlying tiles.
-inline constexpr gfx::Color kInterludeMarkerShadow{0, 0, 0, 140};
+inline constexpr nccu::engine::math::Color kInterludeMarkerShadow{0, 0, 0, 140};
 
 // Build the dash list. `phase` is in pixels; passing 0 yields the
 // deterministic, frame-independent layout used by the unit test. The
@@ -80,7 +80,7 @@ LayoutInterludeExitMarker(float phase = 0.0f) {
         if (dashL < kInterludeExitMinX) dashL = kInterludeExitMinX;
         if (dashR > kInterludeExitMaxX) dashR = kInterludeExitMaxX;
         out.dashes.push_back(InterludeExitMarkerDash{
-            gfx::Rect{dashL, y, dashR - dashL, kInterludeMarkerThickness}});
+            nccu::engine::math::Rect{dashL, y, dashR - dashL, kInterludeMarkerThickness}});
     }
     return out;
 }
@@ -92,7 +92,7 @@ LayoutInterludeExitMarker(float phase = 0.0f) {
 inline void DrawInterludeExitMarker(gfx::IRenderer& r, float phase = 0.0f) {
     const InterludeExitMarkerLayout L = LayoutInterludeExitMarker(phase);
     for (const InterludeExitMarkerDash& d : L.dashes) {
-        r.DrawRect(gfx::Rect{d.rect.x + 2.0f, d.rect.y + 2.0f,
+        r.DrawRect(nccu::engine::math::Rect{d.rect.x + 2.0f, d.rect.y + 2.0f,
                              d.rect.width, d.rect.height},
                    kInterludeMarkerShadow);
         r.DrawRect(d.rect, kInterludeMarkerGold);

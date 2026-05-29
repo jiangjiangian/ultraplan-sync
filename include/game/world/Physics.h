@@ -26,13 +26,13 @@ namespace nccu::physics {
 // pixel-accurate walkability grid; pass nullptr to skip terrain (NPC
 // paths with no mask, unit tests). It is passed by const reference so
 // the caller can rebuild the dynamic list each frame.
-inline gfx::Vec2 ResolveMove(gfx::Vec2 prev,
-                             gfx::Vec2 desired,
-                             gfx::Vec2 playerSize,
-                             const std::vector<gfx::Rect>& colliders,
+inline nccu::engine::math::Vec2 ResolveMove(nccu::engine::math::Vec2 prev,
+                             nccu::engine::math::Vec2 desired,
+                             nccu::engine::math::Vec2 playerSize,
+                             const std::vector<nccu::engine::math::Rect>& colliders,
                              const CollisionMask* mask = nullptr) {
     auto overlapsAny = [&](float x, float y) -> bool {
-        const gfx::Rect aabb{x, y, playerSize.x, playerSize.y};
+        const nccu::engine::math::Rect aabb{x, y, playerSize.x, playerSize.y};
         for (const auto& c : colliders) {
             if (aabb.Intersects(c)) return true;
         }
@@ -46,7 +46,7 @@ inline gfx::Vec2 ResolveMove(gfx::Vec2 prev,
     // and normal blocking resumes.
     if (overlapsAny(prev.x, prev.y)) return desired;
 
-    gfx::Vec2 out = prev;
+    nccu::engine::math::Vec2 out = prev;
     if (!overlapsAny(desired.x, prev.y)) out.x = desired.x;
     if (!overlapsAny(out.x, desired.y))  out.y = desired.y;
     return out;

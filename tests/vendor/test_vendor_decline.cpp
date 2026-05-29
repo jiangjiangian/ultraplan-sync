@@ -110,7 +110,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     REQUIRE_FALSE(p->HasFlag(nccu::kFlagBoughtUglyUmbrella));
     REQUIRE(p->ConsumableCount("UglyUmbrella") == 0);
 
-    p->SetPosition(nccu::gfx::Vec2{vend->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{vend->GetPosition().x - 8.0f,
                                    vend->GetPosition().y});
 
     in.Tap(Key::E);                                     // open the buy menu
@@ -152,7 +152,7 @@ TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
     // And the vendor is still usable afterwards: re-open + actually buy
     // this time (cursor defaults back to the stock line) — declining did
     // not break the stall.
-    p->SetPosition(nccu::gfx::Vec2{vend->GetPosition().x - 8.0f,
+    p->SetPosition(nccu::engine::math::Vec2{vend->GetPosition().x - 8.0f,
                                    vend->GetPosition().y});
     in.Tap(Key::E);
     Frame(controller, in);

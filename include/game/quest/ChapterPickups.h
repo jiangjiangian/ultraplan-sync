@@ -18,7 +18,7 @@ namespace nccu {
 // Ch1 carries a concrete ~50-money spread now; Ch2-4 are filled by
 // S5c/d/e; the Interlude has none (its earners are stalls, not coins).
 struct PickupPlacement {
-    nccu::gfx::Vec2 pos;
+    nccu::engine::math::Vec2 pos;
     int             value;
 };
 

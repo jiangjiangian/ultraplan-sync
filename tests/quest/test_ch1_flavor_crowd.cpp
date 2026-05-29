@@ -115,12 +115,12 @@ TEST_CASE("G-2: a flavor NPC cycles its pool DETERMINISTICALLY, sets no flag") {
     // An NPC loaded with that pool cycles ONE line per Interact(), wrapping
     // modulo the pool size — a deterministic, reproducible "random" pick
     // (the harness needs byte-identical state.jsonl, so no RNG here).
-    NPC a(nccu::gfx::Vec2{0, 0}, {}, /*isQuestGiver=*/false,
+    NPC a(nccu::engine::math::Vec2{0, 0}, {}, /*isQuestGiver=*/false,
           std::string_view{"ch1_flavor_grab"});
     a.LoadDialog("ch1_flavor_grab", SemesterState::Chapter1_AddDrop, 0);
     REQUIRE(a.DialogLineCount() == lines.size());
 
-    Player p = Player{nccu::gfx::Vec2{0, 0}};
+    Player p = Player{nccu::engine::math::Vec2{0, 0}};
     const std::size_t flagsBefore = 0;             // a fresh player has none
 
     // Walk the pool twice; the sequence is identical on the second lap.
@@ -138,7 +138,7 @@ TEST_CASE("G-2: a flavor NPC cycles its pool DETERMINISTICALLY, sets no flag") {
 
     // A SECOND NPC seeded identically yields the SAME sequence (no per-run
     // entropy) — the reproducibility the byte-identical harness depends on.
-    NPC b(nccu::gfx::Vec2{0, 0}, {}, /*isQuestGiver=*/false,
+    NPC b(nccu::engine::math::Vec2{0, 0}, {}, /*isQuestGiver=*/false,
           std::string_view{"ch1_flavor_grab"});
     b.LoadDialog("ch1_flavor_grab", SemesterState::Chapter1_AddDrop, 0);
     for (std::size_t i = 0; i < lines.size(); ++i) {

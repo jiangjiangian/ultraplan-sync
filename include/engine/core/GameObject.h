@@ -12,7 +12,7 @@ class Player; // forward decl — avoids circular include from the role hooks
 
 class GameObject {
 public:
-    GameObject(nccu::gfx::Vec2 position, nccu::gfx::Rect hitBox)
+    GameObject(nccu::engine::math::Vec2 position, nccu::engine::math::Rect hitBox)
         : position_(position), hitBox_(hitBox), isActive_(true), collisionLayer_(0) {}
 
     virtual ~GameObject() = default;
@@ -35,13 +35,13 @@ public:
     // run a damage / death pass over exactly the mortal entities.
     virtual IMortal*         AsMortal()          noexcept { return nullptr; }
 
-    [[nodiscard]] bool CheckCollision(nccu::gfx::Rect other) const noexcept {
+    [[nodiscard]] bool CheckCollision(nccu::engine::math::Rect other) const noexcept {
         return hitBox_.Intersects(other);
     }
 
     [[nodiscard]] bool IsActive() const noexcept { return isActive_; }
     void Deactivate() noexcept { isActive_ = false; }
-    [[nodiscard]] nccu::gfx::Vec2 GetPosition() const noexcept { return position_; }
+    [[nodiscard]] nccu::engine::math::Vec2 GetPosition() const noexcept { return position_; }
 
     // Collision-layer tag (review MINOR: collisionLayer_ was set in the
     // ctor but had no reader — dead state). 0 = the default layer (player,
@@ -91,8 +91,8 @@ public:
     [[nodiscard]] virtual bool IsQuestGiver() const noexcept { return false; }
 
 protected:
-    nccu::gfx::Vec2 position_;
-    nccu::gfx::Rect hitBox_;
+    nccu::engine::math::Vec2 position_;
+    nccu::engine::math::Rect hitBox_;
     bool isActive_;
     int collisionLayer_;
 };

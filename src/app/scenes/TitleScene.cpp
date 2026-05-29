@@ -22,9 +22,9 @@ namespace {
 constexpr int kWinW = 800;
 constexpr int kWinH = 450;
 
-constexpr nccu::gfx::Color kHighlight{255, 153,   0, 255};
-constexpr nccu::gfx::Color kPanel    { 18,  20,  28, 200};
-constexpr nccu::gfx::Color kDim      {170, 170, 170, 255};
+constexpr nccu::engine::math::Color kHighlight{255, 153,   0, 255};
+constexpr nccu::engine::math::Color kPanel    { 18,  20,  28, 200};
+constexpr nccu::engine::math::Color kDim      {170, 170, 170, 255};
 
 // REQUIREMENT #9: 「遊戲說明」 is a title-internal page (mirrors the
 // pre-Phase-3 free-function MenuAction): Help loops back to the menu;
@@ -103,6 +103,7 @@ SceneCommand TitleScene::Update(float /*dt*/) {
 
 void TitleScene::Draw(nccu::gfx::IRenderer& /*renderer*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     if (showingHelp_) {
         Renderer r;

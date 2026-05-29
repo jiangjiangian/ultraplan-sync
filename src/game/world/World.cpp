@@ -28,7 +28,7 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
     : loadSprites_(loadSprites),
       reducedMotion_(opts.reducedMotion),
       largeTargets_(opts.largeTargets) {
-    using nccu::gfx::Vec2;
+    using nccu::engine::math::Vec2;
 
     // Plan P2 step 4: the two getenv reads that used to live here
     // (UMBRELLA_REDUCED_MOTION / UMBRELLA_LARGE_TARGETS) moved into
@@ -56,7 +56,7 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
     // Ch1 跑腿道具：被風吹走的加退選申請書，落在四維堂南側空地。撿起 ->
     // Flag_FoundForm -> 助教給獎勵對白（集英樓 2 樓線索）。
     objects_.push_back(std::make_unique<QuestFlagPickup>(
-        nccu::gfx::Vec2{560.0f, 1725.0f}, kFlagFoundForm));
+        nccu::engine::math::Vec2{560.0f, 1725.0f}, kFlagFoundForm));
 
     // Cache the Player BEFORE spawning chapter NPCs so the front-is-
     // Player invariant is established up front and never disturbed:

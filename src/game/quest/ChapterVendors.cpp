@@ -24,7 +24,7 @@ std::string& VendorContentDir() {
 // 廣場正中間". If the parser yields fewer stalls than positions the
 // extra spots are simply unused; if more, the surplus stalls fall back
 // to the last position.
-const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
+const std::vector<nccu::engine::math::Vec2>& InterludeStallPositions() {
     // Two tidy rows of five across the 羅馬廣場 disc (player request,
     // superseding the old "正中間 tight cluster" REQUIREMENT #7): a north
     // row at y=900 and a south row at y=1020, leaving a ~120-px middle
@@ -38,7 +38,7 @@ const std::vector<nccu::gfx::Vec2>& InterludeStallPositions() {
     // verified STRICTLY walkable (no solid pixel under its 24×24 box) and
     // reachable (test_spawn_reachability re-checks ChapterVendors().pos
     // every build; test_vendor_centred_cluster pins the two-row geometry).
-    static const std::vector<nccu::gfx::Vec2> kPos = {
+    static const std::vector<nccu::engine::math::Vec2> kPos = {
         { 944.0f,  900.0f}, { 998.0f,  900.0f}, {1052.0f,  900.0f},
         {1106.0f,  900.0f}, {1160.0f,  900.0f},                       // north row
         { 944.0f, 1020.0f}, { 998.0f, 1020.0f}, {1052.0f, 1020.0f},
@@ -71,7 +71,7 @@ const std::vector<VendorPlacement>& BuildInterlude() {
                         : (i < pos.size() ? i : pos.size() - 1);
         placements.push_back(VendorPlacement{
             configs[i],
-            pos.empty() ? nccu::gfx::Vec2{0.0f, 0.0f} : pos[p]});
+            pos.empty() ? nccu::engine::math::Vec2{0.0f, 0.0f} : pos[p]});
     }
     cache = std::move(placements);
     return *cache;
@@ -98,7 +98,7 @@ const std::vector<VendorPlacement>& Chapter2Vendors() {
                          .spriteOverride = "resources/assets/Pixel Art "
                              "Vending Machines Pack/Machine 1/"
                              "Vending Machine 1.1.png"},
-            nccu::gfx::Vec2{980.0f, 560.0f}},
+            nccu::engine::math::Vec2{980.0f, 560.0f}},
     };
     return kCh2;
 }
@@ -126,7 +126,7 @@ const std::vector<VendorPlacement>& Chapter4Vendors() {
                          .spriteOverride = "resources/assets/Pixel Art "
                              "Vending Machines Pack/Machine 3/"
                              "Vending Machine 3.1.png"},
-            nccu::gfx::Vec2{1500.0f, 1450.0f}},
+            nccu::engine::math::Vec2{1500.0f, 1450.0f}},
     };
     return kCh4;
 }

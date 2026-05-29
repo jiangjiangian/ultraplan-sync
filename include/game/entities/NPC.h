@@ -20,7 +20,7 @@
 class NPC : public WithRoles<NPC, Character>,
             public IUpdatable, public IDrawable, public IInteractable {
 public:
-    NPC(nccu::gfx::Vec2 position,
+    NPC(nccu::engine::math::Vec2 position,
         std::vector<std::string> dialogLines,
         bool isQuestGiver = false,
         std::string_view npcId = {});
@@ -51,7 +51,7 @@ public:
     // advancing `angularSpeed` rad/s from `startAngle`. Walk-animated and
     // non-blocking (the player runs the same track). 5 runners at distinct
     // speeds populate the 操場 lap.
-    NPC& EnableCircularRun(nccu::gfx::Vec2 center, float radius,
+    NPC& EnableCircularRun(nccu::engine::math::Vec2 center, float radius,
                            float angularSpeed, float startAngle) noexcept;
 
     // Wandering NPCs self-resolve against the world's terrain mask so
@@ -110,14 +110,14 @@ private:
 
     bool                                       wander_;
     float                                      retargetTimer_;
-    nccu::gfx::Vec2                             wanderDir_;
+    nccu::engine::math::Vec2                             wanderDir_;
     std::uint32_t                              rng_;
     const nccu::CollisionMask*                 wanderMask_;
 
     // 校慶 crowd runner (EnableCircularRun): a fixed circular track + a
     // walk-frame animation so the runner reads as running, not sliding.
     bool                                       circular_ = false;
-    nccu::gfx::Vec2                             circleCenter_{};
+    nccu::engine::math::Vec2                             circleCenter_{};
     float                                      circleRadius_ = 0.0f;
     float                                      circleAngle_  = 0.0f;
     float                                      circleSpeed_  = 0.0f;  // rad/s
@@ -132,7 +132,7 @@ private:
     float                                      animTimer_    = 0.0f;
     int                                        animStep_     = 0;
     bool                                       moving_       = false;
-    nccu::gfx::Vec2                             facing_{0.0f, 1.0f};
+    nccu::engine::math::Vec2                             facing_{0.0f, 1.0f};
 };
 
 #endif // N_P_C_H_

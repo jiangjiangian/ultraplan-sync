@@ -145,6 +145,7 @@ void View::UpdateChapterCardTransition(SemesterState st) {
 
 void View::RenderEnding(const World& world, SemesterState st) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // A-T3 (完結章節畫面不斷閃爍/像關閉畫布): clear the WHOLE framebuffer
     // to OPAQUE black FIRST, every frame, before drawing the card. This
@@ -196,6 +197,7 @@ void View::RenderEnding(const World& world, SemesterState st) {
 
 void View::RenderWorld(const World& world, SemesterState st) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
     using nccu::queries::ForEachActive;
 
     Renderer{}.Clear(Colors::RayWhite);
@@ -320,6 +322,7 @@ void View::RenderWorld(const World& world, SemesterState st) {
 
 void View::RenderHud(const World& world, SemesterState st) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // 操場 校慶 lap progress ring (HUD, screen space) — extracted to
     // ui/hud/SportsLapRing.cpp (P1 step 7e). Early-returns when no
@@ -344,6 +347,7 @@ void View::RenderHud(const World& world, SemesterState st) {
 
 void View::RenderOverlays(const World& world) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // Transient ShowMessage toasts: above the world/HUD labels, BELOW the
     // dialog box — an open conversation takes visual precedence, matching

@@ -6,9 +6,9 @@ class CursedUmbrella final : public TransparentUmbrella {
 public:
     // REQUIREMENT #9: deep ominous violet + the sagging Drooping canopy
     // with a pure-black handle — an oppressive "this is wrong" read.
-    explicit CursedUmbrella(nccu::gfx::Vec2 position)
+    explicit CursedUmbrella(nccu::engine::math::Vec2 position)
         : TransparentUmbrella(position, "CursedUmbrella",
-                              nccu::gfx::Color{95, 45, 115, 255},
+                              nccu::engine::math::Color{95, 45, 115, 255},
                               UmbrellaStyle::Drooping) {}
 
     // P2: pickup no longer applies an immediate karma penalty. It increments

@@ -21,7 +21,7 @@
 #include "engine/math/Vec2.h"
 #include "game/quest/Flags.h"
 
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 TEST_CASE("P2: cursed pickup increments taint, leaves karma untouched at pickup") {
     EventBus::Instance().Clear();

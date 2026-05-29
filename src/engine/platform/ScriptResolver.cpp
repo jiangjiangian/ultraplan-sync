@@ -163,7 +163,7 @@ void ScriptInput::ResolvePlan(const World* world) {
                 // every harness regression pinned before this profile.
                 const float kInteractReach =
                     world->LargeTargets() ? 16.0f : 8.0f;
-                const gfx::Rect pHit{pp.x - kInteractReach,
+                const nccu::engine::math::Rect pHit{pp.x - kInteractReach,
                                      pp.y - kInteractReach,
                                      24.0f + 2.0f * kInteractReach,
                                      24.0f + 2.0f * kInteractReach};
@@ -182,7 +182,7 @@ void ScriptInput::ResolvePlan(const World* world) {
                 // — or, for a Vendor, the moment its menu opens (the
                 // dialog-active guard above, next frame). The travel
                 // watchdog bounds an unreachable target.
-                const gfx::Rect tgt{step.x, step.y, 24.0f, 24.0f};
+                const nccu::engine::math::Rect tgt{step.x, step.y, 24.0f, 24.0f};
                 const int k = AxisKeyToward(pp.x, pp.y, step.x, step.y);
                 releaseMoveKeys();
                 if (k >= 0) SynthDown(k);             // drive / hold flush
@@ -218,7 +218,7 @@ void ScriptInput::ResolvePlan(const World* world) {
             // press would land" gate under the accessibility profile too.
             const float kInteractReach =
                 world->LargeTargets() ? 16.0f : 8.0f;
-            const gfx::Rect pHit{pos.x - kInteractReach,
+            const nccu::engine::math::Rect pHit{pos.x - kInteractReach,
                                  pos.y - kInteractReach,
                                  24.0f + 2.0f * kInteractReach,
                                  24.0f + 2.0f * kInteractReach};

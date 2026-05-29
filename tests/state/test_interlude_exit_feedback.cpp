@@ -10,7 +10,7 @@
 
 using nccu::SemesterState;
 using nccu::World;
-using nccu::gfx::Vec2;
+using nccu::engine::math::Vec2;
 
 // H3 (cycle9): the Interlude exit zone (InterludeExit.h) was a silent
 // position trigger — `InInterludeExitZone` returned true and the engine

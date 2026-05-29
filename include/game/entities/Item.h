@@ -5,7 +5,7 @@
 
 class Item : public GameObject {
 public:
-    Item(nccu::gfx::Vec2 position, nccu::gfx::Rect hitBox, std::string name)
+    Item(nccu::engine::math::Vec2 position, nccu::engine::math::Rect hitBox, std::string name)
         : GameObject(position, hitBox), itemName_(std::move(name)), isPickable_(true) {}
 
     virtual void OnPickup(Player* player) = 0;

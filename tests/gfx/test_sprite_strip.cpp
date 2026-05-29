@@ -6,6 +6,7 @@
 #include <vector>
 
 using namespace nccu::gfx;
+using namespace nccu::engine::math;
 using nccu::SemesterState;
 using nccu::kSportsTrackCx;
 using nccu::kSportsTrackCy;

@@ -64,15 +64,15 @@ namespace nccu::gfx {
 // Frames tile left-to-right in one row, so each is texW/frameCount wide and
 // the full texture tall. `index` is assumed already in [0, frameCount)
 // (FrameAt guarantees this); frameCount<=0 degenerates to the whole texture.
-[[nodiscard]] inline Rect StripSourceRect(int index, int frameCount,
+[[nodiscard]] inline nccu::engine::math::Rect StripSourceRect(int index, int frameCount,
                                           int texW, int texH) noexcept {
     if (frameCount <= 0) {
-        return Rect{0.0f, 0.0f, static_cast<float>(texW),
+        return nccu::engine::math::Rect{0.0f, 0.0f, static_cast<float>(texW),
                     static_cast<float>(texH)};
     }
     const float frameW = static_cast<float>(texW) /
                          static_cast<float>(frameCount);
-    return Rect{static_cast<float>(index) * frameW, 0.0f,
+    return nccu::engine::math::Rect{static_cast<float>(index) * frameW, 0.0f,
                 frameW, static_cast<float>(texH)};
 }
 
@@ -86,7 +86,7 @@ namespace nccu::gfx {
 // the strip can be re-exported at any resolution without touching code.
 struct DecorationDef {
     SemesterState chapter;     // drawn ONLY while the FSM is in this state
-    Vec2          center;      // world-space CENTRE the sprite is drawn around
+    nccu::engine::math::Vec2          center;      // world-space CENTRE the sprite is drawn around
     const char*   stripPath;   // PNG path; missing file => draws nothing
     int           frameCount;  // N frames in the horizontal strip (>=1)
     float         drawScale;   // on-screen size of ONE frame's longer side, px
@@ -99,7 +99,7 @@ struct DecorationDef {
 // scaled to `drawScale` px; the rect is centred on `center` so the
 // ping-pong zoom pulses symmetrically about the anchor (a statue/cat does
 // not drift as it breathes). Pure — no raylib, unit-testable.
-[[nodiscard]] inline Rect DecorationDestRect(const DecorationDef& d,
+[[nodiscard]] inline nccu::engine::math::Rect DecorationDestRect(const DecorationDef& d,
                                              int texW, int texH) noexcept {
     const int n = d.frameCount > 0 ? d.frameCount : 1;
     const float frameW = static_cast<float>(texW) / static_cast<float>(n);
@@ -108,7 +108,7 @@ struct DecorationDef {
     const float scale  = longer > 0.0f ? d.drawScale / longer : 0.0f;
     const float w = frameW * scale;
     const float h = frameH * scale;
-    return Rect{d.center.x - w * 0.5f, d.center.y - h * 0.5f, w, h};
+    return nccu::engine::math::Rect{d.center.x - w * 0.5f, d.center.y - h * 0.5f, w, h};
 }
 
 } // namespace nccu::gfx

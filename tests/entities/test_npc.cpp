@@ -6,7 +6,7 @@
 #include <vector>
 
 TEST_CASE("NPC defaults: starts at line 0, has the expected line count") {
-    NPC n(nccu::gfx::Vec2{100, 100},
+    NPC n(nccu::engine::math::Vec2{100, 100},
           std::vector<std::string>{"line 0", "line 1", "line 2"});
     CHECK(n.CurrentLineIndex() == 0);
     CHECK(n.DialogLineCount() == 3);
@@ -21,7 +21,7 @@ TEST_CASE("NPC: Interact publishes the current line then advances index") {
     EventBus::Instance().Subscribe(EventType::ShowMessage,
         [&](const Event& e) { hits++; captured = e.text; });
 
-    NPC n(nccu::gfx::Vec2{0, 0},
+    NPC n(nccu::engine::math::Vec2{0, 0},
           std::vector<std::string>{"hello", "world", "again"});
     n.Interact(nullptr);
     CHECK(hits == 1);
@@ -36,7 +36,7 @@ TEST_CASE("NPC: Interact publishes the current line then advances index") {
 
 TEST_CASE("NPC: Interact wraps after the last line") {
     EventBus::Instance().Clear();
-    NPC n(nccu::gfx::Vec2{0, 0}, std::vector<std::string>{"a", "b"});
+    NPC n(nccu::engine::math::Vec2{0, 0}, std::vector<std::string>{"a", "b"});
     n.Interact(nullptr); // publishes "a", index -> 1
     n.Interact(nullptr); // publishes "b", index -> 0
     CHECK(n.CurrentLineIndex() == 0);
@@ -44,7 +44,7 @@ TEST_CASE("NPC: Interact wraps after the last line") {
 
 TEST_CASE("NPC: SetDialogLines replaces dialog and resets index") {
     EventBus::Instance().Clear();
-    NPC n(nccu::gfx::Vec2{0, 0},
+    NPC n(nccu::engine::math::Vec2{0, 0},
           std::vector<std::string>{"a", "b", "c"});
     n.Interact(nullptr); // index -> 1
     CHECK(n.CurrentLineIndex() == 1);
@@ -61,7 +61,7 @@ TEST_CASE("NPC: Interact with no dialog lines is a safe no-op") {
     EventBus::Instance().Subscribe(EventType::ShowMessage,
         [&](const Event&) { hits++; });
 
-    NPC n(nccu::gfx::Vec2{0, 0}, std::vector<std::string>{});
+    NPC n(nccu::engine::math::Vec2{0, 0}, std::vector<std::string>{});
     n.Interact(nullptr);
     CHECK(hits == 0);
     CHECK(n.CurrentLineIndex() == 0);

@@ -32,14 +32,14 @@ class World;
 // CollisionSystem. No raylib, no input — pure data.
 struct SimContext {
     World&                          world;
-    nccu::gfx::Vec2                 worldSize;
-    nccu::gfx::Vec2                 playerSize;
-    std::vector<nccu::gfx::Rect>&   frameColliders;  // reused scratch
+    nccu::engine::math::Vec2                 worldSize;
+    nccu::engine::math::Vec2                 playerSize;
+    std::vector<nccu::engine::math::Rect>&   frameColliders;  // reused scratch
     // Set by MovementSystem (the player's top-left BEFORE this frame's
     // object Update tick), read by CollisionSystem for the axis-separated
     // resolve. Lives in the context so the two stages stay decoupled types
     // yet preserve the exact prev→resolve handoff the inline code had.
-    nccu::gfx::Vec2                 prevPlayerPos{0.0f, 0.0f};
+    nccu::engine::math::Vec2                 prevPlayerPos{0.0f, 0.0f};
 };
 
 // One ordered simulation stage. Run() advances the model by `dt` seconds.

@@ -13,9 +13,9 @@ class TextBuilder {
 public:
     explicit TextBuilder(std::string text) : text_(std::move(text)) {}
 
-    TextBuilder& At(Vec2 p)            noexcept { position_ = p; return *this; }
+    TextBuilder& At(nccu::engine::math::Vec2 p)            noexcept { position_ = p; return *this; }
     TextBuilder& Size(int s)           noexcept { size_ = s; return *this; }
-    TextBuilder& Color(struct Color c) noexcept { color_ = c; return *this; }
+    TextBuilder& Color(struct nccu::engine::math::Color c) noexcept { color_ = c; return *this; }
 
     void Draw() const {
         const ::Color rc{color_.r, color_.g, color_.b, color_.a};
@@ -42,27 +42,27 @@ public:
     // takes), else raylib's default-font measure; both honour the size/10
     // spacing Draw() uses. Falls back to a width-only estimate if no font
     // /GL context exists (headless tests never call this on a live panel).
-    Vec2 Measure() const {
+    nccu::engine::math::Vec2 Measure() const {
         const float spacing = static_cast<float>(size_) / 10.0f;
         if (IsCJKFontLoaded()) {
             const ::Vector2 m = ::MeasureTextEx(
                 CJKFont(), text_.c_str(),
                 static_cast<float>(size_), spacing);
-            return Vec2{m.x, m.y};
+            return nccu::engine::math::Vec2{m.x, m.y};
         }
-        return Vec2{static_cast<float>(::MeasureText(text_.c_str(), size_)),
+        return nccu::engine::math::Vec2{static_cast<float>(::MeasureText(text_.c_str(), size_)),
                     static_cast<float>(size_)};
     }
 
-    Vec2                GetPosition() const noexcept { return position_; }
+    nccu::engine::math::Vec2                GetPosition() const noexcept { return position_; }
     int                 GetSize()     const noexcept { return size_; }
-    struct Color        GetColor()    const noexcept { return color_; }
+    struct nccu::engine::math::Color        GetColor()    const noexcept { return color_; }
 
 private:
     std::string         text_;
-    Vec2                position_{0.0f, 0.0f};
+    nccu::engine::math::Vec2                position_{0.0f, 0.0f};
     int                 size_{10};
-    struct Color        color_{0, 0, 0, 255};
+    struct nccu::engine::math::Color        color_{0, 0, 0, 255};
 };
 
 } // namespace nccu::gfx

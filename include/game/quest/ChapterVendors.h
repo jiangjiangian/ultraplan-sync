@@ -22,7 +22,7 @@ namespace nccu {
 // empty static vector — chapters get incidental Vendors in S5c/d/e.
 struct VendorPlacement {
     VendorConfig    config;
-    nccu::gfx::Vec2 pos;
+    nccu::engine::math::Vec2 pos;
 };
 
 // Cached per-state placements. Interlude is parser-backed; everything

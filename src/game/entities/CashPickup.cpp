@@ -19,17 +19,17 @@ void CashPickup::Render(nccu::gfx::IRenderer& renderer) const {
     constexpr float kCoin = 10.0f;                 // < the 16px hitbox
     const float inset = (hitBox_.width - kCoin) * 0.5f;
     renderer.DrawRect(
-        nccu::gfx::Rect{hitBox_.x + inset, hitBox_.y + inset, kCoin, kCoin},
-        nccu::gfx::Colors::Gold);
+        nccu::engine::math::Rect{hitBox_.x + inset, hitBox_.y + inset, kCoin, kCoin},
+        nccu::engine::math::Colors::Gold);
 }
 
-CashPickup::CashPickup(nccu::gfx::Vec2 position, int value)
+CashPickup::CashPickup(nccu::engine::math::Vec2 position, int value)
     // Direct base is WithRoles<CashPickup, Item>; its `using Base::Base`
     // inherits Item's ctor so this 3-arg form still resolves.
     : WithRoles(position,
            // 16x16 hitbox anchored at the world position — same size as
            // ConsumableItem so it picks up via the same collision sweep.
-           nccu::gfx::Rect{position.x, position.y, 16.0f, 16.0f},
+           nccu::engine::math::Rect{position.x, position.y, 16.0f, 16.0f},
            "Cash"),
       value_(value) {}
 

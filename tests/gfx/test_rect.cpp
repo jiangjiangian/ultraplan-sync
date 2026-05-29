@@ -2,7 +2,7 @@
 #include "engine/math/Rect.h"
 #include "engine/math/Vec2.h"
 
-using namespace nccu::gfx;
+using namespace nccu::engine::math;
 
 TEST_CASE("Rect: default-constructs to zero") {
     constexpr Rect r;

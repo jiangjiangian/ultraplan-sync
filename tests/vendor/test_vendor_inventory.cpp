@@ -29,7 +29,7 @@ struct MsgCapture {
 }  // namespace
 
 TEST_CASE("Player: count inventory add / query / consume") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(p.ConsumableCount("HotPack") == 0);
 
     p.AddConsumable("HotPack").AddConsumable("HotPack");
@@ -46,7 +46,7 @@ TEST_CASE("Player: count inventory add / query / consume") {
 }
 
 TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
 
     VendorConfig cfg;
@@ -61,7 +61,7 @@ TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
 }
 
 TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
     const int karma0 = p.GetKarma();
 
@@ -75,7 +75,7 @@ TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
     CHECK(p.GetKarma() == karma0 + 1);             // karma valve fired
 
     // A default stall (karmaOnInteract 0) must NOT move karma.
-    Player q{nccu::gfx::Vec2{0, 0}};
+    Player q{nccu::engine::math::Vec2{0, 0}};
     const int qk = q.GetKarma();
     VendorConfig plain;
     plain.name  = "一般攤";
@@ -86,7 +86,7 @@ TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
 }
 
 TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
     MsgCapture cap;
     cap.Attach();
 
@@ -116,7 +116,7 @@ TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
 // "didn't see deduct money") now shows the 中文 catalog name + price spent
 // + remaining balance, via the SAME TryBuy path the market uses.
 TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance") {
-    Player p{nccu::gfx::Vec2{0, 0}};            // starts with 100 元
+    Player p{nccu::engine::math::Vec2{0, 0}};            // starts with 100 元
     MsgCapture cap;
     cap.Attach();
 

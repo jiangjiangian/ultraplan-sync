@@ -56,7 +56,7 @@ public:
         return false;
     }
 
-    bool BlockedBox(gfx::Vec2 pos, gfx::Vec2 size) const noexcept {
+    bool BlockedBox(nccu::engine::math::Vec2 pos, nccu::engine::math::Vec2 size) const noexcept {
         return BlockedBox(pos.x, pos.y, size.x, size.y);
     }
 

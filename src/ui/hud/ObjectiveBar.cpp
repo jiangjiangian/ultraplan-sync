@@ -19,6 +19,7 @@ void DrawObjectiveBar(nccu::gfx::IRenderer& r,
                       float screenW,
                       float /*screenH*/) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // Quest objective: a panel-backed one-liner, top-centre but BELOW
     // the left status column (its lines end ~y86) so it never overlaps

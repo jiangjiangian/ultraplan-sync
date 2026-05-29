@@ -24,11 +24,11 @@ namespace {
 struct Spy final : nccu::gfx::IRenderer {
     int rects = 0;
     std::vector<std::string> texts;
-    void DrawRect(nccu::gfx::Rect, nccu::gfx::Color) override { ++rects; }
-    void DrawSprite(const nccu::gfx::Texture&, nccu::gfx::Rect,
-                    nccu::gfx::Rect, nccu::gfx::Color) override {}
-    void DrawText(std::string_view t, nccu::gfx::Vec2, int,
-                  nccu::gfx::Color) override { texts.emplace_back(t); }
+    void DrawRect(nccu::engine::math::Rect, nccu::engine::math::Color) override { ++rects; }
+    void DrawSprite(const nccu::gfx::Texture&, nccu::engine::math::Rect,
+                    nccu::engine::math::Rect, nccu::engine::math::Color) override {}
+    void DrawText(std::string_view t, nccu::engine::math::Vec2, int,
+                  nccu::engine::math::Color) override { texts.emplace_back(t); }
 };
 
 } // namespace

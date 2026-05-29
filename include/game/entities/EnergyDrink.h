@@ -13,7 +13,7 @@ public:
     // bump and waking the Ch2 學霸 (TryRescueBookworm consumes one).
     static constexpr float kRainRelief = 15.0f;
 
-    explicit EnergyDrink(nccu::gfx::Vec2 position)
+    explicit EnergyDrink(nccu::engine::math::Vec2 position)
         : ConsumableItem(position, "EnergyDrink", kPrice) {}
 
     void Consume(Player* player) override;

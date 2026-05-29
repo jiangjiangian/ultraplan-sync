@@ -7,7 +7,7 @@
 
 namespace nccu {
 
-const buildings::Building* BuildingTracker::Update(gfx::Vec2 playerCenter) {
+const buildings::Building* BuildingTracker::Update(nccu::engine::math::Vec2 playerCenter) {
     const buildings::Building* found =
         detail::NearestContaining(playerCenter, buildings::kAll);
 

@@ -34,7 +34,7 @@
 class QuestFlagPickup final : public WithRoles<QuestFlagPickup, Item>,
                               public IDrawable, public IInteractable {
 public:
-    QuestFlagPickup(nccu::gfx::Vec2 position, std::string flagName,
+    QuestFlagPickup(nccu::engine::math::Vec2 position, std::string flagName,
                     std::string message = "撿到了被風吹走的申請書",
                     std::vector<std::string> completionFlags = {},
                     int completionKarma = 0,

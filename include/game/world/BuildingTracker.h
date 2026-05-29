@@ -16,7 +16,7 @@ namespace detail {
 // disambiguation is unit-testable against synthetic fixtures, decoupled
 // from the live (Tiled-regenerated) campus layout.
 template <typename Range>
-const buildings::Building* NearestContaining(gfx::Vec2 p, const Range& range) {
+const buildings::Building* NearestContaining(nccu::engine::math::Vec2 p, const Range& range) {
     const buildings::Building* found = nullptr;
     float bestDistSq = std::numeric_limits<float>::max();
     for (const auto& b : range) {
@@ -43,7 +43,7 @@ const buildings::Building* NearestContaining(gfx::Vec2 p, const Range& range) {
 // without firing an event.
 class BuildingTracker {
 public:
-    const buildings::Building* Update(gfx::Vec2 playerCenter);
+    const buildings::Building* Update(nccu::engine::math::Vec2 playerCenter);
 
     [[nodiscard]] const buildings::Building* Current() const noexcept { return current_; }
 

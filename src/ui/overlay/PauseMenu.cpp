@@ -16,6 +16,7 @@ void DrawPauseMenu(nccu::gfx::IRenderer& r,
                    float screenW,
                    float screenH) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     if (!world.MenuOpen()) return;
 

@@ -43,9 +43,9 @@ struct MessageCapture {
 TEST_CASE("DlcSign Interact: publishes the teaser and is NOT consumed") {
     MessageCapture cap;
     cap.Attach();
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
 
-    DlcSign sign{nccu::gfx::Vec2{1305.0f, 88.0f}};
+    DlcSign sign{nccu::engine::math::Vec2{1305.0f, 88.0f}};
     CHECK(sign.IsActive());
 
     sign.Interact(&p);
@@ -75,7 +75,7 @@ TEST_CASE("DlcSign Interact: publishes the teaser and is NOT consumed") {
 }
 
 TEST_CASE("DlcSign roles + identity: IInteractable+IDrawable, no NPC/Vendor") {
-    DlcSign sign{nccu::gfx::Vec2{1305.0f, 88.0f}};
+    DlcSign sign{nccu::engine::math::Vec2{1305.0f, 88.0f}};
     GameObject& asObj = sign;   // exercise the heterogeneous-container view
 
     // It plays exactly the interact + draw roles (E-interact sweep finds it
@@ -96,9 +96,9 @@ TEST_CASE("DlcSign roles + identity: IInteractable+IDrawable, no NPC/Vendor") {
 TEST_CASE("DlcSign dispatches its Interact through a GameObject& (sweep path)") {
     MessageCapture cap;
     cap.Attach();
-    Player p{nccu::gfx::Vec2{0, 0}};
+    Player p{nccu::engine::math::Vec2{0, 0}};
 
-    DlcSign sign{nccu::gfx::Vec2{1305.0f, 88.0f}};
+    DlcSign sign{nccu::engine::math::Vec2{1305.0f, 88.0f}};
     GameObject& asObj = sign;
     // Mirror the controller's E-interact dispatch: route a non-NPC object
     // through AsInteractable()->Interact(), exactly as GameController does.

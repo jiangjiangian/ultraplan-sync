@@ -52,7 +52,7 @@ void MovementSystem::Run(SimContext& ctx, float dt) {
     World& world = ctx.world;
     Player* player = world.GetPlayer();
     ctx.prevPlayerPos = player ? player->GetPosition()
-                               : nccu::gfx::Vec2{0.0f, 0.0f};
+                               : nccu::engine::math::Vec2{0.0f, 0.0f};
     ForEachRole<IUpdatable>(world.Objects(),
                             [dt](IUpdatable& u) { u.Update(dt); });
 }
@@ -71,7 +71,7 @@ void CollisionSystem::Run(SimContext& ctx, float /*dt*/) {
     Player* player = world.GetPlayer();
     if (!player) return;
 
-    const nccu::gfx::Vec2 clamped =
+    const nccu::engine::math::Vec2 clamped =
         nccu::gfx::ClampToWorld(player->GetPosition(), ctx.playerSize,
                                 ctx.worldSize);
     if (clamped.x != player->GetPosition().x ||
@@ -82,11 +82,11 @@ void CollisionSystem::Run(SimContext& ctx, float /*dt*/) {
     ctx.frameColliders.clear();
     ForEachActiveExcept(world.Objects(), player, [&ctx](GameObject& o) {
         if (!o.BlocksMovement()) return;
-        const nccu::gfx::Vec2 p = o.GetPosition();
+        const nccu::engine::math::Vec2 p = o.GetPosition();
         ctx.frameColliders.push_back(
-            nccu::gfx::Rect{p.x, p.y, ctx.playerSize.x, ctx.playerSize.y});
+            nccu::engine::math::Rect{p.x, p.y, ctx.playerSize.x, ctx.playerSize.y});
     });
-    const nccu::gfx::Vec2 resolved = nccu::physics::ResolveMove(
+    const nccu::engine::math::Vec2 resolved = nccu::physics::ResolveMove(
         ctx.prevPlayerPos, player->GetPosition(), ctx.playerSize,
         ctx.frameColliders, &world.TerrainMask());
     if (resolved.x != player->GetPosition().x ||

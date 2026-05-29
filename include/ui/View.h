@@ -33,7 +33,7 @@ private:
     // pixels, and the ground line (sprite bottom) used for depth sorting.
     struct BuildingSprite {
         std::size_t     texIndex;
-        nccu::gfx::Rect dest;
+        nccu::engine::math::Rect dest;
         float           baseY;
         bool            flipX;
         bool            flipY;
@@ -88,9 +88,9 @@ private:
     nccu::gfx::RaylibRenderer        renderer_;
     nccu::gfx::Camera2D              camera_;
     nccu::gfx::Texture               worldmap_;
-    nccu::gfx::Vec2                  screenCenter_;
-    nccu::gfx::Vec2                  worldSize_;
-    nccu::gfx::Vec2                  viewportSize_;
+    nccu::engine::math::Vec2                  screenCenter_;
+    nccu::engine::math::Vec2                  worldSize_;
+    nccu::engine::math::Vec2                  viewportSize_;
     std::vector<nccu::gfx::Texture>  buildingTextures_;
     std::vector<BuildingSprite>      buildings_;
     std::vector<DecorationSprite>    decorations_;  // ambient strips (cosmetic)

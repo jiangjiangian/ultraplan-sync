@@ -27,7 +27,7 @@ namespace nccu {
 // via QuestFlagPickup's completion hook, and 圖書館管理員 (b) then points
 // to 羅馬廣場.
 struct QuestItemPlacement {
-    nccu::gfx::Vec2          pos;
+    nccu::engine::math::Vec2          pos;
     std::string              flag;
     std::string              message;          // ShowMessage on pickup
     std::vector<std::string> completionFlags;  // all set => grant karma

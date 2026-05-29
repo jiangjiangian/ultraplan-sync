@@ -15,6 +15,7 @@ void DrawRainVignette(nccu::gfx::IRenderer& r,
                       float screenW,
                       float screenH) {
     using namespace nccu::gfx;
+    using namespace nccu::engine::math;
 
     // Rain "pressure" vignette — PURE render derived only from
     // GetRainMeter() (no sim/state/input touched: MVC §5). The rain is

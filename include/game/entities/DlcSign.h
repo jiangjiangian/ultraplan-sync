@@ -29,7 +29,7 @@
 class DlcSign final : public WithRoles<DlcSign, GameObject>,
                       public IDrawable, public IInteractable {
 public:
-    explicit DlcSign(nccu::gfx::Vec2 position);
+    explicit DlcSign(nccu::engine::math::Vec2 position);
 
     void Render(nccu::gfx::IRenderer& renderer) const override;
     // Re-readable: publishes the teaser ShowMessage but does NOT set
