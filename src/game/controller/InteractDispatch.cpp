@@ -15,10 +15,11 @@
 #include <string_view>
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 void DispatchInteract(EventBus& bus, World& world, Vendor*& pendingVendor) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     using nccu::gfx::Rect;
     using nccu::queries::ForEachActiveExcept;
     Player* player = world.GetPlayer();

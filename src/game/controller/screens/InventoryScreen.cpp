@@ -9,10 +9,11 @@
 #include <vector>
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 bool HandleInventory(EventBus& bus, World& world) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     if (Input::IsPressed(Key::Tab))
         world.SetInventoryOpen(!world.InventoryOpen());
     if (world.InventoryOpen()) {

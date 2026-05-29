@@ -47,7 +47,7 @@ public:
     void Update();
 
 private:
-    // Per-screen INPUT sub-handlers (each reads gfx::Input, so they stay
+    // Per-screen INPUT sub-handlers (each reads nccu::engine::input::Input, so they stay
     // in the controller layer — NOT systems). Each returns true when it
     // consumed the frame and the world must stay frozen (the orchestrator
     // then returns before the simulation pipeline runs), false to fall

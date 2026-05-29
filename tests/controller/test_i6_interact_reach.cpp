@@ -26,7 +26,7 @@
 // near-side target, AxisKeyToward never returns -1, E is never pressed).
 //
 // Driven through the EXACT path the harness uses: ScriptInput is the
-// gfx::Input source and the per-frame loop mirrors Harness
+// nccu::engine::input::Input source and the per-frame loop mirrors Harness
 // (Advance + ResolvePlan against the previous frame's World snapshot,
 // then controller.Update) so this exercises the production seam, not a
 // unit shim. Headless, deterministic, no GL.
@@ -109,7 +109,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
     ScriptInput in;
     std::istringstream src(script);
     in.Load(src);
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     Outcome out;
     const Player* p0 = world.GetPlayer();
@@ -135,7 +135,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
     out.endX = p ? p->GetPosition().x : 0.0f;
     out.endY = p ? p->GetPosition().y : 0.0f;
 
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
     return out;

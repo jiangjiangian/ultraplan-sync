@@ -89,7 +89,7 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
     ScriptInput in;
     std::istringstream src(script);
     in.Load(src);
-    nccu::gfx::Input::SetSource(&in);
+    nccu::engine::input::Input::SetSource(&in);
 
     const World* snap = nullptr;
     int f = 0;
@@ -101,7 +101,7 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
         if (in.WantsQuit() || (in.HasPlan() && f >= 1 && in.PlanDone()))
             break;
     }
-    nccu::gfx::Input::SetSource(nullptr);
+    nccu::engine::input::Input::SetSource(nullptr);
     nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     const Player* p = world.GetPlayer();

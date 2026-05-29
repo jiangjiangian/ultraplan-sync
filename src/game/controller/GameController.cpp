@@ -38,6 +38,7 @@
 #include <string_view>
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 // P3 step 1d: the file-local OpenVendorMenu + kVendorContext +
 // kVendorDeclineLabel moved into `controller/VendorMenu.{h,cpp}`.

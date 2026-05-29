@@ -16,6 +16,7 @@
 #include <utility>
 
 namespace nccu::app {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 namespace {
 
 constexpr int kWinW = 800;
@@ -48,8 +49,8 @@ TitleScene::TitleScene(NextSceneFactory startGame)
     : startGame_(std::move(startGame)) {}
 
 SceneCommand TitleScene::Update(float /*dt*/) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
 
     // 遊戲說明 page is a title-internal sub-state — input + draw both
     // route here, the menu input is muted.

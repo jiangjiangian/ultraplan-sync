@@ -22,12 +22,12 @@
 
 using nccu::World;
 using nccu::SemesterState;
-using nccu::gfx::Key;
+using nccu::engine::input::Key;
 using nccu::gfx::Vec2;
 
 // G2 — the ending must NOT be abrupt: every Ch4 ending TRIGGER is deferred
 // behind a brief inner-monologue (自白). These cases drive the REAL
-// GameController::Update() loop (the same gfx::Input seam the harness +
+// GameController::Update() loop (the same nccu::engine::input::Input seam the harness +
 // test_rain_survival use) and prove the deferral end-to-end: an ending does
 // NOT fire while the 自白 dialog is on screen, and DOES fire once it closes.
 // They also pin TryOpenEndingConfession's once-key idempotency and that the
@@ -37,7 +37,7 @@ namespace {
 
 // Never presses a key — the player stands still; only the per-frame
 // rain/confession/gate logic runs. Mirrors test_rain_survival's TestInput.
-class TestInput final : public nccu::gfx::InputSource {
+class TestInput final : public nccu::engine::input::InputSource {
 public:
     void EndFrame() {}
     bool IsDown(Key)     const noexcept override { return false; }
@@ -63,13 +63,13 @@ struct Ch4Fixture {
         nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
         EventBus::Instance().Clear();
         world.Semester().Transition(SemesterState::Chapter4_Finals);
-        nccu::gfx::Input::SetSource(&in);
+        nccu::engine::input::Input::SetSource(&in);
         // Settle the Ch4 entry side-effects (clears HasUmbrella +
         // Flag_HasTrueUmbrella) with one quiet frame, THEN arm the player.
         Frame(controller, in);
     }
     ~Ch4Fixture() {
-        nccu::gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
         nccu::engine::platform::Time::SetFixedStep(0.0f);
         EventBus::Instance().Clear();
     }

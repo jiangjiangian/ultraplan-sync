@@ -5,10 +5,11 @@
 #include "engine/input/Key.h"
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 bool HandlePauseMenu(World& world) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     const bool toggle = Input::IsPressed(Key::M);
     if (world.MenuOpen()) {
         // REQUIREMENT #9: the 說明 help overlay sits ON TOP of the

@@ -13,6 +13,7 @@
 #include <utility>
 
 namespace nccu::app {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 namespace {
 
 constexpr int kWinW      = 800;
@@ -61,8 +62,8 @@ void CharacterSelectScene::Enter() {
 }
 
 SceneCommand CharacterSelectScene::Update(float /*dt*/) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
 
     if (Input::IsPressed(Key::Right) || Input::IsPressed(Key::D))
         cursor_ = (cursor_ + 1) % kCount;

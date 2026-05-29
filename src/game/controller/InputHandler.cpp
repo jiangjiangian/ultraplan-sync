@@ -1,10 +1,11 @@
 #include "game/controller/InputHandler.h"
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 bool InputHandler::TickDialogAdvance(float dt) noexcept {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
 
     // Hold timer: ticked while E is held, snapped to 0 on release. The
     // cooldown counter also resets on release so a future hold starts

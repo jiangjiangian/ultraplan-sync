@@ -240,7 +240,7 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
 Harness::Harness() : s_(std::make_unique<HarnessState>()) {}
 Harness::~Harness() {
     if (s_ && s_->active) {
-        gfx::Input::SetSource(nullptr);
+        nccu::engine::input::Input::SetSource(nullptr);
         nccu::engine::platform::Time::SetFixedStep(0.0f);
     }
 }
@@ -345,7 +345,7 @@ Harness MaybeAttach() {
     if (!st.statePath.empty())
         st.stateOut.open(st.statePath, std::ios::out | std::ios::trunc);
 
-    gfx::Input::SetSource(st.script.get());
+    nccu::engine::input::Input::SetSource(st.script.get());
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     return h;
 }

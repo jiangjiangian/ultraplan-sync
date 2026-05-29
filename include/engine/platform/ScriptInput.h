@@ -52,7 +52,7 @@ class World;  // forward decl: the high-level plan reads World read-only
 // and must be called once per game frame before input is read; the
 // harness calls ResolvePlan() right after, before GameController reads
 // input.
-class ScriptInput final : public gfx::InputSource {
+class ScriptInput final : public nccu::engine::input::InputSource {
 public:
     void Load(std::istream& in);
     void LoadFile(const std::string& path);
@@ -77,9 +77,9 @@ public:
         return planPc_ >= plan_.size();
     }
 
-    bool IsDown(gfx::Key k)     const noexcept override;
-    bool IsPressed(gfx::Key k)  const noexcept override;
-    bool IsReleased(gfx::Key k) const noexcept override;
+    bool IsDown(nccu::engine::input::Key k)     const noexcept override;
+    bool IsPressed(nccu::engine::input::Key k)  const noexcept override;
+    bool IsReleased(nccu::engine::input::Key k) const noexcept override;
 
 private:
     struct Directive { enum Kind { Down, Up, Press, Quit } kind; int key; };

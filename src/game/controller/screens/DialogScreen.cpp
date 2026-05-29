@@ -22,11 +22,12 @@
 #include <string>
 
 namespace nccu {
+using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
 
 bool HandleDialog(EventBus& bus, World& world, Vendor*& pendingVendor,
                   InputHandler& input, SceneRouter& sceneRouter) {
-    using nccu::gfx::Input;
-    using nccu::gfx::Key;
+    using nccu::engine::input::Input;
+    using nccu::engine::input::Key;
     using nccu::engine::platform::Time;
     DialogState& dlg = world.Dialog();
     // I5: drop the pending-vendor target the instant its menu is no
