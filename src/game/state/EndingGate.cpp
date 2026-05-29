@@ -1,6 +1,6 @@
 #include "game/state/EndingGate.h"
 #include "game/quest/Flags.h"
-#include "ui/ChapterToast.h"
+#include "game/state/ChapterToast.h"
 #include "engine/events/EventBus.h"
 #include "game/entities/Player.h"
 #include "game/state/SemesterStateMachine.h"

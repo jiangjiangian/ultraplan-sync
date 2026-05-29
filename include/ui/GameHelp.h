@@ -106,8 +106,21 @@ inline constexpr std::array<std::span<const std::string_view>, 2>
         std::span<const std::string_view>{kGameHelpPage1},
         std::span<const std::string_view>{kGameHelpPage2},
 };
-inline constexpr int kGameHelpPageCount =
-    static_cast<int>(kGameHelpPages.size());
+// Phase 4 layering: kGameHelpPageCount now lives in
+// game/state/GameHelpPages.h so the game-layer scenes / controllers
+// (TitleScene, PauseScreen) can read it without pulling this ui
+// header. The static_assert below pins that the literal count and the
+// page array length stay in lock-step — adding a third page means
+// bumping BOTH.
+} // namespace nccu
+
+#include "game/state/GameHelpPages.h"
+namespace nccu {
+static_assert(kGameHelpPageCount ==
+              static_cast<int>(kGameHelpPages.size()),
+              "ui/GameHelp.h kGameHelpPages count must match "
+              "game/state/GameHelpPages.h kGameHelpPageCount — adding "
+              "a page means bumping BOTH.");
 
 // Back-compat flat list = page1 ++ page2, KEPT as the glyph-scan + menu-
 // hint source of truth (test_font_ui_glyph_scan / test_menu_help iterate

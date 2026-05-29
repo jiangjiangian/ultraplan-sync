@@ -1,19 +1,17 @@
 #ifndef INVENTORY_VIEW_H_
 #define INVENTORY_VIEW_H_
-#include "game/quest/ItemCatalog.h"   // nccu::InventoryRow DTO
+#include "game/quest/InventoryPaging.h"  // kInventoryRowsPerPage (game-side)
+#include "game/quest/ItemCatalog.h"      // nccu::InventoryRow DTO
 #include <vector>
 
 namespace nccu {
 namespace gfx { class IRenderer; }
 
-// U2-T1: fixed rows-per-page window for the Tab bag. When the row count
-// exceeds this, the panel PAGES instead of squeezing every row into a
-// cramped sub-28px band (which also made the description overflow). The
-// page shown is always the one containing the cursor (derived, see
-// InventoryPageOf), so the selected row is never off-screen; an explicit
-// ←/→ page-jump in GameController moves the cursor by ±this. Exported so
-// the controller's page-jump and the View's window math share ONE value.
-inline constexpr int kInventoryRowsPerPage = 6;
+// kInventoryRowsPerPage is defined in game/quest/InventoryPaging.h
+// (single source of truth, included above) so the game-layer
+// inventory scene can read it without pulling this ui header.
+// The View's paging math (InventoryPageCount / InventoryPageOf below)
+// resolves against the same constant.
 
 // U2-T1: which page (0-based) the cursor sits on, and how many pages a bag
 // of `rowCount` rows has, for `kInventoryRowsPerPage` rows/page. Pure

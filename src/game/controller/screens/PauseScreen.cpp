@@ -1,6 +1,6 @@
 #include "game/controller/screens/PauseScreen.h"
 #include "game/world/World.h"
-#include "ui/GameHelp.h"          // kGameHelpPageCount (paged 說明 nav)
+#include "game/state/GameHelpPages.h"  // kGameHelpPageCount
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 

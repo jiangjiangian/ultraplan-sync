@@ -2,7 +2,7 @@
 #define GFX_TEXTURE_PRELOAD_H_
 #include "engine/render/Texture.h"
 #include "game/gfx/Decorations.h"          // kDecorations — ambient strips
-#include "ui/CharacterSelect.h"       // kPersonas — player + preview sheets
+#include "game/entities/Personas.h"   // kPersonas — player + preview sheets
 #include "game/world/Buildings.h"          // kAll — building art
 #include "game/world/Obstacles.h"          // kBuildingCollisionSkip
 #include "game/vendor/VendorSprite.h"      // kVendorFallbackSprites

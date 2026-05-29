@@ -1,7 +1,7 @@
 #include "app/scenes/LoadingScene.h"
 
 #include "engine/render/Renderer.h"
-#include "engine/render/TexturePreload.h"
+#include "game/world/TexturePreload.h"
 #include "engine/render/TextBuilder.h"
 #include "engine/math/Color.h"
 #include "engine/math/Vec2.h"

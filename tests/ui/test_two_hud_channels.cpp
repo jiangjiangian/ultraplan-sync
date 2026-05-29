@@ -22,10 +22,10 @@
 // so each test starts clean.
 
 #include "doctest/doctest.h"
-#include "ui/ChapterToast.h"
+#include "game/state/ChapterToast.h"
 #include "engine/events/EventBus.h"
 #include "game/controller/EventWiring.h"
-#include "ui/HudSlot.h"
+#include "engine/events/HudSlot.h"
 #include "ui/MessageView.h"   // kHudTtl
 #include "game/entities/Player.h"
 #include "game/state/SemesterState.h"

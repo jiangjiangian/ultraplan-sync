@@ -1,6 +1,6 @@
 #ifndef EVENT_BUS_H_
 #define EVENT_BUS_H_
-#include "ui/HudSlot.h"
+#include "engine/events/HudSlot.h"
 #include <cstdint>
 #include <functional>
 #include <shared_mutex>

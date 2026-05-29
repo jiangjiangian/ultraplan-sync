@@ -2,7 +2,7 @@
 #include "game/world/World.h"
 #include "game/entities/Player.h"
 #include "game/quest/ItemCatalog.h"
-#include "ui/InventoryView.h"     // kInventoryRowsPerPage (paged bag nav)
+#include "game/quest/InventoryPaging.h"  // kInventoryRowsPerPage
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 #include <algorithm>

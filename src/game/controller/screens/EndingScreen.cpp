@@ -1,6 +1,6 @@
 #include "game/controller/screens/EndingScreen.h"
 #include "game/world/World.h"
-#include "ui/EndingView.h"        // A-T3: IsEndingState + EndingMenuChoiceAt
+#include "game/state/EndingMenuModel.h"  // IsEndingState + EndingMenuChoiceAt
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 
