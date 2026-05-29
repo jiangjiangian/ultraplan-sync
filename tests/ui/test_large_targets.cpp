@@ -79,9 +79,16 @@ TEST_CASE("M2 large-targets accessibility profile: defaults + setter") {
 }
 
 TEST_CASE("M2 UMBRELLA_LARGE_TARGETS=1 wires the flag on at construction") {
+    // Plan P2 step 4: the getenv read now lives in
+    // ReadWorldOptionsFromEnv() — main.cpp calls it once and passes the
+    // resolved WorldOptions to the World ctor. The test exercises both
+    // halves: that the env-reader interprets the variable correctly AND
+    // that the World ctor honours the resulting bool.
     SUBCASE("env=1 turns the flag on") {
         setenv("UMBRELLA_LARGE_TARGETS", "1", /*overwrite=*/1);
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK(opts.largeTargets);
+        World w("", /*loadSprites=*/false, opts);
         CHECK(w.LargeTargets());
         unsetenv("UMBRELLA_LARGE_TARGETS");
     }
@@ -91,14 +98,18 @@ TEST_CASE("M2 UMBRELLA_LARGE_TARGETS=1 wires the flag on at construction") {
         // literal "1" so an unset/"0"/"true"/empty leaves the default
         // false. This rules out accidental opt-in from a stale env.
         setenv("UMBRELLA_LARGE_TARGETS", "0", /*overwrite=*/1);
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK_FALSE(opts.largeTargets);
+        World w("", /*loadSprites=*/false, opts);
         CHECK_FALSE(w.LargeTargets());
         unsetenv("UMBRELLA_LARGE_TARGETS");
     }
 
     SUBCASE("env unset → flag stays off") {
         unsetenv("UMBRELLA_LARGE_TARGETS");
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK_FALSE(opts.largeTargets);
+        World w("", /*loadSprites=*/false, opts);
         CHECK_FALSE(w.LargeTargets());
     }
 }

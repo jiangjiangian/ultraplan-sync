@@ -87,23 +87,32 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
 }
 
 TEST_CASE("D8 reduced-motion: UMBRELLA_REDUCED_MOTION=1 wires the flag on") {
+    // Plan P2 step 4: getenv moved into ReadWorldOptionsFromEnv(); World
+    // is now pure relative to its args. Test exercises both halves
+    // (env-reader + ctor honour).
     SUBCASE("env=1 turns the flag on at construction") {
         setenv("UMBRELLA_REDUCED_MOTION", "1", /*overwrite=*/1);
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK(opts.reducedMotion);
+        World w("", /*loadSprites=*/false, opts);
         CHECK(w.ReducedMotion());
         unsetenv("UMBRELLA_REDUCED_MOTION");  // restore for siblings
     }
 
     SUBCASE("env=0 leaves the flag off (only '1' opts in)") {
         setenv("UMBRELLA_REDUCED_MOTION", "0", /*overwrite=*/1);
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK_FALSE(opts.reducedMotion);
+        World w("", /*loadSprites=*/false, opts);
         CHECK_FALSE(w.ReducedMotion());
         unsetenv("UMBRELLA_REDUCED_MOTION");
     }
 
     SUBCASE("env unset → flag stays off") {
         unsetenv("UMBRELLA_REDUCED_MOTION");
-        World w("", /*loadSprites=*/false);
+        const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
+        CHECK_FALSE(opts.reducedMotion);
+        World w("", /*loadSprites=*/false, opts);
         CHECK_FALSE(w.ReducedMotion());
     }
 }
