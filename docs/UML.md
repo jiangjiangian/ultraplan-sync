@@ -68,11 +68,11 @@ flowchart TD
 
 | 層 | 章節 | 主要資料夾 |
 |---|---|---|
-| 實體與道具繼承樹 | §1 | `include/entities/` |
-| 狀態機與結局 | §2 | `include/state/` |
-| MVC 核心 + ISystem 模擬管線 | §3 | `include/world/`、`include/controller/`、`include/ui/View.h` |
-| gfx 繪圖層 | §4 | `include/gfx/`、`include/ui/` |
-| autoplay 縫合層 | §5 | `include/harness/`、`include/gfx/{Input,Time}.h` |
+| 實體與道具繼承樹 | §1 | `include/game/entities/`、`include/engine/core/` |
+| 狀態機與結局 | §2 | `include/game/state/` |
+| MVC 核心 + ISystem 模擬管線 | §3 | `include/game/world/`、`include/game/controller/`、`include/ui/View.h` |
+| gfx 繪圖層 | §4 | `include/game/gfx/`、`include/engine/render/`、`include/ui/` |
+| autoplay 縫合層 | §5 | `include/engine/platform/`（Harness/ScriptInput/Time） |
 
 ---
 
