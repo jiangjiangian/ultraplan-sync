@@ -11,7 +11,7 @@ public:
                               nccu::engine::math::Color{70, 190, 255, 255},
                               UmbrellaStyle::Domed) {}
 
-    void beClaimed(Player* player) override;
+    void BeClaimed(Player* player) override;
 };
 
 #endif // TRUE_UMBRELLA_H_

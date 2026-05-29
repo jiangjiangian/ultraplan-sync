@@ -9,7 +9,7 @@
 //   2. The WireKarmaToastSubscriber consumer turns that into a
 //      ShowMessage prefixed with 業力, which is what the HUD banner
 //      eventually mirrors.
-//   3. CursedUmbrella::beClaimed (which goes through decreaseKarma →
+//   3. CursedUmbrella::BeClaimed (which goes through decreaseKarma →
 //      AddKarma) no longer double-publishes KarmaChanged.
 //
 // The eventbus_isolation listener clears the bus between cases, so each
@@ -77,7 +77,7 @@ TEST_CASE("decreaseKarma forwards through AddKarma — single publish only") {
     CHECK(cap.deltas[0] == "-10");
 }
 
-TEST_CASE("P2: CursedUmbrella::beClaimed publishes NO KarmaChanged (pickup is karma-neutral)") {
+TEST_CASE("P2: CursedUmbrella::BeClaimed publishes NO KarmaChanged (pickup is karma-neutral)") {
     // Pre-P2 the cursed pickup ran .decreaseKarma(30) inline, which fired
     // ONE KarmaChanged "-30" via Player::AddKarma's auto-publish (Cycle
     // 9.B's de-duplication win). P2 moves the karma cost off the pickup
@@ -89,7 +89,7 @@ TEST_CASE("P2: CursedUmbrella::beClaimed publishes NO KarmaChanged (pickup is ka
     auto cap = CaptureKarma();
 
     CursedUmbrella umb{Vec2{0, 0}};
-    umb.beClaimed(&p);
+    umb.BeClaimed(&p);
 
     CHECK(cap.deltas.empty());                       // no KarmaChanged at pickup
     CHECK(p.GetKarma() == 50);                       // karma untouched

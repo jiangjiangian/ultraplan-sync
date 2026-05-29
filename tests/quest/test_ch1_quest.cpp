@@ -159,7 +159,7 @@ TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
 }
 
 // REGRESSION 2 — the three-ending architecture is untouched: a CursedUmbrella
-// claim still works (its beClaimed sets Flag_TookCursedUmbrella + publishes
+// claim still works (its BeClaimed sets Flag_TookCursedUmbrella + publishes
 // UmbrellaClaimed → Ending B path), independent of the victim grant.
 TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
     EventBus::Instance().Clear();
@@ -171,7 +171,7 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
     // promise first, then claim (this mirrors the in-game gate).
     p.SetFlag(nccu::kFlagPromisedVictim);
     CursedUmbrella cursed{nccu::engine::math::Vec2{0.0f, 0.0f}};
-    cursed.beClaimed(&p);
+    cursed.BeClaimed(&p);
 
     CHECK(p.HasUmbrella());
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));      // Ending B seed
@@ -180,7 +180,7 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
     REQUIRE(cap.umbrellaClaims.size() == 1);
     CHECK(cap.umbrellaClaims[0] == "CursedUmbrella"); // its own clear path
     // Idempotent (CLAUDE.md §5 / BUGLEDGER L2).
-    cursed.beClaimed(&p);
+    cursed.BeClaimed(&p);
     CHECK(cap.umbrellaClaims.size() == 1);
     EventBus::Instance().Clear();
 }

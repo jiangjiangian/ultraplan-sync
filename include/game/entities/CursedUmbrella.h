@@ -16,7 +16,7 @@ public:
     // (SceneRouter Ch2/3/4 entry) bleeds -5 * taint each transition so the
     // moral cost is felt cumulatively across the run rather than as a single
     // sticker shock. Flag_TookCursedUmbrella is still set (Ending B path).
-    void beClaimed(Player* player) override;
+    void BeClaimed(Player* player) override;
 };
 
 #endif // CURSED_UMBRELLA_H_

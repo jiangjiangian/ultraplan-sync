@@ -24,11 +24,11 @@ bool QuestGateOpen(Player* player) {
 }  // namespace
 
 void TransparentUmbrella::Interact(Player* initiator) {
-    if (QuestGateOpen(initiator)) beClaimed(initiator);
+    if (QuestGateOpen(initiator)) BeClaimed(initiator);
 }
 
 void TransparentUmbrella::OnPickup(Player* player) {
-    if (QuestGateOpen(player)) beClaimed(player);
+    if (QuestGateOpen(player)) BeClaimed(player);
 }
 
 void TransparentUmbrella::Render(nccu::engine::render::IRenderer& renderer) const {

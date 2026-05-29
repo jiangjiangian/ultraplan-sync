@@ -3,7 +3,7 @@
 #include "engine/events/EventBus.h"
 #include "engine/events/EventSink.h"
 
-void FragileUmbrella::beClaimed(Player* player) {
+void FragileUmbrella::BeClaimed(Player* player) {
     if (!player) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
     player->SetHeldUmbrella(HeldUmbrella::Fragile);  // B2.1: held-kind + shelter

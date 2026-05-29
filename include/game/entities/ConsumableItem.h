@@ -6,7 +6,7 @@
 // ConsumableItem: abstract Item that the player collects into the bag.
 // Mirrors TransparentUmbrella's role as a middle layer between Item and the
 // concrete subclasses; the polymorphic verb here is Consume() instead of
-// beClaimed().
+// BeClaimed().
 //
 // ISP roles: IInteractable ONLY. Its old Update/Render bodies were empty
 // no-ops (nothing to tick, the View owns drink rendering), so dropping

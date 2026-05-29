@@ -174,7 +174,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
     // LEFT of the gym so it is no longer occluded by the 體育館 building
     // (the old (1640,375) sat inside the gym footprint — visible only once
     // you walked behind it; players reported "傘沒出現"). Claiming it is
-    // the Ch3 clear (Ch1-isomorphic: beClaimed → UmbrellaClaimed → the
+    // the Ch3 clear (Ch1-isomorphic: BeClaimed → UmbrellaClaimed → the
     // EventWiring Ch3 sibling-if → Interlude returnTo Ch4). So it is NOT
     // spawned here at entry — see MaybeSpawnChapter3Umbrella below.
 
@@ -337,7 +337,7 @@ bool World::MaybeSpawnChapter3Umbrella() {
     // 風雩樓 and the gym, so it is visible/reachable instead of occluded
     // inside the gym footprint as the old (1640,375) was. Roster-tracked,
     // so it is swept if the player leaves Ch3 uncleared. Claiming it is the
-    // Ch3 clear (beClaimed → UmbrellaClaimed → EventWiring → Interlude).
+    // Ch3 clear (BeClaimed → UmbrellaClaimed → EventWiring → Interlude).
     if (ch3UmbrellaSpawned_) return false;
     if (semester_.Current() != SemesterState::Chapter3_SportsDay) return false;
     if (!player_ || !player_->HasFlag(kFlagKnowsUmbrellaLoc)) return false;

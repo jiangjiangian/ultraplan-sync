@@ -66,7 +66,7 @@ void LiftChapter1Clear(EventBus& bus, Player& player, SemesterState state,
     if (dialog.Active()) return;                          // (d) still on screen
     if (player.HasFlag(kFlagClearChapter1)) return;       // once
     // The (d) 重逢致謝 exchange has played and closed — NOW clear Ch1.
-    // Publish in TrueUmbrella::beClaimed's exact pair order — ShowMessage
+    // Publish in TrueUmbrella::BeClaimed's exact pair order — ShowMessage
     // FIRST, UmbrellaClaimed SECOND — so the EventWiring chapter-clear toast
     // wins the single Top HUD slot while the pickup line takes Bottom
     // (reversing the pair re-introduces the Cycle 9.A.2 regression pinned by

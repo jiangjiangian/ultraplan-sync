@@ -216,7 +216,7 @@ int Ch4Ta(const Player& p) {
 }
 
 // (b) 淡漠：承諾過但傘到 Ch4 仍未在手 (chapter4.md L338). 否則 (a) 釋懷
-// （已歸還 or Ch1 無承諾, L325). HasUmbrella() is set by TrueUmbrella::beClaimed.
+// （已歸還 or Ch1 無承諾, L325). HasUmbrella() is set by TrueUmbrella::BeClaimed.
 int Ch4Victim(const Player& p) {
     if (p.HasFlag(kFlagPromisedVictim) && !p.HasUmbrella()) return 1;
     return 0;

@@ -4,7 +4,7 @@
 #include "engine/events/EventSink.h"
 #include "game/quest/Flags.h"
 
-void ProfessorTrapUmbrella::beClaimed(Player* player) {
+void ProfessorTrapUmbrella::BeClaimed(Player* player) {
     if (!player) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op (same guard as the sibling umbrellas)
     player->SetHeldUmbrella(HeldUmbrella::ProfessorTrap);  // B2.1: held-kind + shelter

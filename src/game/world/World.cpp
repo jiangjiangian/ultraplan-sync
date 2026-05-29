@@ -46,7 +46,7 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
     // no longer claimable off the ground — the 苦主 grants it once the
     // player carries HIS umbrella back (TryReturnVictimUmbrella). The
     // Cursed / Fragile / ProfessorTrap umbrellas REMAIN as the morality /
-    // Ending-B-etc. paths and still clear Ch1 via their own beClaimed (the
+    // Ending-B-etc. paths and still clear Ch1 via their own BeClaimed (the
     // three-ending architecture is untouched — CLAUDE.md §5).
     objects_.push_back(GameObjectFactory::Create(ObjectType::Player,                Vec2{500, 1860}));
     objects_.push_back(GameObjectFactory::Create(ObjectType::FragileUmbrella,       Vec2{ 750, 1280}));
@@ -60,8 +60,12 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
 
     // Cache the Player BEFORE spawning chapter NPCs so the front-is-
     // Player invariant is established up front and never disturbed:
-    // SpawnChapterNpcs only appends at the back.
-    player_ = dynamic_cast<Player*>(objects_.front().get());
+    // SpawnChapterNpcs only appends at the back. static_cast behind that
+    // documented invariant (front() is the Player pushed first above;
+    // RespawnChapterRoster asserts it stays element 0) — CONVENTIONS §9
+    // bans dynamic_cast and allows static_cast behind a documented
+    // invariant. Removes the last dynamic_cast from non-test src/.
+    player_ = static_cast<Player*>(objects_.front().get());
     if (player_) player_->LoadSprite(playerSpritePath);
 
     // Ch1 spawns through the same state-aware path the FSM later drives,

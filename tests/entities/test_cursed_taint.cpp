@@ -9,7 +9,7 @@
 // Ending B precondition is preserved.
 //
 // Revert-verify (these tests must FAIL on a pre-P2 build):
-//  - CursedUmbrella::beClaimed back to `.decreaseKarma(karmaPenalty_)`
+//  - CursedUmbrella::BeClaimed back to `.decreaseKarma(karmaPenalty_)`
 //    → the "no karma change at pickup" check breaks (karma drops to 20).
 //  - cursedTaint_ removed / ApplyCursedTaintDecay no-op → the per-chapter
 //    decay checks break (karma stays at the pre-decay value).
@@ -33,13 +33,13 @@ TEST_CASE("P2: cursed pickup increments taint, leaves karma untouched at pickup"
     CHECK_FALSE(p.HasFlag(nccu::kFlagTookCursedUmbrella));
 
     CursedUmbrella cursed{Vec2{0.0f, 0.0f}};
-    cursed.beClaimed(&p);
+    cursed.BeClaimed(&p);
     CHECK(p.HasFlag(nccu::kFlagTookCursedUmbrella));  // Ending B key still set
     CHECK(p.HasUmbrella());                            // bag shows cursed row
     CHECK(p.GetKarma() == k0);                        // pickup itself is karma-neutral
     CHECK(p.GetCursedTaint() == 1);                   // counter advanced
 
-    cursed.beClaimed(&p);                             // idempotency guard (isActive_)
+    cursed.BeClaimed(&p);                             // idempotency guard (isActive_)
     CHECK(p.GetCursedTaint() == 1);                   // NOT double-bumped
     CHECK(p.GetKarma() == k0);
 
@@ -76,7 +76,7 @@ TEST_CASE("P2: taint persists through SetHasUmbrella(false) / chapter resets") {
 
     Player p{Vec2{0.0f, 0.0f}};
     CursedUmbrella cursed{Vec2{0.0f, 0.0f}};
-    cursed.beClaimed(&p);
+    cursed.BeClaimed(&p);
     CHECK(p.GetCursedTaint() == 1);
 
     // SceneRouter Ch2/3/4 entry calls SetHasUmbrella(false) to empty the

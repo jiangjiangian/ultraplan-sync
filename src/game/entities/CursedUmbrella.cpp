@@ -4,7 +4,7 @@
 #include "engine/events/EventSink.h"
 #include "game/quest/Flags.h"
 
-void CursedUmbrella::beClaimed(Player* player) {
+void CursedUmbrella::BeClaimed(Player* player) {
     if (player == nullptr) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
     // P2 cursed-taint policy. Pickup no longer takes karma in one shot;

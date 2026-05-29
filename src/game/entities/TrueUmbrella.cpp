@@ -4,7 +4,7 @@
 #include "engine/events/EventSink.h"
 #include "game/quest/Flags.h"
 
-void TrueUmbrella::beClaimed(Player* player) {
+void TrueUmbrella::BeClaimed(Player* player) {
     if (!player) return;
     if (!isActive_) return;        // idempotent: a second call is a no-op
     // B2.1: record WHICH umbrella is now in the bag (sets HasUmbrella too).
