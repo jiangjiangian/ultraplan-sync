@@ -81,7 +81,7 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
 
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world, EventBus::Instance()};
@@ -102,7 +102,7 @@ SpineResult RunSpine(const std::string& script, int maxFrames) {
             break;
     }
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     const Player* p = world.GetPlayer();
     return SpineResult{

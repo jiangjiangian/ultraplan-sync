@@ -53,7 +53,7 @@ struct Frame {
 // input source / real timestep on exit.
 std::vector<Frame> RunPlan(const std::string& script, int maxFrames) {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
 
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world, EventBus::Instance()};
@@ -83,7 +83,7 @@ std::vector<Frame> RunPlan(const std::string& script, int maxFrames) {
     }
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     return trace;
 }
 
@@ -198,7 +198,7 @@ TEST_CASE("plan: `interact victim` deterministically reaches the NPC") {
 // tests/test_ch1_spine_reachable.cpp (the full Ch1→Ch2 spine on this mask).
 TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world, EventBus::Instance()};
 
@@ -230,7 +230,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
         if (in.HasPlan() && f >= 1 && in.PlanDone()) planDone = true;
     }
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     const Player* p = world.GetPlayer();
     REQUIRE(p != nullptr);

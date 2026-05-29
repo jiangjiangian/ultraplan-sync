@@ -76,7 +76,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);    // 60 fps deterministic
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);    // 60 fps deterministic
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -169,12 +169,12 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     }
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
 TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -233,6 +233,6 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
     }
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

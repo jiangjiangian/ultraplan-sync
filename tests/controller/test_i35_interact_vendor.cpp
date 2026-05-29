@@ -127,7 +127,7 @@ bool WalkUpAndTalk(nccu::GameController& c, TestInput& in, World& w,
 // the NPC and dialog NEVER opens (the entire spine soft-locks here).
 TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -166,7 +166,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
     CHECK(world.Dialog().NpcId() == "victim");
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -176,7 +176,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
 // pass-through is not).
 TEST_CASE("I3: player still cannot walk through a static NPC") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -207,7 +207,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
     CHECK(endY >= vy);                                  // ended flush, not past
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -219,7 +219,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
 // Vendor::TryBuy, just as the pinned test_vendor contract requires.
 TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     int pickupHits = 0;
@@ -294,7 +294,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
     CHECK(lastPickup == "UglyUmbrella");
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }
 
@@ -307,7 +307,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
 // I5 fix the EnergyDrink was unobtainable in-engine so the spine stalled.
 TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -399,6 +399,6 @@ TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared
     CHECK(p->HasFlag(nccu::kFlagCh2Cleared));              // <-- Ch2 spine clears
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
 }

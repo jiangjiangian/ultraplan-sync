@@ -96,7 +96,7 @@ const char* const kRouteToVictimStaging =
 Outcome RunInteract(const char* npcId, int maxFrames,
                     const char* preRoute = kRouteToVictimStaging) {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
     World world("", /*loadSprites=*/false);
@@ -136,7 +136,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
     out.endY = p ? p->GetPosition().y : 0.0f;
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
     EventBus::Instance().Clear();
     return out;
 }

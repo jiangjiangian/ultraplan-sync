@@ -2,7 +2,7 @@
 #define GFX_TIME_H_
 #include "raylib.h"
 
-namespace nccu::gfx {
+namespace nccu::engine::platform {
 
 struct Time {
     // Deterministic replay: the autoplay harness pins a fixed step so a
@@ -19,6 +19,6 @@ private:
     inline static float fixed_ = 0.0f;
 };
 
-} // namespace nccu::gfx
+} // namespace nccu::engine::platform
 
 #endif // GFX_TIME_H_

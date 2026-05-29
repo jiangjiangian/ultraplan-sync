@@ -46,7 +46,7 @@ public:
     // hold-timer increment, which is driven by `dt` exactly once per
     // call site — the controller calls this at most once per frame).
     //
-    // dt: frame delta in seconds, sourced from gfx::Time::DeltaSeconds().
+    // dt: frame delta in seconds, sourced from nccu::engine::platform::Time::DeltaSeconds().
     bool TickDialogAdvance(float dt) noexcept;
 
     // The dialog has just closed (or never opened this frame). Drop the

@@ -60,7 +60,7 @@ struct Ch4Fixture {
     explicit Ch4Fixture()
         : world("", /*loadSprites=*/false), controller(world, EventBus::Instance()) {
         nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-        nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+        nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
         EventBus::Instance().Clear();
         world.Semester().Transition(SemesterState::Chapter4_Finals);
         nccu::gfx::Input::SetSource(&in);
@@ -70,7 +70,7 @@ struct Ch4Fixture {
     }
     ~Ch4Fixture() {
         nccu::gfx::Input::SetSource(nullptr);
-        nccu::gfx::Time::SetFixedStep(0.0f);
+        nccu::engine::platform::Time::SetFixedStep(0.0f);
         EventBus::Instance().Clear();
     }
     Player& P() { return *world.GetPlayer(); }

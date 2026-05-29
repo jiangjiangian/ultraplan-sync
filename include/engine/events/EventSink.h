@@ -5,7 +5,7 @@
 namespace nccu::events {
 
 // Plan P2 step 3 — entity-layer publish seam. Mirrors the deliberately-
-// retained gfx::Input::SetSource / gfx::Time::SetFixedStep harness seams
+// retained gfx::Input::SetSource / nccu::engine::platform::Time::SetFixedStep harness seams
 // blueprint phase 2 calls out as "the deliberate, documented mechanism"
 // to keep. The entity layer (umbrella family / consumables / NPC /
 // pickups / Vendor / BuildingTracker) historically called

@@ -51,7 +51,7 @@ public:
     virtual void Enter() {}
 
     // Per-frame model-advance tick. dt is seconds since the previous
-    // frame, sourced from gfx::Time. Returns the SceneCommand the
+    // frame, sourced from nccu::engine::platform::Time. Returns the SceneCommand the
     // SceneManager applies AFTER this frame's Draw — never swap
     // mid-frame. SceneCommand{Kind::None} keeps the scene active.
     [[nodiscard]] virtual SceneCommand Update(float dt) = 0;

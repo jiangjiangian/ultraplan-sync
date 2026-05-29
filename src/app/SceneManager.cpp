@@ -76,7 +76,7 @@ SceneManager::RunOutcome SceneManager::Run(nccu::gfx::Window& window,
         // for this tick BEFORE the active scene's Update reads input.
         harness.BeginFrame();
 
-        const float dt = nccu::gfx::Time::DeltaSeconds();
+        const float dt = nccu::engine::platform::Time::DeltaSeconds();
         SceneCommand cmd = stack_.back()->Update(dt);
 
         {

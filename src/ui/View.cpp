@@ -164,7 +164,7 @@ void View::RenderEnding(const World& world, SemesterState st) {
     // Audit D8 / SC 2.3.3: reduced-motion players skip the half-
     // second luminance ramp and see the card opaque on first paint.
     endingAlpha_ = EndingFadeAlphaStep(
-        endingAlpha_, nccu::gfx::Time::DeltaSeconds(),
+        endingAlpha_, nccu::engine::platform::Time::DeltaSeconds(),
         world.ReducedMotion());
     // Item 1: the ending .md (its narrative + the new 字卡 reason
     // callbacks) is NEVER drawn because this branch early-returns —
@@ -218,7 +218,7 @@ void View::RenderWorld(const World& world, SemesterState st) {
         // below. DeltaSeconds() is the fixed 1/60 step under the harness,
         // so the animation is deterministic; this accumulator is pure View
         // state and never reaches state.jsonl (MVC §5).
-        decorationClock_ += static_cast<double>(Time::DeltaSeconds());
+        decorationClock_ += static_cast<double>(nccu::engine::platform::Time::DeltaSeconds());
 
         drawOrder_.clear();
         drawOrder_.reserve(buildings_.size() + decorations_.size() +
@@ -311,7 +311,7 @@ void View::RenderWorld(const World& world, SemesterState st) {
             // (phase stops advancing); the line is still drawn so the
             // ground-marker affordance is preserved, only animation is.
             interludeMarkerPhase_ += InterludeMarkerPhaseStep(
-                nccu::gfx::Time::DeltaSeconds(),
+                nccu::engine::platform::Time::DeltaSeconds(),
                 world.ReducedMotion());
             DrawInterludeExitMarker(renderer_, interludeMarkerPhase_);
         }
@@ -406,7 +406,7 @@ void View::RenderOverlays(const World& world) {
     // never reaches state.jsonl. reducedMotion (audit D8 / SC 2.3.3) makes
     // it appear opaque immediately and hard-cut at the end (no luminance
     // ramp). The card auto-clears after ChapterCardState::kTotal seconds.
-    chapterCard_.Step(nccu::gfx::Time::DeltaSeconds());
+    chapterCard_.Step(nccu::engine::platform::Time::DeltaSeconds());
     DrawChapterCard(renderer_, chapterCard_, viewportSize_.x, viewportSize_.y,
                     world.ReducedMotion());
 }

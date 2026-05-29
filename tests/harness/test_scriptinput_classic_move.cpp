@@ -82,7 +82,7 @@ TEST_CASE("ScriptInput: classic `down` survives ResolvePlan when plan is empty")
 // ResolvePlan(prevSnapshot) with the snapshot lagging one frame.
 TEST_CASE("ScriptInput: minimal plan verbs still resolve after the I4 fix") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
-    nccu::gfx::Time::SetFixedStep(1.0f / 60.0f);
+    nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
 
     World world("", /*loadSprites=*/false);
     nccu::GameController controller{world, EventBus::Instance()};
@@ -107,7 +107,7 @@ TEST_CASE("ScriptInput: minimal plan verbs still resolve after the I4 fix") {
     }
 
     nccu::gfx::Input::SetSource(nullptr);
-    nccu::gfx::Time::SetFixedStep(0.0f);
+    nccu::engine::platform::Time::SetFixedStep(0.0f);
 
     // wait 2 then quit completed: the resolver ran end-to-end for a
     // plan-bearing script (proving the fix did not short-circuit it).
