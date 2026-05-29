@@ -1,8 +1,10 @@
 #include "game/dialog/DialogSource.h"
+#include "game/dialog/DialogRepository.h"
 
 #include <map>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace nccu::dialog {
@@ -11,6 +13,8 @@ namespace {
 
 // English NPC id (as carried by the codegen Entry / used by the dialog
 // consumers) -> the Chinese section name LoadChapter keys its map on.
+// IMMUTABLE pure data — shared across DialogRepository instances; not
+// part of any instance's mutable state.
 const std::map<std::string_view, std::string>& NpcNameTable() {
     static const std::map<std::string_view, std::string> kTable = {
         {"victim",       "苦主"},
@@ -41,6 +45,7 @@ const std::map<std::string_view, std::string>& NpcNameTable() {
 }
 
 // SemesterState -> the chapter markdown file under the content dir.
+// IMMUTABLE pure data — shared across instances like NpcNameTable above.
 const std::map<SemesterState, std::string>& ChapterFileTable() {
     static const std::map<SemesterState, std::string> kTable = {
         {SemesterState::Chapter1_AddDrop,   "chapter1.md"},
@@ -55,43 +60,42 @@ const std::map<SemesterState, std::string>& ChapterFileTable() {
     return kTable;
 }
 
-std::string& ContentDir() {
-    static std::string dir = "docs/content";
-    return dir;
+// Phase 2.5 — process-default DialogRepository. A function-local
+// static so its construction is thread-safe and lazy (matches the
+// pre-Phase-2.5 ContentDir/Cache Meyers idiom). The seam below
+// (SetRepository/Repository) prefers an injected override and falls
+// through to this default when none is set.
+DialogRepository& DefaultRepository() {
+    static DialogRepository repo;
+    return repo;
 }
 
-// One parsed chapter per state. std::map is node-stable: inserting a
-// new state never moves the vectors already stored, so references
-// handed out by Entries() survive later loads of other states. Only
-// Reload()'s clear() invalidates them.
-std::map<SemesterState, LoadedChapter>& Cache() {
-    static std::map<SemesterState, LoadedChapter> cache;
-    return cache;
-}
+DialogRepository* g_override = nullptr;
 
-// Loads the chapter for `state` once and returns the cached parse.
-// A file that could not be opened still gets cached (LoadChapter
-// yields an empty LoadedChapter) so repeated misses don't re-read.
-const LoadedChapter& ChapterFor(SemesterState state) {
-    auto& cache = Cache();
-    auto it = cache.find(state);
-    if (it != cache.end()) return it->second;
+} // namespace
+
+// ── DialogRepository methods ─────────────────────────────────────
+
+DialogRepository::DialogRepository()
+    : contentDir_("docs/content") {}
+
+const LoadedChapter& DialogRepository::ChapterFor(SemesterState state) {
+    auto it = cache_.find(state);
+    if (it != cache_.end()) return it->second;
 
     const auto& files = ChapterFileTable();
     auto fileIt = files.find(state);
     if (fileIt == files.end()) {
         // Unknown state: cache an empty chapter so we stop looking.
-        return cache.emplace(state, LoadedChapter{}).first->second;
+        return cache_.emplace(state, LoadedChapter{}).first->second;
     }
 
-    const std::string path = ContentDir() + "/" + fileIt->second;
-    return cache.emplace(state, LoadChapter(path)).first->second;
+    const std::string path = contentDir_ + "/" + fileIt->second;
+    return cache_.emplace(state, LoadChapter(path)).first->second;
 }
 
-}  // namespace
-
-const std::vector<SubEntry>& Entries(std::string_view npcId,
-                                     SemesterState state) {
+const std::vector<SubEntry>& DialogRepository::Entries(
+        std::string_view npcId, SemesterState state) {
     static const std::vector<SubEntry> kEmpty;
 
     const auto& names = NpcNameTable();
@@ -105,12 +109,37 @@ const std::vector<SubEntry>& Entries(std::string_view npcId,
     return npcIt->second;
 }
 
+void DialogRepository::Reload() {
+    cache_.clear();
+}
+
+void DialogRepository::SetContentDir(std::string dir) {
+    contentDir_ = std::move(dir);
+}
+
+// ── Seam (process-current repository accessor) ────────────────────
+
+void SetRepository(DialogRepository* repo) noexcept {
+    g_override = repo;
+}
+
+DialogRepository& Repository() noexcept {
+    return g_override ? *g_override : DefaultRepository();
+}
+
+// ── Free-function delegates (preserve pre-Phase-2.5 API) ─────────
+
+const std::vector<SubEntry>& Entries(std::string_view npcId,
+                                     SemesterState state) {
+    return Repository().Entries(npcId, state);
+}
+
 void Reload() {
-    Cache().clear();
+    Repository().Reload();
 }
 
 void SetContentDir(std::string dir) {
-    ContentDir() = std::move(dir);
+    Repository().SetContentDir(std::move(dir));
 }
 
-}  // namespace nccu::dialog
+} // namespace nccu::dialog
