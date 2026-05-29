@@ -42,7 +42,18 @@ if(NOT raylib_FOUND)
 endif()
 
 add_executable(${PROJECT_NAME} "${SRC_DIR}/app/main.cpp")
-target_include_directories(${PROJECT_NAME} PRIVATE "${INCLUDE_DIR}")
+# Two include roots:
+#   ${INCLUDE_DIR}        — engine + ui + game/* in their full layered form
+#                           (every file under include/, with the file's actual
+#                           on-disk path matching its #include string)
+#   ${INCLUDE_DIR}/game   — the composition root's short-form shortcut, so
+#                           main.cpp reads "world/World.h" instead of
+#                           "game/world/World.h". The game/ leaf is the
+#                           app's "domain root"; main.cpp gets the short form
+#                           since the WHOLE program is built from there.
+target_include_directories(${PROJECT_NAME} PRIVATE
+    "${INCLUDE_DIR}"
+    "${INCLUDE_DIR}/game")
 
 # Ship the game binary as `umbrella` (per the assignment README naming) while
 # keeping the CMake target name (${PROJECT_NAME}) and the _tests/_lib targets

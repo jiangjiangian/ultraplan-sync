@@ -1,6 +1,6 @@
-#include "game/world/World.h"
+#include "world/World.h"
 #include "ui/View.h"
-#include "game/controller/GameController.h"
+#include "controller/GameController.h"
 #include "ui/TitleScreen.h"
 #include "ui/CharacterSelect.h"
 #include "ui/LoadingScreen.h"
