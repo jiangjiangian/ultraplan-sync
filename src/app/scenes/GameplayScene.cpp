@@ -15,7 +15,8 @@ GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
                              nccu::audio::AudioDevice& audioDevice,
                              nccu::Harness& harness,
                              int windowWidth,
-                             int windowHeight)
+                             int windowHeight,
+                             RestartFactory restartFactory)
     // Order MATTERS — same as main.cpp's pre-Phase-3 inline block.
     // World is the model; View is the presentation; GameController
     // wires both with the EventBus. AudioManager comes AFTER so
@@ -28,7 +29,8 @@ GameplayScene::GameplayScene(nccu::CharacterSelectResult selection,
       view_(windowWidth, windowHeight),
       controller_(world_, EventBus::Instance()),
       audioManager_(EventBus::Instance(), audioDevice),
-      harness_(harness) {
+      harness_(harness),
+      restartFactory_(std::move(restartFactory)) {
     // Harness-only debug warp: UMBRELLA_START_STATE jumps the FSM at
     // startup so a screenshot can reach a later chapter without
     // scripting the whole spine. Off by default — guarded by
@@ -87,8 +89,23 @@ SceneCommand GameplayScene::Update(float /*dt*/) {
     // main.cpp owns the SceneManager teardown on RunOutcome::Restart
     // by simply rebuilding it.
     const auto act = world_.PendingAppAction();
-    if (act == nccu::World::AppAction::Restart)
-        return SceneCommand{SceneCommand::Kind::Restart, {}};
+    if (act == nccu::World::AppAction::Restart) {
+        // Phase 3 step 4: rebuild via the composition-root-supplied
+        // factory. main.cpp passes a closure that creates a fresh
+        // LoadingScene (-> TitleScene -> CharacterSelectScene ->
+        // GameplayScene), so the whole human path is re-enterable
+        // without an outer loop in main. Harness path receives an
+        // empty restartFactory_ and falls through to Quit, which
+        // matches the never-restart contract: a script that asks
+        // for Restart on a harness run ends the program rather than
+        // looping back to title.
+        if (restartFactory_) {
+            auto fact = restartFactory_;
+            return SceneCommand{SceneCommand::Kind::Replace,
+                                std::move(fact)};
+        }
+        return SceneCommand{SceneCommand::Kind::Quit, {}};
+    }
     if (act == nccu::World::AppAction::Quit)
         return SceneCommand{SceneCommand::Kind::Quit, {}};
     return SceneCommand{SceneCommand::Kind::None, {}};

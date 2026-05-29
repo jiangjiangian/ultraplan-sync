@@ -7,6 +7,8 @@
 #include "ui/CharacterSelect.h"          // PersonaSelection
 #include "ui/View.h"
 #include "game/world/World.h"
+#include <functional>
+#include <memory>
 #include <string>
 
 namespace nccu { class Harness; }
@@ -41,11 +43,20 @@ namespace nccu::app {
 //     Run loop owns the Window/Harness exits).
 class GameplayScene final : public IScene {
 public:
+    // restartFactory: produced by the composition root to build the
+    // scene that should take over when the player picks 重新開始 from
+    // the in-game menu — typically a fresh LoadingScene. Empty (or
+    // nullptr-returning) closure means "no restart path available";
+    // GameplayScene then routes Restart to Quit, which matches the
+    // harness's never-restart contract today.
+    using RestartFactory = std::function<std::unique_ptr<IScene>()>;
+
     GameplayScene(nccu::CharacterSelectResult selection,
                   nccu::audio::AudioDevice& audioDevice,
                   nccu::Harness& harness,
                   int windowWidth,
-                  int windowHeight);
+                  int windowHeight,
+                  RestartFactory restartFactory = {});
 
     void Enter() override;
     [[nodiscard]] SceneCommand Update(float dt) override;
@@ -65,6 +76,7 @@ private:
     nccu::GameController controller_;
     nccu::audio::AudioManager audioManager_;
     nccu::Harness&       harness_;          // borrowed; lives in main.cpp
+    RestartFactory       restartFactory_;    // Phase 3 step 4: rebuild path
 };
 
 } // namespace nccu::app
