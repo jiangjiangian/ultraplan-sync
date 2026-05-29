@@ -1,20 +1,20 @@
-#include "world/World.h"
-#include "ui/View.h"
-#include "controller/GameController.h"
+// Phase 3 step 1: main.cpp shrinks to compose + push the initial
+// scene. The per-run gameplay loop body moved into GameplayScene;
+// SceneManager owns the one app loop.
+#include "app/SceneManager.h"
+#include "app/scenes/GameplayScene.h"
 #include "ui/TitleScreen.h"
 #include "ui/CharacterSelect.h"
 #include "ui/LoadingScreen.h"
 #include "engine/platform/Harness.h"
 #include "engine/render/Window.h"
-#include "engine/render/DrawScope.h"
 #include "engine/render/Font.h"
+#include "engine/render/RaylibRenderer.h"
 #include "engine/render/Texture.h"
 #include "engine/audio/AudioDevice.h"
-#include "engine/audio/AudioManager.h"
 #include "engine/events/EventBus.h"
 #include "engine/events/EventSink.h"  // Plan P2 step 3: entity publish seam
-#include <cstdlib>
-#include <cstring>
+#include <memory>
 
 // MVC composition root. Model = World (pure data), View = rendering,
 // Controller = input + simulation + event wiring. The inner game loop is
@@ -98,95 +98,32 @@ int main() {
             if (selection.closed) continue;  // (defensive; unused now)
         }
 
-        // Per-run scope. Declaration order matters: reverse-destruction
-        // runs the controller dtor (EventBus::Clear) BEFORE the World
-        // refs its subscribers captured die. Do not reorder these three.
-        // On scope exit (Restart) all three are destroyed while `win` /
-        // GL is still alive, then the next iteration builds a brand-new
-        // set — a clean reset with no dangling EventBus handlers.
+        // Phase 3 step 1: the per-run scope (World/View/GameController/
+        // AudioManager + the gameplay while-loop) now lives entirely
+        // inside GameplayScene. SceneManager owns the scene stack +
+        // runs the one app loop (BeginFrame → Update → Draw →
+        // EndFrame → deferred-command apply), mirroring main.cpp's
+        // pre-Phase-3 shape one-for-one so the harness-observable
+        // {state.jsonl, screenshots, event stream} stays byte-identical.
+        //
+        // RAII order: SceneManager dtor runs the scene's dtor (which
+        // runs the controller → AudioManager → View → World chain in
+        // reverse-declaration order) BEFORE the surrounding renderer /
+        // window / GL resources die. The unique_ptr-managed scene gets
+        // teardown for free, exactly as the inline block did.
         {
-            // Plan P2 step 4: resolve UMBRELLA_REDUCED_MOTION /
-            // UMBRELLA_LARGE_TARGETS in the composition root, NOT inside
-            // World — World is now pure relative to its arguments.
-            const nccu::WorldOptions worldOpts =
-                nccu::ReadWorldOptionsFromEnv();
-            nccu::World          world{selection.spritePath,
-                                       /*loadSprites=*/true, worldOpts};
-            // Harness-only debug warp: UMBRELLA_START_STATE jumps the FSM at
-            // startup so a screenshot can reach a later chapter without
-            // scripting the whole spine. Off by default — guarded by
-            // harness.Active() AND the env var, so normal play and the
-            // classic timed harness are byte-for-byte unchanged.
-            if (harness.Active()) {
-                if (const char* s = std::getenv("UMBRELLA_START_STATE"); s) {
-                    using S = nccu::SemesterState;
-                    S target = world.Semester().Current();
-                    bool warp = true;
-                    if      (std::strcmp(s, "Chapter2")  == 0) target = S::Chapter2_Midterms;
-                    else if (std::strcmp(s, "Chapter3")  == 0) target = S::Chapter3_SportsDay;
-                    else if (std::strcmp(s, "Chapter4")  == 0) target = S::Chapter4_Finals;
-                    else if (std::strcmp(s, "Interlude") == 0) target = S::Interlude_Market;
-                    else warp = false;
-                    if (warp) {                       // FSM + roster, so the
-                        world.Semester().Transition(target);   // chapter's NPCs
-                        world.RespawnChapterRoster(target);     // actually spawn
-                    }
-                }
-            }
-            nccu::View           view{kWinW, kWinH};
-            // Plan P2: the bus is the single shared instance for this run.
-            // GameController stores it as a member and threads it down into
-            // the gate/router/screen layers so every Publish reachable from
-            // the controller's frame goes through THIS bus (tests can
-            // construct a local bus and inject it instead).
-            EventBus&             bus = EventBus::Instance();
-            // Plan P2 step 3: bind the entity-layer publish seam to the
-            // SAME bus the controller threads. Entities (umbrella family /
-            // consumables / NPC / pickups / Vendor / BuildingTracker) call
-            // nccu::events::Sink().Publish(...); SetSink redirects that
-            // seam from EventBus::Instance() (the fallback) onto the bus
-            // the controller owns this run. Cleared after the controller
-            // dies — see the Restart/Quit loop reset below.
-            nccu::events::SetSink(&bus);
-            nccu::GameController  controller{world, bus};
-            // Per-run audio orchestrator. Declared AFTER the controller
-            // so reverse-destruction tears down audio FIRST — once audio
-            // events exist, this lets AudioManager unsubscribe its own
-            // EventBus handlers before the controller dtor's bulk
-            // EventBus::Clear() (the same H1/B2 discipline that keeps
-            // restart-across-runs free of dangling subscribers).
-            nccu::audio::AudioManager audioManager{EventBus::Instance(), audioDevice};
-
-            if (Player* p = world.GetPlayer())
-                p->SetTint(selection.tint);  // persona colour modulate
-
-            harness.WireEvents();   // after controller wiring: safe teardown
-
-            bool restart = false;
-            while (!win.ShouldClose() && !harness.ShouldQuit()) {
-                harness.BeginFrame();
-                controller.Update();
-                {
-                    nccu::gfx::DrawScope frame;
-                    view.Draw(world);
-                }
-                harness.EndFrame(world);
-
-                // In-game menu intent (human only — the scripted input
-                // never opens the pause menu, so the harness path is
-                // unaffected and deterministic).
-                const auto act = world.PendingAppAction();
-                if (act == nccu::World::AppAction::Restart) {
-                    restart = true;
-                    break;                   // tear down → back to title
-                }
-                if (act == nccu::World::AppAction::Quit) {
-                    running = false;
-                    break;
-                }
-            }
-            if (!restart) running = false;   // normal end / quit / window
-        }   // world/view/controller dtors (RAII, GL still live)
+            nccu::app::SceneManager sm;
+            nccu::gfx::RaylibRenderer renderer;
+            sm.Push(std::make_unique<nccu::app::GameplayScene>(
+                selection, audioDevice, harness, kWinW, kWinH));
+            const auto outcome = sm.Run(win, renderer, harness);
+            if (outcome == nccu::app::SceneManager::RunOutcome::Quit)
+                running = false;
+            // outcome == Restart: outer loop iterates → new SceneManager
+            // + GameplayScene next round (after Title/Select rerun for
+            // the human path; harness never restarts so the harness
+            // branch never returns Restart).
+        }
         // Plan P2 step 3: drop the entity-layer publish seam BEFORE the
         // next iteration rebuilds World/Controller (which would re-SetSink
         // anyway). Resetting to nullptr makes the seam fall through to
