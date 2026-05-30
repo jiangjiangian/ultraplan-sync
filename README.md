@@ -2,8 +2,8 @@
 # 2026 OOP Assignment #5
 
 - Due: 2026/5/12 23:59:59
-- Author: 111703003 廖經翔
-- Contact: <111703003@g.nccu.edu.tw>
+- Author: jiangjiangian
+- Contact: <iansu0924@gmail.com>
 
 ---
 
