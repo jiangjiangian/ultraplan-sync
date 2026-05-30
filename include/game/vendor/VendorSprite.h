@@ -51,23 +51,26 @@ inline std::string VendorSpriteKey(const std::string& stallKeeper,
 }
 
 /**
- * @brief 取得生成索引為 `index` 的攤位所用的 sprite。
- * @param index       攤位的生成索引。
- * @param stallKeeper 攤主名稱（可為空）。
- * @param name        攤位名稱（攤主為空時改用之）。
- * @param pos         攤位的世界座標位置。
+ * @brief 取得生成索引為 `index` 的攤位所用的 sprite，保證十攤各不相同。
+ * @param index       攤位的生成索引（唯一的選圖依據）。
+ * @param stallKeeper 攤主名稱（保留以維持簽名；現以索引選圖，故未使用）。
+ * @param name        攤位名稱（同上，保留簽名用）。
+ * @param pos         攤位的世界座標位置（同上）。
  * @return sprite 資源路徑。
  *
- * 依索引給出彼此分明的精選退路（乾淨 clone），或在資源包存在時，以攤位唯一字串為鍵
- * 取得 PIPOYA 選圖。每個攤位皆具決定性且穩定。
+ * 以「生成索引」逐攤挑相異 sprite——不論有無 PIPOYA 素材包。有素材包：索引進其清單；
+ * 無素材包：索引進精選後備清單（兩者皆 >= 10 張，足供十攤）。刻意不用 PickNpcSprite
+ * 的 (key, pos) 雜湊：當攤位數接近 roster 大小時雜湊會碰撞（生日悖論），讓有素材包的
+ * 環境冒出重複攤販。索引在兩份清單內皆是單射，故各攤穩定且相異。
  */
 inline std::string VendorSpriteFor(std::size_t index,
-                                   const std::string& stallKeeper,
-                                   const std::string& name,
-                                   nccu::engine::math::Vec2 pos) {
-    return PickNpcSprite(
-        VendorSpriteKey(stallKeeper, name), pos,
-        kVendorFallbackSprites[index % kVendorFallbackCount]);
+                                   [[maybe_unused]] const std::string& stallKeeper,
+                                   [[maybe_unused]] const std::string& name,
+                                   [[maybe_unused]] nccu::engine::math::Vec2 pos) {
+    const auto& roster = PipoyaRoster();
+    if (!roster.empty())
+        return roster[index % roster.size()];
+    return kVendorFallbackSprites[index % kVendorFallbackCount];
 }
 
 } // namespace nccu
