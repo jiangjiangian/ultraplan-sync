@@ -3,6 +3,12 @@
 #include "game/entities/Player.h"
 #include <string>
 
+/**
+ * @file Chapter3Quest.cpp
+ * @brief 第三章（校慶）任務邏輯：A→B→C 物物交換鏈的推進與順序提示、`!` 指示
+ *        的依序點亮，以及 Ch1 漣漪延伸至 Ch3 的扣分。
+ */
+
 namespace nccu {
 
 void TryAdvanceCh3Trade(EventBus& bus, Player& player,
@@ -85,19 +91,20 @@ bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
     const bool loud    = player.HasFlag(kFlagHasLoudspeaker);
     const bool known   = player.HasFlag(kFlagKnowsUmbrellaLoc);
     if (npcId == "vendor_sausage_a")
-        return !sausage && !loud && !known;   // A: chain head, incl. pre-lap
-    if (npcId == "loudspeaker_b")    return sausage && !loud;   // B: after A
-    if (npcId == "senior_c")         return loud && !known;     // C: after B
-    return true;   // any other quest-giver: unchanged (always shown)
+        return !sausage && !loud && !known;   // A：鏈頭，含跑圈前
+    if (npcId == "loudspeaker_b")    return sausage && !loud;   // B：A 之後
+    if (npcId == "senior_c")         return loud && !known;     // C：B 之後
+    return true;   // 其他任務給予者：維持不變（恆顯示）
 }
 
 void TryApplyCh3Ripple(EventBus& bus, Player& player, SemesterState state) {
     if (state != SemesterState::Chapter3_SportsDay) return;
-    if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // once
+    if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // 只觸發一次
     if (!player.HasFlag(kFlagHasProfessorTrap)) return;
-    // chapter3.md 章節結尾分支二: 「後台某個同學看了你手上的傘一眼」
-    // → `// karma -10`（Ch1 漣漪延伸至 Ch3）。獨立 once-key，與
-    // Flag_Ch2Rippled_TA 分開，故 Ch2 已扣過本次仍照扣（L329）。
+    // 章節結尾分支：「後台某個同學看了你手上的傘一眼」，karma -10
+    //（Ch1 的漣漪延伸到 Ch3）。本次以獨立的「只觸發一次」旗標
+    // kFlagCh3RippledProfTrap 把關，與 Ch2 的漣漪旗標分開，因此即使
+    // Ch2 已扣過，本次仍照扣。
     player.AddKarma(-10).SetFlag(kFlagCh3RippledProfTrap);
     bus.Publish(Event{
         EventType::ShowMessage,

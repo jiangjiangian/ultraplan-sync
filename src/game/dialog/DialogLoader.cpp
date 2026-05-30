@@ -57,10 +57,10 @@ std::string ParseNpcName(const std::string& line) {
     if (colon == std::string::npos) return {};
     std::string name = Trim(rest.substr(colon + 3 /* U+FF1A 的位元組數 */));
 
-    // 剝除尾端的全形 （…） 註解，使 section key 為純名——例如 chapter2.md
-    //「## NPC：圖書館管理員（新角色）」鍵為 "圖書館管理員"。與 CleanLabel 對選項
-    // 標題的「錨定於結尾的 （…）」剝除一致；已核對 chapter1-4 無任何 NPC 名合法地
-    // 以 （…） 結尾，故此處只移除作者鷹架，Ch1（純標題）為 no-op。
+    // 剝除尾端的全形 （…） 註解，使段落鍵為純角色名——例如標題「## NPC：圖書館管理員
+    //（新角色）」對應的鍵為「圖書館管理員」。與 CleanLabel 對選項標題「錨定於結尾的
+    // （…）」剝除規則一致；各章內容中並無任何 NPC 名合法地以 （…） 結尾，故此處只移除
+    // 作者撰寫時的鷹架標註，對純標題（無括註）則不作任何更動。
     const size_t pr = name.rfind(kFullWidthParenR);
     if (pr != std::string::npos && pr + 3 == name.size()) {
         const size_t pl = name.find(kFullWidthParenL);

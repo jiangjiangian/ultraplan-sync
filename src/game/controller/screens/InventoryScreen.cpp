@@ -8,6 +8,12 @@
 #include <algorithm>
 #include <vector>
 
+/**
+ * @file InventoryScreen.cpp
+ * @brief 背包畫面的輸入處理：Tab 開關背包，開啟期間凍結模擬，並以方向鍵移動／翻頁、
+ *        以 E/Enter 使用消耗品。
+ */
+
 namespace nccu {
 using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出，以此引入
 
