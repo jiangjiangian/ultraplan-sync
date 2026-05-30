@@ -17,7 +17,7 @@ namespace engine::render { class IRenderer; }
  */
 
 /**
- * @brief 列舉結局畫面可能繪製的每一個字面字串（涵蓋全部三種結局與每個判定條件
+ * @brief 列舉結局畫面可能繪製的每一個字面字串（涵蓋全部四種結局與每個判定條件
  *        分支），皆取自 DrawEndingCard 繪製時所用的「同一份」constexpr 表。
  * @return 所有結局字串。
  *

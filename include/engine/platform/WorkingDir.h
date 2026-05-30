@@ -15,7 +15,7 @@ namespace nccu::engine::platform {
  * @brief 確保程序工作目錄能解析遊戲的相對資源路徑（resources/...、docs/content/...）。
  *
  * 每個材質／字型／地圖／對話檔皆以相對於 CWD 的路徑載入。以建議方式（從專案根
- * 目錄執行 ./build/OOP_Raylib_Lab）啟動沒問題，但從檔案管理員／IDE／點兩下，或
+ * 目錄執行 ./build/umbrella）啟動沒問題，但從檔案管理員／IDE／點兩下，或
  * 從 build/ 內執行二進位檔，會讓 CWD 落在沒有這些資料夾的位置。在 macOS 上
  * raylib 還停用了 GLFW 的 chdir-to-bundle，沒有任何機制替我們修正；而缺少
  * docs/content 曾使字型載入走向過大圖集的退路（在部分 GPU 上造成啟動崩潰）。
