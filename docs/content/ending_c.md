@@ -10,7 +10,7 @@ title: 破財消災
 trigger_condition:
   - player enters 集英樓便利商店
   - purchases 超醜螢光綠色雨傘
-  - game_coins == 0  # spends all coins on purchase
+  - fixed_price: 100  # 破財消災：固定 100 元，不依身上金錢浮動
 state_machine_entry: nccu::SemesterState::Ending_C
 karma_range: any  # this ending bypasses karma gating
 prerequisite_flags: none  # available in any playthrough
@@ -34,7 +34,7 @@ replayable: true
 
 > 字卡：「你沒有去追那把丟掉的傘，也沒有去計較是誰拿走的。」
 
-> 字卡：「你選了最省事的那條路——掏光口袋裡的錢，買過了這整場雨。」
+> 字卡：「你選了最省事的那條路——掏出一百塊，把這整場雨買了過去。」
 
 ---
 
@@ -120,7 +120,7 @@ replayable: true
 
 > 字卡：「這或許也是一種成長？」
 
-> 字卡：「……或許只是你的遊戲幣剛好花完了。」
+> 字卡：「……或許只是你覺得一百塊換一個不被淋的學期，值得。」
 
 ---
 
@@ -153,7 +153,7 @@ replayable: true
 ```
 【製作組附記】
 
-此結局（Ending C）為本作三結局之一，
+此結局（Ending C）為本作四結局之一，
 不需要完成主線任務，任何存檔皆可觸發。
 
 重玩提示：
@@ -161,9 +161,10 @@ replayable: true
 - 通關後，主選單解鎖「螢光綠傘」icon 主題，
   將主選單游標傘換為螢光綠配色。
 
-三種結局各有側重：
+四種結局各有側重：
   Ending A 給努力過的你。
   Ending B 給走歪了的你。
+  Ending D 給好心但還差一步的你。
   Ending C 給務實的你。
 
 感謝你撐著這把傘走完了雨季。

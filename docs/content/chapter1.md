@@ -353,7 +353,7 @@
 
 - **拿到 `CursedUmbrella`**
   - 「傘面上隱約刻著別人的名字，但你假裝沒看到。」
-  - `// karma -30`（直接偷拿，最高懲罰）
+  - `// 詛咒污點：每次拾取使污點+1，之後每進一章扣 5×污點 業力（取代舊的一次性 -30）`（對應 `Player::IncCursedTaint` 累積與 `ApplyCursedTaintDecay` 在 Ch2/Ch3/Ch4 章節進入時扣款；累積拾取或多次拾取懲罰更重）
   - `// 畫面色調略微偏灰，對應 Ending B 路徑種子`
   - `// Flag_TookCursedUmbrella = true`
 
