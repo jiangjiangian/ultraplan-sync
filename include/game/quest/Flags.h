@@ -54,6 +54,7 @@ inline constexpr const char* kFlagKnowsUmbrellaLoc     = "Flag_KnowsUmbrellaLoc"
 inline constexpr const char* kFlagSportsLapDone        = "Flag_SportsLapDone";
 inline constexpr const char* kFlagHasProfessorTrap     = "Flag_HasProfessorTrap";
 inline constexpr const char* kFlagCh3RippledProfTrap   = "Flag_Ch3Rippled_ProfTrap";
+inline constexpr const char* kFlagCh3RippledTAHelped   = "Flag_Ch3Rippled_TAHelped";
 
 // ---- Interlude / 二手市場 --------------------------------------------------
 inline constexpr const char* kFlagLeaveInterlude       = "Flag_LeaveInterlude";

@@ -50,6 +50,25 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
     player.SetFlag(kFlagHasTrueUmbrella);
 }
 
+void TryReturnTaForm(Player& player, std::string_view npcId,
+                     SemesterState state) {
+    if (state != SemesterState::Chapter1_AddDrop) return;
+    if (npcId != "ta") return;
+    if (player.HasFlag(kFlagHelpedTACh1)) return;   // 已交還（冪等）
+    if (!player.HasFlag(kFlagFoundForm)) return;     // 還沒撿到申請書，無可歸還
+
+    // 章節內容助教 (b)：玩家把吹散的加退選申請書撿回來交還。正直行為——karma +5 並設下
+    // 跨章情分旗標 Flag_HelpedTA_Ch1（Ch2 捷徑指路／Ch3 (c) 漣漪 +5／Ch4 道歉弧／
+    // ending_a 名冊條件以它為鍵；先前此旗標「從未被設下」，使整條助教支線形同虛設——
+    // 此處補上設置點）。同時清除 Flag_FoundForm 使背包的「申請書」列消失（比照
+    // TryReturnVictimUmbrella 清 Flag_HasVictimUmbrella、換回筆記清 FoundNote*）。致謝
+    // 口白由助教 (b) 對話呈現（DialogOpener 在 Flag_HelpedTA_Ch1 時把助教路由到 (b)），
+    // 故此處不內聯 ShowMessage。
+    player.AddKarma(5)
+          .SetFlag(kFlagHelpedTACh1)
+          .ClearFlag(kFlagFoundForm);
+}
+
 void LiftChapter1Clear(EventBus& bus, Player& player, SemesterState state,
                        const DialogState& dialog) {
     if (state != SemesterState::Chapter1_AddDrop) return;

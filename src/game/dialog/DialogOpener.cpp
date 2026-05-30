@@ -72,7 +72,7 @@ int Ch1Victim(const Player& p) {
 
 int Ch2SuitSenior(const Player& p) {
     if (p.HasFlag(kFlagHelpedSenior))  return 1;  // (b) +3
-    if (p.HasFlag(kFlagScoldedSenior)) return 2;  // (c) -3
+    if (p.HasFlag(kFlagScoldedSenior)) return 2;  // (c) +0（業力中性，見 TryApplyCh2Ripple）
     return 0;                                       // (a) 路過
 }
 

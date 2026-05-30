@@ -21,6 +21,9 @@ const std::vector<QuestHook>& InteractQuestHooks() {
         v.push_back({"TryReturnVictimUmbrella",
             [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryReturnVictimUmbrella(bus, p, id, s); }});
+        v.push_back({"TryReturnTaForm",
+            [](EventBus&, Player& p, std::string_view id, SemesterState s,
+               SemesterState) { TryReturnTaForm(p, id, s); }});
         v.push_back({"TryRescueBookworm",
             [](EventBus& bus, Player& p, std::string_view id, SemesterState s,
                SemesterState) { TryRescueBookworm(bus, p, id, s); }});

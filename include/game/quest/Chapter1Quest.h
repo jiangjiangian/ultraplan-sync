@@ -60,6 +60,24 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
                              std::string_view npcId, SemesterState state);
 
 /**
+ * @brief E 互動鉤子：在 Ch1 把撿到的加退選申請書交還給助教。
+ * @param player 玩家（交還時加業力、設情分旗標、清除攜帶物旗標）。
+ * @param npcId  互動對象識別字串。
+ * @param state  目前章節狀態。
+ *
+ * 為 TryReturnVictimUmbrella 的姊妹（助教申請書支線）。玩家先在校園撿到吹散的申請書
+ * （QuestFlagPickup 設 Flag_FoundForm），回來交還助教時於此落地章節內容助教 (b) 的
+ * `// karma +5` ＋ `// Flag_HelpedTA_Ch1 = true`：正直行為 +5 業力、設下「跨章情分」旗標
+ * （Ch2 捷徑指路／Ch3 (c) 漣漪 +5／Ch4 道歉弧／ending_a 名冊條件皆以它為鍵），並清除
+ * Flag_FoundForm 使背包的「申請書」列消失（比照歸還苦主傘清 Flag_HasVictimUmbrella、
+ * 換回筆記清 FoundNote*）。致謝口白由助教 (b) 對話呈現，故此處不內聯 ShowMessage。除非
+ * state==Chapter1_AddDrop、npcId=="ta"、已持申請書且尚未交還，否則為 no-op；以
+ * Flag_HelpedTA_Ch1 達成冪等。
+ */
+void TryReturnTaForm(Player& player, std::string_view npcId,
+                     SemesterState state);
+
+/**
  * @brief 延後執行的 Ch1 章節結束輪詢，為 Chapter2Quest::LiftChapter2Clear 的姊妹。
  * @param bus    事件匯流排（由此發布 ShowMessage + UmbrellaClaimed）。
  * @param player 玩家（讀取授予旗標與一次性鎖鍵）。

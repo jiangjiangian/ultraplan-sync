@@ -99,17 +99,29 @@ bool Ch3IndicatorVisible(std::string_view npcId, const Player& player) {
 
 void TryApplyCh3Ripple(EventBus& bus, Player& player, SemesterState state) {
     if (state != SemesterState::Chapter3_SportsDay) return;
-    if (player.HasFlag(kFlagCh3RippledProfTrap)) return;       // 只觸發一次
-    if (!player.HasFlag(kFlagHasProfessorTrap)) return;
-    // 章節結尾分支：「後台某個同學看了你手上的傘一眼」，karma -10
-    //（Ch1 的漣漪延伸到 Ch3）。本次以獨立的「只觸發一次」旗標
-    // kFlagCh3RippledProfTrap 把關，與 Ch2 的漣漪旗標分開，因此即使
-    // Ch2 已扣過，本次仍照扣。
-    player.AddKarma(-10).SetFlag(kFlagCh3RippledProfTrap);
-    bus.Publish(Event{
-        EventType::ShowMessage,
-        std::string("有人看了你手上的傘一眼："
-                    "「那把……是教授研究室借出去的那把嗎？」")});
+
+    // 漣漪一：陷阱傘 karma -10（Ch1 漣漪延伸到 Ch3）。以獨立的「只觸發一次」旗標
+    // kFlagCh3RippledProfTrap 把關，與 Ch2 的漣漪旗標分開，因此即使 Ch2 已扣過本次仍照扣。
+    if (player.HasFlag(kFlagHasProfessorTrap) &&
+        !player.HasFlag(kFlagCh3RippledProfTrap)) {
+        player.AddKarma(-10).SetFlag(kFlagCh3RippledProfTrap);
+        bus.Publish(Event{
+            EventType::ShowMessage,
+            std::string("有人看了你手上的傘一眼："
+                        "「那把……是教授研究室借出去的那把嗎？」")});
+    }
+
+    // 漣漪二：Ch1 幫過助教的情分在 Ch3 兌現 karma +5（章節內容助教 (c)
+    // `// karma +5（Flag_HelpedTA_Ch1 callback）`）。同樣以獨立的一次性旗標把關。與漣漪一
+    // 互不相干，兩者可在同一輪各自恰好觸發一次。
+    if (player.HasFlag(kFlagHelpedTACh1) &&
+        !player.HasFlag(kFlagCh3RippledTAHelped)) {
+        player.AddKarma(5).SetFlag(kFlagCh3RippledTAHelped);
+        bus.Publish(Event{
+            EventType::ShowMessage,
+            std::string("助教遠遠對你點了點頭："
+                        "「上次那份申請書，真的幫了大忙。」")});
+    }
 }
 
 } // namespace nccu

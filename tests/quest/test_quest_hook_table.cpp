@@ -26,16 +26,17 @@ using nccu::SemesterState;
 // 表的註冊順序必須逐一對應原始內嵌呼叫的先後（順序錯置會破壞跨 hook 的旗標依賴）。
 TEST_CASE("InteractQuestHooks：註冊順序與原始內嵌呼叫序列一致") {
     const std::vector<QuestHook>& hooks = InteractQuestHooks();
-    REQUIRE(hooks.size() == 9);
+    REQUIRE(hooks.size() == 10);
     CHECK(hooks[0].name == std::string_view("TryReturnVictimUmbrella"));
-    CHECK(hooks[1].name == std::string_view("TryRescueBookworm"));
-    CHECK(hooks[2].name == std::string_view("TryMeetLibrarian"));
-    CHECK(hooks[3].name == std::string_view("TryLendLibrarianUmbrella"));
-    CHECK(hooks[4].name == std::string_view("TryReturnLibrarianUmbrella"));
-    CHECK(hooks[5].name == std::string_view("TryApplyCh2Ripple"));
-    CHECK(hooks[6].name == std::string_view("TryAdvanceCh3Trade"));
-    CHECK(hooks[7].name == std::string_view("TryApplyCh3Ripple"));
-    CHECK(hooks[8].name == std::string_view("TryApplyCh4Ripple"));
+    CHECK(hooks[1].name == std::string_view("TryReturnTaForm"));
+    CHECK(hooks[2].name == std::string_view("TryRescueBookworm"));
+    CHECK(hooks[3].name == std::string_view("TryMeetLibrarian"));
+    CHECK(hooks[4].name == std::string_view("TryLendLibrarianUmbrella"));
+    CHECK(hooks[5].name == std::string_view("TryReturnLibrarianUmbrella"));
+    CHECK(hooks[6].name == std::string_view("TryApplyCh2Ripple"));
+    CHECK(hooks[7].name == std::string_view("TryAdvanceCh3Trade"));
+    CHECK(hooks[8].name == std::string_view("TryApplyCh3Ripple"));
+    CHECK(hooks[9].name == std::string_view("TryApplyCh4Ripple"));
 }
 
 // 每筆項目都必須帶有可呼叫的函式物件，避免表中出現空 hook。
