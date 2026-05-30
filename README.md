@@ -119,87 +119,99 @@ ctest --test-dir build      # 或透過 CTest 執行
 <details>
 <summary>課程作業規格</summary>
 
-### 2026 OOP Assignment #5
+### 2026 OOP Assignment #6
 
-#### 2D Game (1/2)
+#### 2D Game (2/2)
 
-Obejctive: Building a basic structure of a game and practice Object-Oriented
-Design
+Objective: Extend the game skeleton from Assignment #5 and build a simple
+Vampire Survivors-like survival game.
 
 #### Description
 
-In this assignment, you are required to complete the basic game sturcture.
-Raylib has no OOP architecture, so you need to create a simple one by yourself.
+Extend the basic game structure from Assignment #5 into a simple survival game.
+The player moves around the screen, enemies spawn periodically and chase the
+player, and the player attacks automatically. The goal is to survive as long as
+possible. The focus is Object-Oriented Design, object interaction, collision
+handling, and game state management.
 
 #### Requirements
 
-1. Design an architecture that decouples UI logics and Data logics
-2. Design a class that controls player's moving behavior. (e.g. WASD to move.)
-3. Design a tool Class that can generate GameObjects. (Reference:
-   [Factory Pattern](https://medium.com/@antwang/factory-method-in-c-the-right-way-e8c5f015fe39))
-4. Draw a UML Class Diagram that shows the architecture of your app briefly.
+1. Reuse or extend the architecture from Assignment #5.
+2. Continue to decouple UI logic and data logic.
+3. Movable Player GameObject (keyboard control, e.g. WASD).
+4. Enemy GameObjects that spawn periodically and move toward the player.
+5. Automatic attack system firing at a fixed interval (e.g. projectiles toward
+   the nearest enemy).
+6. Projectile GameObjects that move after creation and disappear on hit or when
+   leaving the screen.
+7. Collision detection between Projectile↔Enemy and Enemy↔Player.
+8. HP for both Player and Enemy (enemies die at 0 HP; player loses HP on contact).
+9. Remove dead enemies and expired projectiles from the world.
+10. Basic UI: Player HP, survival time, kill count.
+11. Game Over state when the player's HP reaches zero.
+12. Update the UML Class Diagram to reflect the architecture.
 
 #### Expected Output
 
-After running the program, the following should be displayed on the window:
+On running the program, the window should show:
 
-1. At least one simple GameObject
-2. A movable player GameObject with key control
+1. A movable player GameObject under key control.
+2. Enemies spawning periodically and moving toward the player.
+3. The player auto-attacking nearby enemies; projectiles damaging them.
+4. Defeated enemies disappearing; the player losing HP on contact.
+5. Basic UI (Player HP, survival time, kill count) and a Game Over message
+   when HP reaches zero.
 
-> You can customize every GameObject's appearance
+> You can customize every GameObject's appearance.
 
-#### Clone the Dev Template
+#### Scope Limitation (not required)
 
-```console
-git clone https://github.com/oopnccucs/raylib-dev-template.git
-```
-
-> If you name your project `OOPFinal`, enter
-
-```console
-mv raylib-dev-temlate OOPFinal && cd OOPFinal && rm -rf .git/
-```
+Level-up, multiple weapons, experience gems, upgrade UI, sound effects,
+animation, scrolling map, complex wave design — optional bonus only.
 
 #### Compile and Run
 
-Before compiling the program, in **Project Folder**:
-
 ```console
 cmake -B build
-```
-
-```console
 cmake --build build
-```
-
-To run the program:
-
-```console
 ./build/[your_project_name]
 ```
 
 #### Submit the assignment
 
-Please Create a Github Repository of your own, and submit it's URL on Moodle.
+The repository inherits from Assignment #5. Mark the submission version with:
 
-#### Scoring Criteria
+```console
+git commit -m "feat:Assignment6 submit"
+```
+
+#### Scoring Criteria (Basic)
 
 | Description | Score |
 | --- | --- |
-| Submit the assignment | 20 |
-| Able to compile | 20 |
-| Draw GameObject correctly | 20 |
+| Submit the assignment | 10 |
+| Able to compile | 15 |
+| Reuse or extend Assignment #5 architecture | 10 |
 | UI / Data duty separation | 10 |
 | Implement Player GameObject correctly | 10 |
-| Implement GameObjectFactory | 10 |
+| Implement Enemy spawning and chasing behavior | 15 |
+| Implement automatic attack and Projectiles | 15 |
+| Implement collision, damage, and object removal | 15 |
+| Display basic UI and Game Over state | 10 |
 | UML Class Diagram | 10 |
+
+#### Bonus / Oral Exam
+
+- Bonus: each extra feature grants +5 (up to 30). Custom-topic students get 30.
+- Oral exam (6/3 TA class or 6/10 regular class): overall understanding 10,
+  OOP architecture 10, core mechanics 15, code/debugging 10, expression &
+  honesty 5.
 
 #### Reminder
 
-1. The default `include` and `resources` path is configured. You don't need to
-   add prefix to locate files. (Just use `#include "some_header.h"` under
-   include/)
+1. The default `include` and `resources` paths are configured — just use
+   `#include "some_header.h"` under `include/`.
 2. You may create new files for more features.
-3. This assignment is the foundation of the following one.
+3. This assignment is based on Assignment #5.
 
 </details>
