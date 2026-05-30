@@ -107,36 +107,36 @@ CMake 以 `GLOB_RECURSE` 掃描 `src/`、`tests/`，並在建置時把整個
 ### 目錄樹
 
 ```text
-ultraplan-sync/
-├── README.md                     本檔（作業說明 + 檔案樹）
-├── CMakeLists.txt                CMake 建置（GLOB_RECURSE 掃 src/ + tests/，複製 resources/）
-├── CREDITS.md                    第三方素材與字型出處
-├── Doxyfile                      Doxygen API 文件設定
-├── 遊戲企劃與敘事架構.md           GDD：角色 / karma / 經濟 / 四結局 / 章節脊
+.
+├── README.md                             本檔（作業說明 + 檔案樹）
+├── CMakeLists.txt                        CMake 建置（GLOB_RECURSE 掃 src/ + tests/，複製 resources/）
+├── CREDITS.md                            第三方素材與字型出處
+├── Doxyfile                              Doxygen API 文件設定
+├── 遊戲企劃與敘事架構.md                 GDD：角色 / karma / 經濟 / 四結局 / 章節脊
 │
-├── include/                      標頭檔（144）— 領域分層 app/engine/game/ui
-│   ├── app/      (7)   程式進入點與場景切換（IScene / SceneManager / scenes）
-│   ├── engine/   (27)  與遊戲無關的引擎層：audio / core / events / input / math / platform / render
-│   ├── game/     (89)  遊戲邏輯：controller / dialog / entities / gfx / quest / state / vendor / world
-│   └── ui/       (21)  View 與其下 hud / overlay / world，加上扁平視圖（標題 / 角色選擇 / 結局…）
+├── include/                              標頭檔（144）— 領域分層 app / engine / game / ui
+│   ├── app/      (7)                         程式進入點與場景切換（IScene / SceneManager / scenes）
+│   ├── engine/   (27)                        引擎層：audio / core / events / input / math / platform / render
+│   ├── game/     (89)                        遊戲邏輯：controller / dialog / entities / gfx / quest / state / vendor / world
+│   └── ui/       (21)                        View 與 hud / overlay / world，加上扁平視圖（標題 / 角色選擇 / 結局…）
 │
-├── src/                          實作（80）— 逐檔對應 include/，相同四領域劃分
-│   ├── app/      (7)   main.cpp（composition root）+ SceneBootstrap / SceneManager / scenes
-│   ├── engine/   (8)   有狀態的引擎實作：audio / events / platform / render（多數標頭為 header-only）
-│   ├── game/     (50)  controller / dialog / entities / quest / state / vendor / world 的實作
-│   └── ui/       (15)  View 與 hud / overlay / world 視圖實作
+├── src/                                  實作（80）— 逐檔對應 include/，相同四領域劃分
+│   ├── app/      (7)                         main.cpp（composition root）+ SceneBootstrap / SceneManager / scenes
+│   ├── engine/   (8)                         有狀態的引擎實作：audio / events / platform / render（其餘為 header-only）
+│   ├── game/     (50)                        controller / dialog / entities / quest / state / vendor / world 的實作
+│   └── ui/       (15)                        View 與 hud / overlay / world 視圖實作
 │
-├── tests/                        doctest 測試套件（112 個 .cpp，571 個 TEST_CASE）
-│   └── controller / dialog / entities / gfx / harness / quest / state / ui / vendor / world / fixtures
+├── tests/                                doctest 測試套件（112 個 .cpp，571 個 TEST_CASE）
+│   └── （依 domain 分目錄）                  controller / dialog / entities / gfx / harness / quest / state / ui / vendor / world / fixtures
 │
-├── docs/                         UML.md（評分用 UML 設計）+ content/（執行期載入的劇情 Markdown）
+├── docs/                                 UML.md（評分用 UML 設計）+ content/（執行期載入的劇情 Markdown）
 │
-├── resources/                    執行期資產（CMake 複製到執行檔旁）
-│   └── assets/  sprites/ · buildings_3d_trimmed/ · Pixel Art Vending Machines Pack/ ·
-│                decorations/ · fonts/(cjk.ttf) · maps/（碰撞遮罩 + worldmap）
+├── resources/                            執行期資產（CMake 複製到執行檔旁）
+│   └── assets/                               sprites / buildings_3d_trimmed / Pixel Art Vending Machines Pack /
+│                                             decorations / fonts(cjk.ttf) / maps（碰撞遮罩 + worldmap）
 │
-└── tools/                        資產 / 地圖管線（Python，本地生成用，非執行期相依）
-      tiled_to_world.py · composite_worldmap.py · trim_tiles.py · trim_3d.py …
+└── tools/                                資產 / 地圖管線（Python，本地生成用，非執行期相依）
+    └── *.py                                  tiled_to_world / composite_worldmap / trim_tiles / trim_3d …（8 支）
 ```
 
 > 每個頂層資料夾下皆有一份 `README.md` 說明其內容與職責

@@ -4,13 +4,16 @@
 sprite、世界地圖與碰撞遮罩，並產生分析圖。這些都是**本地一次性工具**，**非執行期相依**：
 遊戲執行時不會呼叫它們，產物已預先烘焙進 `resources/`。
 
-## 各腳本用途
+## 目錄樹（8 支腳本）
 
-- **tiled_to_world.py** — 由 Tiled 地圖輸出 `Buildings.h` 的 `kAll[]` 建築清單，並烘焙地形碰撞遮罩。
-- **composite_worldmap.py** — 把所有建築 tile 合成到世界地圖底圖上，產出完整 worldmap。
-- **trim_tiles.py** — 一次性前處理：把 `buildings_topdown/` 內每張 PNG 的灰底去除（俯視角建築去背）。
-- **trim_3d.py** — 一次性前處理：把 `buildings_3d/` 內每張 PNG 的白色背景去除，輸出至 `buildings_3d_trimmed/`。
-- **strip_plots.py** — 把 `worldmap_base.png` 上米色的建築基地矩形清掉、改塗成草地（保留底圖供重組）。
-- **gif_to_strip.py** — 把動態 GIF 轉成遊戲用的水平 sprite strip（橫向連續幀）PNG。
-- **text_map.py** — 產生《尋傘記》的「文字 ↔ 旗標 ↔ 程式碼」相依關係圖。
-- **docs_graph.py** — 《尋傘記》專用的知識圖譜萃取器，從文件擷取關聯結構。
+```text
+.
+├── tiled_to_world.py                     由 Tiled 地圖輸出 Buildings.h 的 kAll[] 並烘焙地形碰撞遮罩
+├── composite_worldmap.py                 把所有建築 tile 合成到世界底圖，產出完整 worldmap
+├── trim_tiles.py                         一次性去背：俯視角建築 PNG 去灰底（buildings_topdown/）
+├── trim_3d.py                            一次性去背：3D 建築 PNG 去白底 → buildings_3d_trimmed/
+├── strip_plots.py                        清掉 worldmap_base.png 上的米色建築基地，改塗草地（保留底圖供重組）
+├── gif_to_strip.py                       把動態 GIF 轉成遊戲用的水平 sprite strip（橫向連續幀）PNG
+├── text_map.py                           產生「文字 ↔ 旗標 ↔ 程式碼」相依關係圖
+└── docs_graph.py                         從文件擷取關聯結構的知識圖譜萃取器
+```

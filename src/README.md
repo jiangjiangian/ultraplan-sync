@@ -14,22 +14,37 @@ app  ──▶  game / ui  ──▶  engine
 本樹共 **80** 個 `.cpp`。檔案數少於 `include/` 是刻意的：`engine` 的 math / render 包裝、
 以及 `game/gfx` 多為 header-only，故只有需要存放狀態或非平凡邏輯者才有對應 `.cpp`。
 
-## 各領域子目錄
+## 目錄樹
 
-- **app/**（7）— `main.cpp`（composition root，刻意置於 app 根）+ `SceneBootstrap` /
-  `SceneManager`，以及 `scenes/`（Loading / Title / CharacterSelect / Gameplay 四個場景）。
-- **engine/**（8）— 有狀態或需連結 Raylib 的引擎實作：
-  - `audio/`（2）AudioDevice / AudioManager
-  - `events/`（2）EventBus / EventSink
-  - `platform/`（3）Harness / ScriptInput / Time
-  - `render/`（1）RaylibRenderer（其餘 render 包裝為 header-only）
-- **game/**（50）— 遊戲邏輯實作：
-  - `controller/`（12）GameController / GameObjectFactory / InputHandler / SceneRouter / EventWiring / SimSystem / screens
-  - `dialog/`（6）DialogLoader / Source / Opener / Repository …
-  - `entities/`（13）Player / NPC / Item / 雨傘 / 消耗品 / 拾取物 …
-  - `quest/`（9）章節任務 / spawn / flags / objective
-  - `state/`（2）SemesterStateMachine / EndingGate（**四結局** Ending_A/B/C/D）
-  - `vendor/`（2）攤販邏輯
-  - `world/`（6）World / Physics / CollisionMask / BuildingTracker
-- **ui/**（15）— `View` 與 `hud/`（4）、`overlay/`（3）、`world/`（2）視圖實作，
-  外加扁平視圖（EndingView / InventoryView / MessageView / ChapterCard / HelpPageView）。
+```text
+.
+├── app/                                組裝層與場景生命週期（7）
+│   ├── main.cpp                            composition root（刻意置於 app 根）
+│   ├── SceneBootstrap.cpp                  場景接線組裝
+│   ├── SceneManager.cpp                    場景堆疊管理
+│   └── scenes/                             Loading / Title / CharacterSelect / Gameplay 四場景
+│
+├── engine/                             有狀態 / 需連結 Raylib 的引擎實作（8）
+│   ├── audio/    (2)                       AudioDevice / AudioManager
+│   ├── events/   (2)                       EventBus / EventSink
+│   ├── platform/ (3)                       Harness / ScriptInput / ScriptResolver
+│   └── render/   (1)                       RaylibRenderer（其餘 render 包裝為 header-only）
+│
+├── game/                               遊戲邏輯實作（50）
+│   ├── controller/ (12)                    GameController / GameObjectFactory / InputHandler / SceneRouter …
+│   │   └── screens/ (4)                        Dialog / Ending / Inventory / Pause 畫面控制
+│   ├── dialog/     (6)                     DialogLoader / Source / Opener / Layout / State / View
+│   ├── entities/   (13)                    Player / NPC / 雨傘家族 / 消耗品 / 拾取物 / DlcSign
+│   ├── quest/      (9)                     各章任務 / ChapterGate / ItemCatalog / QuestHookTable …
+│   ├── state/      (2)                     SemesterStateMachine / EndingGate（四結局）
+│   ├── vendor/     (2)                     Vendor / VendorLoader
+│   └── world/      (6)                     World / TerrainMask / BuildingTracker / WorldSpawn …
+│
+└── ui/                                 視圖實作（15）
+    ├── (扁平視圖 6)                        View / EndingView / InventoryView / MessageView / ChapterCard / HelpPageView
+    ├── hud/      (4)                       ObjectiveBar / RainVignette / SportsLapRing / StatusPanel
+    ├── overlay/  (3)                       HelpOverlay / MenuAffordance / PauseMenu
+    └── world/    (2)                       QuestGiverIndicators / SportsLapTrack
+```
+
+> `state/EndingGate` 對應狀態機 **四結局** Ending_A / B / C / D。

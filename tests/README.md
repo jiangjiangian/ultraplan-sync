@@ -7,6 +7,25 @@
 本樹共 **112** 個 `.cpp` 檔，合計 **571** 個 `TEST_CASE`（另有 `fixtures/` 放共用測試資料，非測試案例）。
 測試樹依與原始碼相同的 domain 子目錄組織。
 
+## 目錄樹
+
+```text
+.
+├── controller/ (9)                       GameController / 工廠 / 接線；test_factory · test_scene_router
+├── dialog/     (10)                      Markdown 解析與分支；test_dialog_loader · test_dialog_state
+├── entities/   (14)                      Player / NPC / 雨傘；test_player_core · test_rain_survival
+├── gfx/        (10)                      版面與座標換算；test_vec2 · test_camera2d_clamp
+├── harness/    (3)                       自動遊玩感知層；test_scriptinput · test_scriptinput_plan
+├── quest/      (31)                      章節脊 / spawn / flags；test_chapter_spine · test_economy_loop
+├── state/      (6)                       狀態機轉移；test_state_machine · test_ending_gate（四結局）
+├── ui/         (20)                      HUD / overlay / model；test_pause_menu_toggle · test_karma_toast
+├── vendor/     (5)                       攤販定價與訊息；test_vendor · test_vendor_loader
+├── world/      (4)                       碰撞 / 物理；test_collision_mask · test_physics
+└── fixtures/   (1)                       共用測試資料 dialog_sample.md（非 TEST_CASE）
+```
+
+各子目錄的詳細涵蓋範圍與 `TEST_CASE` 計數見下表。
+
 ## 如何執行
 
 CMake 透過 `FetchContent` 取得 doctest，並以 `add_test(NAME unit_tests …)` 註冊到 CTest：
