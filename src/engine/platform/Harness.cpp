@@ -24,39 +24,33 @@
 namespace nccu {
 namespace {
 
-// Canonical quest/choice flags (SCRIPT_HANDOFF.md). Player exposes only
-// HasFlag(name), so the observable set is enumerated here; the dump emits
-// the subset currently true.
+// 正規的任務／選擇旗標。Player 只暴露 HasFlag(name)，故可觀察的集合在此列舉；輸出時
+// 只發出當前為真的子集。
 const std::vector<std::string>& KnownFlags() {
     static const std::vector<std::string> kFlags = {
         kFlagFoundForm, kFlagPromisedVictim, kFlagHelpedTACh1,
-        // 善有善報: the findable 苦主's-umbrella pickup flag (set by the
-        // Ch1 QuestFlagPickup, cleared by the grant in
-        // TryReturnVictimUmbrella). Whitelisted so the Ch1 reciprocity
-        // spine is observable in state.jsonl, like Flag_FoundForm.
+        // 善有善報：可被尋獲的苦主之傘拾取旗標（由第一章 QuestFlagPickup 設下，於
+        // TryReturnVictimUmbrella 的授予時清除）。列入白名單，使第一章的善有善報主線
+        // 像 Flag_FoundForm 一樣在存檔中可觀察。
         kFlagHasVictimUmbrella,
         kFlagTookCursedUmbrella, kFlagHasTrueUmbrella,
-        // (Cycle-8 audit F1, B3 precedent: the inert KnowsUgly seed
-        // formerly listed here was removed; the Ch1 阿姨 (c) buy is
-        // now a pure narrative seed with no tracked flag — Ending-C
-        // is driven entirely by Flag_BoughtUglyUmbrella set by the
-        // Ch4 集英樓 Vendor, EndingGate.cpp.)
+        // （先前列於此處、無作用的 KnowsUgly 種子已移除；第一章阿姨 (c) 的購買現在是純
+        // 敘事種子、不追蹤任何旗標——結局 C 完全由第四章集英樓攤販所設的
+        // Flag_BoughtUglyUmbrella 驅動，見 EndingGate.cpp。）
         kFlagBoughtUglyUmbrella,
         kFlagSuitSeniorChoiceMade, kFlagScoldedSenior,
         kFlagHelpedSenior, kFlagFoundNote1, kFlagFoundNote2,
         kFlagFoundNote3, kFlagBookwormRecovered, kFlagCh2Cleared,
         kFlagCh2RippledSuitSenior, kFlagCh2RippledTA,
         kFlagHasSausage, kFlagHasLoudspeaker, kFlagKnowsUmbrellaLoc,
-        // B2.3: the 圖書館管理員 loaner-umbrella latch, so the Ch2 loaner
-        // grant is observable in state.jsonl like the other quest flags.
+        // 圖書館管理員借傘的閂鎖，使第二章的借傘授予像其他任務旗標一樣在存檔中可觀察。
         kFlagLibrarianUmbrella,
         kFlagCh3RippledProfTrap, kFlagCh3Cleared, kFlagConsoledTA,
         kFlagTaFinaleChoiceMade, kFlagCh4RippledSenior,
         kFlagCh4RippledBookworm, kFlagCh4RippledTAHelped,
         kFlagCh4RippledProfTrap, kFlagLeaveInterlude,
-        // G2: the Ch4 ending-自白 once-keys (TryOpenEndingConfession). Listed
-        // so the deferred-then-resolved ending sequence is observable in
-        // state.jsonl when a playtest drives a Ch4 ending.
+        // 第四章結局自白的一次性旗標（TryOpenEndingConfession）。列出，使當測試驅動某個
+        // 第四章結局時，先延後再解算的結局序列在存檔中可觀察。
         kFlagCh4ConfessedCursed, kFlagCh4ConfessedUgly,
         kFlagCh4ConfessedTrue,
     };
@@ -79,7 +73,7 @@ std::string EscapeJson(std::string_view s) {
                     std::snprintf(buf, sizeof(buf), "\\u%04x", c);
                     o += buf;
                 } else {
-                    o += static_cast<char>(c);  // UTF-8 bytes pass through
+                    o += static_cast<char>(c);  // UTF-8 位元組直接通過
                 }
         }
     }
@@ -104,7 +98,7 @@ std::string GetEnv(const char* k) {
 
 } // namespace
 
-// ---- Harness state -----------------------------------------------------
+// ---- Harness 狀態 -----------------------------------------------------
 struct HarnessState {
     bool active = false;
     std::unique_ptr<ScriptInput> script;
@@ -115,11 +109,9 @@ struct HarnessState {
     bool quitReq   = false;
     std::ofstream stateOut;
     std::vector<Event> events;
-    // Non-owning snapshot of the World, captured read-only at EndFrame and
-    // consumed by the NEXT BeginFrame's plan resolution. The harness never
-    // mutates it (MVC purity); using the previous frame's state keeps the
-    // high-level verbs a pure, deterministic function of the recorded
-    // simulation. Null until the first EndFrame (plan idles until then).
+    // World 的非擁有快照，於 EndFrame 唯讀擷取，並由「下一次」 BeginFrame 的計畫解析
+    // 消費。harness 絕不改寫它（MVC 純度）；使用前一幀的狀態，使高階動詞成為已記錄模擬
+    // 的純粹且具決定性的函式。在首次 EndFrame 之前為 null（在那之前計畫待機）。
     const World* lastWorld = nullptr;
 };
 
@@ -142,10 +134,9 @@ std::string DumpStateJson(const HarnessState& st, const World& world) {
           << ",\"money\":" << p->GetMoney()
           << ",\"rain\":" << p->GetRainMeter()
           << ",\"umbrella\":" << (p->HasUmbrella() ? "true" : "false");
-        // P2: only emit cursedTaint when non-zero so non-cursed playtest
-        // oracles (e.g. `3ea809bb…`) stay byte-identical. A taint > 0 run
-        // intentionally writes a NEW field — visible diff vs the oracle
-        // is by design for that scenario, like the flags array growing.
+        // 只在非零時才輸出 cursedTaint，使未受詛咒的測試基準維持逐位元一致。taint > 0 的
+        // 執行刻意寫出一個「新」欄位——對該情境而言，相對於基準有可見差異是有意為之的，
+        // 如同 flags 陣列增長一樣。
         if (p->GetCursedTaint() > 0)
             o << ",\"cursedTaint\":" << p->GetCursedTaint();
         o << ",\"flags\":[";
@@ -249,12 +240,10 @@ bool Harness::ShouldQuit() const noexcept {
     if (s_->quitReq) return true;
     if (!s_->script) return false;
     if (s_->script->WantsQuit()) return true;
-    // A plan-driven run ends once every high-level verb has completed, so
-    // timelines need no hand-placed `quit`/maxframes. Classic-only scripts
-    // (HasPlan()==false) are never auto-quit here — the maxframes/`quit`
-    // watchdog still governs them, behaviour unchanged. Guard frame_ >= 1
-    // so a plan only ends AFTER it has actually run (frame 0 idles with no
-    // World snapshot yet, so PlanDone() must not short-circuit the loop).
+    // 計畫驅動的執行在每個高階動詞都完成後即結束，故時間線無需手動放置 `quit`／maxframes。
+    // 純傳統腳本（HasPlan()==false）在此絕不自動結束——maxframes／`quit` 看門狗仍管轄
+    // 它們，行為不變。以 frame_ >= 1 為防護，使計畫只在「真正執行過」之後才結束（第 0 幀
+    // 尚無 World 快照而待機，故 PlanDone() 不得短路整個迴圈）。
     return s_->frame >= 1 && s_->script->HasPlan() &&
            s_->script->PlanDone();
 }
@@ -279,20 +268,17 @@ void Harness::BeginFrame() {
     if (!Active()) return;
     s_->script->Advance();
     ++s_->frame;
-    // Compile the active high-level verb into this frame's synthetic key
-    // edges, BEFORE GameController reads input. Resolved against the World
-    // snapshot captured at the previous EndFrame (null on frame 0) — a
-    // pure function of the recorded simulation, so replays are identical.
-    // Read-only: the harness never mutates the World (MVC purity).
+    // 在 GameController 讀取輸入「之前」，把當前作用中的高階動詞編譯成本幀的合成按鍵邊緣。
+    // 以前一次 EndFrame 擷取的 World 快照解析（第 0 幀為 null）——為已記錄模擬的純函式，
+    // 故重播一致。唯讀：harness 絕不改寫 World（MVC 純度）。
     s_->script->ResolvePlan(s_->lastWorld);
 }
 
 void Harness::EndFrame(const World& world) {
     if (!Active()) return;
 
-    // Capture the post-Update World read-only for the NEXT BeginFrame's
-    // plan resolution. `world` lives for the whole loop (main.cpp owns it
-    // for the harness's lifetime), so the raw pointer stays valid.
+    // 唯讀擷取 Update 後的 World，供「下一次」 BeginFrame 的計畫解析使用。`world` 存活於
+    // 整個迴圈（main.cpp 在 harness 生命期內持有它），故裸指標保持有效。
     s_->lastWorld = &world;
 
     if (!s_->shotsDir.empty() && s_->shotEvery > 0 &&
@@ -301,9 +287,8 @@ void Harness::EndFrame(const World& world) {
         std::filesystem::create_directories(s_->shotsDir, ec);
         char name[64];
         std::snprintf(name, sizeof(name), "frame_%06d.png", s_->frame);
-        // raylib 5.5 TakeScreenshot() forcibly writes GetFileName(name)
-        // into its base path (CWD) — a path argument is ignored by
-        // design. So shoot to CWD, then move it where we want it.
+        // raylib 5.5 的 TakeScreenshot() 會強制把 GetFileName(name) 寫進其基底路徑
+        //（CWD）——路徑參數依設計被忽略。故先截圖到 CWD，再移動到我們要的位置。
         ::TakeScreenshot(name);
         std::filesystem::rename(name,
             std::filesystem::path(s_->shotsDir) / name, ec);
@@ -322,7 +307,7 @@ void Harness::EndFrame(const World& world) {
 Harness MaybeAttach() {
     Harness h;
     const std::string script = GetEnv("UMBRELLA_SCRIPT");
-    if (script.empty()) return h;             // inactive: zero behavior change
+    if (script.empty()) return h;             // 未啟用：行為完全不變
 
     HarnessState& st = *h.s_;
     st.active     = true;

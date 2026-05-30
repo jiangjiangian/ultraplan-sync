@@ -8,21 +8,29 @@
 #include <string>
 #include <vector>
 
-// Picks a varied character sprite per NPC/Vendor so the campus crowd is
-// not ten identical clones (the playtest's "人物請多樣性"). The PIPOYA
-// 32x32 pack ships Male/ + Female/ sheets, each a 96x128 (3x4) sheet
-// exactly like the hand-curated NPC art — NPC::LoadSprite slices it the
-// same way, so any sheet drops in with no render change.
-//
-// The pack lives under a gitignored directory, so a fresh clone / the
-// grading rebuild will not have it: when the roster comes up empty the
-// caller's existing hand-picked spritePath is returned unchanged, i.e.
-// this is purely additive variety where the assets exist and a no-op
-// where they do not. The pick is DETERMINISTIC per (npcId, position) so
-// a given spawn keeps one stable look across re-spawns / frames while
-// different spawns differ — same idea as the per-ambient PRNG seed.
+/**
+ * @file PipoyaRoster.h
+ * @brief 為每個 NPC／Vendor 挑選多樣的角色 sprite，讓校園人潮不再是十個一模一樣
+ *        的複製人，且在素材缺席時自動退化為無作用。
+ *
+ * PIPOYA 32x32 素材包提供 Male 與 Female 兩組 sheet，每張皆為 96x128（3x4）排版，
+ * 與手工挑選的 NPC 美術完全相同；NPC::LoadSprite 以同樣方式切片，因此任一張 sheet
+ * 都能直接套用，無須改動任何渲染邏輯。
+ *
+ * 此素材包放在被 gitignore 的目錄下，全新 clone 或評分用的重建環境不會有它：當清單
+ * 為空時，呼叫端原本手選的 spritePath 會原封不動回傳。換言之，有素材時純粹增添多樣
+ * 性，沒素材時則為 no-op。挑選對 (npcId, position) 而言是確定性的，使同一個生成點在
+ * 重生／跨幀之間維持穩定外觀，不同生成點則各異——與每個環境音效各自的 PRNG seed 同理。
+ */
 namespace nccu {
 
+/**
+ * @brief 掃描 PIPOYA 素材包並回傳排序後的可用 sprite 路徑清單（首次呼叫時建構並快取）。
+ * @return 全部可用 sprite 路徑；素材包不存在時為空向量。
+ *
+ * 以函式區域 static 做惰性初始化，掃描只進行一次。最後對結果排序，確保跨次執行的順序
+ * 穩定（目錄列舉順序本身不保證），讓確定性挑選的結果可重現。
+ */
 inline const std::vector<std::string>& PipoyaRoster() {
     static const std::vector<std::string> roster = [] {
         namespace fs = std::filesystem;
@@ -39,14 +47,22 @@ inline const std::vector<std::string>& PipoyaRoster() {
                     out.push_back(e.path().string());
             }
         }
-        std::sort(out.begin(), out.end());   // stable order across runs
+        std::sort(out.begin(), out.end());   // 確保跨次執行的順序穩定
         return out;
     }();
     return roster;
 }
 
-// fallbackPath is returned verbatim when the PIPOYA pack is absent, so
-// callers stay correct on a clean checkout.
+/**
+ * @brief 為某個生成點挑一張確定性的 sprite；素材包缺席時退回 fallbackPath。
+ * @param npcId        NPC 識別字串，作為雜湊輸入之一。
+ * @param pos          生成點世界座標，與 npcId 一起雜湊以區分同類不同位置的生成。
+ * @param fallbackPath 素材包不存在時原樣回傳的後備路徑（呼叫端手選的 sprite）。
+ * @return 確定性選出的 sprite 路徑，或在無素材時為 fallbackPath。
+ *
+ * 把 npcId 與整數化後的座標混入雜湊，使同一生成點固定對應同一張外觀，不同生成點則
+ * 分散開來。素材包缺席（清單為空）時原樣回傳 fallbackPath，讓乾淨 checkout 仍正確。
+ */
 inline std::string PickNpcSprite(const std::string& npcId,
                                  nccu::engine::math::Vec2 pos,
                                  const std::string& fallbackPath) {

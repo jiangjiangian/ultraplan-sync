@@ -8,6 +8,12 @@
 #include <utility>
 #include <vector>
 
+/**
+ * @file ChapterVendors.cpp
+ * @brief 各章節攤販的擺放來源：市集插曲由內容檔解析後配上座標，Ch2／Ch4 則為
+ *        手寫的固定攤位；座標屬於 code 的職責，內容（文案、商品）屬於內容檔。
+ */
+
 namespace nccu {
 
 namespace {
@@ -17,39 +23,30 @@ std::string& VendorContentDir() {
     return dir;
 }
 
-// Spatial layout is code's job (the .md owns content/dialogue, not
-// positions — same split as NpcSpawns vs chapter dialog). REQUIREMENT
-// #7: the ten stalls are gathered into a TIGHT cluster at the dead
-// CENTRE of 羅馬廣場 (the campus's circular plaza hub) — "全部移到羅馬
-// 廣場正中間". If the parser yields fewer stalls than positions the
-// extra spots are simply unused; if more, the surplus stalls fall back
-// to the last position.
+// 空間擺放是 code 的職責（內容檔負責文案與對話，不負責座標——與 NpcSpawns
+// 對章節對話的分工相同）。若解析出的攤位少於座標數，多出的位置就閒置不用；
+// 若多於座標數，超出的攤位則一律退回最後一個位置。
 const std::vector<nccu::engine::math::Vec2>& InterludeStallPositions() {
-    // Two tidy rows of five across the 羅馬廣場 disc (player request,
-    // superseding the old "正中間 tight cluster" REQUIREMENT #7): a north
-    // row at y=900 and a south row at y=1020, leaving a ~120-px middle
-    // aisle (y≈960) the player walks down to press E on either side.
-    // Columns at x∈{944,998,1052,1106,1160} (54-px pitch ⇒ 30-px gaps >
-    // the 24-px Vendor collider, so stalls never overlap). The grid is
-    // centred on x≈1052 — ~36 px WEST of the disc centre (1088) — because
-    // the plaza's NE and SE corners are walled (map_registry.py walkability
-    // map): the walkable box only reaches x≈1160 on the east, so a disc-
-    // centred grid would be too cramped to thread. Every point was mask-
-    // verified STRICTLY walkable (no solid pixel under its 24×24 box) and
-    // reachable (test_spawn_reachability re-checks ChapterVendors().pos
-    // every build; test_vendor_centred_cluster pins the two-row geometry).
+    // 在羅馬廣場（校園的圓形廣場樞紐）圓盤上排成整齊的兩排各五個：北排 y=900、
+    // 南排 y=1020，中間留出約 120 px 的走道（y≈960）供玩家穿行、在兩側按 E。
+    // 各欄 x∈{944,998,1052,1106,1160}（間距 54 px ⇒ 攤位間隙 30 px，大於 24 px
+    // 的 Vendor 碰撞盒，故攤位彼此不重疊）。整個方陣以 x≈1052 為中心——比圓盤
+    // 中心（1088）偏西約 36 px——因為廣場的東北、東南角有牆：可行走範圍在東側
+    // 只到 x≈1160，若以圓盤中心擺放會太擠而難以穿行。每個點都經遮罩驗證為嚴格
+    // 可行走（其 24×24 碰撞盒下方無實心像素）且可抵達（生成可達性測試每次建置
+    // 都會重新檢查攤位座標，另有測試固定這套兩排幾何）。
     static const std::vector<nccu::engine::math::Vec2> kPos = {
         { 944.0f,  900.0f}, { 998.0f,  900.0f}, {1052.0f,  900.0f},
-        {1106.0f,  900.0f}, {1160.0f,  900.0f},                       // north row
+        {1106.0f,  900.0f}, {1160.0f,  900.0f},                       // 北排
         { 944.0f, 1020.0f}, { 998.0f, 1020.0f}, {1052.0f, 1020.0f},
-        {1106.0f, 1020.0f}, {1160.0f, 1020.0f},                       // south row
+        {1106.0f, 1020.0f}, {1160.0f, 1020.0f},                       // 南排
     };
     return kPos;
 }
 
-// Parsed-and-zipped Interlude placements, cached. std::optional so
-// ReloadVendors() / SetVendorContentDir() can force a re-parse and the
-// reference handed out by ChapterVendors() stays valid until then.
+// 解析並與座標配對後的市集擺放結果，快取於此。用 std::optional 是為了讓
+// ReloadVendors()／SetVendorContentDir() 能強制重新解析，且 ChapterVendors()
+// 先前發出的參考在重新解析前都維持有效。
 std::optional<std::vector<VendorPlacement>>& InterludeCache() {
     static std::optional<std::vector<VendorPlacement>> cache;
     return cache;

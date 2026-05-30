@@ -11,8 +11,19 @@
 
 #include <string>
 
+/**
+ * @file ObjectiveBar.cpp
+ * @brief HUD 任務指引列：在畫面頂端置中、狀態面板下方，顯示一行當前任務目標。
+ */
+
 namespace nccu {
 
+/**
+ * @brief 繪製當前任務目標的單行指引列。
+ *
+ * 置於頂端置中、但壓在左上狀態欄之下，避免遮住業力／章節等數值讀數；以深色底
+ * 面板襯托明亮文字使其更顯眼。無玩家或目標字串為空時直接略過，不畫面板。
+ */
 void DrawObjectiveBar(nccu::engine::render::IRenderer& r,
                       const World& world,
                       SemesterState st,
@@ -21,14 +32,6 @@ void DrawObjectiveBar(nccu::engine::render::IRenderer& r,
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // Quest objective: a panel-backed one-liner, top-centre but BELOW
-    // the left status column (its lines end ~y86) so it never overlaps
-    // the karma/chapter readout — the playtest's "不要佔到左上數值狀態
-    // ，放一個面板當底". Smaller than the status text; the dark panel
-    // makes the bright text pop ("比較顯眼"). Width is estimated from the
-    // UTF-8 codepoint count (lead bytes — continuation bytes are
-    // 10xxxxxx) treating each glyph as ~size wide, enough to centre a
-    // one-liner without a text-measurement dependency in the View.
     const Player* p = world.GetPlayer();
     if (!p) return;
 
@@ -37,17 +40,15 @@ void DrawObjectiveBar(nccu::engine::render::IRenderer& r,
 
     constexpr int   kObjSize = 14;
     constexpr float kPad     = 6.0f;
-    // Measure the actual rendered text so the backing panel hugs it
-    // exactly — it grows and shrinks with the objective string
-    // instead of guessing a fixed width from a glyph count.
+    // 量測實際渲染後的文字尺寸，讓底色面板剛好包住它——面板會隨目標字串長短伸縮，
+    // 而非由字數猜一個固定寬度。
     const Vec2 m = TextBuilder{obj}.Size(kObjSize).Measure();
     const float panelW = m.x + kPad * 2.0f;
     const float panelH = m.y + kPad * 2.0f;
     float px = screenW * 0.5f - panelW * 0.5f;
     if (px < 4.0f) px = 4.0f;
-    // Sit BELOW the top-left status panel (≤6 rows reaches ~y132),
-    // so a wide objective bar never touches the karma/money/rain
-    // readout — the playtest's "任務指引往下一點不要碰到數值面板".
+    // 坐落在左上狀態面板之下（最多 6 行約到 y132），使較寬的任務列也不會碰到
+    // 業力／金錢／降雨讀數。
     constexpr float kPanelY = 138.0f;
     r.DrawRect(Rect{px, kPanelY, panelW, panelH},
                Color{20, 22, 30, 185});

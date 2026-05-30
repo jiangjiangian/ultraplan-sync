@@ -18,9 +18,9 @@ using namespace nccu::game::gfx;  // game/gfx 輔助函式
 using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
-// ---- U2-T1: paging window math (pure, header-declared, unit-tested) ------
+// ---- 分頁視窗運算（純函式、於標頭宣告、有單元測試） ------
 int InventoryPageCount(int rowCount) noexcept {
-    if (rowCount <= 0) return 1;                 // empty bag is "1 / 1"
+    if (rowCount <= 0) return 1;                 // 空背包為「1 / 1」
     return (rowCount + kInventoryRowsPerPage - 1) / kInventoryRowsPerPage;
 }
 
@@ -33,39 +33,34 @@ int InventoryPageOf(int cursor, int rowCount) noexcept {
 
 namespace {
 
-// T6 / U2-T3: a bag row's CATEGORY, derived purely from its itemId
-// (presentation only — no gameplay logic, the DTO already carries the id).
-// Drives a left-edge swatch + the row colour so 金幣 / 雨傘 / 任務紙張 /
-// 食物道具 read as a different KIND than the usable consumables. U2-T3 adds
-// Food for the Ch3 物物交換鏈 carried items (香腸 / 大聲公) so they no longer
-// borrow the teal potion-flask swatch (which implied "usable") — they are
-// view-only (usable=false), so they MUST NOT read as a usable consumable.
+// 一個背包列的「分類」，純由其 itemId 衍生（僅呈現用——不含玩法邏輯，DTO 已帶有 id）。
+// 它驅動左緣的色塊 + 該列顏色，使金幣 / 雨傘 / 任務紙張 / 食物道具讀來與可用消耗品屬不同
+//「種類」。為第三章物物交換鏈的攜帶物（香腸 / 大聲公）新增 Food 類，使它們不再借用青色
+// 藥水瓶色塊（那暗示「可用」）——它們只供檢視（usable=false），故「絕不可」讀成可用消耗品。
 enum class RowKind { Consumable, Money, Umbrella, Paper, Food };
 
 RowKind KindOf(const InventoryRow& row) {
     if (row.itemId == kItemMoney) return RowKind::Money;
     if (row.itemId == kItemForm || row.itemId == kItemNotes)
         return RowKind::Paper;
-    // U2-T3: the Ch3 carried trade items are view-only 道具, not consumables.
+    // 第三章攜帶的交易物是只供檢視的道具，而非消耗品。
     if (row.itemId == kItemSausage || row.itemId == kItemLoudspeaker)
         return RowKind::Food;
-    // Any umbrella sentinel (or a vendor umbrella id) → Umbrella. Shares
-    // ItemCatalog::IsUmbrellaItemId (the SAME predicate BuildInventoryRows
-    // uses to exclude umbrellas from the count loop) so the two can't drift.
+    // 任何雨傘哨兵值（或攤販雨傘 id）→ Umbrella。共用 ItemCatalog::IsUmbrellaItemId
+    //（與 BuildInventoryRows 用來把雨傘排除於計數迴圈外的「同一」述詞），使兩者不會走樣。
     if (IsUmbrellaItemId(row.itemId))
         return RowKind::Umbrella;
-    return RowKind::Consumable;        // a held, usable consumable
+    return RowKind::Consumable;        // 持有的、可用的消耗品
 }
 
-// U2-T3: the umbrella look for an umbrella row, so the bag swatch matches
-// the in-world / ending glyph (the same shared nccu::game::gfx::DrawUmbrellaGlyph).
-// Previously only cursed/ugly were mapped and EVERYTHING else fell to
-// TrueBlue — so the 破傘 / 陷阱傘 the player can now hold drew the wrong
-// (intact blue) canopy. Map every held-umbrella sentinel to its true look:
-//   fragile  → FragileBroken (破傘, only handle/ribs)
-//   proftrap → ProfessorTrap (陷阱傘, danger red)
-//   cursed   → CursedPurple,  ugly → UglyGreen
-//   true / loaner (管理員的傘, a plain loaner) / victim (苦主的透明傘) → TrueBlue
+// 雨傘列所用的雨傘外觀，使背包色塊與世界中／結局的字形一致（同一個共用的
+// nccu::game::gfx::DrawUmbrellaGlyph）。先前只對應 cursed/ugly，其餘「全部」落到
+// TrueBlue——故玩家現在能持有的破傘／陷阱傘會畫出錯誤的（完好藍色）傘面。將每個持有型
+// 雨傘哨兵值對應到其真正外觀：
+//   fragile  → FragileBroken（破傘，只剩傘柄／傘骨）
+//   proftrap → ProfessorTrap（陷阱傘，危險紅）
+//   cursed   → CursedPurple，ugly → UglyGreen
+//   true / loaner（管理員的傘，普通借傘）／victim（苦主的透明傘）→ TrueBlue
 UmbrellaLook UmbrellaLookOf(const InventoryRow& row) {
     if (row.itemId == kItemCursedUmbrella || row.itemId == "CursedUmbrella")
         return UmbrellaLook::CursedPurple;
@@ -75,27 +70,24 @@ UmbrellaLook UmbrellaLookOf(const InventoryRow& row) {
         return UmbrellaLook::FragileBroken;     // 破傘
     if (row.itemId == kItemProfTrapUmbrella)
         return UmbrellaLook::ProfessorTrap;     // 陷阱傘
-    // True + the 管理員 loaner + the carried 苦主 transparent umbrella all
-    // read as the clean blue canopy.
+    // 真傘 + 管理員借傘 + 攜帶的苦主透明傘，全部讀作乾淨的藍色傘面。
     return UmbrellaLook::TrueBlue;
 }
 
-// Row text colour by kind: usable consumables stay gold (you can DO
-// something), the view-only categories get their own muted tints so the
-// player can tell a 金幣 / 傘 / 紙 / 道具 row from an actionable one at a
-// glance.
+// 各種類的列文字顏色：可用消耗品維持金色（你可以「做」些什麼），只供檢視的分類各有其
+// 柔和色調，使玩家一眼就能分辨金幣 / 傘 / 紙 / 道具 列與可操作的列。
 Color RowColor(RowKind k) {
     switch (k) {
-        case RowKind::Money:      return Color{255, 205, 90, 255};   // coin gold
-        case RowKind::Umbrella:   return Color{150, 200, 255, 255};  // soft blue
-        case RowKind::Paper:      return Color{225, 225, 230, 255};  // paper white
-        case RowKind::Food:       return Color{255, 190, 120, 255};  // warm tan
+        case RowKind::Money:      return Color{255, 205, 90, 255};   // 硬幣金
+        case RowKind::Umbrella:   return Color{150, 200, 255, 255};  // 柔藍
+        case RowKind::Paper:      return Color{225, 225, 230, 255};  // 紙白
+        case RowKind::Food:       return Color{255, 190, 120, 255};  // 暖褐
         case RowKind::Consumable: return Colors::Gold;
     }
     return Colors::White;
 }
 
-// Draw the small left-edge category swatch in `box`.
+// 在 `box` 內畫出左緣的小分類色塊。
 void DrawSwatch(IRenderer& r, const InventoryRow& row, RowKind k, Rect box) {
     namespace C = Colors;
     switch (k) {
@@ -103,16 +95,16 @@ void DrawSwatch(IRenderer& r, const InventoryRow& row, RowKind k, Rect box) {
             DrawUmbrellaGlyph(r, UmbrellaLookOf(row), box);
             break;
         case RowKind::Money: {
-            // A round-ish gold coin token (rect-only, inset to read circular).
+            // 一枚略圓的金色硬幣標記（僅用矩形，內縮以讀作圓形）。
             r.DrawRect(Rect{box.x + box.width * 0.18f, box.y + box.height * 0.08f,
                             box.width * 0.64f, box.height * 0.84f}, C::Gold);
             r.DrawRect(Rect{box.x + box.width * 0.36f, box.y + box.height * 0.30f,
                             box.width * 0.28f, box.height * 0.40f},
-                       Color{200, 150, 0, 255});           // engraved centre
+                       Color{200, 150, 0, 255});           // 中央刻印
             break;
         }
         case RowKind::Paper: {
-            // A white sheet with a folded corner — matches the world pickup.
+            // 一張帶折角的白紙——與世界中的拾取物一致。
             r.DrawRect(Rect{box.x + box.width * 0.20f, box.y + box.height * 0.10f,
                             box.width * 0.60f, box.height * 0.80f}, C::White);
             r.DrawRect(Rect{box.x + box.width * 0.58f, box.y + box.height * 0.10f,
@@ -120,26 +112,25 @@ void DrawSwatch(IRenderer& r, const InventoryRow& row, RowKind k, Rect box) {
             break;
         }
         case RowKind::Food: {
-            // U2-T3: a distinct food/道具 token — a warm orange parcel with a
-            // darker tie band — so the Ch3 香腸 / 大聲公 read as carried
-            // 道具, NOT the teal potion-flask of a usable consumable. Rect-
-            // only (the architecture rule), inset to read as a wrapped item.
+            // 一個鮮明的食物／道具標記——暖橘色包裹加一條較深的綁帶——使第三章的香腸 /
+            // 大聲公 讀作攜帶的道具，「而非」可用消耗品的青色藥水瓶。僅用矩形（架構規則），
+            // 內縮以讀作一個包裝好的物品。
             r.DrawRect(Rect{box.x + box.width * 0.18f, box.y + box.height * 0.22f,
                             box.width * 0.64f, box.height * 0.58f},
-                       Color{225, 140, 55, 255});          // parcel body
+                       Color{225, 140, 55, 255});          // 包裹本體
             r.DrawRect(Rect{box.x + box.width * 0.44f, box.y + box.height * 0.10f,
                             box.width * 0.12f, box.height * 0.80f},
-                       Color{150, 85, 30, 255});           // tie band
+                       Color{150, 85, 30, 255});           // 綁帶
             break;
         }
         case RowKind::Consumable: {
-            // A little potion/flask: a teal body so a usable item reads apart.
+            // 一個小藥水瓶：青色瓶身，使可用物品讀來有別。
             r.DrawRect(Rect{box.x + box.width * 0.32f, box.y + box.height * 0.05f,
                             box.width * 0.36f, box.height * 0.18f},
-                       Color{180, 180, 185, 255});         // cap
+                       Color{180, 180, 185, 255});         // 瓶蓋
             r.DrawRect(Rect{box.x + box.width * 0.24f, box.y + box.height * 0.23f,
                             box.width * 0.52f, box.height * 0.70f},
-                       Color{60, 200, 180, 255});          // flask body
+                       Color{60, 200, 180, 255});          // 瓶身
             break;
         }
     }
@@ -151,22 +142,18 @@ void DrawInventory(IRenderer& r,
                    const std::vector<InventoryRow>& rows,
                    int cursor,
                    float screenW, float screenH) {
-    // Dim the (frozen) world, then a centred panel — same overlay idiom
-    // as the dialog box / ending card.
+    // 先把（凍結的）世界變暗，再畫一個置中面板——與對話框／結局卡片相同的疊層慣用法。
     r.DrawRect(Rect{0.0f, 0.0f, screenW, screenH}, Color{0, 0, 0, 140});
 
-    // U2-T2: a BIGGER box. Was 400x312 with a 96px desc band that the
-    // longer post-G4 effect lines overflowed; now 468 wide (more room for
-    // a wrapped row + the description) and 372 tall, sized so a fixed
-    // kInventoryRowsPerPage rows sit at a comfortable 26px pitch AND the
-    // description band below holds up to kDescLines WRAPPED lines fully
-    // inside the border.
+    // 一個「更大」的方框。原為 400x312、含 96px 的說明帶，較長的效果行會溢出；現在寬 468
+    //（給換行後的列 + 說明更多空間）、高 372，尺寸使固定的 kInventoryRowsPerPage 列以舒適的
+    // 26px 間距排列，「且」下方說明帶能把多達 kDescLines 個「換行後」的行完整容於邊框內。
     const float pw = 468.0f;
     const float ph = 372.0f;
     const float px = screenW * 0.5f - pw * 0.5f;
     const float py = screenH * 0.5f - ph * 0.5f;
     r.DrawRect(Rect{px, py, pw, ph}, Color{30, 30, 40, 235});
-    // A gold title underline so the panel reads as a framed window.
+    // 一條金色標題底線，使面板讀作一個有框的視窗。
     r.DrawRect(Rect{px + 16.0f, py + 44.0f, pw - 32.0f, 2.0f},
                Color{255, 200, 70, 220});
 
@@ -180,31 +167,26 @@ void DrawInventory(IRenderer& r,
     }
 
     const int rowCount = static_cast<int>(rows.size());
-    // Clamp the highlighted index into range so an out-of-bounds cursor
-    // (e.g. after a row was used and the list shrank) still selects a real
-    // row for the description panel.
+    // 把高亮索引夾到範圍內，使超出邊界的游標（例如某列被使用後清單縮短）仍能為說明面板
+    // 選到一個真實的列。
     const int sel = std::min(std::max(cursor, 0), rowCount - 1);
 
-    // ---- U2-T1: paging. Show only the cursor's page so the selected row
-    // is ALWAYS visible and a big bag never crushes the rows / overflows
-    // the box. The page index is DERIVED from the cursor (no retained UI
-    // state, nothing serialized — state.jsonl stays byte-identical).
+    // ---- 分頁。只顯示游標所在頁，使被選列「永遠」可見，且大背包絕不會把列擠扁／溢出
+    // 方框。頁索引由游標「衍生」（不保留 UI 狀態、不序列化任何東西——存檔逐位元一致）。
     const int pageCount = InventoryPageCount(rowCount);
     const int page      = InventoryPageOf(sel, rowCount);
     const int first     = page * kInventoryRowsPerPage;
     const int last      = std::min(rowCount, first + kInventoryRowsPerPage);
 
-    // Geometry bands: rows in the upper band at a fixed comfortable pitch,
-    // then a page-indicator strip, then the description band at the foot.
+    // 幾何分帶：列位於上方帶、以固定舒適間距排列，接著一條頁碼指示條，再來是位於底部的
+    // 說明帶。
     constexpr float kRowH     = 26.0f;
     constexpr float kSwatchSz = 20.0f;
-    constexpr int   kDescLines = 3;          // wrapped description rows shown
+    constexpr int   kDescLines = 3;          // 顯示的換行說明行數
     constexpr float kDescLineH = 18.0f;
 
-    // One drawn row per VISIBLE bag row: a left-edge category swatch, a
-    // "> " caret on the selected row, the 中文 name, and an "xN" suffix when
-    // count>0. The selected row gets a highlight bar behind it so the cursor
-    // is unmistakable. Index i is the absolute row; slot is its on-page row.
+    // 每個「可見」背包列畫一列：左緣分類色塊、被選列上的「> 」插字符、中文名稱，以及
+    // count>0 時的「xN」後綴。被選列後方加一條高亮條，使游標明確無誤。索引 i 是絕對列號。
     for (int i = first; i < last; ++i) {
         const InventoryRow& row = rows[static_cast<std::size_t>(i)];
         const bool isSel = (i == sel);
@@ -213,27 +195,24 @@ void DrawInventory(IRenderer& r,
 
         if (isSel)
             r.DrawRect(Rect{px + 8.0f, rowY - 2.0f, pw - 16.0f, kRowH - 2.0f},
-                       Color{70, 60, 25, 235});            // selection bar
+                       Color{70, 60, 25, 235});            // 選取條
 
-        // Category swatch (the umbrella row draws its actual look).
+        // 分類色塊（雨傘列會畫出其實際外觀）。
         DrawSwatch(r, row, kind,
                    Rect{px + 14.0f, rowY + (kRowH - kSwatchSz) * 0.5f - 1.0f,
                         kSwatchSz, kSwatchSz});
 
         std::string line = (isSel ? "> " : "  ") + row.name;
         if (row.count > 0) line += " x" + std::to_string(row.count);
-        // Selected row reads bright orange; otherwise the per-category tint
-        // so 金幣 / 雨傘 / 任務紙張 / 道具 are visually distinct from usable
-        // items.
+        // 被選列讀作亮橘色；否則用各分類色調，使金幣 / 雨傘 / 任務紙張 / 道具 在視覺上與
+        // 可用物品分明。
         const Color c = isSel ? Color{255, 170, 40, 255} : RowColor(kind);
         r.DrawText(line, Vec2{px + 14.0f + kSwatchSz + 8.0f, rowY + 2.0f},
                    18, c);
     }
 
-    // U2-T1: 「第 N／M 頁」 page indicator — right-aligned-ish on its own
-    // strip just under the row band, plus a ←/→翻頁 hint when >1 page so
-    // the navigation is discoverable. Drawn for every bag (single page reads
-    // "第 1／1 頁") so the affordance is consistent.
+    // 「第 N／M 頁」頁碼指示——位於列帶正下方的獨立條上，並在超過 1 頁時加上 ←/→翻頁
+    // 提示，使導覽可被發現。每個背包都繪製（單頁讀作「第 1／1 頁」），使提示性一致。
     const float pageY = listTop + kInventoryRowsPerPage * kRowH + 4.0f;
     {
         std::string ind = "第 " + std::to_string(page + 1) + "／" +
@@ -242,25 +221,20 @@ void DrawInventory(IRenderer& r,
         r.DrawText(ind, Vec2{px + 16.0f, pageY}, 14, Color{200, 200, 210, 255});
     }
 
-    // ---- Description band for the selected row — a faint divider, the row
-    // name, then the catalog line WRAPPED so it never spills past the box
-    // border (U2-T2), plus a usage hint. Sits at the panel foot, below the
-    // row band + page strip, so it never overlaps them.
+    // ---- 被選列的說明帶——一條淡分隔線、列名，接著「換行後」的圖鑑文字（使其絕不衝出
+    // 方框邊框），再加一個使用提示。位於面板底部、列帶 + 頁碼條下方，故絕不與它們重疊。
     const InventoryRow& cur = rows[static_cast<std::size_t>(sel)];
     const float descTop = pageY + 24.0f;
     r.DrawRect(Rect{px + 12.0f, descTop - 8.0f, pw - 24.0f, 1.0f},
                Color{120, 120, 140, 200});
     r.DrawText(cur.name, Vec2{px + 16.0f, descTop}, 18, Colors::Gold);
 
-    // U2-T2: wrap the description to the box's inner CELL width (East-Asian-
-    // Width aware, the project's single source of truth nccu::dialog::
-    // WrapToCells — full-width CJK = 2 cells). The text runs from px+16 to
-    // ~px+pw-16 (≈436px inner); at font size 14 a full-width glyph advances
-    // ~14 + 14/10 ≈ 15.4px ≈ 7.7px/cell, so ≈436/7.7 ≈ 56 cells fit a row.
-    // Use 54 for a safety margin against the box's right border. Show up to
-    // kDescLines wrapped rows; the densest catalog line (the 防水噴霧
-    // 「使用：雨量 −35（彈開大半雨水）；專門擋雨，不影響業力。」 ≈ 48 cells)
-    // fits in one row, so kDescLines=3 leaves ample headroom.
+    // 把說明換行到方框的內部「字格」寬度（東亞寬度感知，本專案的單一事實來源
+    // nccu::dialog::WrapToCells——全形 CJK = 2 格）。文字由 px+16 延伸到約 px+pw-16
+    //（內部約 436px）；在字體大小 14 下，全形字形推進約 14 + 14/10 ≈ 15.4px ≈ 7.7px/格，
+    // 故約 436/7.7 ≈ 56 格可容於一列。取 54 以對方框右緣留安全裕度。顯示多達 kDescLines
+    // 個換行行；最密的圖鑑行（防水噴霧的「使用：雨量 −35（彈開大半雨水）；專門擋雨，不影響
+    // 業力。」約 48 格）可容於一列，故 kDescLines=3 仍留有充裕空間。
     if (!cur.description.empty()) {
         constexpr int kDescCells = 54;
         const std::vector<std::string> wrapped =

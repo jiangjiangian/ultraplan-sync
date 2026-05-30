@@ -5,6 +5,15 @@
 #include <fstream>
 #include <string>
 
+/**
+ * @file DialogLoader.cpp
+ * @brief 章節對白 Markdown 的解析器：把 NPC 標題、(x) 子段標題、選項標籤與
+ *        台詞行，連同 karma／旗標註記，解析成 LoadedChapter 模型。
+ *
+ * 全程逐位元組手寫掃描，刻意不引入正規表示式，以便精準處理全形標點與 CJK 引號
+ *（「」“” 與全形冒號、全形括號）等多位元組序列；其匹配規則須與內容產生工具保持一致。
+ */
+
 namespace nccu::dialog {
 
 namespace {
@@ -167,9 +176,9 @@ bool ParseDialogLine(const std::string& line, std::string& out) {
     return false;
 }
 
-// Scans one ">" blockquote line for a `// karma ±N` note. Mirrors
-// gen_dialog KARMA_RE = //\s*karma\s*([+-]\d+). Returns true and sets
-// `value` on a match.
+// 掃描一行 ">" 引用區塊，尋找 `// karma ±N` 註記。比對規則須與內容產生器端的
+// karma 樣式一致（即 //\s*karma\s*([+-]\d+) 所表達者）。命中時回傳 true 並寫入
+// `value`。
 bool ScanKarma(const std::string& line, int& value) {
     const std::string kMark = "//";
     size_t p = line.find(kMark);
@@ -188,7 +197,7 @@ bool ScanKarma(const std::string& line, int& value) {
                        line[d] <= '9') {
                     ++d;
                 }
-                if (d > i + 1) {  // at least one digit
+                if (d > i + 1) {  // 至少要有一位數字
                     value = std::atoi(line.substr(i, d - i).c_str());
                     return true;
                 }
@@ -204,17 +213,17 @@ bool IsFlagWordByte(char c) {
            (c >= '0' && c <= '9') || c == '_';
 }
 
-// Scans one ">" blockquote line for a `Flag_X = true|false` note. Mirrors
-// gen_dialog FLAG_RE = \b(Flag_[A-Za-z0-9_]+)\s*=\s*(true|false)\b.
+// 掃描一行 ">" 引用區塊，尋找 `Flag_X = true|false` 註記。比對規則須與內容產生器端
+// 的旗標樣式一致（即 \b(Flag_[A-Za-z0-9_]+)\s*=\s*(true|false)\b 所表達者）。
 bool ScanFlag(const std::string& line, std::string& name, bool& val) {
     const std::string kPfx = "Flag_";
     size_t p = line.find(kPfx);
     while (p != std::string::npos) {
-        // \b before "Flag_": preceding byte must not be a word byte.
+        // "Flag_" 之前的單字邊界 \b：前一個位元組不可為單字字元。
         if (p == 0 || !IsFlagWordByte(line[p - 1])) {
             size_t e = p + kPfx.size();
             while (e < line.size() && IsFlagWordByte(line[e])) ++e;
-            if (e > p + kPfx.size()) {  // at least one trailing word char
+            if (e > p + kPfx.size()) {  // 前綴後至少要有一個單字字元
                 size_t i = e;
                 while (i < line.size() &&
                        (line[i] == ' ' || line[i] == '\t')) {
@@ -234,7 +243,7 @@ bool ScanFlag(const std::string& line, std::string& name, bool& val) {
                     } else if (line.compare(i, 5, "false") == 0) {
                         ok = true; v = false; after = i + 5;
                     }
-                    // \b after the literal: next byte not a word byte.
+                    // 字面值之後的單字邊界 \b：下一個位元組不可為單字字元。
                     if (ok && (after >= line.size() ||
                                !IsFlagWordByte(line[after]))) {
                         name = line.substr(p, e - p);
@@ -257,22 +266,20 @@ LoadedChapter LoadChapter(const std::string& path) {
     if (!in.is_open()) return chapter;
 
     std::string currentNpc;
-    SubEntry*   cur = nullptr;  // active substate entry, or null
+    SubEntry*   cur = nullptr;  // 目前作用中的子段條目，無則為 null
 
     std::string line;
     while (std::getline(in, line)) {
         RStripCr(line);
 
-        // Any "## " heading terminates the previous NPC section. (gen_dialog
-        // also treats a leading "# " the same way; LoadChapter's content
-        // files always use "## " for NPC headings, so "## " suffices and
-        // matches the prior behaviour exactly.)
+        // 任何 "## " 標題都會結束前一個 NPC 段落。內容檔的 NPC 標題一律使用
+        // "## "，故只認 "## " 即可，與既有行為完全一致。
         if (StartsWith(line, "## ")) {
             cur = nullptr;
             const std::string name = ParseNpcName(line);
             if (!name.empty()) {
                 currentNpc = name;
-                // Ensure the NPC entry exists even if it has no substates.
+                // 即使該 NPC 沒有任何子段，也要先確保其條目存在。
                 chapter.npcs[currentNpc];
             } else {
                 currentNpc.clear();
@@ -280,7 +287,7 @@ LoadedChapter LoadChapter(const std::string& path) {
             continue;
         }
 
-        // Only meaningful while we are inside an NPC section.
+        // 只有在 NPC 段落內部才有意義。
         if (currentNpc.empty()) continue;
 
         if (StartsWith(line, "### ")) {
@@ -305,9 +312,9 @@ LoadedChapter LoadChapter(const std::string& path) {
 
         if (cur == nullptr) continue;
 
-        // Blockquote note lines: scanned for karma / flag metadata while a
-        // substate is active. "first non-zero" / "first non-empty" guards
-        // mirror gen_dialog (`if cur.karma == 0` / `if not cur.flag`).
+        // 引用區塊註記行：當有子段作用中時，從中掃描 karma／旗標的中介資料。
+        // 「取第一個非零 karma」「取第一個非空旗標」這兩道防護與內容產生器端一致
+        // ——已寫入過的值不再被後續同類註記覆寫。
         if (!line.empty() && line[0] == '>') {
             if (cur->karmaDelta == 0) {
                 int k = 0;
@@ -332,9 +339,8 @@ LoadedChapter LoadChapter(const std::string& path) {
         }
     }
 
-    // Sub-blocks ordered by subState ascending (a<b<c<d). Content files
-    // already author them in order, but enforce the model invariant. Stable
-    // so duplicate-letter authoring keeps document order within a letter.
+    // 子段依 subState 遞增排序（a<b<c<d）。內容檔通常已照順序撰寫，但仍主動施行此
+    // 模型不變式。採穩定排序，使同一字母重複出現時，仍保留其在文件中的原始先後。
     for (auto& kv : chapter.npcs) {
         std::stable_sort(kv.second.begin(), kv.second.end(),
                          [](const SubEntry& l, const SubEntry& r) {

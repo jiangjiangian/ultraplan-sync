@@ -87,13 +87,10 @@ World::World(const std::string& playerSpritePath, bool loadSprites,
 
 
 void World::RespawnChapterRoster(nccu::SemesterState state) {
-    // Build the drop-set from the tracked pointers, then clear the
-    // tracker FIRST so the raw pointers are never dereferenced after
-    // their unique_ptr is freed — the erase predicate compares pointer
-    // identity only (no deref). The single remove-erase pass runs AFTER
-    // we are done iterating chapterRoster_, never mid-iteration, and
-    // never reorders/removes element 0 (Player) since the Player was
-    // never in chapterRoster_.
+    // 先以追蹤指標組出待刪集合，再「先」清空追蹤容器，使裸指標絕不會在其 unique_ptr
+    // 釋放後被解參考——erase 述詞「只」比對指標身分（不解參考）。這趟 remove-erase 在
+    // 我們迭代完 chapterRoster_「之後」才跑，絕非迭代途中，也絕不重排或移除元素 0
+    //（Player），因為 Player 從未被放進 chapterRoster_。
     if (!chapterRoster_.empty()) {
         const std::unordered_set<GameObject*> drop(chapterRoster_.begin(),
                                                    chapterRoster_.end());
@@ -106,26 +103,24 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
             objects_.end());
     }
 
-    // Re-arm the Ch2 deferred-note one-shot: the old notes (if any) were
-    // just swept with the roster, so a fresh visit to any chapter starts
-    // with the deferred spawn re-armed. MaybeSpawnChapter2Notes then only
-    // fires once the player re-wakes the 學霸 in a new Ch2 visit.
+    // 重新武裝第二章延後筆記的一次性旗標：舊的筆記（若有）剛隨名冊一併清掃，故任何章節
+    // 的新一次造訪都從「延後生成已重新武裝」起步。MaybeSpawnChapter2Notes 之後只在玩家
+    // 於新的第二章造訪中重新喚醒學霸時才觸發。
     ch2NotesSpawned_ = false;
-    // T5: same re-arm for the Ch3 reveal-after-clue umbrella one-shot.
+    // 第三章「線索後才揭示」傘的一次性旗標，同樣重新武裝。
     ch3UmbrellaSpawned_ = false;
-    // A1: same re-arm for the Ch1 reveal-after-choice victim's-umbrella
-    // one-shot, so a fresh Ch1 visit re-gates it on Flag_SuitSeniorChoiceMade.
+    // 第一章「選擇後才揭示」苦主傘的一次性旗標，同樣重新武裝，使新一次第一章造訪重新以
+    // Flag_SuitSeniorChoiceMade 為閘。
     ch1VictimUmbrellaSpawned_ = false;
-    // G-3: same re-arm for the Interlude 管理員的傘 return-point one-shot, so a
-    // fresh Interlude visit re-gates it on (ReturnTo==Ch3 && holds loaner).
+    // 插曲段「管理員的傘」歸還點的一次性旗標，同樣重新武裝，使新一次插曲段造訪重新以
+    //（ReturnTo==Ch3 且手持借傘）為閘。
     interludeReturnSpawned_ = false;
 
     SpawnChapterNpcs(state);
 
-    // Invariant guard: front must still be the live Player and the
-    // cached pointer must still address it. Both hold by construction
-    // (we only ever appended at the back and dropped tracked NPCs that
-    // were never element 0), this asserts it rather than trusting it.
+    // 不變式守衛：front 必須仍是存活的 Player，且快取指標必須仍指向它。兩者皆由建構過程
+    // 保證（我們只在尾端附加，並只刪除從不是元素 0 的被追蹤 NPC）；此處以 assert 確認，
+    // 而非盲信。
     if (player_) {
         assert(!objects_.empty() &&
                objects_.front().get() == static_cast<GameObject*>(player_));
@@ -133,11 +128,10 @@ void World::RespawnChapterRoster(nccu::SemesterState state) {
 }
 
 void World::Sweep() {
-    // Snapshot the player's death BEFORE erase — the cached player_
-    // pointer dangles the instant its owning unique_ptr is destroyed
-    // (heap-use-after-free per [basic.stc.dynamic.deallocation]/4). The
-    // bool snapshot sidesteps that: we decide whether to clear the cache
-    // while the object still exists, then erase, then act on the snapshot.
+    // 在 erase「之前」先把玩家是否死亡快照下來——快取的 player_ 指標會在其所屬
+    // unique_ptr 被銷毀的瞬間懸空（heap-use-after-free，依 [basic.stc.dynamic
+    // .deallocation]/4）。bool 快照繞過這點：趁物件仍存在時就決定是否要清快取，再
+    // erase，最後依快照行動。
     const bool playerWillDie = player_ && !player_->IsActive();
     objects_.erase(
         std::remove_if(objects_.begin(), objects_.end(),

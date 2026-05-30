@@ -57,7 +57,7 @@ void World::SpawnChapterNpcs(nccu::SemesterState state) {
         if (loadSprites_)
             npc->LoadSprite(
                 PickNpcSprite(spawn.npcId, spawn.pos, spawn.spritePath));
-        chapterRoster_.push_back(npc.get());   // record before the move
+        chapterRoster_.push_back(npc.get());   // 須在 move 之前記錄裸指標
         objects_.push_back(std::move(npc));
     }
 

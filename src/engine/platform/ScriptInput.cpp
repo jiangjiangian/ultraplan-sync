@@ -36,16 +36,15 @@ int KeyCode(std::string_view tok) {
     return -1;
 }
 
-// A line is a high-level verb iff its first non-space char is not a digit
-// and not '-' (no negative frame numbers exist) — keeps the classic
-// "<frame> ..." grammar working untouched (additive, never ambiguous).
+// 一行是高階動詞，當且僅當其第一個非空白字元既非數字、也非 '-'（不存在負的幀號）——
+// 使傳統的「<幀號> ...」文法維持不變（純增添、永不歧義）。
 bool LooksLikeVerb(const std::string& line) {
     for (char c : line) {
         if (std::isspace(static_cast<unsigned char>(c))) continue;
-        if (c == '#') return false;                 // comment
+        if (c == '#') return false;                 // 註解
         return !(std::isdigit(static_cast<unsigned char>(c)) || c == '-');
     }
-    return false;                                   // blank
+    return false;                                   // 空行
 }
 
 
@@ -62,36 +61,23 @@ void ScriptInput::Load(std::istream& in) {
                 Step s; s.verb = Verb::Goto;
                 if (ls >> s.x >> s.y) plan_.push_back(std::move(s));
             } else if (verb == "interact") {
-                // `interact <npcId>`                — talk to / pick up
-                //                                     the object with
-                //                                     that NpcId.
-                // `interact <label> <x> <y>`        — drive to world
-                //                                     (x,y) and tap E
-                //                                     there. The harness
-                //                                     plan has no other
-                //                                     way to E-actuate a
-                //                                     non-NPC world
-                //                                     object (umbrellas /
-                //                                     QuestFlagPickups
-                //                                     have an empty
-                //                                     NpcId(), so they
-                //                                     are unreachable by
-                //                                     the NPC form — the
-                //                                     whole A/B/C spine
-                //                                     needs this to claim
-                //                                     the TrueUmbrella /
-                //                                     the 申請書). <label>
-                //                                     is a human-readable
-                //                                     comment token only;
-                //                                     the coords are the
-                //                                     actual target. Edge
-                //                                     case: an NpcId that
-                //                                     also has coords
-                //                                     still resolves as
-                //                                     the NPC (coords
-                //                                     ignored) so the
-                //                                     existing form is
-                //                                     byte-unchanged.
+                // `interact <npcId>`                — 與帶有該 NpcId 的物件
+                //                                     對話／拾取它。
+                // `interact <label> <x> <y>`        — 移動到世界座標 (x,y)
+                //                                     並在該處按 E。harness
+                //                                     計畫沒有別的方式可對非
+                //                                     NPC 的世界物件按 E 觸發
+                //                                     （雨傘／QuestFlagPickup
+                //                                     的 NpcId() 為空，故無法
+                //                                     經 NPC 形式抵達——整條
+                //                                     A/B/C 主線需要它來拾取
+                //                                     TrueUmbrella／申請書）。
+                //                                     <label> 只是人類可讀的
+                //                                     註解標記；座標才是真正的
+                //                                     目標。邊界情形：同時帶有
+                //                                     座標的 NpcId 仍解析為該
+                //                                     NPC（座標被忽略），故既有
+                //                                     形式逐位元不變。
                 Step s; s.verb = Verb::Interact;
                 if (ls >> s.arg) {
                     float cx, cy;
@@ -111,12 +97,12 @@ void ScriptInput::Load(std::istream& in) {
                 Step s; s.verb = Verb::Quit;
                 plan_.push_back(std::move(s));
             }
-            continue;                               // not a timed directive
+            continue;                               // 非定時指令
         }
         std::istringstream ls(line);
         int frame;
         std::string verb, key;
-        if (!(ls >> frame)) continue;               // blank / comment / '#'
+        if (!(ls >> frame)) continue;               // 空行／註解／'#'
         if (!(ls >> verb)) continue;
         if (verb == "quit") {
             byFrame_[frame].push_back({Directive::Quit, -1});
@@ -156,7 +142,7 @@ void ScriptInput::Advance() {
     }
 }
 
-// --- synthetic edge helpers (shared by classic + plan) ------------------
+// --- 合成邊緣輔助函式（傳統與計畫共用） ------------------
 void ScriptInput::SynthDown(int key) {
     if (down_.insert(key).second) pressed_.insert(key);
 }

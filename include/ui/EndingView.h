@@ -1,8 +1,8 @@
 #ifndef ENDING_VIEW_H_
 #define ENDING_VIEW_H_
-#include "game/state/EndingMenuModel.h"  // IsEndingState + EndingMenuChoice +
-                                           // EndingMenuChoiceAt + EndingMenuLabel
-                                           // (game-side; this header renders against them)
+#include "game/state/EndingMenuModel.h"  // IsEndingState、EndingMenuChoice、
+                                           // EndingMenuChoiceAt、EndingMenuLabel
+                                           // （遊戲側；本標頭對著它們渲染）
 #include "game/state/SemesterState.h"
 #include <string>
 #include <string_view>

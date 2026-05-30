@@ -4,16 +4,19 @@
 #include <fstream>
 #include <string>
 
+/**
+ * @file VendorLoader.cpp
+ * @brief 市集內容檔的逐行解析實作：把 markdown 區段轉成 VendorConfig 清單。
+ */
+
 namespace nccu::vendor {
 
 namespace {
 
-// The source file is UTF-8; markdown read from disk is UTF-8 bytes. So
-// std::string::find / compare on UTF-8 string literals is a byte match —
-// exactly what we want. (DialogLoader uses \x escapes for the few code
-// points it needs; here we use the literals directly for clarity, since
-// the field tags are whole words and hand-computing their bytes is the
-// one mistake worth designing out.)
+// 原始碼檔為 UTF-8，從磁碟讀進的 markdown 也是 UTF-8 位元組，因此對 UTF-8 字串字面
+// 做 std::string::find／compare 即為位元組比對——正是所需。（DialogLoader 對少數需要
+// 的碼位用 \x 轉義；此處為求清晰直接用字面常數，因為欄位標籤都是完整詞，手算其位元組
+// 是值得從設計上避開的出錯點。）
 constexpr const char* kFullWidthColon  = "：";   // U+FF1A
 constexpr const char* kLeftCjkQuote    = "“";   // U+201C
 constexpr const char* kRightCjkQuote   = "”";   // U+201D
@@ -45,8 +48,8 @@ bool HasSuffix(const std::string& s, size_t at, const char* suf) {
     return s.compare(at, n, suf) == 0;
 }
 
-// "## 攤位：<name>" -> <name>. Empty if not a stall heading. "## 10 攤位
-// lineup" is safely rejected (does not start with "## 攤位").
+// 由 "## 攤位：<name>" 取出 <name>；非攤位標題則回傳空字串。"## 10 攤位 lineup"
+// 之類會被安全排除（並非以 "## 攤位" 開頭）。
 std::string ParseStallName(const std::string& line) {
     if (!StartsWith(line, kStallPrefix)) return {};
     const std::string rest = line.substr(kStallPrefix.size());
@@ -55,8 +58,8 @@ std::string ParseStallName(const std::string& line) {
     return Trim(rest.substr(colon + std::char_traits<char>::length(kFullWidthColon)));
 }
 
-// "### <key>…" -> base key (token before whitespace or a （ qualifier).
-// e.g. "### onPurchase（陷阱傘殘骸）" -> "onPurchase".
+// 由 "### <key>…" 取出基礎 key（空白或全形括號（後綴之前的 token）。
+// 例如 "### onPurchase（陷阱傘殘骸）" 取出 "onPurchase"。
 std::string ParseSubsectionKey(const std::string& line) {
     static const std::string kPrefix = "### ";
     if (!StartsWith(line, kPrefix)) return {};
@@ -74,8 +77,8 @@ std::string ParseSubsectionKey(const std::string& line) {
     return rest.substr(0, end);
 }
 
-// Inner text of a `- "…"` bullet (ASCII " or CJK U+201C/U+201D). False on
-// any mismatch — identical contract to DialogLoader::ParseDialogLine.
+// 取出 `- "…"` 條列的內層文字（ASCII " 或全形 U+201C/U+201D 引號）。任一處不符即回傳
+// false——契約與 DialogLoader::ParseDialogLine 完全相同。
 bool ParseBulletLine(const std::string& line, std::string& out) {
     if (line.size() < 4 || line[0] != '-' || line[1] != ' ') return false;
     const size_t open = 2;
@@ -100,8 +103,8 @@ bool ParseBulletLine(const std::string& line, std::string& out) {
     return false;
 }
 
-// "> <tag>：<value>" blockquote field. False if not that shape. ASCII-colon
-// design notes ("> 命名原則:") never match — the separator is full-width.
+// 解析 "> <tag>：<value>" 引言欄位；不是此形狀即回傳 false。用 ASCII 冒號的設計註記
+// （如 "> 命名原則:"）永遠不會誤判——分隔符規定為全形冒號。
 bool ParseField(const std::string& line, std::string& tag,
                 std::string& value) {
     if (!StartsWith(line, "> ")) return false;
@@ -114,11 +117,14 @@ bool ParseField(const std::string& line, std::string& tag,
 }
 
 int ParseSignedInt(const std::string& s) {
-    return std::atoi(s.c_str());  // leading +/- ok, trailing junk -> 0
+    return std::atoi(s.c_str());  // 允許開頭 +/- 號；尾端雜訊一律視為 0
 }
 
 }  // namespace
 
+// 單趟逐行掃描的狀態機：cur 累積目前攤位，遇到下一個攤位標題或檔尾才 flush()
+// 收尾推入 out。pendingStock 與 successCaptured 屬於當前攤位的狀態，因此每次
+// flush() 都要一併重設，否則會洩漏到下一個攤位。
 std::vector<VendorConfig> LoadInterludeVendors(const std::string& path) {
     std::vector<VendorConfig> out;
     std::ifstream in(path);
@@ -126,8 +132,8 @@ std::vector<VendorConfig> LoadInterludeVendors(const std::string& path) {
 
     VendorConfig cur;
     bool haveCur         = false;
-    int  pendingStock    = -1;      // from "> stock：N", applied at close
-    bool successCaptured = false;   // first success block wins
+    int  pendingStock    = -1;      // 來自 "> stock：N"，於攤位收尾時才套用
+    bool successCaptured = false;   // 只採用第一個成交區塊
     enum class Sub { None, Greeting, Success, Leave } sub = Sub::None;
 
     auto flush = [&]() {
@@ -153,7 +159,7 @@ std::vector<VendorConfig> LoadInterludeVendors(const std::string& path) {
             cur.name = std::move(name);
             continue;
         }
-        if (!haveCur) continue;  // skip §-intro notes before the first stall
+        if (!haveCur) continue;  // 跳過第一個攤位之前的章節前言註記
 
         if (std::string key = ParseSubsectionKey(line); !key.empty()) {
             if (key == "greeting") {
@@ -164,7 +170,7 @@ std::vector<VendorConfig> LoadInterludeVendors(const std::string& path) {
             } else if (key == "onLeave") {
                 sub = Sub::Leave;
             } else {
-                sub = Sub::None;  // onChat（未捐款） & other variants: recorded-not-used
+                sub = Sub::None;  // onChat（未捐款）等其他變體：解析得到但目前不使用
             }
             continue;
         }

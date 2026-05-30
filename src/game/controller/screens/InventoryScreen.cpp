@@ -33,14 +33,11 @@ bool HandleInventory(EventBus& bus, World& world) {
                 if (cur >= n)  cur = n - 1;
                 if (Input::IsPressed(Key::Up))   cur = (cur - 1 + n) % n;
                 if (Input::IsPressed(Key::Down)) cur = (cur + 1) % n;
-                // U2-T1: ←/→ jump a whole PAGE (the View pages the bag once
-                // rows exceed kInventoryRowsPerPage). The page index is
-                // DERIVED from the cursor render-side, so moving the cursor
-                // by ±a page is all that is needed — the shown page follows.
-                // Up/Down already flip the page when the selection crosses a
-                // boundary; ←/→ are the explicit fast path. Clamped (no
-                // wrap) so a page-jump can't skip past the ends. No new
-                // serialized state — InventoryCursor is not in state.jsonl.
+                // ←／→ 一次跳「整頁」（列數超過 kInventoryRowsPerPage 後 View 會把背包
+                // 分頁）。頁碼是在繪製端「由游標導出」的，故只需把游標移動 ±一頁即可——
+                // 顯示的頁面會跟著走。↑／↓ 在選取跨越頁界時本就會翻頁；←／→ 則是明確的
+                // 快速捷徑。夾限（不繞回），使跳頁不會越過頭尾。不新增任何序列化狀態——
+                // InventoryCursor 不在 state.jsonl 中。
                 if (Input::IsPressed(Key::Right))
                     cur = std::min(n - 1, cur + nccu::kInventoryRowsPerPage);
                 if (Input::IsPressed(Key::Left))
@@ -50,12 +47,9 @@ bool HandleInventory(EventBus& bus, World& world) {
                     const InventoryRow& sel = rows[static_cast<std::size_t>(cur)];
                     if (sel.usable && IsUsableConsumable(sel.itemId) &&
                         invP->ConsumableCount(sel.itemId) > 0) {
-                        // Apply the effect, THEN spend one. Order matters
-                        // for nothing here (the effect doesn't read the
-                        // count), but spending after keeps the "use → it's
-                        // gone" reading obvious. ApplyConsumableEffect
-                        // publishes the same flavour ShowMessage the pickup
-                        // path used to.
+                        // 先套用效果，「再」扣減一份。此處先後其實不影響任何結果（效果不
+                        // 讀取數量），但把扣減放在後面，能讓「使用 → 它就沒了」這個語意一目
+                        // 了然。ApplyConsumableEffect 會發布與拾取路徑相同的風味 ShowMessage。
                         ApplyConsumableEffect(bus, *invP, sel.itemId);
                         (void)invP->ConsumeOne(sel.itemId);
                     }
@@ -66,7 +60,7 @@ bool HandleInventory(EventBus& bus, World& world) {
         }
         return true;
     }
-    return false;   // bag closed — fall through
+    return false;   // 背包關閉——往下穿透
 }
 
 } // namespace nccu

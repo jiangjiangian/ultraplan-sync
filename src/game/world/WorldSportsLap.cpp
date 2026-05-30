@@ -22,19 +22,19 @@ void World::UpdateSportsLap() noexcept {
     // 圈數。
     if (dist < 90.0f || dist > 320.0f) return;
     const float ang = std::atan2(dy, dx);
-    if (!lapStarted_) {                       // first on-band frame: anchor
+    if (!lapStarted_) {                       // 首個進入環帶的幀：定錨
         lapStarted_   = true;
         lapPrevAngle_ = ang;
         lapSwept_     = 0.0f;
         return;
     }
     constexpr float kPi = 3.14159265358979323846f;
-    float d = ang - lapPrevAngle_;            // shortest signed step
+    float d = ang - lapPrevAngle_;            // 取最短的有號角差
     while (d >  kPi) d -= 2.0f * kPi;
     while (d < -kPi) d += 2.0f * kPi;
     lapSwept_    += d;
     lapPrevAngle_ = ang;
-    if (std::fabs(lapSwept_) >= 2.0f * kPi * 0.92f)   // ~one lap (8% slack)
+    if (std::fabs(lapSwept_) >= 2.0f * kPi * 0.92f)   // 約一整圈（留 8% 寬容）
         player_->SetFlag(kFlagSportsLapDone);
 }
 

@@ -4,27 +4,29 @@
 #include "engine/input/Input.h"
 #include "engine/input/Key.h"
 
+/**
+ * @file PauseScreen.cpp
+ * @brief 暫停選單與其上層說明疊層的輸入處理：M 開關選單，選單開啟期間凍結模擬，
+ *        並把游標選項導向繼續／說明／無障礙開關／重新開始／離開。
+ */
+
 namespace nccu {
-using namespace nccu::engine::input;  // Phase 4 §B: input types moved out of nccu::gfx
+using namespace nccu::engine::input;  // 輸入型別已自 nccu::gfx 移出，以此引入
 
 bool HandlePauseMenu(World& world) {
     using nccu::engine::input::Input;
     using nccu::engine::input::Key;
     const bool toggle = Input::IsPressed(Key::M);
     if (world.MenuOpen()) {
-        // REQUIREMENT #9: the 說明 help overlay sits ON TOP of the
-        // paused menu. While it is up, M / E / Enter dismisses it
-        // back to the menu and the menu cursor / sim stay frozen.
-        // (ESC is not a dismiss key — it quits the program.) Handled
-        // FIRST so a key meant for "close help" never also moves the
-        // menu cursor or triggers an AppAction.
+        // 說明（help）疊層覆蓋在已暫停的選單「之上」。它開啟時，M／E／Enter 用來把它
+        // 關回選單，期間選單游標與模擬皆維持凍結（ESC 不是關閉鍵——它會結束程式）。此處
+        // 「最先」處理，使一個原本要「關閉說明」的按鍵，絕不會同時移動選單游標或觸發
+        // AppAction。
         if (world.HelpOpen()) {
-            // U2-T4: the 說明 overlay is paged — ←/→ flip between the
-            // 操作+目標 page and the 雨傘外觀+道具須知+結局 page (the
-            // page index wraps; the View draws a 「第 N／M 頁」 indicator).
-            // Pure UI state (World::HelpPage, NOT serialized — see
-            // Harness.cpp), so a paged help leaves state.jsonl byte-
-            // identical. M / E / Enter still dismisses back to the menu.
+            // 說明疊層分頁顯示——←／→ 在「操作＋目標」頁與「雨傘外觀＋道具須知＋結局」頁
+            // 之間切換（頁碼會繞回；View 會畫出「第 N／M 頁」的指示）。這是純 UI 狀態
+            //（World::HelpPage，不序列化），故分頁不會改變存檔位元組。M／E／Enter 仍可關回
+            // 選單。
             constexpr int n = nccu::kGameHelpPageCount;
             if (Input::IsPressed(Key::Right))
                 world.SetHelpPage((world.HelpPage() + 1) % n);
@@ -34,11 +36,11 @@ bool HandlePauseMenu(World& world) {
                 Input::IsPressed(Key::Enter) ||
                 Input::IsPressed(Key::E))
                 world.SetHelpOpen(false);
-            return true;                    // frozen behind help
+            return true;                    // 凍結於說明疊層之後
         }
         if (Input::IsPressed(Key::Up))   world.MoveMenuCursor(-1);
         if (Input::IsPressed(Key::Down)) world.MoveMenuCursor(1);
-        if (toggle) {                       // M = quick Resume
+        if (toggle) {                       // M = 快速繼續
             world.SetMenuOpen(false);
             return true;
         }
@@ -51,20 +53,15 @@ bool HandlePauseMenu(World& world) {
                     world.SetHelpOpen(true);
                     break;
                 case 2:                     // 減少動畫 (toggle)
-                    // Cycle 9.E.3: pause-menu UI for the
-                    // ReducedMotion accessibility flag added in
-                    // 9.E.1. Flip in place; the menu stays open so
-                    // the player can see the [開]/[關] state update
-                    // on the same row their cursor is on. Pure
-                    // World mutation — no AppAction, no menu close.
+                    // ReducedMotion 無障礙旗標的暫停選單開關。就地翻轉、選單維持開啟，
+                    // 使玩家能在游標所在的同一列即時看到 [開]/[關] 狀態更新。純 World
+                    // 狀態變動——不發 AppAction、不關閉選單。
                     world.SetReducedMotion(!world.ReducedMotion());
                     break;
                 case 3:                     // 擴大目標 (toggle)
-                    // Cycle 9.E.3: pause-menu UI for the
-                    // LargeTargets accessibility flag added in
-                    // 9.E.2. Same in-place toggle shape as row 2 —
-                    // the next gameplay frame's E-probe reach picks
-                    // up the new value via World::LargeTargets().
+                    // LargeTargets 無障礙旗標的暫停選單開關。與第 2 列同樣的就地翻轉
+                    // 形態——下一個遊玩幀的 E 互動探測距離，會經 World::LargeTargets()
+                    // 讀到新值。
                     world.SetLargeTargets(!world.LargeTargets());
                     break;
                 case 4:                     // 重新開始 (Restart)
@@ -75,13 +72,13 @@ bool HandlePauseMenu(World& world) {
                     break;
             }
         }
-        return true;   // frozen while the menu is up
+        return true;   // 選單開啟期間凍結
     }
-    if (toggle) {                           // open from gameplay
+    if (toggle) {                           // 自遊玩中開啟
         world.SetMenuOpen(true);
         return true;
     }
-    return false;   // no menu involved this frame — fall through
+    return false;   // 本幀與選單無關——往下穿透
 }
 
 } // namespace nccu

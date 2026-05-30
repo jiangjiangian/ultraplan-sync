@@ -30,30 +30,22 @@ void TryReturnVictimUmbrella(EventBus& bus, Player& player,
         return;
     }
 
-    // GRANT — the reciprocity payoff (T2: now a real exchange SCENE that
-    // plays BEFORE the chapter clears). The player carried the victim's
-    // umbrella back; the 苦主 takes it, then reveals he ALSO found the
-    // player's true umbrella and hands it over. This sets HasUmbrella +
-    // Flag_HasTrueUmbrella (Ending A's precise condition, EndingGate.cpp)
-    // — but it does NOT publish UmbrellaClaimed here. Pre-T2, publishing
-    // UmbrellaClaimed inline drove the EventWiring Ch1 sibling-if →
-    // Transition(Interlude) on the SAME frame, so the chapter snapped shut
-    // BEFORE the (d) 重逢致謝 exchange dialogue could be read (the opener,
-    // running right after this in GameController, saw state==Interlude and
-    // never routed the victim to (d)).
+    // 授予——善有善報的回報（現在是一場在章節通關「之前」真正演出的交換場景）。玩家把
+    // 苦主的傘帶了回來；苦主收下後，揭示他「也」找到了玩家的真傘並交還。這會設下
+    // HasUmbrella + Flag_HasTrueUmbrella（結局 A 的精確條件，見 EndingGate.cpp）——但
+    // 此處「不」發布 UmbrellaClaimed。改作法之前，內聯發布 UmbrellaClaimed 會在「同一幀」
+    // 經事件接線的第一章兄弟 if 驅動 Transition(Interlude)，使本章在 (d) 重逢致謝 交換
+    // 對話能被讀到「之前」就闔上（緊接其後在 GameController 執行的開場，會看到
+    // state==Interlude 而從不把苦主路由到 (d)）。
     //
-    // The fix mirrors Ch2's LiftChapter2Clear: grant the flags silently
-    // here, let the opener route the victim to his (d) exchange recap
-    // (ResolveOpenerSubState: Flag_HasTrueUmbrella → (d)), and defer the
-    // UmbrellaClaimed publish to LiftChapter1Clear — which fires it only
-    // AFTER the (d) dialogue has closed. So the player reads the exchange,
-    // THEN Ch1 clears to the Interlude. The exchange's spoken lines live in
-    // chapter1.md 苦主 (d); no inline ShowMessage is needed (it would be a
-    // redundant one-line echo of the (d) scene).
-    player.ClearFlag(kFlagHasVictimUmbrella);   // 苦主 takes his傘 back
-    // B2.1: the player now HOLDS the true umbrella the 苦主 hands over — the
-    // bag swaps the 苦主's-umbrella row for the 真傘 row (SetHeldUmbrella
-    // also sets HasUmbrella). Flag_HasTrueUmbrella stays the Ending A marker.
+    // 修正比照第二章的 LiftChapter2Clear：在此「靜默」授予旗標，讓開場把苦主路由到他的
+    // (d) 交換回顧（ResolveOpenerSubState：Flag_HasTrueUmbrella → (d)），並把 UmbrellaClaimed
+    // 的發布延後到 LiftChapter1Clear——後者只在 (d) 對話關閉「之後」才觸發。於是玩家先讀
+    // 完交換，「然後」第一章才清關到插曲段。交換的口白台詞放在章節內容的苦主 (d)；不需內聯
+    // ShowMessage（那會與 (d) 場景重複地單行回放）。
+    player.ClearFlag(kFlagHasVictimUmbrella);   // 苦主收回他的傘
+    // 玩家現在「持有」苦主交還的真傘——背包把「苦主的傘」那一列換成「真傘」那一列
+    //（SetHeldUmbrella 同時也設下 HasUmbrella）。Flag_HasTrueUmbrella 維持為結局 A 的標記。
     player.SetHeldUmbrella(HeldUmbrella::True);
     player.SetFlag(kFlagHasTrueUmbrella);
 }
@@ -84,40 +76,33 @@ bool TryBuyAuntieUglyUmbrella(EventBus& bus, Player& player,
                               SemesterState state) {
     if (state != SemesterState::Chapter1_AddDrop) return false;
     if (npcId != "shop_auntie") return false;
-    // The (c) heading in chapter1.md is "### (c) 購買醜綠傘", so the
-    // choice-opener label is exactly "購買醜綠傘". Match it so the other
-    // 阿姨 choices (詢問雨傘 / 請阿姨喝一杯熱咖啡 / the 我再想想… exit) are
-    // untouched.
+    // 章節內容中 (c) 的標題是「### (c) 購買醜綠傘」，故選項開場標籤恰為「購買醜綠傘」。
+    // 比對它，使阿姨的其他選項（詢問雨傘 / 請阿姨喝一杯熱咖啡 / 我再想想… 退出）不受影響。
     if (choiceLabel != "購買醜綠傘") return false;
 
-    // Idempotent: the 阿姨's menu is re-presented on a re-talk (shop_auntie
-    // is not self-locked), so without this guard a second pick would deduct
-    // another 80 元 for an umbrella the player already holds.
+    // 冪等：阿姨的選單在重新對話時會再次呈現（shop_auntie 未自我上鎖），故若無此防護，
+    // 第二次選取會為玩家已持有的傘再扣 80 元。
     if (player.HeldUmbrellaKind() == HeldUmbrella::Ugly) return false;
 
     namespace msg = nccu::vendor::msg;
 
-    // DeductMoney is the gatekeeper — it returns false (no side effect) when
-    // the purse can't cover the price, so the held umbrella is granted ONLY
-    // on a real deduction (mirrors Vendor::TryBuy's order).
+    // DeductMoney 是把關者——錢包不足以支付時回傳 false（無副作用），故持有型傘「只」在
+    // 真正扣款時才授予（比照 Vendor::TryBuy 的順序）。
     if (!player.DeductMoney(kCh1UglyUmbrellaPrice)) {
         bus.Publish(Event{
             EventType::ShowMessage, std::string(msg::kInsufficientFunds)});
         return false;
     }
 
-    // Grant the HELD ugly umbrella: a bag row + automatic rain shelter
-    // (ApplyRainSheltered). This is a REAL umbrella the player carries, NOT
-    // the Ending-C lock — Flag_BoughtUglyUmbrella is deliberately NOT set
-    // here (it is the Ch4 集英樓 Vendor's commitment; EndingGate.cpp). No
-    // karma either (the (c) annotation was `// karma +0`, a pragmatic but
-    // morally neutral buy).
+    // 授予「持有型」醜傘：一個背包列 + 自動遮雨（ApplyRainSheltered）。這是一把玩家攜帶的
+    //「真實」雨傘，「非」結局 C 鎖——此處刻意「不」設下 Flag_BoughtUglyUmbrella（那是第四章
+    // 集英樓攤販的承諾；見 EndingGate.cpp）。也無業力（(c) 的註記是 `// karma +0`，是務實
+    // 但道德中性的購買）。
     player.SetHeldUmbrella(HeldUmbrella::Ugly);
 
-    // 花費/餘額 toast — the exact Vendor::TryBuy spend line, reusing the same
-    // vendor::msg copy + the catalog 中文 name so the Ch1 阿姨 buy reads
-    // consistently with the market / 集英樓 Vendor ("買了螢光綠醜傘，花了 80
-    // 元（剩 N 元）"). GetMoney() is the post-deduction balance.
+    // 花費/餘額 提示——與 Vendor::TryBuy 完全相同的花費行，重用同一份 vendor::msg 文案 +
+    // 圖鑑的中文名稱，使第一章阿姨的購買與市集／集英樓攤販讀來一致（「買了螢光綠醜傘，
+    // 花了 80 元（剩 N 元）」）。GetMoney() 為扣款後的餘額。
     const std::string itemName{nccu::ItemInfoFor("UglyUmbrella").displayName};
     bus.Publish(Event{
         EventType::ShowMessage,
@@ -130,32 +115,28 @@ bool TryBuyAuntieUglyUmbrella(EventBus& bus, Player& player,
 
 bool Ch1IndicatorVisible(std::string_view npcId, bool isQuestGiver,
                          const Player& player) {
-    // G3: 苦主 → 西裝學長 → 苦主 sequence. Each spine NPC lights ONLY on its
-    // own step so exactly one main `!` is visible at a time (out-of-order
-    // contact is redirected by the E-interact hooks, not here).
+    // 苦主 → 西裝學長 → 苦主 的序列。每個主線 NPC「只」在自己那一步亮起，使同一時間恰好
+    // 只有一個主要「!」可見（順序錯亂的接觸由按 E 互動鉤子轉向，而非在此）。
     const bool grantDone   = player.HasFlag(kFlagHasTrueUmbrella);
     const bool promised    = player.HasFlag(kFlagPromisedVictim);
     const bool seniorChoice = player.HasFlag(kFlagSuitSeniorChoiceMade);
 
     if (npcId == "victim") {
-        // Lit at step 1 (before the promise — give the lead) and again at
-        // step 3 (after the 學長 choice — bring his umbrella back). Dark in
-        // between (the player is off confronting the 學長) and after the
-        // grant (the (d) reunion is then a recap, not an objective).
-        if (grantDone) return false;                 // done → dark
-        if (!promised) return true;                  // step 1: get the lead
-        return seniorChoice;                         // step 3 once 學長 done
+        // 在第 1 步亮起（承諾之前——給出線索），並在第 3 步再次亮起（學長選項之後——把他
+        // 的傘帶回來）。其間（玩家正去面對學長）與授予之後（(d) 重逢此時是回顧、非目標）
+        // 則熄滅。
+        if (grantDone) return false;                 // 完成 → 熄滅
+        if (!promised) return true;                  // 第 1 步：取得線索
+        return seniorChoice;                         // 學長完成後的第 3 步
     }
     if (npcId == "suit_senior") {
-        // Lit at step 2 ONLY: the player has the lead (promised) but has
-        // not yet made the 學長 choice. Goes dark the instant the choice is
-        // committed (Flag_SuitSeniorChoiceMade), handing the `!` back to
-        // 苦主 for step 3. Keyed on npcId (not the roster bit) because the
-        // 學長 ships isQuestGiver=false.
+        // 「只」在第 2 步亮起：玩家已有線索（已承諾）但尚未做出學長選項。選項一經確認
+        //（Flag_SuitSeniorChoiceMade）便立刻熄滅，把「!」交還給苦主進入第 3 步。以 npcId
+        // 為鍵（而非名冊位元），因為學長隨附 isQuestGiver=false。
         return promised && !seniorChoice && !grantDone;
     }
-    // Every other Ch1 npc keeps its roster bit (the 助教 申請書 errand /
-    // 學霸 / 阿姨 are isQuestGiver=false → never a main `!`).
+    // 其餘所有第一章 npc 維持其名冊位元（助教申請書跑腿／學霸／阿姨皆 isQuestGiver=false
+    // → 永遠不會有主要「!」）。
     return isQuestGiver;
 }
 

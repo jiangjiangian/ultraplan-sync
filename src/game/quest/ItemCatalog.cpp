@@ -18,23 +18,21 @@ namespace nccu {
 
 namespace {
 
-// One catalog row per itemId. zh-TW only (forbidden-string rule). The
-// consumable rows describe the SAME effect their ConsumableItem::Consume
-// body applies; the umbrella / 金幣 / 任務紙張 rows describe the carried
-// objects the inventory DTO synthesises from flags. Static so the
-// string_views into it stay valid for the program lifetime.
+// 每個 itemId 一筆圖鑑列。僅繁體中文。消耗品列描述的效果與其
+// ConsumableItem::Consume 主體所套用者「相同」；雨傘／金幣／任務紙張列則描述物品欄
+// DTO 由旗標合成出的攜帶物。設為 static，使指向其中的 string_view 在整個程式生命期
+// 都保持有效。
 const std::unordered_map<std::string, ItemInfo>& Table() {
     static const std::unordered_map<std::string, ItemInfo> kTable = {
-        // ---- currency --------------------------------------------------
-        // G4: state the economy rules the owner asked to KEEP (money is
-        // cross-chapter; consumables are chapter-scoped, wiped on market
-        // entry — see SceneRouter ClearConsumables).
+        // ---- 貨幣 --------------------------------------------------
+        // 載明企劃要求保留的經濟規則（金錢跨章節保留；消耗品為章節限定，進入市集時
+        // 清除——見 SceneRouter 的 ClearConsumables）。
         {kItemMoney,
          {"金幣", "錢包餘額，跨章節保留；可在市集與便利商店消費（消耗品則每章用完）。"}},
 
-        // ---- consumables (usable from the bag) -------------------------
-        // G4: each row states its EXACT effect (the use-from-bag path
-        // applies it; descriptions kept in sync with ApplyConsumableEffect).
+        // ---- 消耗品（可從背包使用） -------------------------
+        // 每一列載明其「精確」效果（從背包使用的路徑會套用它；描述與
+        // ApplyConsumableEffect 保持同步）。
         {"EnergyDrink",
          {"能量飲料", "使用：業力 +3、雨量 −15；也能用來喚醒攤倒的學霸。"}},
         {"HotPack",
@@ -42,19 +40,18 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
         {"WaterproofSpray",
          {"防水噴霧", "使用：雨量 −35（彈開大半雨水）；專門擋雨，不影響業力。"}},
 
-        // ---- market food / flavour buys (held in the bag) --------------
-        // G4: the edible 小吃 are now USABLE (each sheds −15 雨量 on use,
-        // no karma). 愛心捐款 stays a view-only held gift (no rain effect).
-        // They land in the bag like any purchase (Vendor::TryBuy →
-        // AddConsumable); the catalog gives them a 中文 name so neither the
-        // purchase toast nor the bag row prints a raw English id.
+        // ---- 市集小吃／風味購買（持有於背包） --------------
+        // 可食用的小吃現在「可使用」（每次使用減 15 雨量、無業力）。愛心捐款維持為只供
+        // 檢視的持有贈品（無降雨效果）。它們與任何購買一樣進入背包（Vendor::TryBuy →
+        // AddConsumable）；圖鑑給它們一個中文名稱，使購買提示與背包列都不會印出原始的
+        // 英文 id。
         {"EggCake",   {"雞蛋糕", "使用：雨量 −15。古早味雞蛋糕，暖手暖胃。"}},
         {"FlowerTea", {"花茶", "使用：雨量 −15。茶藝社的熱花茶，雨天裡的暖意。"}},
         {"Takoyaki",  {"章魚燒", "使用：雨量 −15。三色章魚燒，校慶味道的小點心。"}},
         {"Donation",  {"愛心捐款", "捐給學生會的善款，幫弱勢同學繳活動費（持有用）。"}},
 
-        // ---- vendor-sold umbrellas (the toast / bag use these itemIds;
-        // the flag-derived bag rows use the kItem* sentinels above) ------
+        // ---- 攤販販售的雨傘（提示／背包使用這些 itemId；由旗標衍生的背包列則用上方的
+        // kItem* 哨兵值） ------
         {"UglyUmbrella",
          {"螢光綠醜傘", "醜得全校最好認，但保證沒人拿錯。務實的選擇。"}},
         {"CursedUmbrella",
@@ -62,10 +59,9 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
         {"TransparentUmbrella",
          {"透明傘", "再普通不過的透明傘——但它可能是別人的。"}},
 
-        // ---- umbrellas (view-only; derived from flags) -----------------
-        // G4: clarify the umbrella's rain relief is AUTOMATIC while held
-        // (撐著 → 雨量 緩升而非急升, ApplyRainSheltered) — no "use" needed,
-        // unlike the消耗品 above.
+        // ---- 雨傘（只供檢視；由旗標衍生） -----------------
+        // 釐清雨傘的雨勢緩解在持有時「自動」生效（撐著 → 雨量緩升而非急升，
+        // ApplyRainSheltered）——不像上方的消耗品需要「使用」。
         {kItemTrueUmbrella,
          {"真傘", "撐著它，雨量上升會大幅減緩（自動生效）。完美結局的關鍵。"}},
         {kItemCursedUmbrella,
@@ -74,28 +70,26 @@ const std::unordered_map<std::string, ItemInfo>& Table() {
          {"螢光綠醜傘", "醜得全校最好認，但保證沒人拿錯。務實的選擇。"}},
         {kItemVictimUmbrella,
          {"苦主的傘", "撿到的透明傘，傘主在綜院等它回家。記得還給他。"}},
-        // B2.1: the remaining held-over-head umbrellas the bag can show.
-        // (Descriptions use only glyphs already in docs/content so the
-        // headless font-glyph-scan gate stays green — see test_font_ui_glyph_scan.)
+        // 背包能顯示的其餘「拿在頭頂」型雨傘。（描述只用 docs/content 中已存在的字形，
+        // 使無頭的字形掃描關卡維持綠燈——見 test_font_ui_glyph_scan。）
         {kItemFragileUmbrella,
          {"破傘", "骨架斷了的傘，雨還是會慢慢滲進來；有總比沒有好。"}},
         {kItemProfTrapUmbrella,
          {"陷阱傘", "傘骨上有奇怪的刻字，撐著它總覺得有人在後面跟著。"}},
-        // B2.3: the Ch2 圖書館管理員 loaner. Functional shelter (auto-rains
-        // while held) but explicitly NOT the true umbrella (no Ending A).
+        // 第二章圖書館管理員的借傘。具實際遮蔽功能（持有時自動緩解降雨），但明確「非」
+        // 真傘（不通往結局 A）。
         {kItemLoanerUmbrella,
          {"管理員的傘", "圖書館管理員借你的傘，撐著它雨量會自動減緩；記得歸還。"}},
 
-        // ---- quest papers (view-only; derived from flags) --------------
+        // ---- 任務紙張（只供檢視；由旗標衍生） --------------
         {kItemForm,
          {"申請書",
           "撿到的加退選申請書，還不知道該交給哪位助教，先收著吧。"}},
         {kItemNotes,
          {"學霸的筆記", "替學霸撿回的筆記，散落校園的三頁心血。"}},
 
-        // ---- Ch3 物物交換鏈 carried items (view-only; derived from flags) --
-        // B2.4: shown in the bag so the trade chain is visible; each is
-        // consumed (its flag cleared) the moment it is traded for the next.
+        // ---- Ch3 物物交換鏈攜帶物（只供檢視；由旗標衍生） --
+        // 顯示在背包中，使交換鏈可見；每一個在被換成下一個的當下即被消費（清除其旗標）。
         {kItemSausage,
          {"香腸", "A 系攤主給的烤香腸，熱的、燙手；拿去找 B 系同學換東西。"}},
         {kItemLoudspeaker,
@@ -123,11 +117,9 @@ std::vector<std::string> CatalogStrings() {
     return out;
 }
 
-// G4: generic 小吃 rain relief (-15). The market food buys have no entity
-// class (they are bought as bare itemIds via Vendor::TryBuy), so their
-// effect lives only here. 愛心捐款 (Donation) is deliberately NOT in this
-// set — it is a charity gift, not food, so it has no rain effect and stays
-// a view-only held item.
+// 通用小吃的雨勢緩解（-15）。市集食物購買沒有實體類別（它們經 Vendor::TryBuy 以裸
+// itemId 購得），故其效果只存在於此。愛心捐款（Donation）刻意「不」在此集合中——它是
+// 慈善贈品而非食物，故無降雨效果，維持為只供檢視的持有物。
 namespace {
 constexpr float kFoodRainRelief = 15.0f;
 bool IsGenericFood(std::string_view itemId) {
@@ -137,56 +129,51 @@ bool IsGenericFood(std::string_view itemId) {
 }  // namespace
 
 bool IsUsableConsumable(std::string_view itemId) {
-    // G4: the three gear/drink consumables PLUS the edible 小吃 are usable
-    // from the bag (each sheds rain on use). Donation / money / umbrellas /
-    // quest papers remain view-only.
+    // 三種裝備／飲料消耗品，「加上」可食用的小吃，皆可從背包使用（每次使用減雨）。
+    // 愛心捐款／金錢／雨傘／任務紙張維持只供檢視。
     return itemId == "EnergyDrink" || itemId == "HotPack" ||
            itemId == "WaterproofSpray" || IsGenericFood(itemId);
 }
 
 void ApplyConsumableEffect(EventBus& bus, Player& player, std::string_view itemId) {
-    // Mirror each ConsumableItem::Consume body EXACTLY (same karma delta,
-    // same ShowMessage text), now player-triggered from the bag instead of
-    // fired on pickup. The entity bodies stay the source of the constants
-    // (EnergyDrink::kKarmaBonus / HotPack::kKarmaBonus) so the two paths
-    // can never disagree on the number. Strings are kept literally in sync
-    // with the entity .cpp (a doctest pins both).
+    // 與每個 ConsumableItem::Consume 主體「完全」一致地鏡像（相同的業力增減、相同的
+    // ShowMessage 文字），只是現在改由玩家從背包觸發、而非拾取時觸發。常數仍以實體主體為
+    // 來源（EnergyDrink::kKarmaBonus / HotPack::kKarmaBonus），使兩條路徑對數值絕不會
+    // 不一致。字串與實體 .cpp 逐字保持同步（有 doctest 同時固定兩者）。
     if (itemId == "EnergyDrink") {
-        // G4: +3 karma AND -15 rain (mirrors EnergyDrink::Consume).
+        // +3 業力「且」-15 雨量（鏡像 EnergyDrink::Consume）。
         player.AddKarma(EnergyDrink::kKarmaBonus)
               .DrainRainBy(EnergyDrink::kRainRelief);
         bus.Publish(Event{
             EventType::ShowMessage,
             "喝完飲料，精神好多了，淋到的雨也擦乾了一些。"});
     } else if (itemId == "HotPack") {
-        // G4: +5 karma AND -25 rain (mirrors HotPack::Consume; was a full
-        // resetRainMeter()).
+        // +5 業力「且」-25 雨量（鏡像 HotPack::Consume；原本是整個 resetRainMeter()）。
         player.AddKarma(HotPack::kKarmaBonus).DrainRainBy(HotPack::kRainRelief);
         bus.Publish(Event{
             EventType::ShowMessage,
             "用了暖暖包，烘乾了大半的雨水，心情也好了一些。"});
     } else if (itemId == "WaterproofSpray") {
-        // G4: -35 rain, no karma (mirrors WaterproofSpray::Consume).
+        // -35 雨量、無業力（鏡像 WaterproofSpray::Consume）。
         player.DrainRainBy(WaterproofSpray::kRainRelief);
         bus.Publish(Event{
             EventType::ShowMessage,
             "噴了防水噴霧，雨水大半都被彈開了。"});
     } else if (IsGenericFood(itemId)) {
-        // G4: a generic 小吃 dries off -15 rain (no karma, no entity class —
-        // this is the only place these market buys carry an effect).
+        // 通用小吃減 15 雨量（無業力、無實體類別——這是這些市集購買唯一帶有效果之處）。
         player.DrainRainBy(kFoodRainRelief);
         bus.Publish(Event{
             EventType::ShowMessage,
             "吃了點熱的，身子暖了，雨水也擦掉了一些。"});
     }
-    // Unknown / non-usable id: no-op (the caller already gated on
-    // IsUsableConsumable, but staying defensive keeps this safe to call).
+    // 未知／不可用的 id：空操作（呼叫端已以 IsUsableConsumable 閘控，但保持防禦性使此處
+    // 仍可安全呼叫）。
 }
 
 namespace {
 
-// Append a catalog-described row. count>0 prints "xN"; count==0 is a
-// single instance (umbrella / quest paper) with no suffix.
+// 附加一個由圖鑑描述的列。count>0 印出「xN」；count==0 是單一實例（雨傘／任務紙張），
+// 無後綴。
 void PushRow(std::vector<InventoryRow>& rows, std::string_view itemId,
              int count, bool usable) {
     const ItemInfo info = ItemInfoFor(itemId);
@@ -195,7 +182,7 @@ void PushRow(std::vector<InventoryRow>& rows, std::string_view itemId,
         std::string(info.description), usable, std::string(itemId)});
 }
 
-// B2.1: the catalog sentinel for a held umbrella kind. None ⇒ no row.
+// 某個持有型雨傘種類對應的圖鑑哨兵值。None ⇒ 無此列。
 const char* HeldUmbrellaItem(HeldUmbrella kind) {
     switch (kind) {
         case HeldUmbrella::True:          return kItemTrueUmbrella;
@@ -204,8 +191,7 @@ const char* HeldUmbrellaItem(HeldUmbrella kind) {
         case HeldUmbrella::Fragile:       return kItemFragileUmbrella;
         case HeldUmbrella::ProfessorTrap: return kItemProfTrapUmbrella;
         case HeldUmbrella::Loaner:        return kItemLoanerUmbrella;
-        // Victim's carried umbrella is shown via its quest flag, not the
-        // held-kind (it grants no shelter), so it has no held-kind row.
+        // 苦主攜帶的傘經其任務旗標顯示，而非持有種類（它不提供遮蔽），故無持有種類列。
         case HeldUmbrella::Victim:
         case HeldUmbrella::None:          return nullptr;
     }
@@ -219,9 +205,8 @@ const char* HeldUmbrellaCatalogId(HeldUmbrella kind) {
 }
 
 HeldUmbrella HeldUmbrellaForItemId(std::string_view itemId) {
-    // The vendor-stock umbrella ids (ItemCatalog Table) → the held kind.
-    // Only the 集英樓 醜傘 is actually sold today; the others are mapped for
-    // robustness so any future umbrella stock line lands as a held umbrella.
+    // 攤販庫存的雨傘 id（ItemCatalog 的 Table）→ 持有種類。今日實際販售的只有集英樓的
+    // 醜傘；其餘為穩健起見一併對應，使任何未來的雨傘庫存品項都能落為持有型雨傘。
     if (itemId == "UglyUmbrella")        return HeldUmbrella::Ugly;
     if (itemId == "CursedUmbrella")      return HeldUmbrella::Cursed;
     if (itemId == "TransparentUmbrella") return HeldUmbrella::True;
@@ -243,15 +228,13 @@ bool IsUmbrellaItemId(std::string_view id) {
 std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
     std::vector<InventoryRow> rows;
 
-    // 金幣 — always present; persists across chapters (catalog copy notes
-    // it). Count carries the balance so the View can show "金幣 x123".
+    // 金幣——永遠存在；跨章節保留（圖鑑文案有註明）。count 帶有餘額，使 View 能顯示
+    //「金幣 x123」。
     PushRow(rows, kItemMoney, player.GetMoney(), /*usable=*/false);
 
-    // Held consumables — sorted by itemId for a deterministic panel (the
-    // count map iteration order is unspecified). Each is usable from the
-    // bag (E/Enter applies its effect). B2.1: umbrella itemIds are skipped
-    // here — a held umbrella is shown by the held-kind row below, never as a
-    // count entry (the Ch4 集英樓 vendor adds "UglyUmbrella" to this map).
+    // 持有的消耗品——依 itemId 排序以取得具決定性的面板（計數表的迭代順序未指定）。每個
+    // 都可從背包使用（E/Enter 套用其效果）。此處略過雨傘 itemId——持有型雨傘由下方的持有
+    // 種類列顯示，絕不作為計數項目（第四章集英樓攤販會把 "UglyUmbrella" 加進此表）。
     {
         std::vector<std::pair<std::string, int>> held;
         held.reserve(player.Consumables().size());
@@ -264,34 +247,28 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
             PushRow(rows, id, n, /*usable=*/IsUsableConsumable(id));
     }
 
-    // B2.1: the umbrella the player is HOLDING OVER THEIR HEAD — keyed off
-    // HeldUmbrellaKind(), the live held-umbrella state, NOT the persistent
-    // ending flags. So a lost umbrella (SetHasUmbrella(false) on Ch4 entry /
-    // a per-chapter「傘又掉了」reset clears the held kind) shows NO umbrella
-    // row, and a cursed / ugly ending flag — which is NEVER cleared — no
-    // longer leaves a stale row after the umbrella is gone. View-only single
-    // instance. (None / Victim ⇒ no held-kind row; the 苦主's carried
-    // umbrella is shown by its quest flag just below, as it grants no
-    // shelter and is a thing-to-return, not a thing-you-hold.)
+    // 玩家「撐在頭頂」的那把傘——以 HeldUmbrellaKind()（即時的持有雨傘狀態）為鍵，「非」
+    // 持久的結局旗標。如此一來，失去的傘（第四章進入時 SetHasUmbrella(false)／某章「傘又
+    // 掉了」的重置會清除持有種類）便「不」顯示雨傘列，而詛咒／醜傘的結局旗標——那些「絕不」
+    // 清除——也不再於傘消失後留下過時的列。只供檢視的單一實例。（None / Victim ⇒ 無持有
+    // 種類列；苦主攜帶的傘由其下方的任務旗標顯示，因它不提供遮蔽，是「要歸還的東西」、
+    // 而非「你撐著的東西」。）
     if (const char* held = HeldUmbrellaCatalogId(player.HeldUmbrellaKind()))
         PushRow(rows, held, 0, /*usable=*/false);
 
-    // The 苦主's transparent umbrella, while CARRIED for return (Ch1, before
-    // the grant). It is a quest item the player ferries back, not held over
-    // their own head (it grants no shelter — hasUmbrella_ stays false), so it
-    // is an INDEPENDENT row alongside any held shelter umbrella, flag-driven
-    // like the quest papers. The return grant clears this flag and sets the
-    // held TRUE umbrella, so the bag swaps rows cleanly.
+    // 苦主的透明傘，在「為歸還而攜帶」期間（第一章，授予之前）。它是玩家運送回去的任務
+    // 物品，並非撐在自己頭頂（它不提供遮蔽——hasUmbrella_ 維持 false），故它是與任何持有
+    // 遮蔽傘並列的「獨立」列，與任務紙張一樣由旗標驅動。歸還授予會清除此旗標並設下持有型
+    // 真傘，使背包乾淨地換列。
     if (player.HasFlag(kFlagHasVictimUmbrella))
         PushRow(rows, kItemVictimUmbrella, 0, /*usable=*/false);
 
-    // Current-cycle quest papers the player has found (view-only).
+    // 玩家在本輪已找到的任務紙張（只供檢視）。
     if (player.HasFlag(kFlagFoundForm))
         PushRow(rows, kItemForm, 0, /*usable=*/false);
     {
-        // The Ch2 三頁筆記 collapse into ONE "學霸的筆記 xN" row counting
-        // how many of the 3 the player currently holds — clearer than
-        // three identical rows. Omitted entirely when none are held.
+        // 第二章的三頁筆記合併成「一」列「學霸的筆記 xN」，計入玩家目前持有 3 頁中的幾頁
+        // ——比三列相同的列更清楚。一頁都沒持有時則完全略去。
         int notes = 0;
         if (player.HasFlag(kFlagFoundNote1)) ++notes;
         if (player.HasFlag(kFlagFoundNote2)) ++notes;
@@ -299,11 +276,9 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
         if (notes > 0) PushRow(rows, kItemNotes, notes, /*usable=*/false);
     }
 
-    // B2.4: the Ch3 物物交換鏈 carried items, flag-driven like the papers.
-    // Each disappears the instant the trade consumes it (Chapter3Quest clears
-    // Flag_HasSausage when it hands over the 大聲公, and Flag_HasLoudspeaker
-    // when it hands over the 情報), so the bag is always honest about what is
-    // in hand. 情報 (Flag_KnowsUmbrellaLoc) is knowledge, not a carried thing.
+    // 第三章物物交換鏈的攜帶物，與紙張一樣由旗標驅動。每一個在交易消費它的當下即消失
+    //（Chapter3Quest 交出大聲公時清除 Flag_HasSausage，交出情報時清除 Flag_HasLoudspeaker），
+    // 故背包對手上持有之物始終誠實。情報（Flag_KnowsUmbrellaLoc）是知識、而非攜帶物。
     if (player.HasFlag(kFlagHasSausage))
         PushRow(rows, kItemSausage, 0, /*usable=*/false);
     if (player.HasFlag(kFlagHasLoudspeaker))
