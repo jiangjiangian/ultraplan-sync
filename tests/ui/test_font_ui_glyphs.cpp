@@ -36,7 +36,7 @@ bool Contains(const std::vector<int>& v, int cp) {
 } // namespace
 
 // CollectCodepoints 會烘入 U+25BC 下翻提示（▼）。
-TEST_CASE("CollectCodepoints bakes the U+25BC down-cue (V1 ▼ fix)") {
+TEST_CASE("CollectCodepoints 會烘入 U+25BC 下翻提示（▼）") {
     const std::vector<int> cps = CollectCodepoints();
     // 0x25BC ▼：對話框的分頁提示。移除 UiLiteralChars() 的 ▼ 項會使它消失，
     // 提示就會變成豆腐「?」。
@@ -46,7 +46,7 @@ TEST_CASE("CollectCodepoints bakes the U+25BC down-cue (V1 ▼ fix)") {
 }
 
 // CollectCodepoints 會烘入結局字卡的字形。
-TEST_CASE("CollectCodepoints bakes the V3 ending-caption glyphs") {
+TEST_CASE("CollectCodepoints 會烘入結局字卡的字形") {
     const std::vector<int> cps = CollectCodepoints();
     // 討（U+8A0E）與厭（U+53AD）只出現在結局 B 字卡「你成為了你曾經最討厭的那種人」——
     // 它們不在任何 docs/content 檔，故只能透過 UiLiteralChars() 進入圖集。
@@ -64,7 +64,7 @@ TEST_CASE("CollectCodepoints bakes the V3 ending-caption glyphs") {
 // docs/content 也不在 UiLiteralChars()，就會渲染成無字形的「?」（曾回報的缺字：
 // 井/仁/勇/塘/夫/志/泳/雩，因為它們不在任何內容檔）。此處驅動真實的 Buildings.h
 // 表，故日後改名而引入未涵蓋的字也會在此失敗。
-TEST_CASE("CollectCodepoints covers every Buildings.h name glyph (#10)") {
+TEST_CASE("CollectCodepoints 涵蓋每個 Buildings.h 名稱字形") {
     const std::vector<int> cps = CollectCodepoints();
     for (const auto& b : nccu::buildings::kAll) {
         // 用 raylib 自己的解碼器把 UTF-8 建築名解成碼位（與 CollectCodepoints

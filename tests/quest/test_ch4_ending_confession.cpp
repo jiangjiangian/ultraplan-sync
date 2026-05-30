@@ -78,7 +78,7 @@ struct Ch4Fixture {
 }  // namespace
 
 // 買醜傘的結局會延後到自白之後：自白期間不轉場，關閉後才結算到 Ending C。
-TEST_CASE("G2: buy-ugly ending DEFERS behind the 自白, then resolves to C on close") {
+TEST_CASE("買醜傘結局延後到自白之後，關閉後才結算為 Ending C") {
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);                       // 維持雨只扣血、不致命
@@ -104,7 +104,7 @@ TEST_CASE("G2: buy-ugly ending DEFERS behind the 自白, then resolves to C on c
 }
 
 // 詛咒傘的結局會延後到自白之後：關閉後才結算到 Ending B。
-TEST_CASE("G2: cursed ending DEFERS behind the 自白, then resolves to B on close") {
+TEST_CASE("詛咒傘結局延後到自白之後，關閉後才結算為 Ending B") {
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);
@@ -120,7 +120,7 @@ TEST_CASE("G2: cursed ending DEFERS behind the 自白, then resolves to B on clo
 }
 
 // 自白具單次性（once-key）：讀過之後絕不會在前往結局的路上再次開啟。
-TEST_CASE("G2: the 自白 is one-shot (once-key) — it never re-opens after reading") {
+TEST_CASE("自白具單次性（once-key）— 讀過後絕不重新開啟") {
     Ch4Fixture fx;
     Player& p = fx.P();
     p.SetHasUmbrella(true);
@@ -137,18 +137,18 @@ TEST_CASE("G2: the 自白 is one-shot (once-key) — it never re-opens after rea
 }
 
 // 直接測試輔助函式：依優先序（詛咒高於醜傘／真傘）恰好開啟一次對應自白，且對話開啟中或非 Ch4 時為無操作。
-TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by precedence") {
+TEST_CASE("TryOpenEndingConfession 依優先序恰好開啟一段自白一次") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     EventBus::Instance().Clear();
 
-    SUBCASE("outside Ch4 -> no-op") {
+    SUBCASE("非 Ch4 -> 無操作") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK_FALSE(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter1_AddDrop));
         CHECK_FALSE(d.Active());
     }
-    SUBCASE("cursed outranks ugly (matches the B-over-C gate)") {
+    SUBCASE("詛咒優先於醜傘（與 B 優先於 C 的閘門一致）") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
@@ -158,7 +158,7 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
         CHECK(p.HasFlag(nccu::kFlagCh4ConfessedCursed));   // 選中詛咒
         CHECK_FALSE(p.HasFlag(nccu::kFlagCh4ConfessedUgly));
     }
-    SUBCASE("never interrupts an open dialog; once-key blocks a re-open") {
+    SUBCASE("絕不打斷進行中的對話；once-key 擋住重新開啟") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         d.Open({"some other conversation"});
@@ -171,7 +171,7 @@ TEST_CASE("G2 unit: TryOpenEndingConfession picks one confession, once, by prece
         CHECK_FALSE(nccu::TryOpenEndingConfession(
             p, d, SemesterState::Chapter4_Finals));        // 單次鍵 -> 無操作
     }
-    SUBCASE("reclaimed-true 自白 only BEFORE the finale (no double beat)") {
+    SUBCASE("重新取得真傘的自白只在結局前出現（不重複橋段）") {
         Player p{Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagHasTrueUmbrella);
         p.SetFlag(nccu::kFlagTaFinaleChoiceMade);              // 溫柔結局路徑

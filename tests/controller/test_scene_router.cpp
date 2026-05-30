@@ -57,7 +57,7 @@ SubscribeToLatest(std::string& latest) {
 } // namespace
 
 // ctor 後兩個 cursor 都從初始狀態起算。
-TEST_CASE("SceneRouter ctor: cursors start at the initial state") {
+TEST_CASE("SceneRouter ctor：兩個 cursor 都從初始狀態起算") {
     SceneRouter r{SemesterState::Chapter1_AddDrop};
     CHECK(r.LastRosterState() == SemesterState::Chapter1_AddDrop);
     CHECK(r.LastRosterRespawnState() == SemesterState::Chapter1_AddDrop);
@@ -65,7 +65,7 @@ TEST_CASE("SceneRouter ctor: cursors start at the initial state") {
 }
 
 // FSM 未移動時 SettleRoster 為 no-op。
-TEST_CASE("SettleRoster: no-op when the FSM hasn't moved") {
+TEST_CASE("SettleRoster：FSM 未移動時為 no-op") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1 roster 已存在
@@ -76,7 +76,7 @@ TEST_CASE("SettleRoster: no-op when the FSM hasn't moved") {
 }
 
 // 發生轉場時 SettleRoster 重生新章節的 NPC。
-TEST_CASE("SettleRoster: respawns the new chapter's NPCs on a transition") {
+TEST_CASE("SettleRoster：發生轉場時重生新章節的 NPC") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
     REQUIRE(HasNpcId(w, "victim"));        // Ch1 NPC
@@ -93,7 +93,7 @@ TEST_CASE("SettleRoster: respawns the new chapter's NPCs on a transition") {
 }
 
 // SettleRoster 不會動到 SettleSideEffects 的 cursor（拆分確實生效）。
-TEST_CASE("SettleRoster: SettleSideEffects cursor untouched (split is real)") {
+TEST_CASE("SettleRoster：不會動到 SettleSideEffects 的 cursor（拆分確實生效）") {
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
 
@@ -107,7 +107,7 @@ TEST_CASE("SettleRoster: SettleSideEffects cursor untouched (split is real)") {
 }
 
 // 進入 Interlude：SettleSideEffects 同時處理位置、消耗品、提示與 latch。
-TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
+TEST_CASE("SettleSideEffects 進入 Interlude：位置、消耗品、提示與 latch") {
     EventBus::Instance().Clear();
     std::string latestHud;
     auto sub = SubscribeToLatest(latestHud);
@@ -146,7 +146,7 @@ TEST_CASE("SettleSideEffects Interlude entry: pos, consumables, hint, latch") {
 }
 
 // 進入 Ch4：SettleSideEffects 清除雨傘與 TrueUmbrella 旗標。
-TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
+TEST_CASE("SettleSideEffects 進入 Ch4：清除雨傘與 TrueUmbrella 旗標") {
     EventBus::Instance().Clear();
 
     World w("", /*loadSprites=*/false);
@@ -171,7 +171,7 @@ TEST_CASE("SettleSideEffects Ch4 entry: umbrella + TrueUmbrella flag reset") {
 
 // 每章「傘又掉了」現已機制上成立：進入 Ch2/Ch3/Ch4 任一者都會清除手持的傘（原本只在
 // Ch4 清除，導致真傘殘留在 Ch2 背包）。
-TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
+TEST_CASE("SettleSideEffects 進入 Ch2 時清除手持的傘") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
@@ -193,7 +193,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch2 entry") {
 }
 
 // 進入 Ch3 時也清除手持的傘。
-TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
+TEST_CASE("SettleSideEffects 進入 Ch3 時清除手持的傘") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};
@@ -213,7 +213,7 @@ TEST_CASE("B4: SettleSideEffects clears the held umbrella on Ch3 entry") {
 }
 
 // 端到端流程：同一 tick 內先 SettleRoster、下一格再 SettleSideEffects，各半皆冪等。
-TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
+TEST_CASE("端到端：同一 tick 內先 SettleRoster 再 SettleSideEffects") {
     // 釘住完整流程：轉場在某格中途觸發（在對話分支 / E-probe / CheckChapterGates 等之後）；
     // controller 在 Update 末段呼叫 SettleRoster，使 View 接下來的 Draw 以新章節的 NPC 繪製。
     // 下一格的 Update 前段，SettleSideEffects 才做玩家位置傳送 + 抵達提示。兩半每次轉場各
@@ -257,7 +257,7 @@ TEST_CASE("L8 fix end-to-end: SettleRoster THEN SettleSideEffects on a tick") {
 }
 
 // 若 SettleRoster 被略過，SettleSideEffects 會防禦性地重生 roster。
-TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was skipped") {
+TEST_CASE("SettleRoster 被略過時 SettleSideEffects 會防禦性地重生 roster") {
     // 拆分讓兩半都能各自獨立執行，故繞過 SettleRoster 的呼叫端（例如測試，或未來只走
     // Update 前段分支的程式路徑）仍能取得一致的 roster。當 SettleSideEffects 的 respawn
     // cursor 與 FSM 狀態不一致時，它會呼叫 RespawnChapterRoster。
@@ -282,7 +282,7 @@ TEST_CASE("SettleSideEffects defensively respawns the roster if SettleRoster was
 // 跨 Interlude 的背包倖存者：Ch1 → Interlude → Ch2 後，唯一可留存的列只有金幣（跨章節
 // 金錢）與申請書（跨章節攜帶物，TA 線仰賴）。消耗品在進市集時清空、手持傘在進 Ch2 時清除，
 // 故兩者都不留存。
-TEST_CASE("B4: across the Interlude the bag carries only money + 申請書") {
+TEST_CASE("跨 Interlude 後背包只留下金幣與申請書") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     SceneRouter r{w.Semester().Current()};

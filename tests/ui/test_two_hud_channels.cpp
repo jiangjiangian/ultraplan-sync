@@ -36,7 +36,7 @@ using nccu::World;
 using nccu::engine::math::Vec2;
 
 // World::SetHudMessage 依 slot 路由，且不會跨通道外洩。
-TEST_CASE("World::SetHudMessage routes by slot, no cross-channel leak") {
+TEST_CASE("World::SetHudMessage 依 slot 路由，且不會跨通道外洩") {
     World w("", /*loadSprites=*/false);
 
     // 全新世界：兩通道皆空，皆未過期。
@@ -45,20 +45,20 @@ TEST_CASE("World::SetHudMessage routes by slot, no cross-channel leak") {
     REQUIRE_FALSE(w.HudExpired(HudSlot::Top));
     REQUIRE_FALSE(w.HudExpired(HudSlot::Bottom));
 
-    SUBCASE("Top write does not touch Bottom") {
+    SUBCASE("寫入 Top 不會動到 Bottom") {
         w.SetHudMessage(HudSlot::Top, "✓ 章節清關 — 進入幕間市集");
         CHECK(w.HudMessage(HudSlot::Top) == "✓ 章節清關 — 進入幕間市集");
         CHECK(w.HudMessage(HudSlot::Bottom).empty());
         CHECK(w.HudAge(HudSlot::Top) == doctest::Approx(0.0f));
     }
-    SUBCASE("Bottom write does not touch Top") {
+    SUBCASE("寫入 Bottom 不會動到 Top") {
         w.SetHudMessage(HudSlot::Bottom, "你撿到了 TrueUmbrella，雨停了。");
         CHECK(w.HudMessage(HudSlot::Bottom)
               == "你撿到了 TrueUmbrella，雨停了。");
         CHECK(w.HudMessage(HudSlot::Top).empty());
         CHECK(w.HudAge(HudSlot::Bottom) == doctest::Approx(0.0f));
     }
-    SUBCASE("Backward-compat SetHudMessage(text) writes to Bottom") {
+    SUBCASE("向後相容的 SetHudMessage(text) 寫入 Bottom") {
         // 拆分前的呼叫點（測試、臨時探針）仍如拆分前一樣落在 Bottom 通道。
         w.SetHudMessage("legacy");
         CHECK(w.HudMessage(HudSlot::Bottom) == "legacy");
@@ -71,7 +71,7 @@ TEST_CASE("World::SetHudMessage routes by slot, no cross-channel leak") {
 }
 
 // 同一幀的 Top + Bottom 發佈彼此共存，不會互相覆寫。
-TEST_CASE("Same-frame Top + Bottom publishes coexist (no clobber)") {
+TEST_CASE("同一幀的 Top + Bottom 發佈彼此共存（不互相覆寫）") {
     // 關鍵契約：同一幀發佈的章節清關（Top）與抵達提示（Bottom）最終必須都可見。
     // 斷言的是 World.HudMessage(Top) 與 HudMessage(Bottom) 的最終狀態 ——
     // 拆分前第二次發佈會覆寫第一次。
@@ -80,7 +80,7 @@ TEST_CASE("Same-frame Top + Bottom publishes coexist (no clobber)") {
     // WireHudMessageSubscriber 必須放在每個 SUBCASE 內（與其他以參考捕捉探針的
     // 轉場／業力測試相同）。
 
-    SUBCASE("Top then Bottom") {
+    SUBCASE("先 Top 後 Bottom") {
         World w("", /*loadSprites=*/false);
         nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
 
@@ -96,7 +96,7 @@ TEST_CASE("Same-frame Top + Bottom publishes coexist (no clobber)") {
     }
 
     // 順序不影響結果。
-    SUBCASE("Bottom then Top — order does not matter") {
+    SUBCASE("先 Bottom 後 Top——順序不影響結果") {
         World w("", /*loadSprites=*/false);
         nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
 
@@ -113,7 +113,7 @@ TEST_CASE("Same-frame Top + Bottom publishes coexist (no clobber)") {
 }
 
 // 章節→幕間轉場樣式：兩行都會存活到下一幀。
-TEST_CASE("Ch->IL transition pattern: both lines survive into next frame") {
+TEST_CASE("章節→幕間轉場樣式：兩行都存活到下一幀") {
     // 完全模擬正式環境的順序（GameController 加上 EventWiring 的 UmbrellaClaimed
     // 處理器）：
     //
@@ -145,7 +145,7 @@ TEST_CASE("Ch->IL transition pattern: both lines survive into next frame") {
 }
 
 // Top 通道過期不會把文字外洩到 Bottom。
-TEST_CASE("Top channel expiry never leaks text into Bottom") {
+TEST_CASE("Top 通道過期絕不把文字外洩到 Bottom") {
     // Top 提示存活時間超過 kHudTtl 後，往 Bottom 的發佈絕不可繼承到過期文字 ——
     // 兩通道真正獨立。
     World w("", /*loadSprites=*/false);
@@ -167,24 +167,24 @@ TEST_CASE("Top channel expiry never leaks text into Bottom") {
 }
 
 // DismissHud 的單通道與全通道語意。
-TEST_CASE("DismissHud per-slot vs default both-slot semantics") {
+TEST_CASE("DismissHud 的單通道與全通道語意") {
     World w("", /*loadSprites=*/false);
     w.SetHudMessage(HudSlot::Top,    "top");
     w.SetHudMessage(HudSlot::Bottom, "bottom");
     REQUIRE_FALSE(w.HudExpired(HudSlot::Top));
     REQUIRE_FALSE(w.HudExpired(HudSlot::Bottom));
 
-    SUBCASE("DismissHud(Top) only kills Top") {
+    SUBCASE("DismissHud(Top) 只關掉 Top") {
         w.DismissHud(HudSlot::Top);
         CHECK(w.HudExpired(HudSlot::Top));
         CHECK_FALSE(w.HudExpired(HudSlot::Bottom));
     }
-    SUBCASE("DismissHud(Bottom) only kills Bottom") {
+    SUBCASE("DismissHud(Bottom) 只關掉 Bottom") {
         w.DismissHud(HudSlot::Bottom);
         CHECK_FALSE(w.HudExpired(HudSlot::Top));
         CHECK(w.HudExpired(HudSlot::Bottom));
     }
-    SUBCASE("DismissHud() kills both slots") {
+    SUBCASE("DismissHud() 關掉兩個 slot") {
         // 不論有幾個通道在運作，略過提示的輸入都仍能以一次按鍵完成。
         w.DismissHud();
         CHECK(w.HudExpired(HudSlot::Top));
@@ -193,7 +193,7 @@ TEST_CASE("DismissHud per-slot vs default both-slot semantics") {
 }
 
 // 未指定 slot 的 Event 落在 Bottom（向後相容）。
-TEST_CASE("Default-slot Event lands on Bottom (backward compat)") {
+TEST_CASE("未指定 slot 的 Event 落在 Bottom（向後相容）") {
     // 建立 Event{type, text} 而未指定 slot 的舊發佈者必須仍落在 Bottom ——
     // 每個既有呼叫點（教授陷阱傘、撿錢、NPC 對話、商人……）都屬此類。
     // 透過現存的 HUD 訂閱者接線驗證。
@@ -209,7 +209,7 @@ TEST_CASE("Default-slot Event lands on Bottom (backward compat)") {
 }
 
 // 章節提示的發佈在 Event 中帶有 HudSlot::Top。
-TEST_CASE("Chapter toast publish carries HudSlot::Top in the Event") {
+TEST_CASE("章節提示的發佈在 Event 中帶有 HudSlot::Top") {
     // 擷取每一筆發佈的 ShowMessage 並檢查其 slot 欄位 —— 這是發佈端的契約：
     // ChapterToast.h 讓章節／結局轉場改用 Top 通道。
     EventBus::Instance().Clear();

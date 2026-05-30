@@ -21,7 +21,7 @@ using nccu::SemesterState;
 // 且新的 npcId 都能解析到 chapter3.md 對應段落。
 
 // Ch3 名冊應為 8 個 NPC，其中只有 3 個物物交換鏈節點是任務給予者。
-TEST_CASE("ChapterNpcSpawns: Ch3 is the 8 chapter3.md NPCs") {
+TEST_CASE("ChapterNpcSpawns：Ch3 是 chapter3.md 的 8 個 NPC") {
     const auto& ch3 = nccu::ChapterNpcSpawns(SemesterState::Chapter3_SportsDay);
     REQUIRE(ch3.size() == 8);
 
@@ -43,7 +43,7 @@ TEST_CASE("ChapterNpcSpawns: Ch3 is the 8 chapter3.md NPCs") {
 }
 
 // 3 個交換鏈 npcId 都應能解析到 chapter3.md 並具備開場 (a) 對話。
-TEST_CASE("DialogSource: the 3 Ch3 chain npcIds resolve to chapter3.md") {
+TEST_CASE("DialogSource：3 個 Ch3 交換鏈 npcId 解析到 chapter3.md") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     for (const char* id : {"vendor_sausage_a", "loudspeaker_b", "senior_c"}) {

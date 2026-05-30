@@ -15,7 +15,7 @@ using nccu::game::gfx::WalkRowForFacing;
 using nccu::game::gfx::kWalkColumns;
 
 // 四步循環為 idle -> left -> idle -> right，並對任意整數步數正確環繞。
-TEST_CASE("WalkColumn cycles idle -> left -> idle -> right over 4 steps") {
+TEST_CASE("WalkColumn 四步循環為 idle -> left -> idle -> right 並正確環繞") {
     // 圖序為 idle(1)、左腳(0)、idle(1)、右腳(2)：兩個跨步格之間夾一個 idle
     // 格，讓踏步看起來自然——第 0 步是靜止/idle 姿勢。
     CHECK(WalkColumn(0) == 1);
@@ -31,13 +31,13 @@ TEST_CASE("WalkColumn cycles idle -> left -> idle -> right over 4 steps") {
 }
 
 // WalkColumn 與標準的 kWalkColumns 表一致。
-TEST_CASE("WalkColumn matches the canonical kWalkColumns table") {
+TEST_CASE("WalkColumn 與標準的 kWalkColumns 表一致") {
     for (int s = 0; s < 4; ++s)
         CHECK(WalkColumn(s) == kWalkColumns[static_cast<std::size_t>(s)]);
 }
 
 // WalkRowForFacing 將四個基本方向對應到列（0=下..3=上）。
-TEST_CASE("WalkRowForFacing maps the four cardinal headings (0=down..3=up)") {
+TEST_CASE("WalkRowForFacing 將四個基本方向對應到列（0=下..3=上）") {
     CHECK(WalkRowForFacing(Vec2{0.0f,  1.0f}) == 0);   // 下
     CHECK(WalkRowForFacing(Vec2{-1.0f, 0.0f}) == 1);   // 左
     CHECK(WalkRowForFacing(Vec2{1.0f,  0.0f}) == 2);   // 右
@@ -45,7 +45,7 @@ TEST_CASE("WalkRowForFacing maps the four cardinal headings (0=down..3=up)") {
 }
 
 // 取絕對值較大的主軸決定方向；相等時偏向垂直方向。
-TEST_CASE("WalkRowForFacing: dominant axis wins, ties go vertical") {
+TEST_CASE("WalkRowForFacing：絕對值較大的主軸決定方向，相等時偏向垂直") {
     // |x| > |y| -> 水平列。
     CHECK(WalkRowForFacing(Vec2{-3.0f, 1.0f}) == 1);   // 偏左
     CHECK(WalkRowForFacing(Vec2{ 3.0f, 1.0f}) == 2);   // 偏右
@@ -57,6 +57,6 @@ TEST_CASE("WalkRowForFacing: dominant axis wins, ties go vertical") {
 }
 
 // 零向量（無方向）時靜止面向下（列 0）。
-TEST_CASE("WalkRowForFacing: a zero heading rests facing down (row 0)") {
+TEST_CASE("WalkRowForFacing：零向量時靜止面向下（列 0）") {
     CHECK(WalkRowForFacing(Vec2{0.0f, 0.0f}) == 0);
 }

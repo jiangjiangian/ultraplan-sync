@@ -22,7 +22,7 @@ using nccu::SemesterState;
 using nccu::World;
 
 // Ch2 任務物品為 3 張筆記（完成集合 +3）；Ch1 為苦主之傘（單旗標、無完成集合）；其餘狀態皆為空。
-TEST_CASE("ChapterQuestItems: Ch2 is the 3 notes; every other state empty") {
+TEST_CASE("ChapterQuestItems：Ch2 是 3 張筆記；其餘狀態皆為空") {
     const auto& ch2 = nccu::ChapterQuestItems(SemesterState::Chapter2_Midterms);
     REQUIRE(ch2.size() == 3);
 
@@ -52,8 +52,8 @@ TEST_CASE("ChapterQuestItems: Ch2 is the 3 notes; every other state empty") {
 }
 
 // 計數式提示：第 N 次撿到就顯示第 N 則訊息，與撿取順序無關（修正「先撿到第 3 張卻印出最後一頁」的問題）。
-TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
-          "regardless of pickup order") {
+TEST_CASE("QuestFlagPickup：計數式訊息 — 第 N 次撿到 -> 第 N 則，"
+          "與撿取順序無關") {
     EventBus::Instance().Clear();
     std::string lastMsg;
     auto sub = EventBus::Instance().ScopedSubscribe(
@@ -95,7 +95,7 @@ TEST_CASE("QuestFlagPickup: COUNT-based message — Nth pickup -> Nth line "
 }
 
 // countMessages 為空時，沿用單一訊息的舊行為不變。
-TEST_CASE("QuestFlagPickup: empty countMessages keeps the single message") {
+TEST_CASE("QuestFlagPickup：countMessages 為空時沿用單一訊息") {
     EventBus::Instance().Clear();
     std::string lastMsg;
     auto sub = EventBus::Instance().ScopedSubscribe(
@@ -110,7 +110,7 @@ TEST_CASE("QuestFlagPickup: empty countMessages keeps the single message") {
 }
 
 // 完成集合時，完成獎勵 karma 只觸發一次（集滿最後一張才 +3）；2 參數建構子不給獎。
-TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
+TEST_CASE("QuestFlagPickup：集合完成時完成獎勵 karma 只觸發一次") {
     Player p{nccu::engine::math::Vec2{0.0f, 0.0f}};
     const std::vector<std::string> set = {nccu::kFlagFoundNote1,
                                           nccu::kFlagFoundNote2,
@@ -140,7 +140,7 @@ TEST_CASE("QuestFlagPickup: completion karma fires once when the set closes") {
 }
 
 // World 把 3 張 Ch2 筆記延後到學霸被叫醒後才生成（且只一次），離開章節時隨名冊清除；申請書始終保留。
-TEST_CASE("World defers the 3 Ch2 notes until the 學霸 is woken; then sweeps") {
+TEST_CASE("World 把 3 張 Ch2 筆記延後到學霸被叫醒後才生成，離開章節隨名冊清除") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
 

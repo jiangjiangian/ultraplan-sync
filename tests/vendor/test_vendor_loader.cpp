@@ -34,7 +34,7 @@ const VendorConfig* Find(const std::vector<VendorConfig>& v,
 }  // namespace
 
 // LoadInterludeVendors 從真實內容解析全部十攤。
-TEST_CASE("LoadInterludeVendors: parses all 10 stalls from real content") {
+TEST_CASE("LoadInterludeVendors：從真實內容解析全部十攤") {
     const auto stalls = LoadInterludeVendors(ContentPath());
     REQUIRE(stalls.size() == 10);
 
@@ -56,7 +56,7 @@ TEST_CASE("LoadInterludeVendors: parses all 10 stalls from real content") {
 }
 
 // 募款箱帶有業力與有限庫存。
-TEST_CASE("LoadInterludeVendors: 募款箱 carries karma + finite stock") {
+TEST_CASE("LoadInterludeVendors：募款箱帶有業力與有限庫存") {
     const auto stalls = LoadInterludeVendors(ContentPath());
     const VendorConfig* d = Find(stalls, "學生會募款箱");
     REQUIRE(d != nullptr);
@@ -69,7 +69,7 @@ TEST_CASE("LoadInterludeVendors: 募款箱 carries karma + finite stock") {
 }
 
 // 多個成功區塊時——第一個生效、且不給物品。
-TEST_CASE("LoadInterludeVendors: variant success blocks — first wins, no item") {
+TEST_CASE("LoadInterludeVendors：多個成功區塊時第一個生效且不給物品") {
     const auto stalls = LoadInterludeVendors(ContentPath());
     const VendorConfig* sell = Find(stalls, "畢業生二手書攤");
     REQUIRE(sell != nullptr);
@@ -81,7 +81,7 @@ TEST_CASE("LoadInterludeVendors: variant success blocks — first wins, no item"
 }
 
 // ChapterVendors：Interlude 由解析器供給、已定位且有快取。
-TEST_CASE("ChapterVendors: Interlude is parser-backed + positioned + cached") {
+TEST_CASE("ChapterVendors：Interlude 由解析器供給、已定位且有快取") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
 

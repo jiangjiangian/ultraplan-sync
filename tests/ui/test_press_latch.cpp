@@ -17,7 +17,7 @@
 using nccu::PressLatch;
 
 // 從前一畫面延續按住的按鍵會被抑制；釋放後重新武裝，下一次新按下才觸發一次。
-TEST_CASE("PressLatch suppresses a press inherited held from a prior screen") {
+TEST_CASE("PressLatch 抑制從前一畫面延續按住的按鍵") {
     PressLatch l;
     // 建立鎖存時按鍵已按下（Enter 由前一畫面延續）。無論按住多久都不該觸發。
     CHECK_FALSE(l.Fired(/*down=*/true, /*pressed=*/true));   // 進入畫面那一幀
@@ -32,14 +32,14 @@ TEST_CASE("PressLatch suppresses a press inherited held from a prior screen") {
 }
 
 // 當按鍵一開始就是釋放狀態時，第一次按下即觸發。
-TEST_CASE("PressLatch fires on the first press when the key starts released") {
+TEST_CASE("按鍵一開始是釋放狀態時 PressLatch 在第一次按下即觸發") {
     PressLatch l;
     CHECK_FALSE(l.Fired(false, false));   // 第 1 幀：按鍵抬起 → 武裝
     CHECK(l.Fired(true, true));           // 第一次真正按下，觸發
 }
 
 // 模擬「標題 -> 遊戲說明 -> 標題」這趟來回。
-TEST_CASE("PressLatch models the title -> 遊戲說明 -> title round trip") {
+TEST_CASE("PressLatch 模擬「標題 → 遊戲說明 → 標題」這趟來回") {
     // 一次實體 Enter 必須只開啟說明、不會同時關閉它；而按住不放的關閉用 Enter
     // 回到標題後也不可再次開啟說明。
     PressLatch titleConfirm;
@@ -62,7 +62,7 @@ TEST_CASE("PressLatch models the title -> 遊戲說明 -> title round trip") {
 }
 
 // 模擬「標題開始遊戲 -> 選角」的交接。
-TEST_CASE("PressLatch models title 開始遊戲 -> character-select handoff") {
+TEST_CASE("PressLatch 模擬「標題開始遊戲 → 選角」的交接") {
     // 確認開始遊戲的 Enter 在選角畫面開始時仍按著；選角自己的鎖存必須吞掉這次
     // 按下，以免第 1 幀就自動確認第 0 個角色。
     PressLatch selectConfirm;

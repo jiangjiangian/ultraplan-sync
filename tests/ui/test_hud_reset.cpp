@@ -19,7 +19,7 @@
 #include <string>
 
 // 當 hudAge_ 超過 kHudTtl 後，HudExpired 轉為 true。
-TEST_CASE("HudExpired flips to true once hudAge_ crosses kHudTtl") {
+TEST_CASE("hudAge_ 超過 kHudTtl 後 HudExpired 轉為 true") {
     nccu::World w{"", /*loadSprites=*/false};
 
     // 全新世界：尚未設定任何提示，故 HudExpired() 為 false（從未設定的 HUD
@@ -46,7 +46,7 @@ TEST_CASE("HudExpired flips to true once hudAge_ crosses kHudTtl") {
 }
 
 // 重新呼叫 SetHudMessage 會重置存活時間並清除過期狀態。
-TEST_CASE("A fresh SetHudMessage resets age and clears expiry") {
+TEST_CASE("重新呼叫 SetHudMessage 會重置存活時間並清除過期狀態") {
     nccu::World w{"", /*loadSprites=*/false};
 
     w.SetHudMessage("first");
@@ -64,7 +64,7 @@ TEST_CASE("A fresh SetHudMessage resets age and clears expiry") {
 }
 
 // 空的訊息緩衝不算過期。
-TEST_CASE("HudExpired ignores an empty message buffer") {
+TEST_CASE("HudExpired 不理會空的訊息緩衝") {
     // 從未顯示過提示（或訊息已被明確清除）的 World 不算「過期」—— 沒有東西可
     // 過期。這保證工具在 HUD 確實無內容、以及過期提示被抑制這兩種情況下都輸出
     // 空字串；兩種情況收斂為相同的輸出格式。

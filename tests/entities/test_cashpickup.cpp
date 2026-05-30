@@ -28,7 +28,7 @@ struct MessageCapture {
 } // namespace
 
 // 撿取硬幣後玩家金錢增加其面額、物件停用、並發出一則撿錢訊息。
-TEST_CASE("CashPickup OnPickup: money grows by value, isActive flips, ShowMessage fired") {
+TEST_CASE("CashPickup OnPickup：money 增加其 value、isActive 翻轉、發出 ShowMessage") {
     Player p({0, 0});
     const int before = p.GetMoney();
 
@@ -49,7 +49,7 @@ TEST_CASE("CashPickup OnPickup: money grows by value, isActive flips, ShowMessag
 }
 
 // 對 null 玩家撿取是安全的空操作：物件維持啟用、不發事件。
-TEST_CASE("CashPickup OnPickup on null player is a safe no-op") {
+TEST_CASE("CashPickup OnPickup 對 null 玩家是安全的空操作") {
     MessageCapture cap;
     cap.Attach();
 
@@ -61,7 +61,7 @@ TEST_CASE("CashPickup OnPickup on null player is a safe no-op") {
 }
 
 // Factory 產生面額 5 的 CashPickup，撿取後玩家金錢加 5。
-TEST_CASE("Factory::Create(CashPickup5) yields a CashPickup that grants 5 on pickup") {
+TEST_CASE("Factory::Create(CashPickup5) 產生撿取後加 5 元的 CashPickup") {
     Player p({0, 0});
     const int before = p.GetMoney();
 
@@ -76,7 +76,7 @@ TEST_CASE("Factory::Create(CashPickup5) yields a CashPickup that grants 5 on pic
 }
 
 // Factory 產生面額 10 的 CashPickup，撿取後玩家金錢加 10。
-TEST_CASE("Factory::Create(CashPickup10) grants 10 on pickup") {
+TEST_CASE("Factory::Create(CashPickup10) 撿取後加 10 元") {
     Player p({0, 0});
     const int before = p.GetMoney();
 
@@ -91,7 +91,7 @@ TEST_CASE("Factory::Create(CashPickup10) grants 10 on pickup") {
 }
 
 // Factory 產生面額 20 的 CashPickup，撿取後玩家金錢加 20。
-TEST_CASE("Factory::Create(CashPickup20) grants 20 on pickup") {
+TEST_CASE("Factory::Create(CashPickup20) 撿取後加 20 元") {
     Player p({0, 0});
     const int before = p.GetMoney();
 

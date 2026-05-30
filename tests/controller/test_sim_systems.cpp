@@ -47,7 +47,7 @@ struct Fixture {
 
 // ── SurvivalSystem：三向雨量分支 ───────────────────────────
 // 室外、無傘時累積雨量（Ch1 預設）。
-TEST_CASE("SurvivalSystem: outdoors umbrella-less ACCRUES rain (Ch1 default)") {
+TEST_CASE("SurvivalSystem：室外無傘時累積雨量（Ch1 預設）") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     REQUIRE(p != nullptr);
@@ -61,7 +61,7 @@ TEST_CASE("SurvivalSystem: outdoors umbrella-less ACCRUES rain (Ch1 default)") {
 }
 
 // 室外、有傘時以較低速率累積。
-TEST_CASE("SurvivalSystem: outdoors WITH umbrella accrues at the reduced rate") {
+TEST_CASE("SurvivalSystem：室外有傘時以較低速率累積") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     p->SetHasUmbrella(true);
@@ -75,7 +75,7 @@ TEST_CASE("SurvivalSystem: outdoors WITH umbrella accrues at the reduced rate") 
 }
 
 // 在建築室內會排掉雨量。
-TEST_CASE("SurvivalSystem: inside a building DRAINS rain") {
+TEST_CASE("SurvivalSystem：在建築室內會排掉雨量") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     p->ApplyRain(2.0f, /*lethal=*/false);   // 先淋濕，才有可排掉的量
@@ -89,7 +89,7 @@ TEST_CASE("SurvivalSystem: inside a building DRAINS rain") {
 }
 
 // 市集 interlude 期間不進行雨量計算。
-TEST_CASE("SurvivalSystem: no rain tick in the market interlude") {
+TEST_CASE("SurvivalSystem：市集 interlude 期間不進行雨量計算") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     f.w.Semester().Transition(SemesterState::Interlude_Market);
@@ -102,7 +102,7 @@ TEST_CASE("SurvivalSystem: no rain tick in the market interlude") {
 
 // ── MovementSystem：擷取前一格位置 + 推進物件 ─────────────────
 // MovementSystem 將推進前的玩家位置擷取進 ctx。
-TEST_CASE("MovementSystem captures the pre-tick player position into the ctx") {
+TEST_CASE("MovementSystem 將推進前的玩家位置擷取進 ctx") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     p->SetPosition(nccu::engine::math::Vec2{123.0f, 456.0f});
@@ -115,7 +115,7 @@ TEST_CASE("MovementSystem captures the pre-tick player position into the ctx") {
 
 // ── CollisionSystem：將玩家夾限進世界 AABB ───────────
 // CollisionSystem 把出界的玩家夾回世界內。
-TEST_CASE("CollisionSystem clamps an out-of-bounds player back into the world") {
+TEST_CASE("CollisionSystem 把出界的玩家夾回世界內") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     // 將玩家放到右下邊界之外；夾限應在每個軸把它拉回 worldSize - playerSize。
@@ -132,7 +132,7 @@ TEST_CASE("CollisionSystem clamps an out-of-bounds player back into the world") 
 
 // ── SpawnSystem：在對應章節以外為廉價 no-op，絕不崩潰 ────
 // 全新 Ch1（未設任何旗標）下 SpawnSystem 為安全 no-op。
-TEST_CASE("SpawnSystem is a safe no-op in Ch1 default (no deferred spawn armed)") {
+TEST_CASE("SpawnSystem 在 Ch1 預設下為安全 no-op（無延遲生成武裝）") {
     Fixture f;
     const std::size_t before = f.w.Objects().size();
     SpawnSystem sys;
@@ -145,7 +145,7 @@ TEST_CASE("SpawnSystem is a safe no-op in Ch1 default (no deferred spawn armed)"
 
 // ── SweepSystem / World::Sweep ──────────────────────────────────────
 // SweepSystem 移除已停用的物件，並保持 Player 在名單最前端。
-TEST_CASE("SweepSystem removes a deactivated object, keeps the Player at front") {
+TEST_CASE("SweepSystem 移除已停用的物件，並保持 Player 在名單最前端") {
     Fixture f;
     Player* p = f.w.GetPlayer();
     REQUIRE(p != nullptr);
@@ -166,7 +166,7 @@ TEST_CASE("SweepSystem removes a deactivated object, keeps the Player at front")
 }
 
 // Player 死亡時 World::Sweep 會清除快取的 player 指標。
-TEST_CASE("World::Sweep clears the cached player pointer when the Player dies") {
+TEST_CASE("Player 死亡時 World::Sweep 會清除快取的 player 指標") {
     World w{"", /*loadSprites=*/false};
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
@@ -187,7 +187,7 @@ TEST_CASE("World::Sweep clears the cached player pointer when the Player dies") 
 }
 
 // 無任何物件死亡時 World::Sweep 為 no-op。
-TEST_CASE("World::Sweep is a no-op when nothing is dead") {
+TEST_CASE("無任何物件死亡時 World::Sweep 為 no-op") {
     World w{"", /*loadSprites=*/false};
     const std::size_t before = w.Objects().size();
     Player* p = w.GetPlayer();

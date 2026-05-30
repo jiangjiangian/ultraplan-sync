@@ -44,7 +44,7 @@ std::set<std::string> ChapterNpcIdSet(SemesterState s) {
 } // namespace
 
 // World ctor 把 Ch1 NPC 登記進章節 roster，因此它們會在換班時被掃除。
-TEST_CASE("World ctor registers Ch1 NPCs in chapterRoster_ so they sweep") {
+TEST_CASE("World ctor 把 Ch1 NPC 登記進 chapterRoster_ 以便換班時掃除") {
     World w("", /*loadSprites=*/false);
 
     // 前置條件：ctor 後 5 個 Ch1 原型都在。
@@ -71,7 +71,7 @@ TEST_CASE("World ctor registers Ch1 NPCs in chapterRoster_ so they sweep") {
 }
 
 // World ctor：每個 Ch1 NPC 都是章節 roster 的成員。
-TEST_CASE("World ctor: every Ch1 NPC is a chapterRoster_ member") {
+TEST_CASE("World ctor：每個 Ch1 NPC 都是 chapterRoster_ 的成員") {
     World w("", /*loadSprites=*/false);
 
     // 以行為計數，而非直接存取 private 的 chapterRoster_。若有任一 Ch1 NPC 在 ctor 被推入
@@ -84,7 +84,7 @@ TEST_CASE("World ctor: every Ch1 NPC is a chapterRoster_ member") {
 }
 
 // 走完整條章節主線時 roster 換班不會讓任何 NPC 外洩。
-TEST_CASE("Roster sweep across the full chapter spine: no NPC leaks") {
+TEST_CASE("走完整條章節主線時 roster 換班不會讓任何 NPC 外洩") {
     World w("", /*loadSprites=*/false);
 
     // 走完 Ch1 -> Interlude -> Ch2 -> Interlude -> Ch3 -> Interlude -> Ch4 -> Ending。
@@ -114,7 +114,7 @@ TEST_CASE("Roster sweep across the full chapter spine: no NPC leaks") {
 }
 
 // 走完整條主線後 Player 不變量仍成立（同一物件、仍在清單最前端）。
-TEST_CASE("Player invariant survives the full spine traversal") {
+TEST_CASE("走完整條主線後 Player 不變量仍成立") {
     World w("", /*loadSprites=*/false);
     Player*     p0 = w.GetPlayer();
     GameObject* f0 = w.Objects().front().get();
@@ -136,7 +136,7 @@ TEST_CASE("Player invariant survives the full spine traversal") {
 }
 
 // Ch3 物物交換鏈的三個 NPC 散落在羅馬廣場。
-TEST_CASE("Ch3 trade-chain NPCs sit scattered in 羅馬廣場") {
+TEST_CASE("Ch3 物物交換鏈的三個 NPC 散落在羅馬廣場") {
     // 3 個物物交換鏈任務給予者（vendor_sausage_a / loudspeaker_b / senior_c）由舊的南側走廊
     // 移到羅馬廣場（玩家跑完操場一圈後前往之處）。把它們釘在可行走的廣場圓盤內（中心約
     // 1088,960，半徑約 200），使未來的調整不會把它們又散落到南側校園各處。
@@ -158,7 +158,7 @@ TEST_CASE("Ch3 trade-chain NPCs sit scattered in 羅馬廣場") {
 }
 
 // Ch3：操場的校慶人群會生成（5 名跑者 + 10 名閒置者）。
-TEST_CASE("Ch3: the 操場 校慶 crowd spawns (5 runners + 10 idlers)") {
+TEST_CASE("Ch3：操場的校慶人群會生成（5 名跑者 + 10 名閒置者）") {
     // 裝飾性人群填滿操場（x1384-2005, y541-940），讓運動會真的有人。在生成時計數：雨傘
     //（y375）/ 原型 / ABC（廣場）/ 環境學生（南側）都落在操場框外，故此處計數的是人群。
     World w("", /*loadSprites=*/false);

@@ -11,7 +11,7 @@ using nccu::SemesterStateMachine;
 using nccu::SemesterState;
 
 // 在 Ch1 領到 TrueUmbrella 應觸發章節清關，推進到幕間市集。
-TEST_CASE("chapter gate: TrueUmbrella claim in Ch1 -> Interlude") {
+TEST_CASE("章節閘門：在 Ch1 領取 TrueUmbrella -> 幕間市集") {
     EventBus::Instance().Clear();
     SemesterStateMachine m; std::string name;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, name);
@@ -22,7 +22,7 @@ TEST_CASE("chapter gate: TrueUmbrella claim in Ch1 -> Interlude") {
 }
 
 // 領到非 TrueUmbrella 的雨傘不得推進章節，避免誤判清關條件。
-TEST_CASE("chapter gate: a non-True umbrella does NOT advance Ch1") {
+TEST_CASE("章節閘門：非 True 的雨傘不會推進 Ch1") {
     EventBus::Instance().Clear();
     SemesterStateMachine m; std::string name;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, name);
@@ -32,7 +32,7 @@ TEST_CASE("chapter gate: a non-True umbrella does NOT advance Ch1") {
 }
 
 // 不在 Ch1 時領到 TrueUmbrella 不應改變狀態（閘門僅由 Ch1 觸發）。
-TEST_CASE("chapter gate: TrueUmbrella claimed when not in Ch1 -> no bounce") {
+TEST_CASE("章節閘門：非 Ch1 時領取 TrueUmbrella -> 不轉場") {
     EventBus::Instance().Clear();
     SemesterStateMachine m; std::string name;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, name);
@@ -43,7 +43,7 @@ TEST_CASE("chapter gate: TrueUmbrella claimed when not in Ch1 -> no bounce") {
 }
 
 // 進入建築只更新建築名稱，不應再連帶跳章（修正過去誤跳章節的行為）。
-TEST_CASE("chapter gate: entering a building no longer jumps chapter") {
+TEST_CASE("章節閘門：進入建築不再連帶跳章") {
     EventBus::Instance().Clear();
     SemesterStateMachine m; std::string name;
     nccu::WireStateTransitionSubscribers(EventBus::Instance(), m, name);

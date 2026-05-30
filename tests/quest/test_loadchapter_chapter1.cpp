@@ -34,7 +34,7 @@ const nccu::dialog::SubEntry* Find(
 }  // namespace
 
 // 對照實際 chapter1.md 內容：NPC 段落的辨識，以及各子狀態的台詞數、karma、旗標與選項標籤推導皆正確。
-TEST_CASE("LoadChapter: chapter1 real content parity with codegen") {
+TEST_CASE("LoadChapter：chapter1 實際內容與 codegen 一致") {
     const auto chapter =
         nccu::dialog::LoadChapter(ContentPath("chapter1.md"));
 

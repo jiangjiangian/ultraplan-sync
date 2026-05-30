@@ -60,7 +60,7 @@ struct Capture {
 // Flag_HasTrueUmbrella + HasUmbrella；其餘所有狀態（章節／對象不符、未承諾、
 // 已承諾但空手、已授予過）皆為無操作。授予不再就地發布 UmbrellaClaimed——
 // 它延後到 LiftChapter1Clear（讓 (d) 交換對話先播）。
-TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return") {
+TEST_CASE("TryReturnVictimUmbrella：唯有承諾並歸還後才授予真傘") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
     Player p = MakePlayer();
@@ -100,7 +100,7 @@ TEST_CASE("TryReturnVictimUmbrella: grants the真傘 only after promise + return
 }
 
 // 防禦性條件：玩家持有苦主的傘但從未承諾時，授予不得觸發（兩個條件缺一不可）。
-TEST_CASE("TryReturnVictimUmbrella: umbrella without a promise never grants") {
+TEST_CASE("TryReturnVictimUmbrella：未承諾時即使持傘也永不授予") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
     Player p = MakePlayer();
@@ -114,7 +114,7 @@ TEST_CASE("TryReturnVictimUmbrella: umbrella without a promise never grants") {
 // 交換的順序正確：授予是靜默的（(d) 交換對話先播），唯有對話關閉後 LiftChapter1Clear
 // 才發布 UmbrellaClaimed → Ch1 經事件接線轉到幕間市集（returnTo Ch2）。
 // 對話仍在進行時，清關不得觸發（玩家必須先讀完這段）。
-TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
+TEST_CASE("苦主交換對話先於 Ch1 清關播放（延後清關）") {
     EventBus::Instance().Clear();
     nccu::SemesterStateMachine m;
     std::string buildingName;
@@ -156,7 +156,7 @@ TEST_CASE("T2: victim exchange plays BEFORE the Ch1 clear (deferred)") {
 
 // 三結局架構不受影響：CursedUmbrella 仍可領取（其 BeClaimed 設 Flag_TookCursedUmbrella
 // 並發布 UmbrellaClaimed → Ending B 路徑），且獨立於苦主的授予。
-TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
+TEST_CASE("Ch1 道德傘仍可領取（保留 Ending B 路徑）") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
     Player p = MakePlayer();
@@ -181,7 +181,7 @@ TEST_CASE("Ch1 morality umbrellas still claimable (Ending B path preserved)") {
 }
 
 // 可在世界中撿到的苦主之傘撿取物，撿起時會設下對應旗標。
-TEST_CASE("Ch1 victim's-umbrella pickup sets Flag_HasVictimUmbrella") {
+TEST_CASE("Ch1 苦主之傘撿取物會設下 Flag_HasVictimUmbrella") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
 
@@ -203,7 +203,7 @@ TEST_CASE("Ch1 victim's-umbrella pickup sets Flag_HasVictimUmbrella") {
 // 硬性關卡：見到苦主（Flag_PromisedVictim）之前，西裝學長必須只用純台詞帶過、不開選單。
 // 主線是硬性關卡 苦主 → 學長 → 傘 → 苦主；先找學長不得開啟影響漣漪的選擇選單
 //（否則玩家會在章節第一拍之前就提交學長選擇、甚至領到道德傘）。承諾後才出現真正的選單。
-TEST_CASE("A1: 西裝學長 redirects (no menu) until the 苦主 is met") {
+TEST_CASE("見到苦主前，西裝學長只純台詞帶過、不開選單") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
@@ -252,7 +252,7 @@ std::size_t CountQuestPickups(const nccu::World& w) {
 }  // namespace
 
 // 苦主之傘延後到 Flag_SuitSeniorChoiceMade 之後才生成（且只一次），離開章節時隨名冊清除；申請書不受名冊追蹤而持續存在。
-TEST_CASE("A1: 苦主's umbrella defers until Flag_SuitSeniorChoiceMade, then sweeps") {
+TEST_CASE("苦主之傘延後到 Flag_SuitSeniorChoiceMade 後才生成，離開章節隨名冊清除") {
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
 
@@ -281,7 +281,7 @@ TEST_CASE("A1: 苦主's umbrella defers until Flag_SuitSeniorChoiceMade, then sw
 }
 
 // MaybeSpawnChapter1VictimUmbrella 在非 Ch1 時為無操作（它限定於 Ch1）。
-TEST_CASE("A1: MaybeSpawnChapter1VictimUmbrella is a no-op outside Ch1") {
+TEST_CASE("MaybeSpawnChapter1VictimUmbrella 在非 Ch1 時為無操作") {
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
     REQUIRE(w.GetPlayer() != nullptr);
@@ -299,7 +299,7 @@ TEST_CASE("A1: MaybeSpawnChapter1VictimUmbrella is a no-op outside Ch1") {
 
 // Ch1 福利社阿姨 (c) 購買醜綠傘是一筆真正的交易：必須扣 80 元、授予手持的醜傘、發出花費/餘額提示，
 // 且關鍵在於不得設 Flag_BoughtUglyUmbrella（Ending C 的鎖由 Ch4 的 Vendor 負責）。錢不夠／重複／情境不符皆為乾淨的無操作。
-TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C flag") {
+TEST_CASE("Ch1 阿姨醜傘購買扣 80 元並授予手持 Ugly，不設 Ending C 旗標") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
     Player p = MakePlayer();
@@ -337,7 +337,7 @@ TEST_CASE("B3: Ch1 阿姨 醜傘 buy deducts 80 + grants held Ugly, no Ending-C 
 }
 
 // 醜傘購買有資金守門：錢不夠時不扣錢、不給傘，只顯示「你錢不夠」提示。
-TEST_CASE("B3: Ch1 阿姨 醜傘 buy is fund-guarded (poor → no charge, no umbrella)") {
+TEST_CASE("Ch1 阿姨醜傘購買有資金守門（錢不夠則不扣錢、不給傘）") {
     EventBus::Instance().Clear();
     Capture cap = MakeCapture();
     Player p = MakePlayer();

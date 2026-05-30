@@ -38,7 +38,7 @@ bool DriveToChoiceOrClose(nccu::DialogState& dlg) {
 }  // namespace
 
 // 首次與西裝學長對話應出現 (b)/(c)/(d) 分支選單。
-TEST_CASE("C.3(b): first 西裝學長 talk presents the branch menu") {
+TEST_CASE("首次與西裝學長對話會出現分支選單") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::DialogState dlg;
     Player p{Vec2{0, 0}};
@@ -56,7 +56,7 @@ TEST_CASE("C.3(b): first 西裝學長 talk presents the branch menu") {
 }
 
 // 選擇定案旗標設下後，再對話西裝學長只剩純台詞重述，且不重複套用 karma。
-TEST_CASE("C.3(b): after the choice flag, 西裝學長 recaps line-only") {
+TEST_CASE("選擇定案旗標設下後，西裝學長只剩純台詞重述") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::DialogState dlg;
     Player p{Vec2{0, 0}};
@@ -76,7 +76,7 @@ TEST_CASE("C.3(b): after the choice flag, 西裝學長 recaps line-only") {
 }
 
 // 守門旗標只作用於西裝學長：苦主等其他選擇開場者仍可正常出現分支選單。
-TEST_CASE("C.3(b): the guard is scoped to 西裝學長 — 苦主 still branches") {
+TEST_CASE("守門旗標只作用於西裝學長 — 苦主仍會出現分支") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::DialogState dlg;
     Player p{Vec2{0, 0}};

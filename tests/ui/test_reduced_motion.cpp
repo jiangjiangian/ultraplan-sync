@@ -24,15 +24,15 @@ using nccu::InterludeMarkerPhaseStep;
 using nccu::World;
 
 // 減少動畫：預設值與三個動畫閘函式的開關行為。
-TEST_CASE("D8 reduced-motion: defaults + helper gating") {
-    SUBCASE("default flag is false") {
+TEST_CASE("減少動畫：預設值與三個動畫閘函式的開關行為") {
+    SUBCASE("預設旗標為 false") {
         // 清除前一個測試行程殘留的環境變數，使建構子讀到「未設定」→ 預設關閉。
         unsetenv("UMBRELLA_REDUCED_MOTION");
         World w("", /*loadSprites=*/false);
         CHECK_FALSE(w.ReducedMotion());
     }
 
-    SUBCASE("setter flips the flag both ways") {
+    SUBCASE("setter 雙向翻轉旗標") {
         unsetenv("UMBRELLA_REDUCED_MOTION");
         World w("", /*loadSprites=*/false);
         REQUIRE_FALSE(w.ReducedMotion());
@@ -44,7 +44,7 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
         CHECK_FALSE(w.ReducedMotion());
     }
 
-    SUBCASE("InterludeMarkerPhaseStep freezes when reduced") {
+    SUBCASE("開啟減少動畫時 InterludeMarkerPhaseStep 原地凍結") {
         // dt 為 1/60 秒時，正常會前進約 0.5 px（30 px/s * 1/60）。開啟減少動畫後
         // 步進為 0.0 — 虛線流動原地停止（呼叫端仍會繪製地標，只是抑制動畫）。
         constexpr float dt = 1.0f / 60.0f;
@@ -52,7 +52,7 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
         CHECK(InterludeMarkerPhaseStep(dt, true)  == doctest::Approx(0.0f));
     }
 
-    SUBCASE("EndingFadeAlphaStep jumps to 1.0 instantly when reduced") {
+    SUBCASE("開啟減少動畫時 EndingFadeAlphaStep 立即跳到 1.0") {
         // 預設路徑在累積約一秒的 dt 內由 0 漸增到 1。減少動畫路徑在第一次呼叫即
         // 回傳 1.0，跳過約半秒的亮度漸變。
         constexpr float dt = 1.0f / 60.0f;
@@ -64,7 +64,7 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
         CHECK(EndingFadeAlphaStep(0.4f, dt, true) == doctest::Approx(1.0f));
     }
 
-    SUBCASE("HudToastFadeT holds opaque when reduced (hard cut at TTL)") {
+    SUBCASE("開啟減少動畫時 HudToastFadeT 維持全不透明（到 TTL 才硬切）") {
         // 預設路徑：kHudFade = 1.0 時，淡出視窗過半處係數約為 0.5（漸變途中）。
         const float ramp = HudToastFadeT(0.5f, 1.0f, false);
         CHECK(ramp > 0.4f);
@@ -76,10 +76,10 @@ TEST_CASE("D8 reduced-motion: defaults + helper gating") {
 }
 
 // 環境變數 UMBRELLA_REDUCED_MOTION=1 會在建構時開啟旗標。
-TEST_CASE("D8 reduced-motion: UMBRELLA_REDUCED_MOTION=1 wires the flag on") {
+TEST_CASE("減少動畫：UMBRELLA_REDUCED_MOTION=1 會在建構時開啟旗標") {
     // getenv 移到 ReadWorldOptionsFromEnv()，World 相對其引數即為純函式。
     // 測試同時驗證兩半：環境變數讀取器 + 建構子是否遵循其結果。
-    SUBCASE("env=1 turns the flag on at construction") {
+    SUBCASE("env=1 在建構時開啟旗標") {
         setenv("UMBRELLA_REDUCED_MOTION", "1", /*overwrite=*/1);
         const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
         CHECK(opts.reducedMotion);
@@ -88,7 +88,7 @@ TEST_CASE("D8 reduced-motion: UMBRELLA_REDUCED_MOTION=1 wires the flag on") {
         unsetenv("UMBRELLA_REDUCED_MOTION");  // 還原，避免影響其他測試
     }
 
-    SUBCASE("env=0 leaves the flag off (only '1' opts in)") {
+    SUBCASE("env=0 維持旗標關閉（只有 '1' 才啟用）") {
         setenv("UMBRELLA_REDUCED_MOTION", "0", /*overwrite=*/1);
         const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
         CHECK_FALSE(opts.reducedMotion);
@@ -97,7 +97,7 @@ TEST_CASE("D8 reduced-motion: UMBRELLA_REDUCED_MOTION=1 wires the flag on") {
         unsetenv("UMBRELLA_REDUCED_MOTION");
     }
 
-    SUBCASE("env unset → flag stays off") {
+    SUBCASE("env 未設定 → 旗標維持關閉") {
         unsetenv("UMBRELLA_REDUCED_MOTION");
         const nccu::WorldOptions opts = nccu::ReadWorldOptionsFromEnv();
         CHECK_FALSE(opts.reducedMotion);

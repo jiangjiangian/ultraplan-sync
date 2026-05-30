@@ -32,7 +32,7 @@ const nccu::dialog::SubEntry* Find(
 }  // namespace
 
 // LoadChapter 把樣本解析成預期的 NPC 與子狀態結構。
-TEST_CASE("DialogLoader: parses fixture into expected NPC + substate layout") {
+TEST_CASE("DialogLoader 把樣本解析成預期的 NPC 與子狀態結構") {
     const auto chapter =
         nccu::dialog::LoadChapter(FixturePath("dialog_sample.md"));
 

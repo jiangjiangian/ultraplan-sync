@@ -151,7 +151,7 @@ const char* kSpineScript =
 }  // namespace
 
 // 健全性檢查：直接從實際地圖資產證明南牆只有 x≈880-1042 這個缺口，給上面的路線一個前提依據。
-TEST_CASE("I7: the shipped mask's south wall has exactly the x≈880-1042 gap") {
+TEST_CASE("出貨遮罩的南牆恰好只有 x≈880-1042 這個缺口") {
     // 用實際資產證明問題的幾何，讓路線的前提不會悄悄腐壞。若資產不存在
     //（全新 clone）則優雅降級——此時一切皆可通行、主線自然成立，故跳過幾何斷言。
     const nccu::CollisionMask m = nccu::LoadTerrainMask();
@@ -189,7 +189,7 @@ TEST_CASE("I7: the shipped mask's south wall has exactly the x≈880-1042 gap") 
 }
 
 // 最小 Ch1 主線在實際地圖上應一路推進到 Chapter 2；若路線被擋住、學期停在 Ch1，本案就會失敗。
-TEST_CASE("I7: minimal Ch1 spine reaches Chapter 2 on the shipped mask") {
+TEST_CASE("最小 Ch1 主線在出貨遮罩上可抵達 Chapter 2") {
     const SpineResult r = RunSpine(kSpineScript, 9000);
 
     // 取傘閘門已觸發（已和苦主對話）。
@@ -213,7 +213,7 @@ TEST_CASE("I7: minimal Ch1 spine reaches Chapter 2 on the shipped mask") {
 }
 
 // 重播確定性：解析器是 (計畫步驟, World 快照) 的純函式，因此同一腳本跑兩次必須得到逐位元相同的結尾狀態。
-TEST_CASE("I7: the Ch1-spine route is deterministic across two runs") {
+TEST_CASE("Ch1 主線路線在兩次執行間具確定性") {
     const SpineResult a = RunSpine(kSpineScript, 9000);
     const SpineResult b = RunSpine(kSpineScript, 9000);
     CHECK(a.semester == b.semester);

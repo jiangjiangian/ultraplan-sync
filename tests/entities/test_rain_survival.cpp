@@ -65,7 +65,7 @@ void Frame(nccu::GameController& c, TestInput& in) {
 
 // 單元測試——DrainRain 是純恢復：-10 u/s、裁切到 [0,100]、絕不傳送。先用
 // ApplyRain(lethal=false)（無傘累積但抑制傳送）把雨量計灌高，再排乾到地板。
-TEST_CASE("rain: DrainRain recovers -10 u/s and clamps at 0, no side effect") {
+TEST_CASE("淋雨：DrainRain 以 -10 u/s 恢復、裁切於 0，無副作用") {
     Player p{Vec2{1234.0f, 5678.0f}};
     REQUIRE(p.GetRainMeter() == doctest::Approx(0.0f));
 
@@ -95,7 +95,7 @@ TEST_CASE("rain: DrainRain recovers -10 u/s and clamps at 0, no side effect") {
 // +5 u/s 的三成，裁切於 [0,100]，且帶致命機制（滿值時傳送並重設，同 ApplyRain）。
 // 它在相同時間內必須遠慢於 ApplyRain，且（與 ApplyRain 不同）不理會持傘旗標
 //（因為這正是撐傘的情況）。
-TEST_CASE("REQ#5 unit: ApplyRainSheltered slow-accrues (~1.5 u/s), lethal-armed") {
+TEST_CASE("ApplyRainSheltered 慢速累積（約 1.5 u/s）且帶致命機制") {
     Player p{Vec2{100.0f, 200.0f}};
     p.SetHasUmbrella(true);                  // 不論持傘與否都必須累積
     REQUIRE(p.GetRainMeter() == doctest::Approx(0.0f));
@@ -130,7 +130,7 @@ TEST_CASE("REQ#5 unit: ApplyRainSheltered slow-accrues (~1.5 u/s), lethal-armed"
 // 戶外無傘玩家（Ch1 出生點在所有建築矩形以南，故 CurrentBuildingName() 為空）
 // 透過真正的 GC tick 以 +5 u/s 累積，滿值時觸發致命傳送：發出落湯雞 ShowMessage
 // 並重設雨量計（不會釘在 100）。
-TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fires") {
+TEST_CASE("淋雨：戶外無傘玩家累積後觸發致命傳送") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -193,7 +193,7 @@ TEST_CASE("rain: outdoor umbrella-less player accrues, then the lethal gate fire
 //   * 戶外、有傘     -> 仍會累積，但很慢（+1.5 u/s，ApplyRainSheltered）——
 //                       撐傘只是爭取時間，不是免疫
 //   * 在建築物內     -> 排乾到 0（-10 u/s，真正的避難所）
-TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you") {
+TEST_CASE("撐傘只減緩淋雨（每章皆然）；唯有進入建築才會排乾") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -263,7 +263,7 @@ TEST_CASE("REQ#5: umbrella SLOWS rain (every chapter); only a building dries you
 
 // 淋雨只屬於玩法——市集過場是安全狀態，GC 完全略過 tick，因此即使無傘，
 // 玩家的雨量計也維持不變。
-TEST_CASE("rain: no accrual or drain in the Interlude_Market (safe state)") {
+TEST_CASE("淋雨：在 Interlude_Market（安全狀態）不累積也不排水") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();

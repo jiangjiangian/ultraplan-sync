@@ -43,7 +43,7 @@ struct Spy final : nccu::engine::render::IRenderer {
 } // namespace
 
 // 空的 HUD 訊息不論存活時間多少都不繪製任何東西。
-TEST_CASE("Empty HUD message draws nothing regardless of age") {
+TEST_CASE("空的 HUD 訊息不論存活時間都不繪製任何東西") {
     Spy s;
     nccu::DrawHudMessage(s, "", 0.0f, 800.0f, 450.0f);
     nccu::DrawHudMessage(s, "", 2.0f, 800.0f, 450.0f);
@@ -52,7 +52,7 @@ TEST_CASE("Empty HUD message draws nothing regardless of age") {
 }
 
 // 新的 HUD 訊息會繪製底框與文字。
-TEST_CASE("Fresh HUD message draws a backdrop + the text") {
+TEST_CASE("新的 HUD 訊息會繪製底框與文字") {
     Spy s;
     nccu::DrawHudMessage(s, "撿到一頁學霸的筆記。", 0.0f, 800.0f, 450.0f);
     CHECK(s.rects >= 1);                       // 底框（+ 強調條）
@@ -61,7 +61,7 @@ TEST_CASE("Fresh HUD message draws a backdrop + the text") {
 }
 
 // 超過 TTL 的 HUD 訊息不繪製。
-TEST_CASE("HUD message past its TTL draws nothing") {
+TEST_CASE("超過 TTL 的 HUD 訊息不繪製") {
     Spy s;
     nccu::DrawHudMessage(s, "已過期的旁白", nccu::kHudTtl + 0.5f,
                          800.0f, 450.0f);
@@ -70,7 +70,7 @@ TEST_CASE("HUD message past its TTL draws nothing") {
 }
 
 // 恰在 TTL 邊界的 HUD 訊息不繪製（邊界為包含式）。
-TEST_CASE("HUD message at the TTL boundary draws nothing") {
+TEST_CASE("恰在 TTL 邊界的 HUD 訊息不繪製") {
     Spy s;
     nccu::DrawHudMessage(s, "邊界", nccu::kHudTtl, 800.0f, 450.0f);
     CHECK(s.rects == 0);
@@ -78,7 +78,7 @@ TEST_CASE("HUD message at the TTL boundary draws nothing") {
 }
 
 // 無空白字元的長中文字串會依量得寬度自動換行（不靠空白斷行）。
-TEST_CASE("Long CJK string wraps onto multiple lines (no space breaks)") {
+TEST_CASE("無空白的長中文字串會換成多行（不靠空白斷行）") {
     Spy s;
     // 約 40 個中文字搭配狹窄視窗 → 必定斷行。
     const std::string longLine =
@@ -94,7 +94,7 @@ TEST_CASE("Long CJK string wraps onto multiple lines (no space breaks)") {
 }
 
 // 訊息中的明確換行字元會強制斷行。
-TEST_CASE("Explicit newline in the message forces a line break") {
+TEST_CASE("訊息中的明確換行字元會強制斷行") {
     Spy s;
     nccu::DrawHudMessage(s, "第一行\n第二行", 0.0f, 800.0f, 450.0f);
     REQUIRE(s.texts.size() == 2);
@@ -106,7 +106,7 @@ TEST_CASE("Explicit newline in the message forces a line break") {
 // 訊息框緊貼最寬的一行（DLC開發中，6 個 ASCII + 3 個中文字寬），故較短的
 // 敬請期待（4 個中文字 = 8 字寬）會比寬行更靠右 → 其 X 嚴格較大。這個右移正是
 // 逐行置中可觀察的特徵（靠左對齊的框會把兩行畫在同一 X）。
-TEST_CASE("UI-B-3: the DLC teaser draws as two centred lines") {
+TEST_CASE("DLC 預告以兩行各自置中呈現") {
     Spy s;
     nccu::DrawHudMessage(s, "DLC開發中\n敬請期待", 0.0f, 800.0f, 450.0f);
     REQUIRE(s.texts.size() == 2);
@@ -123,7 +123,7 @@ TEST_CASE("UI-B-3: the DLC teaser draws as two centred lines") {
 // 單行訊息會被置於它（緊貼的）框內。
 // 其繪製 X 等於框的左內緣（框緊貼這一行，故置中偏移約為 0）。重點是：單行提示
 // 的觀感維持不變。
-TEST_CASE("UI-B-3: a single line is drawn inside its box") {
+TEST_CASE("單行訊息被置於它的框內") {
     Spy s;
     nccu::DrawHudMessage(s, "撿到 50 元", 0.0f, 800.0f, 450.0f);
     REQUIRE(s.texts.size() == 1);
@@ -135,7 +135,7 @@ TEST_CASE("UI-B-3: a single line is drawn inside its box") {
 // 使用本專案東亞寬度感知的 CellWidth（與換行所用同一量測），即規格要求的
 // 框內容納判定。框緊貼最寬列，故「容納於框內」等同「無列寬於最寬列」，此外也
 // 確認沒有任何列超過依 72% 螢幕文字寬度推得的字寬上限。
-TEST_CASE("UI-B-3: a long toast wraps within the black box cell-width") {
+TEST_CASE("長提示在黑框的字寬內換行") {
     Spy s;
     const float screenW = 800.0f, screenH = 450.0f;
     const std::string longLine =

@@ -11,7 +11,7 @@
  */
 
 // 事件應派送給對應型別的訂閱者。
-TEST_CASE("EventBus delivers events to subscribers") {
+TEST_CASE("EventBus 將事件派送給訂閱者") {
     EventBus::Instance().Clear();
     int hits = 0;
     std::string captured;
@@ -25,7 +25,7 @@ TEST_CASE("EventBus delivers events to subscribers") {
 }
 
 // 不應派送給型別不符的訂閱者。
-TEST_CASE("EventBus does not deliver to wrong type") {
+TEST_CASE("EventBus 不會派送給型別不符的訂閱者") {
     EventBus::Instance().Clear();
     int hits = 0;
     EventBus::Instance().Subscribe(EventType::KarmaChanged,
@@ -36,7 +36,7 @@ TEST_CASE("EventBus does not deliver to wrong type") {
 
 // 重入安全：handler 在 Publish 期間變動同一型別的訂閱清單，不得破壞正在進行的
 // 迭代。修正方式是在派送前先對 handler 清單做快照。
-TEST_CASE("EventBus tolerates Subscribe + Clear from inside a handler") {
+TEST_CASE("EventBus 容許在 handler 內呼叫 Subscribe 與 Clear") {
     EventBus::Instance().Clear();
     int outer_hits = 0;
     int reentrant_hits = 0;

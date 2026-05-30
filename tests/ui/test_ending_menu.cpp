@@ -83,7 +83,7 @@ void EnterEnding(World& w, nccu::SemesterState s) {
 
 // ---- (1) 純索引→選項對應 -----------------------------------------------
 // EndingMenuChoiceAt 把 0/1/2 對應到 回首頁/重新開始/結束。
-TEST_CASE("A-T3: EndingMenuChoiceAt maps 0/1/2 to Title/Restart/Quit") {
+TEST_CASE("EndingMenuChoiceAt 把 0／1／2 對應到 回首頁／重新開始／結束") {
     CHECK(nccu::EndingMenuChoiceAt(0) == EndingMenuChoice::BackToTitle);
     CHECK(nccu::EndingMenuChoiceAt(1) == EndingMenuChoice::RestartGame);
     CHECK(nccu::EndingMenuChoiceAt(2) == EndingMenuChoice::Quit);
@@ -99,7 +99,7 @@ TEST_CASE("A-T3: EndingMenuChoiceAt maps 0/1/2 to Title/Restart/Quit") {
 
 // ---- (2) 實際的 controller 接線 ----------------------------------------
 // 在結局畫面，←/→ 會環狀移動游標。
-TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
+TEST_CASE("結局畫面上 ←／→ 會環狀移動游標") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -139,7 +139,7 @@ TEST_CASE("A-T3: on the ending screen ←/→ move the cursor (modular)") {
 }
 
 // 結局選單的確認會把游標對應到正確的 AppAction。
-TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
+TEST_CASE("結局選單的確認把游標對應到正確的 AppAction") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -201,7 +201,7 @@ TEST_CASE("A-T3: ending-menu confirm maps the cursor to the right AppAction") {
 }
 
 // 結局畫面上世界凍結（無模擬、無移動）。
-TEST_CASE("A-T3: the world is FROZEN on the ending screen (no sim, no movement)") {
+TEST_CASE("結局畫面上世界凍結（無模擬、無移動）") {
     // 結局取代遊玩：即使按住移動鍵，玩家也不可移動，任意幀數都不可推進模擬
     // （在物件 tick／移動／掃描之前就提前返回）。這正是讓結局畫面成為穩定、
     // 只剩選單操作的畫面之關鍵。

@@ -59,7 +59,7 @@ bool HasRectRGB(const Spy& s, nccu::engine::math::Color want) {
 // ---- 轉場分類（書擋規則）-----------------------------------------------
 
 // 章節「開始」會觸發 Lost 卡。
-TEST_CASE("ChapterCardForTransition: a chapter START fires the Lost card") {
+TEST_CASE("ChapterCardForTransition：章節開始會觸發 Lost 卡") {
     // 遊戲開始（哨兵 -> 第一章）以及每次從幕間離開進入章節。
     CHECK(ChapterCardForTransition(S::Ending_C, S::Chapter1_AddDrop) == ChapterCardKind::Lost);
     CHECK(ChapterCardForTransition(S::Interlude_Market, S::Chapter2_Midterms) == ChapterCardKind::Lost);
@@ -68,7 +68,7 @@ TEST_CASE("ChapterCardForTransition: a chapter START fires the Lost card") {
 }
 
 // 章節「清關」會觸發 Found 卡。
-TEST_CASE("ChapterCardForTransition: a chapter CLEAR fires the Found card") {
+TEST_CASE("ChapterCardForTransition：章節清關會觸發 Found 卡") {
     // 第一／二／三章 -> 市集（章節在收尾旁白結束後剛清關）。第四章不會到這裡
     // （它會走向結局）。
     CHECK(ChapterCardForTransition(S::Chapter1_AddDrop, S::Interlude_Market) == ChapterCardKind::Found);
@@ -77,7 +77,7 @@ TEST_CASE("ChapterCardForTransition: a chapter CLEAR fires the Found card") {
 }
 
 // 走向結局時不觸發任何卡（結局畫面由 EndingView 負責）。
-TEST_CASE("ChapterCardForTransition: endings fire NO card (EndingView owns them)") {
+TEST_CASE("ChapterCardForTransition：走向結局不觸發任何卡（由 EndingView 負責）") {
     CHECK(ChapterCardForTransition(S::Chapter4_Finals, S::Ending_A) == ChapterCardKind::None);
     CHECK(ChapterCardForTransition(S::Chapter4_Finals, S::Ending_B) == ChapterCardKind::None);
     CHECK(ChapterCardForTransition(S::Chapter4_Finals, S::Ending_D) == ChapterCardKind::None);
@@ -85,7 +85,7 @@ TEST_CASE("ChapterCardForTransition: endings fire NO card (EndingView owns them)
 }
 
 // 同狀態的「轉場」不觸發任何卡。
-TEST_CASE("ChapterCardForTransition: a same-state 'transition' fires nothing") {
+TEST_CASE("ChapterCardForTransition：同狀態的轉場不觸發任何卡") {
     CHECK(ChapterCardForTransition(S::Chapter2_Midterms, S::Chapter2_Midterms) == ChapterCardKind::None);
     CHECK(ChapterCardForTransition(S::Interlude_Market, S::Interlude_Market) == ChapterCardKind::None);
 }
@@ -93,7 +93,7 @@ TEST_CASE("ChapterCardForTransition: a same-state 'transition' fires nothing") {
 // ---- 文案 ---------------------------------------------------------------
 
 // 標題：第一章用開場變體，第二到四章用反覆出現的變體。
-TEST_CASE("Headline: Ch1 uses the inciting variant, Ch2-4 the recurring one") {
+TEST_CASE("Headline：第一章用開場變體，第二到四章用反覆出現的變體") {
     CHECK(ChapterCardHeadline(ChapterCardKind::Lost, S::Chapter1_AddDrop) == "傘，不見了");
     CHECK(ChapterCardHeadline(ChapterCardKind::Lost, S::Chapter2_Midterms) == "傘又掉了");
     CHECK(ChapterCardHeadline(ChapterCardKind::Lost, S::Chapter4_Finals) == "傘又掉了");
@@ -102,7 +102,7 @@ TEST_CASE("Headline: Ch1 uses the inciting variant, Ch2-4 the recurring one") {
 }
 
 // 副標：Lost 卡會標出開始的章節名稱。
-TEST_CASE("Subtitle: a Lost card names the starting chapter") {
+TEST_CASE("Subtitle：Lost 卡會標出開始的章節名稱") {
     CHECK(ChapterCardSubtitle(ChapterCardKind::Lost, S::Chapter2_Midterms) == "第二章 期中考");
     CHECK(ChapterCardSubtitle(ChapterCardKind::Found, S::Interlude_Market) == "這一章，過去了");
 }
@@ -110,7 +110,7 @@ TEST_CASE("Subtitle: a Lost card names the starting chapter") {
 // ---- 確定性的計時狀態機 -------------------------------------------------
 
 // 計時狀態機：淡入 -> 停留 -> 淡出 -> 自動消失。
-TEST_CASE("ChapterCardState: fade-in -> hold -> fade-out -> auto-clear") {
+TEST_CASE("ChapterCardState：淡入 → 停留 → 淡出 → 自動消失") {
     ChapterCardState c;
     CHECK_FALSE(c.Active());
     c.Trigger(ChapterCardKind::Lost, "傘又掉了", "第二章 期中考");
@@ -144,7 +144,7 @@ TEST_CASE("ChapterCardState: fade-in -> hold -> fade-out -> auto-clear") {
 }
 
 // Dismiss 會立即清除（玩家按鍵略過）。
-TEST_CASE("ChapterCardState: Dismiss clears immediately (key-press skip)") {
+TEST_CASE("ChapterCardState：Dismiss 會立即清除（玩家按鍵略過）") {
     ChapterCardState c;
     c.Trigger(ChapterCardKind::Found, "找到傘了", "這一章，過去了");
     c.Step(0.5f);
@@ -155,7 +155,7 @@ TEST_CASE("ChapterCardState: Dismiss clears immediately (key-press skip)") {
 }
 
 // 減少動畫時立即全不透明，無漸變。
-TEST_CASE("ChapterCardState: reducedMotion is opaque immediately, no ramp") {
+TEST_CASE("ChapterCardState：reducedMotion 立即全不透明、無漸變") {
     ChapterCardState c;
     c.Trigger(ChapterCardKind::Lost, "傘又掉了", "第三章 運動會");
     CHECK(c.Alpha(/*reducedMotion=*/true) == doctest::Approx(1.0f));  // t=0 即不透明
@@ -164,7 +164,7 @@ TEST_CASE("ChapterCardState: reducedMotion is opaque immediately, no ramp") {
 }
 
 // 對未啟用的卡呼叫 Step 是安全的無操作。
-TEST_CASE("ChapterCardState: Step on an inactive card is a safe no-op") {
+TEST_CASE("ChapterCardState：對未啟用的卡呼叫 Step 是安全的無操作") {
     ChapterCardState c;
     c.Step(1.0f);
     CHECK_FALSE(c.Active());
@@ -174,7 +174,7 @@ TEST_CASE("ChapterCardState: Step on an inactive card is a safe no-op") {
 // ---- DrawChapterCard（攔截器）-----------------------------------------
 
 // 未啟用的卡不繪製任何東西。
-TEST_CASE("DrawChapterCard: inactive card draws nothing") {
+TEST_CASE("DrawChapterCard：未啟用的卡不繪製任何東西") {
     ChapterCardState c;
     Spy r;
     nccu::DrawChapterCard(r, c, 800.0f, 450.0f);
@@ -183,7 +183,7 @@ TEST_CASE("DrawChapterCard: inactive card draws nothing") {
 }
 
 // Lost 卡會畫出標題、副標與破傘的視覺提示。
-TEST_CASE("DrawChapterCard: a Lost card draws headline + subtitle + 破傘 cue") {
+TEST_CASE("DrawChapterCard：Lost 卡會畫出標題、副標與破傘提示") {
     ChapterCardState c;
     c.Trigger(ChapterCardKind::Lost, "傘又掉了", "第二章 期中考");
     c.Step(0.5f);                                   // 進入完全不透明的停留
@@ -199,7 +199,7 @@ TEST_CASE("DrawChapterCard: a Lost card draws headline + subtitle + 破傘 cue")
 }
 
 // Found 卡會畫出「找到傘了」與真傘（藍）的視覺提示。
-TEST_CASE("DrawChapterCard: a Found card draws 找到傘了 + the 真傘 (blue) cue") {
+TEST_CASE("DrawChapterCard：Found 卡會畫出「找到傘了」與真傘（藍）提示") {
     ChapterCardState c;
     c.Trigger(ChapterCardKind::Found, "找到傘了", "這一章，過去了");
     c.Step(0.5f);
@@ -215,7 +215,7 @@ TEST_CASE("DrawChapterCard: a Found card draws 找到傘了 + the 真傘 (blue) 
 // 任何章節卡的標題／副標列都不會溢出面板。卡片現會把標題與副標在側邊留白內
 // 換行（nccu::dialog::WrapToCells），故每段繪製列的右緣都留在畫面內，即使在
 // 較窄寬度也是。以共用的字寬模型（每個東亞字寬約 size/2 px）斷言。
-TEST_CASE("UI-B-3: every chapter-card row stays within the screen width") {
+TEST_CASE("每一章節卡的列都不會溢出畫面寬度") {
     ChapterCardState c;
     c.Trigger(ChapterCardKind::Lost, "傘又掉了", "第一章 加退選");
     c.Step(0.5f);

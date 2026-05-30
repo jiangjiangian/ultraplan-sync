@@ -31,7 +31,7 @@ struct MsgCapture {
 }  // namespace
 
 // Player 計數背包的加入 / 查詢 / 消耗。
-TEST_CASE("Player: count inventory add / query / consume") {
+TEST_CASE("Player：計數背包的加入／查詢／消耗") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(p.ConsumableCount("HotPack") == 0);
 
@@ -49,7 +49,7 @@ TEST_CASE("Player: count inventory add / query / consume") {
 }
 
 // TryBuy 會把商品放進計數背包。
-TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
+TEST_CASE("Vendor::TryBuy 會把商品放進計數背包") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
 
@@ -65,7 +65,7 @@ TEST_CASE("Vendor::TryBuy lands the item in the count inventory") {
 }
 
 // TryBuy 會套用 karmaOnInteract（募款箱的業力閥）。
-TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
+TEST_CASE("Vendor::TryBuy 會套用 karmaOnInteract（募款箱業力閥）") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     EventBus::Instance().Clear();
     const int karma0 = p.GetKarma();
@@ -91,7 +91,7 @@ TEST_CASE("Vendor::TryBuy applies karmaOnInteract (募款箱 valve)") {
 }
 
 // TryBuy 會強制有限的 stockLeft，售完後售罄。
-TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
+TEST_CASE("Vendor::TryBuy 會強制有限的 stockLeft 並在售完後售罄") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     MsgCapture cap;
     cap.Attach();
@@ -120,7 +120,7 @@ TEST_CASE("Vendor::TryBuy enforces finite stockLeft, then sold out") {
 
 // Ch4 集英樓醜傘攤位的購買提示顯示中文 catalog 名稱 + 花費 + 餘額，走的是與市集相同的
 // TryBuy 路徑。
-TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance") {
+TEST_CASE("醜傘購買提示顯示中文名稱 + 花費 + 餘額") {
     Player p{nccu::engine::math::Vec2{0, 0}};            // 起始有 100 元
     MsgCapture cap;
     cap.Attach();
@@ -140,7 +140,7 @@ TEST_CASE("Item 5b: ugly-umbrella buy toast shows 中文 name + spend + balance"
 
 // 攤位販售的每個 itemId 都必須能解析到中文 catalog 名稱，使購買提示／背包列絕不印出原始
 // 英文 id。
-TEST_CASE("Item 2d/5b: every market itemId has a 中文 catalog name") {
+TEST_CASE("每個市集 itemId 都有對應的中文 catalog 名稱") {
     const char* ids[] = {"HotPack", "EnergyDrink", "WaterproofSpray",
                          "EggCake", "FlowerTea", "Takoyaki", "Donation",
                          "UglyUmbrella", "CursedUmbrella",

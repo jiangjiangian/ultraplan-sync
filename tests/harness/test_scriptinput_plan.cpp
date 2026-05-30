@@ -106,7 +106,7 @@ const char* const kRouteToVictimStaging =
 }  // namespace
 
 // `goto` 是玩家位置 + 3 px/格的純函式：必須落在抵達誤差內，且不越過。
-TEST_CASE("plan: `goto` drives the player to a free target within epsilon") {
+TEST_CASE("plan：`goto` 在 epsilon 內把玩家驅動到淨空目標") {
     // 玩家生成在 {500,1860} 的開闊南側道路。沿路往東到 x=1000（唯一的牆缺口），再直上淨空的
     // 通道到 y=1300——全程無牆且無 NPC（已對照地形遮罩與預設 NPC 生成點驗證）。
     const std::vector<Frame> tr =
@@ -123,7 +123,7 @@ TEST_CASE("plan: `goto` drives the player to a free target within epsilon") {
 // 約在移動碰撞箱貼齊停住前 8 px；controller 隨即開啟對話並返回（對話開著時不移動），使玩家
 // 凍結在離原點約 27 px 處（貼齊 24 + 觸及邊際）。故驅動終點落在 [約 24, 24+8] 的觸及帶內，
 // 而非剛好貼齊 24。本案例守護驅動與確定性；對話確實「開啟」由 test_i6_interact_reach.cpp 守護。
-TEST_CASE("plan: `interact victim` deterministically reaches the NPC") {
+TEST_CASE("plan：`interact victim` 確定性地抵達該 NPC") {
     World probeWorld("", /*loadSprites=*/false);
     const GameObject* v = FindNpc(probeWorld, "victim");
     REQUIRE(v != nullptr);
@@ -152,7 +152,7 @@ TEST_CASE("plan: `interact victim` deterministically reaches the NPC") {
 // 只經 x 缺口跨過南側牆，再沿淨空的東側走廊上行到開闊的雨傘地點。斷言 kFlagHasVictimUmbrella
 //（僅由該 QuestFlagPickup 的 OnPickup 設定），故確實演練了驅動+E→OnPickup 路徑，而不只是最終
 // 座標。對照：test_i6_interact_reach.cpp（NPC 對話觸及）。
-TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
+TEST_CASE("plan：goto+E 在可達的（非擋路）item 上實際操作遊戲") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     World world("", /*loadSprites=*/false);
@@ -196,7 +196,7 @@ TEST_CASE("plan: goto+E actuates the game on a reachable (non-blocking) item") {
 
 // 核心保證：同一腳本（混用每種動詞）兩次執行得到逐位元相同的狀態軌跡——相當於兩份相同的
 // 記錄檔。
-TEST_CASE("plan: replay is deterministic — two runs are byte-identical") {
+TEST_CASE("plan：replay 具確定性——兩次執行逐位元相同") {
     const std::string script =
         "goto 750 1860\n"
         "interact victim\n"
@@ -213,7 +213,7 @@ TEST_CASE("plan: replay is deterministic — two runs are byte-identical") {
 }
 
 // 與動詞穿插時，classic 的 `<frame> <action>` 文法仍須維持運作（新增功能，不得造成迴歸）。
-TEST_CASE("plan: classic timed directives still parse alongside verbs") {
+TEST_CASE("plan：classic 計時指令與動詞穿插時仍可解析") {
     ScriptInput in;
     std::istringstream src(
         "# a verb and classic lines in one file\n"

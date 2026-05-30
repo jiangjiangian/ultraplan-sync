@@ -13,7 +13,7 @@ using nccu::engine::math::Vec2;
 using nccu::physics::ResolveMove;
 
 // 無 collider -> 接受目標位置。
-TEST_CASE("ResolveMove: no colliders -> desired position accepted") {
+TEST_CASE("ResolveMove：無 collider 時接受目標位置") {
     const Vec2 prev{100.0f, 100.0f};
     const Vec2 desired{120.0f, 130.0f};
     const Vec2 size{24.0f, 24.0f};
@@ -25,7 +25,7 @@ TEST_CASE("ResolveMove: no colliders -> desired position accepted") {
 }
 
 // collider 在遠處 -> 接受目標位置。
-TEST_CASE("ResolveMove: collider far away -> desired position accepted") {
+TEST_CASE("ResolveMove：collider 在遠處時接受目標位置") {
     const Vec2 prev{100.0f, 100.0f};
     const Vec2 desired{110.0f, 110.0f};
     const Vec2 size{24.0f, 24.0f};
@@ -37,7 +37,7 @@ TEST_CASE("ResolveMove: collider far away -> desired position accepted") {
 }
 
 // 正面朝東撞牆 -> X 被擋，Y 維持。
-TEST_CASE("ResolveMove: head-on wall east -> x blocked, y stays") {
+TEST_CASE("ResolveMove：正面朝東撞牆時 X 被擋、Y 維持") {
     // 牆起於 x=130，故 prev.x=100 的玩家（右緣 x=124）淨空；往東走到 desired.x=110
     //（右緣 x=134）便切到牆，X 移動被擋。
     const Vec2 prev{100.0f, 100.0f};
@@ -51,8 +51,8 @@ TEST_CASE("ResolveMove: head-on wall east -> x blocked, y stays") {
 }
 
 // 對角撞牆角 -> 沿自由軸滑動。
-TEST_CASE("ResolveMove: diagonal into wall corner -> slides on free axis") {
-    SUBCASE("X axis blocked, Y free (slide downward along east wall)") {
+TEST_CASE("ResolveMove：對角撞牆角時沿自由軸滑動") {
+    SUBCASE("X 軸被擋、Y 自由（沿東牆向下滑動）") {
         // 牆起於 x=130，故 prev.x=100 的玩家（右緣 124）淨空；走到 desired.x=110
         //（右緣 134）切到牆而被擋。從 prev.x 算出的 Y 步使玩家仍在牆西側，故往下的滑動
         // 應成功。
@@ -65,7 +65,7 @@ TEST_CASE("ResolveMove: diagonal into wall corner -> slides on free axis") {
         CHECK(out.x == doctest::Approx(100.0f));   // 被擋
         CHECK(out.y == doctest::Approx(260.0f));   // 滑動
     }
-    SUBCASE("Y axis blocked, X free (slide east along south wall)") {
+    SUBCASE("Y 軸被擋、X 自由（沿南牆向東滑動）") {
         const Vec2 prev{100.0f, 100.0f};
         const Vec2 desired{110.0f, 110.0f};
         const Vec2 size{24.0f, 24.0f};
@@ -79,7 +79,7 @@ TEST_CASE("ResolveMove: diagonal into wall corner -> slides on free axis") {
 }
 
 // 多個 collider -> 任一擋住即擋住。
-TEST_CASE("ResolveMove: multiple colliders -> blocked by any") {
+TEST_CASE("ResolveMove：多個 collider 任一擋住即擋住") {
     const Vec2 prev{100.0f, 100.0f};
     const Vec2 desired{110.0f, 100.0f};
     const Vec2 size{24.0f, 24.0f};
@@ -94,7 +94,7 @@ TEST_CASE("ResolveMove: multiple colliders -> blocked by any") {
 }
 
 // NPC 大小的 collider 也會擋住玩家。
-TEST_CASE("ResolveMove: NPC-sized collider blocks player too") {
+TEST_CASE("ResolveMove：NPC 大小的 collider 也會擋住玩家") {
     const Vec2 prev{100.0f, 100.0f};
     const Vec2 desired{110.0f, 100.0f};
     const Vec2 size{24.0f, 24.0f};
@@ -107,7 +107,7 @@ TEST_CASE("ResolveMove: NPC-sized collider blocks player too") {
 }
 
 // 起點已與 collider 重疊時可脫困。
-TEST_CASE("ResolveMove: escape when prev already overlaps a collider") {
+TEST_CASE("ResolveMove：起點已與 collider 重疊時可脫困") {
     // 生成時就疊在牆上（例如開格時 NPC 碰撞箱與玩家重疊）。若無脫困條款，兩軸測試都會失敗、
     // 玩家會卡死；我們希望移動仍能進行。
     const Vec2 prev{100.0f, 100.0f};

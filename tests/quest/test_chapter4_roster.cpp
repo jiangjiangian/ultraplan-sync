@@ -20,7 +20,7 @@ using nccu::SemesterState;
 // 且全部 isQuestGiver=false（結局由閘門條件驅動，而非任務指示）。
 
 // Ch4 名冊應正好是 chapter4.md 的 5 個原型，且皆非任務給予者。
-TEST_CASE("ChapterNpcSpawns: Ch4 is the 5 chapter4.md archetypes") {
+TEST_CASE("ChapterNpcSpawns：Ch4 是 chapter4.md 的 5 個原型") {
     const auto& ch4 = nccu::ChapterNpcSpawns(SemesterState::Chapter4_Finals);
     REQUIRE(ch4.size() == 5);
 
@@ -34,7 +34,7 @@ TEST_CASE("ChapterNpcSpawns: Ch4 is the 5 chapter4.md archetypes") {
 }
 
 // 5 個原型 NPC 都應能在 chapter4.md 找到對應段落並解析出開場 (a)。
-TEST_CASE("DialogSource: the 5 archetypes resolve to chapter4.md") {
+TEST_CASE("DialogSource：5 個原型解析到 chapter4.md") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     for (const char* id : {"victim", "suit_senior", "bookworm",

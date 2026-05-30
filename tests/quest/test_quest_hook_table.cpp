@@ -24,7 +24,7 @@ using nccu::RunInteractHooks;
 using nccu::SemesterState;
 
 // 表的註冊順序必須逐一對應原始內嵌呼叫的先後（順序錯置會破壞跨 hook 的旗標依賴）。
-TEST_CASE("InteractQuestHooks: registered order matches the original inline sequence") {
+TEST_CASE("InteractQuestHooks：註冊順序與原始內嵌呼叫序列一致") {
     const std::vector<QuestHook>& hooks = InteractQuestHooks();
     REQUIRE(hooks.size() == 9);
     CHECK(hooks[0].name == std::string_view("TryReturnVictimUmbrella"));
@@ -39,14 +39,14 @@ TEST_CASE("InteractQuestHooks: registered order matches the original inline sequ
 }
 
 // 每筆項目都必須帶有可呼叫的函式物件，避免表中出現空 hook。
-TEST_CASE("InteractQuestHooks: every entry carries a callable") {
+TEST_CASE("InteractQuestHooks：每筆項目都帶有可呼叫的函式物件") {
     for (const QuestHook& h : InteractQuestHooks()) {
         CHECK(static_cast<bool>(h.fn));
     }
 }
 
 // 不符合的 (npcId, state) 不得改動任何狀態：驗證每個 hook 都確實自我守門。
-TEST_CASE("RunInteractHooks: a non-matching (npcId, state) mutates nothing") {
+TEST_CASE("RunInteractHooks：不符合的 (npcId, state) 不改動任何狀態") {
     // 在 Ch1 用一個未知的 npcId，沒有任何 hook 的守門條件會成立，
     // 整張表等同無操作——karma / money / 旗標都不應改變。
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -61,7 +61,7 @@ TEST_CASE("RunInteractHooks: a non-matching (npcId, state) mutates nothing") {
 }
 
 // 表是穩定的單例：重複取用都回傳同一份 vector，順序不會在每幀之間漂移。
-TEST_CASE("RunInteractHooks: the table is a stable singleton (same instance)") {
+TEST_CASE("RunInteractHooks：表是穩定的單例（同一份實例）") {
     // 首次使用時建立一次，之後的呼叫都回傳同一個 vector。
     CHECK(&InteractQuestHooks() == &InteractQuestHooks());
 }

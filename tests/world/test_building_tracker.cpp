@@ -43,14 +43,14 @@ Vec2 CentreOf(std::string_view name) {
 } // namespace
 
 // 初始的 Current() 為 null。
-TEST_CASE("BuildingTracker: initial Current() is null") {
+TEST_CASE("BuildingTracker：初始的 Current() 為 null") {
     EventBus::Instance().Clear();
     BuildingTracker t;
     CHECK(t.Current() == nullptr);
 }
 
 // 進入操場發出一次事件。
-TEST_CASE("BuildingTracker: entering 操場 fires one event") {
+TEST_CASE("BuildingTracker：進入操場發出一次事件") {
     EventBus::Instance().Clear();
     EventCapture cap;
     SubscribeBuilding(cap);
@@ -68,7 +68,7 @@ TEST_CASE("BuildingTracker: entering 操場 fires one event") {
 }
 
 // 停留同一棟內不再發事件。
-TEST_CASE("BuildingTracker: staying inside same building fires no further events") {
+TEST_CASE("BuildingTracker：停留同一棟建築內不再發事件") {
     EventBus::Instance().Clear();
     EventCapture cap;
     SubscribeBuilding(cap);
@@ -85,7 +85,7 @@ TEST_CASE("BuildingTracker: staying inside same building fires no further events
 }
 
 // 從操場走進體育館發出新事件。
-TEST_CASE("BuildingTracker: walking from 操場 into 體育館 fires a new event") {
+TEST_CASE("BuildingTracker：從操場走進體育館發出新事件") {
     EventBus::Instance().Clear();
     EventCapture cap;
     SubscribeBuilding(cap);
@@ -105,7 +105,7 @@ TEST_CASE("BuildingTracker: walking from 操場 into 體育館 fires a new event
 }
 
 // 走進空地會清除 Current() 且不發多餘事件。
-TEST_CASE("BuildingTracker: leaving into empty space clears Current() with no spurious event") {
+TEST_CASE("BuildingTracker：走進空地會清除 Current() 且不發多餘事件") {
     EventBus::Instance().Clear();
     EventCapture cap;
     SubscribeBuilding(cap);
@@ -130,7 +130,7 @@ TEST_CASE("BuildingTracker: leaving into empty space clears Current() with no sp
 // nccu::detail::NearestContaining helper 演練——與 Buildings.h 無關，且不受 Tiled 重新產生影響。
 
 // NearestContaining：矩形重疊時，中心較近者勝。
-TEST_CASE("NearestContaining: overlapping rects — nearer centre wins") {
+TEST_CASE("NearestContaining：矩形重疊時中心較近者勝") {
     const std::array<Building, 2> fix = {{
         {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // 中心 (100,100)
         {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // 中心 (200,200)
@@ -142,7 +142,7 @@ TEST_CASE("NearestContaining: overlapping rects — nearer centre wins") {
 }
 
 // 同樣的重疊，相反的點選到相反的建築。
-TEST_CASE("NearestContaining: same overlap, opposite points pick opposite buildings") {
+TEST_CASE("NearestContaining：同樣的重疊下相反的點選到相反的建築") {
     const std::array<Building, 2> fix = {{
         {"A", {  0.0f,   0.0f, 200.0f, 200.0f}, false, false}, // 中心 (100,100)
         {"B", {100.0f, 100.0f, 200.0f, 200.0f}, false, false}, // 中心 (200,200)
@@ -156,7 +156,7 @@ TEST_CASE("NearestContaining: same overlap, opposite points pick opposite buildi
 }
 
 // 完全等距的平手依名稱字典序決定。
-TEST_CASE("NearestContaining: exact equidistant tie breaks lexicographically by name") {
+TEST_CASE("NearestContaining：完全等距的平手依名稱字典序決定") {
     // 兩中心 (50,50) 與 (150,50)；(100,50) 落在其垂直平分線上 -> 距離平方相同 (2500)。矩形
     // 加寬，使 (100,50) 嚴格落在兩者內部（Rect::Contains 為半開，共用邊不算）。UTF-8 首位
     // 元組：法 0xE6 < 行 0xE8，故不論陣列順序，法學院都應勝出。

@@ -122,7 +122,7 @@ Outcome RunInteract(const char* npcId, int maxFrames,
 // 「碰到」苦主貼齊停住（不重疊），動詞必須仍能按 E 使對話開啟。苦主現位於綜合院館
 // (1660,1010)；RunInteract 先經缺口繞到他正南方、淨空的 x=1660 列上，故最後的貼齊靠近是
 // 沿 Y 軸（往北）、X 對齊。
-TEST_CASE("I6: harness `interact victim` opens the NPC dialog (flush-blocked)") {
+TEST_CASE("harness 的 `interact victim` 能開啟 NPC 對話（貼齊擋住時）") {
     World probe("", /*loadSprites=*/false);
     const GameObject* v = FindNpc(probe, "victim");
     REQUIRE(v != nullptr);
@@ -148,7 +148,7 @@ TEST_CASE("I6: harness `interact victim` opens the NPC dialog (flush-blocked)") 
 
 // 配套：繞行靠近 + 朝原點驅動是 (計畫步驟, World 快照) 的純函式，故同一缺口路線 +
 // `interact victim` 跑兩次會得到逐位元相同的軌跡（開啟格、最終位置）。
-TEST_CASE("I6: `interact` opens dialog deterministically (two runs identical)") {
+TEST_CASE("`interact` 確定性地開啟對話（兩次執行完全相同）") {
     const Outcome a = RunInteract("victim", 3000);
     const Outcome b = RunInteract("victim", 3000);
 

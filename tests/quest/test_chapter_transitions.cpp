@@ -50,7 +50,7 @@ SubscribeToLatest(std::string& latest) {
 } // namespace
 
 // 轉場提示字串表涵蓋每一個狀態（各章、幕間、四個結局）。
-TEST_CASE("ChapterTransitionToast string table covers every state") {
+TEST_CASE("ChapterTransitionToast 字串表涵蓋每一個狀態") {
     using nccu::ChapterTransitionToast;
     CHECK(ChapterTransitionToast(SemesterState::Chapter1_AddDrop)   == "✓ 進入第一章 加退選");
     CHECK(ChapterTransitionToast(SemesterState::Interlude_Market)   == "✓ 章節清關 — 進入幕間市集");
@@ -64,7 +64,7 @@ TEST_CASE("ChapterTransitionToast string table covers every state") {
 }
 
 // Ch1 經 UmbrellaClaimed 轉到幕間市集時，會發布清關提示。
-TEST_CASE("EventWiring Ch1 -> Interlude (UmbrellaClaimed) publishes toast") {
+TEST_CASE("EventWiring：Ch1 經 UmbrellaClaimed -> 幕間市集會發布提示") {
     EventBus::Instance().Clear();
     std::string last;
     auto sub = SubscribeToLatest(last);
@@ -82,7 +82,7 @@ TEST_CASE("EventWiring Ch1 -> Interlude (UmbrellaClaimed) publishes toast") {
 }
 
 // Ch2 清關經閘門轉到幕間市集時，會發布清關提示。
-TEST_CASE("ChapterGate Ch2 -> Interlude publishes toast") {
+TEST_CASE("ChapterGate：Ch2 -> 幕間市集會發布提示") {
     EventBus::Instance().Clear();
     std::string last;
     auto sub = SubscribeToLatest(last);
@@ -101,7 +101,7 @@ TEST_CASE("ChapterGate Ch2 -> Interlude publishes toast") {
 }
 
 // Ch3 清關（Flag_Ch3Cleared）經閘門轉到幕間市集時，會發布清關提示。
-TEST_CASE("ChapterGate Ch3 -> Interlude (Flag_Ch3Cleared) publishes toast") {
+TEST_CASE("ChapterGate：Ch3 經 Flag_Ch3Cleared -> 幕間市集會發布提示") {
     EventBus::Instance().Clear();
     std::string last;
     auto sub = SubscribeToLatest(last);
@@ -120,7 +120,7 @@ TEST_CASE("ChapterGate Ch3 -> Interlude (Flag_Ch3Cleared) publishes toast") {
 }
 
 // Ch3 經 TrueUmbrella 轉到幕間市集時，會發布清關提示。
-TEST_CASE("EventWiring Ch3 -> Interlude (TrueUmbrella) publishes toast") {
+TEST_CASE("EventWiring：Ch3 經 TrueUmbrella -> 幕間市集會發布提示") {
     EventBus::Instance().Clear();
     std::string last;
     auto sub = SubscribeToLatest(last);
@@ -139,12 +139,12 @@ TEST_CASE("EventWiring Ch3 -> Interlude (TrueUmbrella) publishes toast") {
 }
 
 // 離開幕間市集時，會依 returnTo 發布對應目的章節的提示（Ch2/Ch3/Ch4）。
-TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
+TEST_CASE("ChapterGate：幕間市集 -> returnTo 會發布目的章節提示") {
     // 注意：測試套件的 EventBus 隔離機制會在每個 subcase 邊界呼叫
     // EventBus::Clear()，因此訂閱必須建立在每個 SUBCASE 內——在 TEST_CASE
     // 範圍建立的 Subscribe 會在 SUBCASE 主體執行前就被清掉。
 
-    SUBCASE("returnTo = Ch2") {
+    SUBCASE("returnTo = Ch2（前往期中考）") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -157,7 +157,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
         CHECK(m.Current() == SemesterState::Chapter2_Midterms);
         CHECK(last == "✓ 進入第二章 期中考");
     }
-    SUBCASE("returnTo = Ch3") {
+    SUBCASE("returnTo = Ch3（前往運動會）") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -170,7 +170,7 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
         CHECK(m.Current() == SemesterState::Chapter3_SportsDay);
         CHECK(last == "✓ 進入第三章 運動會");
     }
-    SUBCASE("returnTo = Ch4") {
+    SUBCASE("returnTo = Ch4（前往期末考）") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -186,8 +186,8 @@ TEST_CASE("ChapterGate Interlude -> returnTo publishes destination toast") {
 }
 
 // Ch4 經結局閘門轉到 Ending A/B/C 時，都會發布「抵達結局」提示。
-TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
-    SUBCASE("Ending A path") {
+TEST_CASE("EndingGate：Ch4 -> Ending A/B/C 會發布「抵達結局」提示") {
+    SUBCASE("Ending A 路徑") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -201,7 +201,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         CHECK(m.Current() == SemesterState::Ending_A);
         CHECK(last == "✓ 抵達結局");
     }
-    SUBCASE("Ending B path (cursed umbrella)") {
+    SUBCASE("Ending B 路徑（詛咒傘）") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -213,7 +213,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
         CHECK(m.Current() == SemesterState::Ending_B);
         CHECK(last == "✓ 抵達結局");
     }
-    SUBCASE("Ending C path (ugly umbrella)") {
+    SUBCASE("Ending C 路徑（醜傘）") {
         std::string last;
         auto sub = SubscribeToLatest(last);
         SemesterStateMachine m;
@@ -228,7 +228,7 @@ TEST_CASE("EndingGate Ch4 -> Ending A/B/C publishes 抵達結局 toast") {
 }
 
 // 領取 TrueUmbrella 時，章節清關提示走 HUD 上方欄、雨傘撿取台詞走下方欄，兩欄同時存活、互不覆蓋、互不洩漏。
-TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
+TEST_CASE("TrueUmbrella::BeClaimed：章節提示走上方欄，撿取台詞走下方欄") {
     // 背景：先前兩個發布都寫進同一個單槽的 HUD 頻道——雨傘自己的 ShowMessage，
     // 以及 UmbrellaClaimed 訂閱者發出的章節清關 ShowMessage。後發布的那個才是
     // 玩家看到的，導致清關訊息蓋掉雨傘撿取台詞（或反之）。現在的做法是：
@@ -266,7 +266,7 @@ TEST_CASE("TrueUmbrella::BeClaimed: chapter toast Top, pickup line Bottom") {
 }
 
 // 端到端：接上 GameController 風格的接線後，轉場的 ShowMessage 會抵達 World 的上方 HUD 槽（View 讀取的位置）。
-TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
+TEST_CASE("HudMessage 訂閱者端到端收到轉場提示") {
     // 綜合檢查：接上 GameController 風格的接線後，轉場發出的 ShowMessage 會抵達
     // World 的上方 HUD 槽——也就是 View 讀取的那一面。章節提示路由到 HudSlot::Top，
     // 以便在同一幀也有下方槽的 ShowMessage（抵達提示、karma、撿取）時仍能存活。
@@ -293,7 +293,7 @@ TEST_CASE("HudMessage subscriber receives the transition toast end-to-end") {
 // semester=新章節但 npcs[]=舊章節的落差（七個主線轉場都會發生）。改由
 // SceneRouter::SettleRoster 在 Update 結尾呼叫，便關閉了這個落差窗口。本測試直接
 // 用 SceneRouter 釘住此契約（不需要 View／Harness），日後若退回 1 幀（或 2 幀）落差便會在此失敗。
-TEST_CASE("L8: roster follows FSM on the same frame as Transition()") {
+TEST_CASE("名冊在 Transition() 同一幀跟隨 FSM 更新") {
     nccu::World w("", /*loadSprites=*/false);
     nccu::SceneRouter r{w.Semester().Current()};
 
@@ -332,7 +332,7 @@ TEST_CASE("L8: roster follows FSM on the same frame as Transition()") {
 }
 
 // 走完完整七段主線，每一步都呼叫 SettleRoster，確認每次轉場都在同一幀呈現目的狀態的名冊、不殘留前一章 NPC。
-TEST_CASE("L8: every transition closes its npcs[] lag (full spine)") {
+TEST_CASE("每次轉場都關閉其 npcs[] 落差（完整主幹）") {
     // 走完七段主線——Ch1 → 幕間 → Ch2 → 幕間 → Ch3 → 幕間 → Ch4 → Ending_A——
     // 每一步都依正式版 Update 結尾的方式呼叫 SettleRoster。每一步都必須在同一幀
     // 呈現目的狀態的名冊。

@@ -11,7 +11,7 @@ using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 // target 接近世界中央時不被夾限。
-TEST_CASE("Camera2D::ClampToWorld: target near centre is unchanged") {
+TEST_CASE("Camera2D::ClampToWorld：target 接近世界中央時不被夾限") {
     Camera2D c;
     c.Follow(Vec2{1000.0f, 1000.0f}, Vec2{400.0f, 225.0f});
     c.ClampToWorld(Vec2{2048.0f, 2048.0f}, Vec2{800.0f, 450.0f});
@@ -20,7 +20,7 @@ TEST_CASE("Camera2D::ClampToWorld: target near centre is unchanged") {
 }
 
 // target 在世界原點時夾限至半個視口處（避免露出邊界外）。
-TEST_CASE("Camera2D::ClampToWorld: target at world origin clamps to half-viewport") {
+TEST_CASE("Camera2D::ClampToWorld：target 在世界原點時夾限至半個視口處") {
     Camera2D c;
     c.Follow(Vec2{0.0f, 0.0f}, Vec2{400.0f, 225.0f});
     c.ClampToWorld(Vec2{2048.0f, 2048.0f}, Vec2{800.0f, 450.0f});
@@ -29,7 +29,7 @@ TEST_CASE("Camera2D::ClampToWorld: target at world origin clamps to half-viewpor
 }
 
 // target 超出右下角時夾限至「世界 - 半視口」處。
-TEST_CASE("Camera2D::ClampToWorld: target past lower-right clamps to world - half-viewport") {
+TEST_CASE("Camera2D::ClampToWorld：target 超出右下角時夾限至「世界 - 半視口」處") {
     Camera2D c;
     c.Follow(Vec2{5000.0f, 5000.0f}, Vec2{400.0f, 225.0f});
     c.ClampToWorld(Vec2{2048.0f, 2048.0f}, Vec2{800.0f, 450.0f});
@@ -38,7 +38,7 @@ TEST_CASE("Camera2D::ClampToWorld: target past lower-right clamps to world - hal
 }
 
 // 世界比視口還小時，target 夾限至世界中點。
-TEST_CASE("Camera2D::ClampToWorld: world smaller than viewport pins target to world midpoint") {
+TEST_CASE("Camera2D::ClampToWorld：世界比視口還小時夾限至世界中點") {
     Camera2D c;
     c.Follow(Vec2{500.0f, 100.0f}, Vec2{400.0f, 225.0f});
     c.ClampToWorld(Vec2{200.0f, 100.0f}, Vec2{800.0f, 450.0f});
@@ -47,7 +47,7 @@ TEST_CASE("Camera2D::ClampToWorld: world smaller than viewport pins target to wo
 }
 
 // ClampToWorld 回傳 *this 以支援流暢式串接。
-TEST_CASE("Camera2D::ClampToWorld returns *this for fluent chaining") {
+TEST_CASE("Camera2D::ClampToWorld 回傳 *this 以支援流暢式串接") {
     Camera2D c;
     auto& ret = c.Follow(Vec2{0.0f, 0.0f}, Vec2{400.0f, 225.0f})
                  .ClampToWorld(Vec2{2048.0f, 2048.0f}, Vec2{800.0f, 450.0f});

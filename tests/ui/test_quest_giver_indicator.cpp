@@ -44,7 +44,7 @@ struct Spy final : nccu::engine::render::IRenderer {
 // 端不可見。下列測試固定此指示器輔助函式，避免回退。
 
 // 對任務發派者繪製面板與「!」字形。
-TEST_CASE("QuestGiverIndicator: draws a panel + glyph for a quest-giver") {
+TEST_CASE("QuestGiverIndicator：對任務發派者繪製面板與「!」字形") {
     Spy spy;
     // 位於世界座標 (400, 1860) 的 24x24 hitbox —— 對應苦主的生成座標。
     const nccu::engine::math::Rect hb{400.0f, 1860.0f, 24.0f, 24.0f};
@@ -71,7 +71,7 @@ TEST_CASE("QuestGiverIndicator: draws a panel + glyph for a quest-giver") {
 }
 
 // 指示器的佈局浮在 NPC 精靈頭頂上方。
-TEST_CASE("QuestGiverIndicator: layout floats above the NPC sprite top") {
+TEST_CASE("QuestGiverIndicator：佈局浮在 NPC 精靈頭頂上方") {
     // NPC::Render 把 32 高的精靈以底部對齊在 24 高的 hitbox 上：
     // spriteTopY = hitBox.y + hitBox.height - 32。指示器必須嚴格位於該 y 之上，
     // 並留有明顯間距（不與頭部重疊）。
@@ -94,7 +94,7 @@ TEST_CASE("QuestGiverIndicator: layout floats above the NPC sprite top") {
 }
 
 // 指示器佈局在世界座標中跟隨 hitbox。
-TEST_CASE("QuestGiverIndicator: layout tracks the hitbox in world space") {
+TEST_CASE("QuestGiverIndicator：佈局在世界座標中跟隨 hitbox") {
     // View 在 CameraScope 內繪製指示器，故此輔助函式必須產生世界座標 ——
     // 移動 NPC 時圖示必須在兩軸都位移相同的量。
     const auto A = nccu::LayoutQuestGiverIndicator(
@@ -110,7 +110,7 @@ TEST_CASE("QuestGiverIndicator: layout tracks the hitbox in world space") {
 }
 
 // NPC::IsQuestGiver 透過 GameObject 的虛擬分派回應。
-TEST_CASE("NPC::IsQuestGiver routes through GameObject virtual dispatch") {
+TEST_CASE("NPC::IsQuestGiver 透過 GameObject 虛擬分派回應") {
     // View 走訪 world.Objects()（GameObject&），透過虛擬基底詢問 IsQuestGiver()。
     // 生成時標記為 true 的 NPC 必須透過該基底參考回應 true —— 否則任何 NPC 的
     // 「!」標記都會悄悄永遠不出現。
@@ -129,7 +129,7 @@ TEST_CASE("NPC::IsQuestGiver routes through GameObject virtual dispatch") {
 }
 
 // 一般 GameObject 的 IsQuestGiver 預設為 false。
-TEST_CASE("Plain GameObject defaults IsQuestGiver to false") {
+TEST_CASE("一般 GameObject 的 IsQuestGiver 預設為 false") {
     // 基底類別預設必須維持 false，使道具、玩家、商人、裝飾物件與環境學生都不會
     // 畫出多餘的「!」。此處用非 NPC 的 GameObject 子類別證明繼承閉合性。
     // GameObject 已不再是肥介面（介面隔離的角色拆分已移除其 Update/Render/Interact

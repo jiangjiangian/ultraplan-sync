@@ -21,7 +21,7 @@ using nccu::SemesterState;
 // 解析到 chapter2.md 的「## NPC：圖書館管理員」段落。
 
 // Ch2 名冊應正好包含 chapter2.md 的 6 個 NPC，且 librarian 為任務給予者。
-TEST_CASE("ChapterNpcSpawns: Ch2 is the 6 chapter2.md NPCs") {
+TEST_CASE("ChapterNpcSpawns：Ch2 是 chapter2.md 的 6 個 NPC") {
     const auto& ch2 = nccu::ChapterNpcSpawns(SemesterState::Chapter2_Midterms);
     REQUIRE(ch2.size() == 6);
 
@@ -41,7 +41,7 @@ TEST_CASE("ChapterNpcSpawns: Ch2 is the 6 chapter2.md NPCs") {
 }
 
 // librarian 應能解析到 chapter2.md：有開場 (a)、不給 karma、不設旗標；其他章節則為空。
-TEST_CASE("DialogSource: librarian resolves to chapter2.md content") {
+TEST_CASE("DialogSource：librarian 解析到 chapter2.md 內容") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     const auto& subs =

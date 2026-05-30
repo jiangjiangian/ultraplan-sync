@@ -19,7 +19,7 @@
 using nccu::engine::math::Vec2;
 
 // 撿取詛咒傘會遞增污染值，但撿取當下 karma 不變；重複撿取具冪等性。
-TEST_CASE("P2: cursed pickup increments taint, leaves karma untouched at pickup") {
+TEST_CASE("撿取詛咒傘遞增 taint，撿取當下 karma 不變") {
     EventBus::Instance().Clear();
 
     Player p{Vec2{0.0f, 0.0f}};
@@ -43,7 +43,7 @@ TEST_CASE("P2: cursed pickup increments taint, leaves karma untouched at pickup"
 }
 
 // ApplyCursedTaintDecay 依 -5 * 污染值扣 karma；taint=0 時為空操作。
-TEST_CASE("P2: ApplyCursedTaintDecay bleeds -5 * taint, no-op at taint=0") {
+TEST_CASE("ApplyCursedTaintDecay 依 -5 * taint 扣 karma，taint=0 時為空操作") {
     EventBus::Instance().Clear();
 
     Player p{Vec2{0.0f, 0.0f}};
@@ -69,7 +69,7 @@ TEST_CASE("P2: ApplyCursedTaintDecay bleeds -5 * taint, no-op at taint=0") {
 }
 
 // 污染值在 SetHasUmbrella(false) 與章節重置後仍保留。
-TEST_CASE("P2: taint persists through SetHasUmbrella(false) / chapter resets") {
+TEST_CASE("taint 在 SetHasUmbrella(false) 與章節重置後仍保留") {
     EventBus::Instance().Clear();
 
     Player p{Vec2{0.0f, 0.0f}};
@@ -88,7 +88,7 @@ TEST_CASE("P2: taint persists through SetHasUmbrella(false) / chapter resets") {
 }
 
 // 扣減受 karma 地板值 -100 裁切。
-TEST_CASE("P2: decay clamps at the karma floor of -100") {
+TEST_CASE("扣減受 karma 地板值 -100 裁切") {
     EventBus::Instance().Clear();
 
     Player p{Vec2{0.0f, 0.0f}};

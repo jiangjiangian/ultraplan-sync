@@ -33,7 +33,7 @@ constexpr auto kCh2 = SemesterState::Chapter2_Midterms;
 }  // namespace
 
 // Ch4 結局只點亮助教，直到結算選擇定案（Flag_TaFinaleChoiceMade）後連助教也熄滅。
-TEST_CASE("Ch4IndicatorVisible: 助教 is the finale `!` until the choice is made") {
+TEST_CASE("Ch4IndicatorVisible：助教是結局的「!」，直到結算選擇定案") {
     Player p = MakePlayer();
     // 助教在進場時點亮——它是推進 Ending A/B/C 的那個 NPC。
     CHECK(nccu::Ch4IndicatorVisible("ta", p));
@@ -48,7 +48,7 @@ TEST_CASE("Ch4IndicatorVisible: 助教 is the finale `!` until the choice is mad
 }
 
 // 在 Ch4，助教即使名冊 isQuestGiver=false 也會亮（判定式以 npcId 為鍵，而非該旗標）。
-TEST_CASE("QuestIndicatorVisible Ch4: 助教 lights regardless of roster bit") {
+TEST_CASE("QuestIndicatorVisible Ch4：助教不論名冊旗標都會點亮") {
     // 核心：Ch4 名冊把助教標為 isQuestGiver=FALSE，但結局的「!」仍必須亮——
     // 判定式以 npcId 為鍵，而非該旗標。
     Player p = MakePlayer();
@@ -63,7 +63,7 @@ TEST_CASE("QuestIndicatorVisible Ch4: 助教 lights regardless of roster bit") {
 }
 
 // 在 Ch3，鏈頭 A 在跑圈前就點亮，而 isQuestGiver=false 的原型維持熄滅，不會冒出多餘的「!」。
-TEST_CASE("QuestIndicatorVisible Ch3: chain head lit pre-lap, archetypes dark") {
+TEST_CASE("QuestIndicatorVisible Ch3：鏈頭跑圈前點亮，原型維持熄滅") {
     Player p = MakePlayer();
     // A（任務給予者）從進場、跑圈前就點亮。
     CHECK(nccu::QuestIndicatorVisible("vendor_sausage_a",
@@ -80,7 +80,7 @@ TEST_CASE("QuestIndicatorVisible Ch3: chain head lit pre-lap, archetypes dark") 
 }
 
 // Ch1 主線是三步驟的「!」序列 苦主 → 西裝學長 → 苦主，一次只亮一個；學長雖在名冊中 isQuestGiver=false，仍必須在中間步驟點亮。
-TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
+TEST_CASE("Ch1 的「!」序列 苦主 -> 西裝學長 -> 苦主") {
     Player p = MakePlayer();
 
     // --- 步驟 1：承諾前只有苦主亮（給出引子）。---
@@ -125,7 +125,7 @@ TEST_CASE("G3: Ch1 `!` sequences 苦主 -> 西裝學長 -> 苦主") {
 }
 
 // Ch2 主線「!」依主線順序在圖書館管理員與學霸之間移動；學霸雖在名冊中 isQuestGiver=false 仍會亮。
-TEST_CASE("T3: QuestIndicatorVisible Ch2 sequences 管理員 -> 學霸") {
+TEST_CASE("QuestIndicatorVisible Ch2 的「!」序列 管理員 -> 學霸") {
     Player p = MakePlayer();
     // 進場：管理員（鏈頭）亮，學霸暗（引導玩家先找管理員）。
     CHECK(nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
@@ -153,7 +153,7 @@ TEST_CASE("T3: QuestIndicatorVisible Ch2 sequences 管理員 -> 學霸") {
 }
 
 // 非主線的 Ch2 NPC 維持其名冊旗標（閘門只對兩個主線 NPC 特例處理，其餘直接沿用 isQuestGiver）。
-TEST_CASE("T3: Ch2 non-spine NPC keeps its isQuestGiver bit") {
+TEST_CASE("Ch2 非主線 NPC 維持其 isQuestGiver 旗標") {
     Player p = MakePlayer();
     CHECK(nccu::Ch2IndicatorVisible("suit_senior", /*isQuestGiver=*/true, p));
     CHECK_FALSE(nccu::Ch2IndicatorVisible("suit_senior", /*isQuestGiver=*/false, p));

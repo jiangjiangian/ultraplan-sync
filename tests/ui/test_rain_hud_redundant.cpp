@@ -23,7 +23,7 @@
 using nccu::RainTierPrefix;
 
 // RainTierPrefix 依門檻回傳平靜／警告／危急三級前綴。
-TEST_CASE("D2 fix: RainTierPrefix returns calm/warn/crit by threshold") {
+TEST_CASE("RainTierPrefix 依門檻回傳平靜／警告／危急三級前綴") {
     // 低於 60：平靜 — 兩個空格。空格保留欄位，讓 "rain: NN%" 的數字仍與其他
     // HUD 行對齊。
     CHECK(RainTierPrefix(0.0f)   == "  ");
@@ -42,7 +42,7 @@ TEST_CASE("D2 fix: RainTierPrefix returns calm/warn/crit by threshold") {
 }
 
 // 不論哪一級，前綴都恰好佔 2 個可見字寬。
-TEST_CASE("D2 fix: the prefix is exactly 2 visible cells in every tier") {
+TEST_CASE("不論哪一級前綴都恰好佔 2 個可見字寬") {
     // 寬度不變量：雨量 HUD 行依固定欄距排版，故前綴不論等級都必須是固定的
     // 2 字寬（不縮成 "!"、也不拉成 "!!!"），以維持與上下方 karma／傘／金幣行的
     // 欄位對齊。
@@ -52,7 +52,7 @@ TEST_CASE("D2 fix: the prefix is exactly 2 visible cells in every tier") {
 }
 
 // 中等級的 HUD 行會帶有警告標記。
-TEST_CASE("D2 fix: a HUD line at mid tier carries the warn glyph") {
+TEST_CASE("中等級的 HUD 行帶有警告標記") {
     // 端到端形態：複製 View::Draw 組 rbuf 的 snprintf 呼叫，再檢查結果文字，
     // 確認此輔助函式能正確組進 View 使用的格式字串。
     constexpr float midTier = 70.0f;
@@ -67,7 +67,7 @@ TEST_CASE("D2 fix: a HUD line at mid tier carries the warn glyph") {
 }
 
 // 危急等級的 HUD 行會帶有 !! 標記。
-TEST_CASE("D2 fix: a HUD line at critical tier carries the !! glyph") {
+TEST_CASE("危急等級的 HUD 行帶有 !! 標記") {
     constexpr float critTier = 90.0f;
     const std::string_view tag = RainTierPrefix(critTier);
     char rbuf[40] = {0};

@@ -27,7 +27,7 @@
 // 空的空操作）必須回傳 null；保留的角色必須回傳可用的指標。全程不使用 dynamic_cast。
 
 // Player 扮演 Update + Draw，但不扮演 Interact（空操作已捨棄）。
-TEST_CASE("Player plays Update + Draw but NOT Interact (no-op dropped)") {
+TEST_CASE("Player 扮演 Update + Draw，但不扮演 Interact（空操作已捨棄）") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     GameObject& g = p;
     CHECK(g.AsUpdatable()    != nullptr);   // Update 有實作
@@ -36,7 +36,7 @@ TEST_CASE("Player plays Update + Draw but NOT Interact (no-op dropped)") {
 }
 
 // NPC 扮演全部三種角色。
-TEST_CASE("NPC plays all three roles") {
+TEST_CASE("NPC 扮演全部三種角色") {
     NPC n{nccu::engine::math::Vec2{0, 0}, std::vector<std::string>{"hi"}};
     GameObject& g = n;
     CHECK(g.AsUpdatable()    != nullptr);
@@ -45,7 +45,7 @@ TEST_CASE("NPC plays all three roles") {
 }
 
 // Vendor（NPC 子類）透過 WithRoles 繼承 NPC 的完整角色集。
-TEST_CASE("Vendor (NPC subclass) inherits NPC's full role set via WithRoles") {
+TEST_CASE("Vendor（NPC 子類）透過 WithRoles 繼承 NPC 的完整角色集") {
     // 證明以 NPC 中介層為鍵的 WithRoles，對更衍生的葉節點也能正確分派：
     // Vendor IS-A NPC，因此存取器中的 static_cast<NPC*> 合法，三種角色皆能解析。
     VendorConfig cfg;
@@ -59,7 +59,7 @@ TEST_CASE("Vendor (NPC subclass) inherits NPC's full role set via WithRoles") {
 }
 
 // ConsumableItem 只扮演 Interact（Update + Render 空操作已捨棄）。
-TEST_CASE("ConsumableItem plays Interact ONLY (Update + Render no-ops dropped)") {
+TEST_CASE("ConsumableItem 只扮演 Interact（Update + Render 空操作已捨棄）") {
     HotPack pack{nccu::engine::math::Vec2{0, 0}};
     GameObject& g = pack;
     CHECK(g.AsUpdatable()    == nullptr);    // 舊的 Update 內容為空
@@ -74,7 +74,7 @@ TEST_CASE("ConsumableItem plays Interact ONLY (Update + Render no-ops dropped)")
 }
 
 // 雨傘扮演 Draw + Interact，但不扮演 Update（空操作已捨棄）。
-TEST_CASE("Umbrella plays Draw + Interact but NOT Update (no-op dropped)") {
+TEST_CASE("雨傘扮演 Draw + Interact，但不扮演 Update（空操作已捨棄）") {
     TrueUmbrella u{nccu::engine::math::Vec2{0, 0}};
     GameObject& g = u;
     CHECK(g.AsUpdatable()    == nullptr);    // 舊的 Update 內容為空
@@ -83,7 +83,7 @@ TEST_CASE("Umbrella plays Draw + Interact but NOT Update (no-op dropped)") {
 }
 
 // 金錢／任務拾取物扮演 Draw + Interact，但不扮演 Update。
-TEST_CASE("Cash / quest pickups play Draw + Interact but NOT Update") {
+TEST_CASE("金錢／任務拾取物扮演 Draw + Interact，但不扮演 Update") {
     CashPickup cash{nccu::engine::math::Vec2{0, 0}, 50};
     GameObject& gc = cash;
     CHECK(gc.AsUpdatable()    == nullptr);
@@ -98,7 +98,7 @@ TEST_CASE("Cash / quest pickups play Draw + Interact but NOT Update") {
 }
 
 // 純粹的 GameObject 子類不扮演任何角色。
-TEST_CASE("A bare GameObject subclass plays no roles") {
+TEST_CASE("純粹的 GameObject 子類不扮演任何角色") {
     struct Bare final : GameObject {
         Bare() : GameObject(nccu::engine::math::Vec2{0, 0}, nccu::engine::math::Rect{0, 0, 1, 1}) {}
     };
@@ -110,7 +110,7 @@ TEST_CASE("A bare GameObject subclass plays no roles") {
 }
 
 // 靜態存取器回傳的指標確實能分派到具體覆寫。
-TEST_CASE("The static accessor returns a pointer that really dispatches") {
+TEST_CASE("靜態存取器回傳的指標確實能分派到具體覆寫") {
     // 不只是非 null：回傳的 IInteractable* 必須能呼叫到具體覆寫。
     // QuestFlagPickup 在 Interact 時會設定自己的旗標。
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -124,7 +124,7 @@ TEST_CASE("The static accessor returns a pointer that really dispatches") {
 }
 
 // ForEachRole<IUpdatable> 只走訪會逐幀更新的物件。
-TEST_CASE("ForEachRole<IUpdatable> visits only the objects that tick") {
+TEST_CASE("ForEachRole<IUpdatable> 只走訪會逐幀更新的物件") {
     // 混合容器，正是場景容器的形狀。只有 Player 和 NPC 扮演 IUpdatable；
     // 雨傘／拾取物／消耗品必須被跳過（它們舊的 Update 是空的空操作）。
     std::vector<std::unique_ptr<GameObject>> objs;
@@ -148,7 +148,7 @@ TEST_CASE("ForEachRole<IUpdatable> visits only the objects that tick") {
 
 // ── IMortal（戰鬥相關的角色骨架）──────────────────────
 // Player 扮演 IMortal 角色；NPC／道具不扮演。
-TEST_CASE("Player plays the IMortal role; NPC / items do not") {
+TEST_CASE("Player 扮演 IMortal 角色；NPC／道具不扮演") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     GameObject& gp = p;
     CHECK(gp.AsMortal() != nullptr);         // 玩家有生命值
@@ -163,7 +163,7 @@ TEST_CASE("Player plays the IMortal role; NPC / items do not") {
 }
 
 // IMortal：TakeDamage 會降低 hp、裁切於 0、IsDead 翻轉。
-TEST_CASE("IMortal: TakeDamage lowers hp, clamps at 0, IsDead flips") {
+TEST_CASE("IMortal：TakeDamage 降低 hp、裁切於 0、IsDead 翻轉") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(p.Hp() == Player::kMaxHp);
     CHECK_FALSE(p.IsDead());
@@ -178,7 +178,7 @@ TEST_CASE("IMortal: TakeDamage lowers hp, clamps at 0, IsDead flips") {
 }
 
 // ForEachRole<IMortal> 只走訪有生命值的實體，並分派傷害。
-TEST_CASE("ForEachRole<IMortal> visits only mortal entities, dispatches damage") {
+TEST_CASE("ForEachRole<IMortal> 只走訪有生命值的實體並分派傷害") {
     std::vector<std::unique_ptr<GameObject>> objs;
     objs.push_back(std::make_unique<Player>(nccu::engine::math::Vec2{0, 0}));
     objs.push_back(std::make_unique<NPC>(nccu::engine::math::Vec2{0, 0},
@@ -194,7 +194,7 @@ TEST_CASE("ForEachRole<IMortal> visits only mortal entities, dispatches damage")
 
 // ── GetCollisionLayer：碰撞層位 ────────────────
 // GameObject 碰撞層位：預設為 0，可設定。
-TEST_CASE("GameObject collision layer: default 0, settable") {
+TEST_CASE("GameObject 碰撞層位：預設為 0，可設定") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     GameObject& g = p;
     CHECK(g.GetCollisionLayer() == 0);       // 預設層位

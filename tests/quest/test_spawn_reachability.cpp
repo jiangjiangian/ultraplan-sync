@@ -95,7 +95,7 @@ std::vector<Spot> GameplaySpots() {
 } // namespace
 
 // 每個遊戲生成點都必須可通行，且從玩家出生點以洪水填充可達（否則代表校園被封死或物件嵌牆）。
-TEST_CASE("every gameplay spawn is walkable and reachable from the player") {
+TEST_CASE("每個遊戲生成點都可通行且從玩家出生點可達") {
     const CollisionMask mask = nccu::LoadTerrainMask();
     if (mask.Empty()) {
         MESSAGE("terrain mask asset absent (untracked resources/) — "

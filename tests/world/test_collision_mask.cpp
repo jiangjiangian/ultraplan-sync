@@ -27,7 +27,7 @@ CollisionMask MakeWallMask() {
 } // namespace
 
 // 空遮罩處處可走。
-TEST_CASE("CollisionMask: empty mask is walkable everywhere") {
+TEST_CASE("CollisionMask：空遮罩處處可走") {
     const CollisionMask m;
     CHECK(m.Empty());
     CHECK_FALSE(m.Solid(0, 0));
@@ -36,7 +36,7 @@ TEST_CASE("CollisionMask: empty mask is walkable everywhere") {
 }
 
 // Solid() 回報已塗的格。
-TEST_CASE("CollisionMask: Solid() reports the painted cells") {
+TEST_CASE("CollisionMask：Solid() 回報已塗的格") {
     const CollisionMask m = MakeWallMask();
     CHECK_FALSE(m.Empty());
     CHECK_FALSE(m.Solid(29, 10));
@@ -49,7 +49,7 @@ TEST_CASE("CollisionMask: Solid() reports the painted cells") {
 }
 
 // BlockedBox 偵測壓在牆上的腳印。
-TEST_CASE("CollisionMask: BlockedBox catches a footprint over the wall") {
+TEST_CASE("CollisionMask：BlockedBox 偵測壓在牆上的腳印") {
     const CollisionMask m = MakeWallMask();
     CHECK_FALSE(m.BlockedBox(0.0f, 0.0f, 24.0f, 24.0f));   // 牆的西側
     CHECK(m.BlockedBox(20.0f, 0.0f, 24.0f, 24.0f));        // 跨在牆上
@@ -58,7 +58,7 @@ TEST_CASE("CollisionMask: BlockedBox catches a footprint over the wall") {
 }
 
 // ResolveMove：mask 為 nullptr 時保持「只看矩形」的舊行為。
-TEST_CASE("ResolveMove: nullptr mask preserves rect-only behaviour") {
+TEST_CASE("ResolveMove：mask 為 nullptr 時維持只看矩形的行為") {
     // 新的 mask 參數預設為 nullptr——既有呼叫端與舊有的 physics 測試行為須與先前完全相同。
     const Vec2 prev{0.0f, 0.0f};
     const Vec2 desired{10.0f, 0.0f};
@@ -70,7 +70,7 @@ TEST_CASE("ResolveMove: nullptr mask preserves rect-only behaviour") {
 }
 
 // 地形遮罩擋住 X 步，Y 仍可滑動。
-TEST_CASE("ResolveMove: terrain mask blocks the X step, Y still slides") {
+TEST_CASE("ResolveMove：地形遮罩擋住 X 步，Y 仍可滑動") {
     const CollisionMask m = MakeWallMask();
     const std::vector<Rect> none;
     const Vec2 size{24.0f, 24.0f};
@@ -84,7 +84,7 @@ TEST_CASE("ResolveMove: terrain mask blocks the X step, Y still slides") {
 }
 
 // 穿過遮罩的淨空通道可行走。
-TEST_CASE("ResolveMove: a clear lane through the mask is walkable") {
+TEST_CASE("ResolveMove：穿過遮罩的淨空通道可行走") {
     const CollisionMask m = MakeWallMask();
     const std::vector<Rect> none;
     const Vec2 size{20.0f, 20.0f};
@@ -97,7 +97,7 @@ TEST_CASE("ResolveMove: a clear lane through the mask is walkable") {
 }
 
 // 動態矩形與地形遮罩同時作用。
-TEST_CASE("ResolveMove: dynamic rect and terrain mask both apply") {
+TEST_CASE("ResolveMove：動態矩形與地形遮罩同時作用") {
     const CollisionMask m = MakeWallMask();
     const Vec2 size{24.0f, 24.0f};
     // 往下（y）朝某動態角色的碰撞箱移動：此欄遮罩淨空，但矩形擋住 Y 步。

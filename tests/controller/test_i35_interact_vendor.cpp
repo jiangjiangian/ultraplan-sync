@@ -111,7 +111,7 @@ bool WalkUpAndTalk(nccu::GameController& c, TestInput& in, World& w,
 
 // 玩家「走」（按住 Key::A/W）靠近 Ch1 苦主，被其移動碰撞箱貼齊擋住後按 E，對話必須開啟。
 // 若 E 探測框等同移動箱，貼齊停住時不會與 NPC 重疊，對話便永不開啟（整條主線在此卡死）。
-TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
+TEST_CASE("走近 Ch1 苦主後按 E 會開啟對話") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -153,7 +153,7 @@ TEST_CASE("I3: walking up to the Ch1 victim + E opens the dialog") {
 
 // 互動觸及範圍的修正不得開出「可穿越」的漏洞。玩家持續數格往苦主擠；碰撞箱必須讓玩家的
 // 箱永不嚴格重疊 NPC 的箱（貼齊可以，穿過不行）。
-TEST_CASE("I3: player still cannot walk through a static NPC") {
+TEST_CASE("玩家仍無法穿越靜止的 NPC") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -191,7 +191,7 @@ TEST_CASE("I3: player still cannot walk through a static NPC") {
 // 與 Vendor 互動必須經由選擇 UI 路由到 TryBuy。驅動 Ch4 集英樓攤位（販售醜傘，設定旗標
 // kFlagBoughtUglyUmbrella → 結局 C）。E 開啟購買選單、E 確認唯一的庫存項；購買事件觸發、
 // 扣錢、背包與結局旗標更新——全在 Vendor::TryBuy 內完成。
-TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
+TEST_CASE("與 Vendor 互動會路由到 TryBuy（Ch4 醜傘）") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
@@ -270,7 +270,7 @@ TEST_CASE("I5: Vendor interaction routes to TryBuy (Ch4 ugly umbrella)") {
 // 在 Ch2 自動販賣機買到；與學霸對話一次 -> 第一階段消耗飲料並喚醒他（kFlagBookworm，啟動
 // 撿筆記任務）；湊齊 3 份筆記後第二次對話 -> 第二階段交換（kFlagBookwormRecovered）；關閉
 // 道謝對話後，LiftChapter2Clear 設定 kFlagCh2Cleared。
-TEST_CASE("I5: Ch2 progression — buy EnergyDrink, wake 學霸, Flag_Ch2Cleared") {
+TEST_CASE("Ch2 主線進度 — 購買 EnergyDrink、喚醒學霸、Flag_Ch2Cleared") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();

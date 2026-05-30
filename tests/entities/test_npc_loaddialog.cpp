@@ -13,7 +13,7 @@
 using nccu::SemesterState;
 
 // LoadDialog 能載入 suit_senior 第一章 (a) 開場台詞。
-TEST_CASE("LoadDialog pulls suit_senior Ch1 (a) opening lines") {
+TEST_CASE("LoadDialog 載入 suit_senior 第一章 (a) 開場台詞") {
     NPC npc(nccu::engine::math::Vec2{0, 0}, {"placeholder"}, true);
     npc.LoadDialog("suit_senior", SemesterState::Chapter1_AddDrop, 0);
     CHECK(npc.DialogLineCount() == 5);
@@ -21,13 +21,13 @@ TEST_CASE("LoadDialog pulls suit_senior Ch1 (a) opening lines") {
           == std::string{"欸，加退選也沒搶到嗎？"});
 }
 
-TEST_CASE("LoadDialog on a missing key leaves dialog empty") {
+TEST_CASE("LoadDialog 遇到不存在的鍵時對話維持空白") {
     NPC npc(nccu::engine::math::Vec2{0, 0}, {"x"}, false);
     npc.LoadDialog("nobody", SemesterState::Ending_A, 0);
     CHECK(npc.DialogLineCount() == 0);
 }
 
-TEST_CASE("NPC exposes its lines via the GameObject::DialogLines virtual") {
+TEST_CASE("NPC 透過 GameObject::DialogLines 虛擬函式暴露其台詞") {
     NPC npc(nccu::engine::math::Vec2{0, 0}, {"hi", "there"}, true);
     GameObject& as_base = npc;
     const std::vector<std::string>* lines = as_base.DialogLines();

@@ -22,7 +22,7 @@ using nccu::engine::math::Vec2;
 // 防卡關不變量，並走一次與 GameController 每幀觸發相同的「旗標→轉移」路徑。
 
 // 南側帶狀區內的點視為在區內，北邊的點視為在區外。
-TEST_CASE("InterludeExit: south-band points are inside, north is outside") {
+TEST_CASE("InterludeExit：南側帶狀區內的點視為在區內，北邊視為在區外") {
     // 深入南側帶狀區的點。
     CHECK(nccu::InInterludeExitZone(Vec2{500.0f, 2000.0f}));
     CHECK(nccu::InInterludeExitZone(Vec2{1800.0f, 1905.0f}));
@@ -35,13 +35,13 @@ TEST_CASE("InterludeExit: south-band points are inside, north is outside") {
 }
 
 // 防卡關不變量：市集入口點不可落在出口區內。
-TEST_CASE("InterludeExit: the market entry point is NOT in the exit zone") {
+TEST_CASE("InterludeExit：市集入口點不可落在出口區內（防卡關）") {
     // 若一進市集就已在出口帶狀區內，玩家會立刻被彈回去而完全略過市集。
     CHECK_FALSE(nccu::InInterludeExitZone(nccu::kInterludeEntry));
 }
 
 // 踏入南側觸發區後，狀態機轉移到先前設定的 returnTo 章節。
-TEST_CASE("InterludeExit: entering the south zone routes to returnTo") {
+TEST_CASE("InterludeExit：踏入南側觸發區後轉移到 returnTo 章節") {
     SemesterStateMachine m;
     Player p{Vec2{0, 0}};
     nccu::DialogState d;

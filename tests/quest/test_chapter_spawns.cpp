@@ -66,7 +66,7 @@ std::size_t RosterCashCount(const World& w) {
 } // namespace
 
 // Ch1 資料表為 5 個原型，且與舊版 DefaultNpcSpawns() 逐欄相同；幕間市集與三個結局都沒有 NPC 名冊。
-TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") {
+TEST_CASE("ChapterNpcSpawns：Ch1 是 5 個原型；幕間市集與結局皆為空") {
     const auto& ch1 = ChapterNpcSpawns(SemesterState::Chapter1_AddDrop);
     std::set<std::string> ids;
     for (const auto& s : ch1) ids.insert(s.npcId);
@@ -96,7 +96,7 @@ TEST_CASE("ChapterNpcSpawns: Ch1 is the 5 archetypes; Interlude+endings empty") 
 }
 
 // World 建構子會生成 Ch1 名冊，且 Player 維持在物件清單最前端。
-TEST_CASE("World ctor spawns the Ch1 roster, Player stays at front") {
+TEST_CASE("World 建構子生成 Ch1 名冊，Player 維持在最前端") {
     World w("", /*loadSprites=*/false);
 
     REQUIRE_FALSE(w.Objects().empty());
@@ -110,7 +110,7 @@ TEST_CASE("World ctor spawns the Ch1 roster, Player stays at front") {
 }
 
 // RespawnChapterRoster 會抽換 NPC 名冊，但保住 Player 不變量；往返切換後完整名冊復原、非名冊物件不受影響。
-TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") {
+TEST_CASE("RespawnChapterRoster 抽換 NPC 名冊但保住 Player 不變量") {
     World w("", /*loadSprites=*/false);
 
     // 在任何抽換之前，先記下身分與「非章節物件」的數量。
@@ -166,7 +166,7 @@ TEST_CASE("RespawnChapterRoster swaps NPCs but preserves the Player invariant") 
 }
 
 // 對同一狀態重複呼叫 respawn 不會重複生成或洩漏 NPC。
-TEST_CASE("Repeated same-state respawn does not duplicate or leak NPCs") {
+TEST_CASE("對同一狀態重複 respawn 不會重複生成或洩漏 NPC") {
     World w("", /*loadSprites=*/false);
     const std::size_t total = w.Objects().size();
 

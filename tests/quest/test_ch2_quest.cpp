@@ -34,7 +34,7 @@ void GiveNotes(Player& p) {
 }  // namespace
 
 // Ch2 librarian 的 (b) 受叫醒旗標守門：學霸被叫醒後才切到 (b)（而非撿到筆記之後）。
-TEST_CASE("ResolveOpenerSubState: Ch2 librarian (b) gated on the wake flag") {
+TEST_CASE("ResolveOpenerSubState：Ch2 librarian 的 (b) 受叫醒旗標守門") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState(
               "librarian", SemesterState::Chapter2_Midterms, p) == 0);
@@ -46,7 +46,7 @@ TEST_CASE("ResolveOpenerSubState: Ch2 librarian (b) gated on the wake flag") {
 }
 
 // Ch2 bookworm 開場依進度推進：(a) 沉睡 → (c) 已叫醒 → (d) 已換回；Ch1 路由不受影響。
-TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a)->(c) woken->(d) recovered") {
+TEST_CASE("ResolveOpenerSubState：Ch2 bookworm 由 (a) 沉睡→(c) 已叫醒→(d) 已換回") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState(
               "bookworm", SemesterState::Chapter2_Midterms, p) == 0);  // (a)
@@ -64,7 +64,7 @@ TEST_CASE("ResolveOpenerSubState: Ch2 bookworm (a)->(c) woken->(d) recovered") {
 }
 
 // 叫醒步驟會消耗一瓶飲料；換回步驟需要三張筆記。完整走一遍叫醒→換回流程並驗證冪等性。
-TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
+TEST_CASE("TryRescueBookworm：叫醒步驟消耗飲料；換回步驟需要筆記") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     // 硬性關卡：學霸在見過圖書館管理員之前無法被叫醒。本案測的是叫醒／換回
@@ -109,7 +109,7 @@ TEST_CASE("TryRescueBookworm: wake step consumes drink; exchange needs notes") {
 }
 
 // 叫醒學霸時提神飲料是交出去的：背包數量恰好減一（不是檢查旗標、也不是全清）。持有兩瓶可證明只扣一瓶。
-TEST_CASE("B2.2: waking the 學霸 spends exactly one 提神飲料 from the bag") {
+TEST_CASE("叫醒學霸恰好從背包消耗一瓶提神飲料") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagMetLibrarian);                            // 已見鏈頭
@@ -128,7 +128,7 @@ TEST_CASE("B2.2: waking the 學霸 spends exactly one 提神飲料 from the bag"
 
 // 學霸被叫醒後（她的 (b) 狀態），圖書館管理員會借出管理員的傘：玩家持有借來的傘
 //（背包出現一行＋自動擋雨），但那不是真傘，因此 Ending A 的 Flag_HasTrueUmbrella 仍未設。重複對話不疊加。
-TEST_CASE("B2.3: 圖書館管理員 lends 管理員的傘 (held + shelter, NOT the true umbrella)") {
+TEST_CASE("圖書館管理員借出管理員的傘（手持並擋雨，但非真傘）") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
 
@@ -169,7 +169,7 @@ TEST_CASE("B2.3: 圖書館管理員 lends 管理員的傘 (held + shelter, NOT t
 }
 
 // 叫醒前即使持有三張筆記也不得觸發換回：沉睡的學霸（未設叫醒旗標）無法換回。
-TEST_CASE("TryRescueBookworm: notes BEFORE waking never trigger the exchange") {
+TEST_CASE("TryRescueBookworm：叫醒前持有筆記永不觸發換回") {
     // 守門驗證：即使三張筆記齊全，沉睡（未設叫醒旗標）的學霸也不能換回。
     // 沒有飲料時首次對話只會提示；在設下叫醒旗標前都無法換回。（正式版中
     // 筆記在叫醒前根本不會存在——World 守住其生成——但任務邏輯本身也必須拒絕換回。）
@@ -183,7 +183,7 @@ TEST_CASE("TryRescueBookworm: notes BEFORE waking never trigger the exchange") {
 }
 
 // LiftChapter2Clear 延後到「已換回且收尾對話關閉」之後才生效；章節不符時永不生效。
-TEST_CASE("LiftChapter2Clear: deferred behind recovery + a closed dialog") {
+TEST_CASE("LiftChapter2Clear：延後到已換回且對話關閉後才生效") {
     Player p = MakePlayer();
     nccu::DialogState d;
 
@@ -208,7 +208,7 @@ TEST_CASE("LiftChapter2Clear: deferred behind recovery + a closed dialog") {
 }
 
 // 硬性關卡：見過圖書館管理員（Flag_MetLibrarian）前學霸無法被叫醒——即使持飲料也只得到導向提示、不消耗也不叫醒；見過後同一個對話即可叫醒。
-TEST_CASE("A2: 學霸 cannot be woken before the 圖書館管理員 is met") {
+TEST_CASE("見過圖書館管理員前學霸無法被叫醒") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     p.AddConsumable("EnergyDrink");                       // 持有飲料……
@@ -236,7 +236,7 @@ TEST_CASE("A2: 學霸 cannot be woken before the 圖書館管理員 is met") {
 }
 
 // 對話面的同一關卡：見過管理員前，學霸對話被導向純台詞提示（無分支、無正常 (a) 重述）；見過後恢復正常路由。
-TEST_CASE("A2: 學霸 dialog redirects to the 管理員 until she is met") {
+TEST_CASE("見過管理員前學霸對話被導向她") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
     const auto Ch2 = SemesterState::Chapter2_Midterms;
@@ -260,7 +260,7 @@ TEST_CASE("A2: 學霸 dialog redirects to the 管理員 until she is met") {
 }
 
 // 換回學霸筆記（設下 Flag_BookwormRecovered 的那次交換）必須清掉三個筆記旗標，讓背包的任務紙張那一行消失。
-TEST_CASE("A3: returning the 學霸's notes clears the bag 任務紙張 row") {
+TEST_CASE("換回學霸筆記會清掉背包的任務紙張那一行") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagMetLibrarian);                  // 鏈頭
@@ -295,7 +295,7 @@ TEST_CASE("A3: returning the 學霸's notes clears the bag 任務紙張 row") {
 }
 
 // Ch2 主線端到端：見管理員→喝飲料叫醒→撿筆記→換回→清關，最後經閘門進入幕間市集並把 returnTo 設為 Ch3。
-TEST_CASE("Ch2 quest reaches the Interlude via the existing spine") {
+TEST_CASE("Ch2 主線經既有主幹抵達幕間市集") {
     EventBus::Instance().Clear();
     nccu::SemesterStateMachine m;
     Player p = MakePlayer();

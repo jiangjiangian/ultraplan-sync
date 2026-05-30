@@ -13,7 +13,7 @@
  */
 
 // Factory 建出的 Player 動態型別正確。
-TEST_CASE("Factory creates Player with correct dynamic type") {
+TEST_CASE("Factory 建出的 Player 動態型別正確") {
     auto obj = GameObjectFactory::Create(ObjectType::Player, {100, 100});
     REQUIRE(obj != nullptr);
     auto* p = dynamic_cast<Player*>(obj.get());
@@ -21,7 +21,7 @@ TEST_CASE("Factory creates Player with correct dynamic type") {
 }
 
 // Factory 建出的 TrueUmbrella 動態型別正確。
-TEST_CASE("Factory creates TrueUmbrella with correct dynamic type") {
+TEST_CASE("Factory 建出的 TrueUmbrella 動態型別正確") {
     auto obj = GameObjectFactory::Create(ObjectType::TrueUmbrella, {200, 200});
     REQUIRE(obj != nullptr);
     auto* u = dynamic_cast<TrueUmbrella*>(obj.get());
@@ -29,7 +29,7 @@ TEST_CASE("Factory creates TrueUmbrella with correct dynamic type") {
 }
 
 // Factory 建出的 FragileUmbrella 動態型別正確。
-TEST_CASE("Factory creates FragileUmbrella with correct dynamic type") {
+TEST_CASE("Factory 建出的 FragileUmbrella 動態型別正確") {
     auto obj = GameObjectFactory::Create(ObjectType::FragileUmbrella, {200, 200});
     REQUIRE(obj != nullptr);
     auto* u = dynamic_cast<FragileUmbrella*>(obj.get());
@@ -37,7 +37,7 @@ TEST_CASE("Factory creates FragileUmbrella with correct dynamic type") {
 }
 
 // Factory 建出的 ProfessorTrapUmbrella 動態型別正確。
-TEST_CASE("Factory creates ProfessorTrapUmbrella with correct dynamic type") {
+TEST_CASE("Factory 建出的 ProfessorTrapUmbrella 動態型別正確") {
     auto obj = GameObjectFactory::Create(ObjectType::ProfessorTrapUmbrella, {200, 200});
     REQUIRE(obj != nullptr);
     auto* u = dynamic_cast<ProfessorTrapUmbrella*>(obj.get());
@@ -45,7 +45,7 @@ TEST_CASE("Factory creates ProfessorTrapUmbrella with correct dynamic type") {
 }
 
 // Factory 建出的 CursedUmbrella 動態型別正確。
-TEST_CASE("Factory creates CursedUmbrella with correct dynamic type") {
+TEST_CASE("Factory 建出的 CursedUmbrella 動態型別正確") {
     auto obj = GameObjectFactory::Create(ObjectType::CursedUmbrella, {200, 200});
     REQUIRE(obj != nullptr);
     auto* u = dynamic_cast<CursedUmbrella*>(obj.get());
@@ -54,7 +54,7 @@ TEST_CASE("Factory creates CursedUmbrella with correct dynamic type") {
 
 // CursedUmbrella::BeClaimed 只增加 cursedTaint，業力延遲到後續章節進入時由
 // ApplyCursedTaintDecay 才扣減。
-TEST_CASE("CursedUmbrella BeClaimed bumps cursedTaint, defers karma to ApplyCursedTaintDecay") {
+TEST_CASE("CursedUmbrella BeClaimed 只增加 cursedTaint，業力延遲到 ApplyCursedTaintDecay") {
     // 撿取本身不影響業力；道德代價在每次進入新章節時透過 ApplyCursedTaintDecay
     //（-5 * taint）才落地。
     Player p({0, 0});

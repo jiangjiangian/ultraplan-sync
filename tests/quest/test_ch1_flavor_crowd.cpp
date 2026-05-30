@@ -59,7 +59,7 @@ const NPC* FindNpc(const World& w, const char* id) {
 } // namespace
 
 // Ch1 加退選搶課人潮會生成，且玩家在加入人潮後仍維持在 objects_ 的最前端，離開／往返章節皆守住此不變量。
-TEST_CASE("G-1: the Ch1 加退選搶課 crowd spawns and the Player stays at front") {
+TEST_CASE("Ch1 加退選搶課人潮會生成，且 Player 維持在最前端") {
     World w("", /*loadSprites=*/false);
 
     // 遊走的人潮填滿校園中央（即玩家所見的「搶課人潮」）；由 Chapter1CrowdSpawns 宣告這批。
@@ -83,7 +83,7 @@ TEST_CASE("G-1: the Ch1 加退選搶課 crowd spawns and the Player stays at fro
 }
 
 // Ch1 風味 NPC 是靜態、非任務、不在主線上的：在名冊中、非任務給予者（不畫「!」）、也不是主線原型。
-TEST_CASE("G-2: the Ch1 flavor NPCs are stationary, non-quest, off the spine") {
+TEST_CASE("Ch1 風味 NPC 為靜態、非任務、不在主線上") {
     World w("", /*loadSprites=*/false);
 
     // 每個宣告的風味 NPC 都在活動名冊中、不是任務給予者（因此永不畫「!」）、也不是主線原型。
@@ -103,7 +103,7 @@ TEST_CASE("G-2: the Ch1 flavor NPCs are stationary, non-quest, off the spine") {
 }
 
 // 風味 NPC 會以確定性的方式循環其台詞池、且不設任何旗標：兩輪序列相同、第二個同樣種子的 NPC 序列也相同。
-TEST_CASE("G-2: a flavor NPC cycles its pool DETERMINISTICALLY, sets no flag") {
+TEST_CASE("風味 NPC 以確定性方式循環台詞池，且不設任何旗標") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 

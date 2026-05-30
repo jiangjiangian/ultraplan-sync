@@ -23,7 +23,7 @@ constexpr auto kCh4 = SemesterState::Chapter4_Finals;
 }  // namespace
 
 // Ch4 西裝學長依 HelpedSenior 與 karma 分支到 (a)/(b)/(c)；無 HelpedSenior 時退化為 (a)。
-TEST_CASE("ResolveOpenerSubState: Ch4 西裝學長 splits by HelpedSenior + karma") {
+TEST_CASE("ResolveOpenerSubState：Ch4 西裝學長依 HelpedSenior 與 karma 分支") {
     Player p = MakePlayer();
     // 無 HelpedSenior -> (a)（不出場是已知的省略，退化處理）。
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh4, p) == 0);
@@ -45,7 +45,7 @@ TEST_CASE("ResolveOpenerSubState: Ch4 西裝學長 splits by HelpedSenior + karm
 }
 
 // Ch4 助教在 (b)/(c) 同時成立時 (b) 優先；並驗證 bookworm／victim 的路由分支。
-TEST_CASE("ResolveOpenerSubState: Ch4 助教 (b)/(c) precedence + bookworm/victim") {
+TEST_CASE("ResolveOpenerSubState：Ch4 助教 (b)/(c) 優先序，以及 bookworm/victim 路由") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("ta", kCh4, p) == 0);           // (a)
     p.SetFlag(nccu::kFlagHasProfessorTrap);
@@ -67,7 +67,7 @@ TEST_CASE("ResolveOpenerSubState: Ch4 助教 (b)/(c) precedence + bookworm/victi
 }
 
 // 路由到 Ch4 助教 (c) 時不得誤設 Flag_HelpedTA_Ch1，也不得誤改 karma。
-TEST_CASE("OpenNpcDialog: Ch4 助教 (c) routing must NOT spuriously set HelpedTA") {
+TEST_CASE("OpenNpcDialog：Ch4 助教 (c) 路由不得誤設 HelpedTA") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;
@@ -84,7 +84,7 @@ TEST_CASE("OpenNpcDialog: Ch4 助教 (c) routing must NOT spuriously set HelpedT
 }
 
 // Ch1 助教獎勵重述仍會生效（章節範圍守門完好）：驗證自動套用確有作用的不變量。
-TEST_CASE("OpenNpcDialog: Ch1 1b-3 ta reward recap still applies (guard intact)") {
+TEST_CASE("OpenNpcDialog：Ch1 助教獎勵重述仍會生效（守門完好）") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;

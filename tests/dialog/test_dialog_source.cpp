@@ -31,7 +31,7 @@ const nccu::dialog::SubEntry* Find(
 }  // namespace
 
 // Ch1 西裝學長解析出的四個子狀態與其 metadata 符合預期。
-TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
+TEST_CASE("DialogSource：Ch1 suit_senior 的四個子狀態與 metadata 符合預期") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     const auto& senior =
@@ -72,7 +72,7 @@ TEST_CASE("DialogSource: Ch1 suit_senior parity with codegen golden") {
 }
 
 // Ch1 助教獎勵子狀態的 metadata 符合預期。
-TEST_CASE("DialogSource: Ch1 ta reward substate parity") {
+TEST_CASE("DialogSource：Ch1 ta 獎勵子狀態的 metadata 符合預期") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     const auto& ta =
@@ -89,7 +89,7 @@ TEST_CASE("DialogSource: Ch1 ta reward substate parity") {
 }
 
 // 未知 npcId／未知區段時回傳空，且不丟例外。
-TEST_CASE("DialogSource: unknown npcId / unknown section -> empty, no throw") {
+TEST_CASE("DialogSource：未知 npcId／未知區段回傳空，且不丟例外") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     // 在有效且內容完整的章節上查未知的英文 id。
@@ -103,7 +103,7 @@ TEST_CASE("DialogSource: unknown npcId / unknown section -> empty, no throw") {
 }
 
 // Reload() 重建快取，資料不變。
-TEST_CASE("DialogSource: Reload() rebuilds the cache, data unchanged") {
+TEST_CASE("DialogSource：Reload() 重建快取，資料不變") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
 
     // 填入快取。

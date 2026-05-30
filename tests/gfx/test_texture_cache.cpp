@@ -22,7 +22,7 @@ namespace ng = nccu::engine::render;
 // 使用獨特的合成路徑，讓這些測試不受其他測試載入的影響。
 
 // 對同一路徑重複 Load 為命中（不重新載入）。
-TEST_CASE("Texture cache: repeated Load of one path is a hit (no re-load)") {
+TEST_CASE("Texture 快取：對同一路徑重複 Load 為命中（不重新載入）") {
     const std::string p = "test::__cache_probe_alpha.png";
 
     const std::size_t before = ng::TextureCacheSize();
@@ -41,7 +41,7 @@ TEST_CASE("Texture cache: repeated Load of one path is a hit (no re-load)") {
 }
 
 // 缺檔為乾淨的 no-op（契約不變）。
-TEST_CASE("Texture cache: a missing file is a clean no-op (unchanged contract)") {
+TEST_CASE("Texture 快取：缺檔為乾淨的 no-op（契約不變）") {
     // 無 GL／無此檔 -> 無效貼圖，與未加快取前完全相同。
     ng::Texture t = ng::Texture::Load("test::__definitely_absent_zzz.png");
     CHECK_FALSE(t.IsValid());
@@ -54,7 +54,7 @@ TEST_CASE("Texture cache: a missing file is a clean no-op (unchanged contract)")
 }
 
 // 不同路徑各新增恰好一筆。
-TEST_CASE("Texture cache: distinct paths each add exactly one entry") {
+TEST_CASE("Texture 快取：不同路徑各新增恰好一筆") {
     const std::size_t before = ng::TextureCacheSize();
     ng::Texture a = ng::Texture::Load("test::__cache_probe_beta.png");
     ng::Texture b = ng::Texture::Load("test::__cache_probe_gamma.png");
@@ -66,7 +66,7 @@ TEST_CASE("Texture cache: distinct paths each add exactly one entry") {
 }
 
 // PreloadTexture 預熱快取但不回傳 handle。
-TEST_CASE("Texture cache: PreloadTexture warms without returning a handle") {
+TEST_CASE("Texture 快取：PreloadTexture 預熱快取但不回傳 handle") {
     const std::string p = "test::__cache_preload_delta.png";
     const std::size_t before = ng::TextureCacheSize();
     ng::PreloadTexture(p);                 // 預熱

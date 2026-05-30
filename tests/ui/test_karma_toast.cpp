@@ -47,7 +47,7 @@ KarmaCapture CaptureKarma() {
 } // namespace
 
 // 每次 AddKarma 都發佈帶正負號差值文字的 KarmaChanged。
-TEST_CASE("AddKarma publishes KarmaChanged with signed delta text") {
+TEST_CASE("AddKarma 發佈帶正負號差值文字的 KarmaChanged") {
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
 
@@ -65,7 +65,7 @@ TEST_CASE("AddKarma publishes KarmaChanged with signed delta text") {
 }
 
 // decreaseKarma 經由 AddKarma 轉發，只發佈一次（不重複）。
-TEST_CASE("decreaseKarma forwards through AddKarma — single publish only") {
+TEST_CASE("decreaseKarma 經由 AddKarma 轉發——只發佈一次") {
     Player p{Vec2{0, 0}};
     auto cap = CaptureKarma();
 
@@ -77,7 +77,7 @@ TEST_CASE("decreaseKarma forwards through AddKarma — single publish only") {
 }
 
 // 詛咒傘的拾取本身不影響業力，故不發佈 KarmaChanged。
-TEST_CASE("P2: CursedUmbrella::BeClaimed publishes NO KarmaChanged (pickup is karma-neutral)") {
+TEST_CASE("CursedUmbrella::BeClaimed 不發佈 KarmaChanged（拾取不影響業力）") {
     // 業力代價已從拾取移到每章的 ApplyCursedTaintDecay（SceneRouter 進第二／三／
     // 四章時），故拾取本身發佈零個 KarmaChanged —— 可見的「業力 -5」橫幅改在下一個
     // 章節邊界出現，也就是道德污點真正累積之處。
@@ -99,7 +99,7 @@ TEST_CASE("P2: CursedUmbrella::BeClaimed publishes NO KarmaChanged (pickup is ka
 }
 
 // WireKarmaToastSubscriber 把 KarmaChanged 轉成 HUD 提示。
-TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
+TEST_CASE("WireKarmaToastSubscriber 把 KarmaChanged 轉成 HUD 提示") {
     // 端到端：AddKarma -> KarmaChanged -> WireKarmaToastSubscriber
     // -> ShowMessage -> WireHudMessageSubscriber -> World.HudMessage()。
     // 這是在單元測試行程內走過的完整正式接線（不需建構 GameController）。
@@ -107,7 +107,7 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
     // 註：EventBus 隔離報告器會在每個 subcase 邊界清空匯流排，故 Wire... 呼叫
     // 必須放在每個 SUBCASE 內 —— 在 TEST_CASE 層級的訂閱會在本體執行前就被清掉。
 
-    SUBCASE("positive delta -> 業力 +N") {
+    SUBCASE("正差值 → 業力 +N") {
         nccu::World w{"", /*loadSprites=*/false};
         nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
         nccu::WireKarmaToastSubscriber(EventBus::Instance());
@@ -119,7 +119,7 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
         CHECK(w.HudMessage().find("+5") != std::string::npos);
     }
 
-    SUBCASE("negative delta -> 業力 -N") {
+    SUBCASE("負差值 → 業力 -N") {
         nccu::World w{"", /*loadSprites=*/false};
         nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
         nccu::WireKarmaToastSubscriber(EventBus::Instance());
@@ -131,7 +131,7 @@ TEST_CASE("WireKarmaToastSubscriber turns KarmaChanged into HUD toast") {
         CHECK(w.HudMessage().find("-3") != std::string::npos);
     }
 
-    SUBCASE("AddKarma(0) emits no HUD toast") {
+    SUBCASE("AddKarma(0) 不發出 HUD 提示") {
         nccu::World w{"", /*loadSprites=*/false};
         nccu::WireHudMessageSubscriber(EventBus::Instance(), w);
         nccu::WireKarmaToastSubscriber(EventBus::Instance());

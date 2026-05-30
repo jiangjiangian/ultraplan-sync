@@ -74,7 +74,7 @@ const std::vector<std::string>& ViewLiterals() {
 } // namespace
 
 // 結局畫面的每個字形都已烘進字型圖集。
-TEST_CASE("5c: every ending-screen glyph is baked into the font atlas") {
+TEST_CASE("結局畫面的每個字形都烘進字型圖集") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> strs = nccu::EndingCardStrings();
     CHECK(strs.size() > 10);          // 確認：表確實有列舉內容
@@ -83,7 +83,7 @@ TEST_CASE("5c: every ending-screen glyph is baked into the font atlas") {
 }
 
 // 章節書擋大卡的每個字形都已烘進圖集。
-TEST_CASE("U1-T2: every chapter bookend big-card glyph is baked into the atlas") {
+TEST_CASE("章節書擋大卡的每個字形都烘進圖集") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> strs = nccu::ChapterCardStrings();
     CHECK(strs.size() >= 8);          // 4 對章節 Lost + 1 對 Found
@@ -92,7 +92,7 @@ TEST_CASE("U1-T2: every chapter bookend big-card glyph is baked into the atlas")
 }
 
 // 遊戲說明（GameHelp）的每個字形都已烘進圖集。
-TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {
+TEST_CASE("遊戲說明（GameHelp）的每個字形都烘進圖集") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string_view ln : nccu::kGameHelpLines)
         RequireAllCovered(atlas, std::string{ln}, "help-line");
@@ -102,7 +102,7 @@ TEST_CASE("5c: every 遊戲說明 (GameHelp) glyph is baked into the atlas") {
 
 // 說明現已分頁（kGameHelpPages）。連分頁視圖也一併掃描，使某行加到分頁中卻未同步到
 // 扁平 kGameHelpLines 的字形仍不致在畫面上變豆腐 —— 渲染器畫的是分頁。
-TEST_CASE("U2-T4: every paged 遊戲說明 glyph is baked into the atlas") {
+TEST_CASE("分頁後的遊戲說明每個字形都烘進圖集") {
     const std::vector<int> atlas = CollectCodepoints();
     CHECK(nccu::kGameHelpPageCount == 2);
     int pageNo = 0;
@@ -115,14 +115,14 @@ TEST_CASE("U2-T4: every paged 遊戲說明 glyph is baked into the atlas") {
 }
 
 // View.cpp 的每個 HUD/選單/物品欄字面字形都已烘入。
-TEST_CASE("5c: every View.cpp HUD/menu/inventory literal glyph is baked") {
+TEST_CASE("View.cpp 的每個 HUD／選單／物品欄字面字形都烘入") {
     const std::vector<int> atlas = CollectCodepoints();
     for (const std::string& s : ViewLiterals())
         RequireAllCovered(atlas, s, "view-literal");
 }
 
 // 每個 HUD 目標文字的字形都已烘入。
-TEST_CASE("T5: every HUD 目標 objective-text glyph is baked") {
+TEST_CASE("每個 HUD 目標文字的字形都烘入") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> objs = nccu::QuestObjectiveStrings();
     CHECK(objs.size() >= 9);          // 確認：每個章節／狀態都有列舉
@@ -131,7 +131,7 @@ TEST_CASE("T5: every HUD 目標 objective-text glyph is baked") {
 }
 
 // 每個道具表名稱與說明的字形都已烘入。
-TEST_CASE("T5: every ItemCatalog name + description glyph is baked") {
+TEST_CASE("每個 ItemCatalog 名稱與說明的字形都烘入") {
     const std::vector<int> atlas = CollectCodepoints();
     const std::vector<std::string> cat = nccu::CatalogStrings();
     CHECK(cat.size() > 10);           // 確認：道具表已攤平
@@ -140,7 +140,7 @@ TEST_CASE("T5: every ItemCatalog name + description glyph is baked") {
 }
 
 // 每個商人提示／訊息的字形都已烘入。
-TEST_CASE("T5: every Vendor toast / message glyph is baked") {
+TEST_CASE("每個 Vendor 提示／訊息的字形都烘入") {
     const std::vector<int> atlas = CollectCodepoints();
     namespace m = nccu::vendor::msg;
     const std::vector<std::string> v = {

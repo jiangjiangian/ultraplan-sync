@@ -47,7 +47,7 @@ struct MessageCapture {
 } // namespace
 
 // Interact 會發出預告訊息，且不會被消耗（維持啟用）。
-TEST_CASE("DlcSign Interact: publishes the teaser and is NOT consumed") {
+TEST_CASE("DlcSign Interact：發出預告訊息且不會被消耗") {
     MessageCapture cap;
     cap.Attach();
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -79,7 +79,7 @@ TEST_CASE("DlcSign Interact: publishes the teaser and is NOT consumed") {
 }
 
 // 角色與身分：扮演 IInteractable+IDrawable，但不是 NPC／Vendor。
-TEST_CASE("DlcSign roles + identity: IInteractable+IDrawable, no NPC/Vendor") {
+TEST_CASE("DlcSign 角色與身分：IInteractable+IDrawable，非 NPC／Vendor") {
     DlcSign sign{nccu::engine::math::Vec2{1305.0f, 88.0f}};
     GameObject& asObj = sign;   // 以異質容器的視角操作
 
@@ -99,7 +99,7 @@ TEST_CASE("DlcSign roles + identity: IInteractable+IDrawable, no NPC/Vendor") {
 }
 
 // 透過 GameObject& 分派 Interact（重現掃描路徑）。
-TEST_CASE("DlcSign dispatches its Interact through a GameObject& (sweep path)") {
+TEST_CASE("DlcSign 透過 GameObject& 分派 Interact（掃描路徑）") {
     MessageCapture cap;
     cap.Attach();
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -117,7 +117,7 @@ TEST_CASE("DlcSign dispatches its Interact through a GameObject& (sweep path)") 
 }
 
 // 只在 Chapter4_Finals 生成，離開該章時被清除。
-TEST_CASE("DlcSign spawns ONLY in Chapter4_Finals and is swept on exit") {
+TEST_CASE("DlcSign 只在 Chapter4_Finals 生成，離開該章時被清除") {
     EventBus::Instance().Clear();
     nccu::World w("", /*loadSprites=*/false);
 

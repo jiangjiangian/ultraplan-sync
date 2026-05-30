@@ -27,7 +27,7 @@ constexpr auto kCh4 = SemesterState::Chapter4_Finals;
 }  // namespace
 
 // 選擇體諒（Flag_ConsoledTA）後，輔助函式應同時授予 Flag_HasTrueUmbrella 與實際持傘，且具冪等性。
-TEST_CASE("T4: 體諒 (Flag_ConsoledTA) grants Flag_HasTrueUmbrella + HasUmbrella") {
+TEST_CASE("體諒（Flag_ConsoledTA）授予 Flag_HasTrueUmbrella 與 HasUmbrella") {
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagConsoledTA);                 // 選了體諒
     REQUIRE_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
@@ -43,8 +43,8 @@ TEST_CASE("T4: 體諒 (Flag_ConsoledTA) grants Flag_HasTrueUmbrella + HasUmbrell
 }
 
 // 強硬或尚未做的結局都拿不到傘：質問路徑與對象／章節不符時，溫柔授予一律無操作。
-TEST_CASE("T4: the harsh / unmade finale never gets the umbrella") {
-    SUBCASE("no 體諒 flag -> no grant (harsh 質問 path)") {
+TEST_CASE("強硬或尚未做的結局都拿不到傘") {
+    SUBCASE("無體諒旗標 -> 不授予（強硬質問路徑）") {
         Player p = MakePlayer();
         // 質問路徑：GameController 會設 Flag_TaFinaleChoiceMade，但
         // 不會設 Flag_ConsoledTA——因此溫柔授予必須無操作。
@@ -53,7 +53,7 @@ TEST_CASE("T4: the harsh / unmade finale never gets the umbrella") {
         CHECK_FALSE(p.HasFlag(nccu::kFlagHasTrueUmbrella));
         CHECK_FALSE(p.HasUmbrella());
     }
-    SUBCASE("wrong npc / wrong state -> no-op even with 體諒") {
+    SUBCASE("對象不符／章節不符 -> 即使有體諒也無操作") {
         Player p = MakePlayer();
         p.SetFlag(nccu::kFlagConsoledTA);
         nccu::TryGrantTaFinaleUmbrella(p, "victim", kCh4);          // 對象不符
@@ -64,7 +64,7 @@ TEST_CASE("T4: the harsh / unmade finale never gets the umbrella") {
 }
 
 // 體諒 + karma>80 不需隱藏傘即可抵達 Ending A：依 GameController 的確認順序端到端驗證。
-TEST_CASE("T4: 體諒 + karma>80 reaches Ending A WITHOUT the hidden umbrella") {
+TEST_CASE("體諒 + karma>80 不需隱藏傘即可抵達 Ending A") {
     // 完整走一遍溫柔路徑，依 GameController 確認時的實際順序：ApplyDialogChoice
     // 設 Flag_ConsoledTA（+15）、設 Flag_TaFinaleChoiceMade，接著
     // TryGrantTaFinaleUmbrella 授予持傘旗標，最後才跑 CheckEndingGates。
@@ -83,7 +83,7 @@ TEST_CASE("T4: 體諒 + karma>80 reaches Ending A WITHOUT the hidden umbrella") 
 }
 
 // 體諒但 karma<=80 的玩家仍會拿到傘，並落入苦樂參半的 Ending D，不會卡在 Ch4。
-TEST_CASE("T4/G1: a 體諒 player with karma<=80 still gets the umbrella (-> D, not stuck)") {
+TEST_CASE("體諒但 karma<=80 的玩家仍拿到傘（-> Ending D，不卡關）") {
     // 溫柔分支的授予是無條件的（不受 karma 閘門限制）；只有 Ending A 的
     // karma>80 閘門決定走 A 還是其他結局。體諒但未達 karma>80 的玩家會落入
     // 苦樂參半的 Ending D（風雨同行），絕不會卡在 Ch4。
@@ -99,7 +99,7 @@ TEST_CASE("T4/G1: a 體諒 player with karma<=80 still gets the umbrella (-> D, 
 }
 
 // 強硬質問（冷淡結局）即使高 karma 仍導向 Ending B 而非 A（沒有體諒就拿不到傘）。
-TEST_CASE("T4: harsh 質問 (coldFinale) still routes to Ending B, not A") {
+TEST_CASE("強硬質問（冷淡結局）仍導向 Ending B 而非 A") {
     // 強硬分支：高 karma 但沒有體諒。冷淡結局 =
     // Flag_TaFinaleChoiceMade && !Flag_ConsoledTA -> Ending B。
     // 溫柔授予因缺 ConsoledTA 而無操作，沒有傘，A 不可能達成。
@@ -116,8 +116,8 @@ TEST_CASE("T4: harsh 質問 (coldFinale) still routes to Ending B, not A") {
 }
 
 // 溫柔傘的改動不影響既有的 Ending B（詛咒傘）／Ending C（醜傘）路徑。
-TEST_CASE("T4: Ending B/C unaffected by the gentle-umbrella change") {
-    SUBCASE("cursed -> B regardless of the new helper") {
+TEST_CASE("溫柔傘的改動不影響既有的 Ending B/C") {
+    SUBCASE("詛咒傘 -> B，與新輔助函式無關") {
         nccu::SemesterStateMachine m; m.Transition(kCh4);
         Player p = MakePlayer(); nccu::DialogState d;
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
@@ -125,7 +125,7 @@ TEST_CASE("T4: Ending B/C unaffected by the gentle-umbrella change") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
     }
-    SUBCASE("bought ugly -> C regardless of the new helper") {
+    SUBCASE("買過醜傘 -> C，與新輔助函式無關") {
         nccu::SemesterStateMachine m; m.Transition(kCh4);
         Player p = MakePlayer(); nccu::DialogState d;
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);

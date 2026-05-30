@@ -34,7 +34,7 @@ std::size_t CountTrueUmbrellas(const World& w) {
 }  // namespace
 
 // Ch3 真傘在揭露線索（Flag_KnowsUmbrellaLoc）前不生成，生成後位於體育館左側，且離開章節時隨名冊清除。
-TEST_CASE("T5: Ch3 TrueUmbrella defers until Flag_KnowsUmbrellaLoc, then sweeps") {
+TEST_CASE("Ch3 TrueUmbrella 延後到 Flag_KnowsUmbrellaLoc 後才生成，離開章節隨名冊清除") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
 
@@ -72,7 +72,7 @@ TEST_CASE("T5: Ch3 TrueUmbrella defers until Flag_KnowsUmbrellaLoc, then sweeps"
 }
 
 // Ch4 真傘仍在進場時就無條件生成在體育館後方（彩蛋路線），維持不變。
-TEST_CASE("T5: Ch4 TrueUmbrella still spawns at entry, behind the gym (unchanged)") {
+TEST_CASE("Ch4 TrueUmbrella 仍在進場時生成於體育館後方（維持不變）") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
 
@@ -96,7 +96,7 @@ TEST_CASE("T5: Ch4 TrueUmbrella still spawns at entry, behind the gym (unchanged
 }
 
 // MaybeSpawnChapter3Umbrella 在非 Ch3 章節一律無操作，即使已設線索旗標。
-TEST_CASE("T5: MaybeSpawnChapter3Umbrella is a no-op outside Ch3") {
+TEST_CASE("MaybeSpawnChapter3Umbrella 在非 Ch3 時為無操作") {
     EventBus::Instance().Clear();
     World w("", /*loadSprites=*/false);
     REQUIRE(w.GetPlayer() != nullptr);

@@ -15,14 +15,14 @@ using nccu::DialogChoice;
  */
 
 // 以空台詞 Open 是空操作（維持未啟用）。
-TEST_CASE("Open with empty lines is a no-op (stays inactive)") {
+TEST_CASE("以空台詞 Open 是空操作（維持未啟用）") {
     DialogState d;
     d.Open({});
     CHECK_FALSE(d.Active());
 }
 
 // Open 顯示第一行而非第二行（先顯示再推進）。
-TEST_CASE("Open shows the FIRST line, not the second (show-then-advance)") {
+TEST_CASE("Open 顯示第一行而非第二行（先顯示再推進）") {
     DialogState d;
     d.Open({"a", "b", "c"});
     CHECK(d.Active());
@@ -30,7 +30,7 @@ TEST_CASE("Open shows the FIRST line, not the second (show-then-advance)") {
 }
 
 // Advance 逐行推進後關閉（無選項）。
-TEST_CASE("Advance steps through lines then closes (no choices)") {
+TEST_CASE("Advance 逐行推進後關閉（無選項）") {
     DialogState d;
     d.Open({"a", "b"});
     CHECK(d.Advance() == nullptr);   // a -> b
@@ -40,13 +40,13 @@ TEST_CASE("Advance steps through lines then closes (no choices)") {
 }
 
 // 在未啟用狀態下 CurrentLine 為空，絕不會是未定義行為。
-TEST_CASE("CurrentLine on an inactive state is empty, never UB") {
+TEST_CASE("未啟用狀態下 CurrentLine 為空，絕不會是 UB") {
     DialogState d;
     CHECK(d.CurrentLine().empty());
 }
 
 // 台詞接著選項：推進過最後一行後進入選項模式。
-TEST_CASE("Lines then a choice: Advance past last line enters choice mode") {
+TEST_CASE("台詞接著選項：推進過最後一行後進入選項模式") {
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
@@ -61,7 +61,7 @@ TEST_CASE("Lines then a choice: Advance past last line enters choice mode") {
 }
 
 // MoveChoice 會裁切游標；在選項處 Advance 回傳被選中者並關閉。
-TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes") {
+TEST_CASE("MoveChoice 裁切游標；在選項處 Advance 回傳被選中者並關閉") {
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
@@ -82,7 +82,7 @@ TEST_CASE("MoveChoice clamps; Advance at choice returns the picked one + closes"
 }
 
 // 帶後續台詞的選項：確認後播放後續台詞，再關閉。
-TEST_CASE("Choice WITH nextLines: confirm plays the follow-up, then closes") {
+TEST_CASE("帶 nextLines 的選項：確認後播放後續台詞，再關閉") {
     DialogState d;
     std::vector<DialogChoice> ch{
         {"help", 5, nccu::kFlagPromisedVictim, true, {"c0", "c1"}},
@@ -103,7 +103,7 @@ TEST_CASE("Choice WITH nextLines: confirm plays the follow-up, then closes") {
 }
 
 // 回傳的選項指標在 Advance（含關閉）後仍可讀取（避免 use-after-free）。
-TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)") {
+TEST_CASE("回傳的選項指標在 Advance 後仍可讀取（UAF 回歸）") {
     DialogState d;
     std::vector<DialogChoice> ch{
         {"refuse", 0, "", false},
@@ -121,7 +121,7 @@ TEST_CASE("Returned choice pointer stays readable after Advance (UAF regression)
 }
 
 // ApplyDialogChoice 會改動玩家的 karma 與旗標。
-TEST_CASE("ApplyDialogChoice mutates player karma and flag") {
+TEST_CASE("ApplyDialogChoice 改動玩家的 karma 與旗標") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int before = p.GetKarma();
     nccu::DialogChoice c{"accept", -5, nccu::kFlagScoldedSenior, false};

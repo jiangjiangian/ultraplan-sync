@@ -69,7 +69,7 @@ const GameObject* FindVendor(const World& w) {
 // Ch4 集英樓攤位販售醜傘（售價 100，設定旗標 kFlagBoughtUglyUmbrella → 結局 C）。開啟選單、
 // 把游標移到結尾的「不買」項、確認：對話關閉且一切不變——錢包、背包、旗標、EventBus 皆不動。
 // 這是「不強迫購買」的保證。
-TEST_CASE("REQ#4: declining a vendor purchase mutates nothing") {
+TEST_CASE("拒絕向 Vendor 購買時不改變任何狀態") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();

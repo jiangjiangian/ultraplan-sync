@@ -78,7 +78,7 @@ void AdvanceToChoice(nccu::GameController& c, TestInput& in, World& w) {
 }  // namespace
 
 // 對助教結局選退出（我再想想…）不應改動任何狀態，且之後仍可重新開啟相同選單。
-TEST_CASE("1c: declining the 助教 finale (我再想想…) mutates nothing & re-opens") {
+TEST_CASE("拒絕助教結局（我再想想…）不改動任何狀態且可重新開啟") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();

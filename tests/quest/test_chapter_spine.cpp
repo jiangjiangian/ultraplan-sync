@@ -19,7 +19,7 @@ using nccu::SemesterState;
 // 完整走一遍可重入的章節主幹：Ch1 → 市 → Ch2 → 市 → Ch3 → 市 → Ch4。
 // 幕間市集會進入 3 次；returnTo 存在狀態機上（而非每次重建的
 // InterludeMarket 物件），負責把每次離開市集導向下一章。
-TEST_CASE("chapter spine: Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
+TEST_CASE("章節主幹：Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
     EventBus::Instance().Clear();
     SemesterStateMachine m;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -73,7 +73,7 @@ TEST_CASE("chapter spine: Ch1 -> 市 -> Ch2 -> 市 -> Ch3 -> 市 -> Ch4") {
 }
 
 // 重新進入市集而沒有新的離開旗標時，不得立刻退出（旗標只在離開時消耗一次）。
-TEST_CASE("chapter spine: re-entry does not instantly exit (flag consumed)") {
+TEST_CASE("章節主幹：重新進入市集不會立刻退出（旗標已消耗）") {
     SemesterStateMachine m;
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -93,7 +93,7 @@ TEST_CASE("chapter spine: re-entry does not instantly exit (flag consumed)") {
 }
 
 // 轉場時若仍有開啟中的對話，閘門應將其關閉，避免殘留在新章節。
-TEST_CASE("chapter spine: gate closes a still-active dialog on transition") {
+TEST_CASE("章節主幹：轉場時閘門會關閉仍開啟中的對話") {
     SemesterStateMachine m;
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -108,7 +108,7 @@ TEST_CASE("chapter spine: gate closes a still-active dialog on transition") {
 }
 
 // 沒有設任何旗標時，任一章節都不應發生轉場（守住誤觸條件）。
-TEST_CASE("chapter spine: no flags -> no transition at any chapter") {
+TEST_CASE("章節主幹：沒有任何旗標 -> 任一章節都不轉場") {
     SemesterStateMachine m;
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;

@@ -86,7 +86,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 // 暫停選單現有 6 列，游標環繞於 0..5。
-TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
+TEST_CASE("暫停選單現有 6 列，游標環繞於 0..5") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -128,7 +128,7 @@ TEST_CASE("9.E.3 (a) pause menu now has 6 rows, cursor wraps 0..5") {
 }
 
 // 在第 2 列按 Enter 會翻轉 World.ReducedMotion()。
-TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
+TEST_CASE("在第 2 列按 Enter 會翻轉 World.ReducedMotion()") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -177,7 +177,7 @@ TEST_CASE("9.E.3 (b) Enter on row 2 toggles World.ReducedMotion()") {
 }
 
 // 在第 3 列按 Enter 會翻轉 World.LargeTargets()。
-TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
+TEST_CASE("在第 3 列按 Enter 會翻轉 World.LargeTargets()") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
     unsetenv("UMBRELLA_REDUCED_MOTION");
@@ -225,7 +225,7 @@ TEST_CASE("9.E.3 (c) Enter on row 3 toggles World.LargeTargets()") {
 }
 
 // 列位移後，破壞性列仍對應正確的 AppAction。
-TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
+TEST_CASE("列位移後破壞性列仍正確對應 AppAction") {
     // 新的 6 列順序把重新開始由索引 2 → 4、離開由 3 → 5。兩者都固定：第 4 列的
     // 重新開始必須請求 AppAction::Restart（非 None、非 Quit）；第 5 列的離開必須
     // 請求 AppAction::Quit。純屬意圖 —— 實際動作由 main.cpp 外層迴圈執行；此處只
@@ -235,7 +235,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
     unsetenv("UMBRELLA_REDUCED_MOTION");
     unsetenv("UMBRELLA_LARGE_TARGETS");
 
-    SUBCASE("row 4 → Restart") {
+    SUBCASE("第 4 列 → Restart") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
@@ -261,7 +261,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
         nccu::engine::input::Input::SetSource(nullptr);
     }
 
-    SUBCASE("row 5 → Quit") {
+    SUBCASE("第 5 列 → Quit") {
         World world("", /*loadSprites=*/false);
         GameController controller{world, EventBus::Instance()};
         TestInput in;
@@ -288,7 +288,7 @@ TEST_CASE("9.E.3 (d) destructive rows still map correctly after the shift") {
 }
 
 // 選單只開於 M，絕不開於 ESC（ESC 是程式的離開鍵）。
-TEST_CASE("menu opens on M, never on ESC (ESC is the program quit key)") {
+TEST_CASE("選單只開於 M，絕不開於 ESC（ESC 是程式的離開鍵）") {
     // 暫停選單原本綁在 ESC 上切換。但 ESC 是 raylib 預設的離開鍵，main.cpp 的
     // WindowShouldClose 迴圈會因它而離開 —— 把選單綁在 ESC 也會在視窗關閉前閃現
     // 選單一幀。選單現在改在 M；GameController 從不讀取 ESC，故凍結中的 Update

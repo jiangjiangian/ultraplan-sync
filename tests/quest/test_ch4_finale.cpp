@@ -31,7 +31,7 @@ void StepToChoice(nccu::DialogState& d) {
 }  // namespace
 
 // 助教結算應呈現程式碼建構的「體諒／質問／退出」三選項；退出無任何副作用，體諒為 +15 並設 Ending A 鍵。
-TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問 menu") {
+TEST_CASE("Ch4 助教結算：呈現程式建構的「體諒／質問」選單") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;
@@ -60,7 +60,7 @@ TEST_CASE("S5e-2d: Ch4 助教 結算 presents the code-constructed 體諒/質問
 }
 
 // 質問分支是 -5 karma、不設旗標的路徑。
-TEST_CASE("S5e-2d: 質問 branch is the -5 / no-flag path") {
+TEST_CASE("質問分支是 -5 karma、不設旗標的路徑") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;
@@ -76,7 +76,7 @@ TEST_CASE("S5e-2d: 質問 branch is the -5 / no-flag path") {
 }
 
 // 結算選擇已定案（Flag_TaFinaleChoiceMade）後，再對話只剩純台詞重述，不再出現選單。
-TEST_CASE("S5e-2d: Flag_TaFinaleChoiceMade -> line-only recap (one-shot)") {
+TEST_CASE("Flag_TaFinaleChoiceMade -> 純台詞重述（單次）") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     p.SetFlag(nccu::kFlagTaFinaleChoiceMade);          // 選擇已定案
@@ -93,7 +93,7 @@ TEST_CASE("S5e-2d: Flag_TaFinaleChoiceMade -> line-only recap (one-shot)") {
 }
 
 // 體諒選擇端到端走完 Ending A：閘門會延遲到收尾台詞關閉後才結算到 A。
-TEST_CASE("S5e-2d: the 體諒 choice closes the Ending A path end-to-end") {
+TEST_CASE("體諒選擇端到端走完 Ending A 路徑") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     EventBus::Instance().Clear();
     Player p = MakePlayer();

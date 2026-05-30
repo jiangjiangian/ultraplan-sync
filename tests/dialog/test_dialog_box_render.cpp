@@ -30,7 +30,7 @@ struct Spy final : nccu::engine::render::IRenderer {
 } // namespace
 
 // 未啟用的對話不畫任何東西。
-TEST_CASE("Inactive dialog draws nothing") {
+TEST_CASE("未啟用的對話不畫任何東西") {
     nccu::DialogState d;
     Spy s;
     nccu::DrawDialog(s, d);
@@ -39,7 +39,7 @@ TEST_CASE("Inactive dialog draws nothing") {
 }
 
 // 啟用的單行對話會畫出面板與當前台詞文字。
-TEST_CASE("Active line dialog draws a panel + the current line text") {
+TEST_CASE("啟用的單行對話畫出面板與當前台詞文字") {
     nccu::DialogState d;
     d.Open({"hello"});
     Spy s;
@@ -50,7 +50,7 @@ TEST_CASE("Active line dialog draws a panel + the current line text") {
 }
 
 // 選項模式下每個選項各畫一段文字，被選中者前綴 "> "。
-TEST_CASE("Choice mode draws one text per option, selected prefixed '> '") {
+TEST_CASE("選項模式每個選項各畫一段文字，被選中者前綴 '> '") {
     nccu::DialogState d;
     d.Open({"intro"}, {{"refuse", 0, "", false},
                         {"accept", -5, "f", false}});

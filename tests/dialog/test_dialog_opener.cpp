@@ -16,7 +16,7 @@ using nccu::SemesterState;
  */
 
 // OpenNpcDialogSub 載入苦主 Ch1 (a) 開場白（純台詞）。
-TEST_CASE("OpenNpcDialogSub loads victim Ch1 (a) opener, line-only") {
+TEST_CASE("OpenNpcDialogSub 載入苦主 Ch1 (a) 開場白（純台詞）") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "victim", SemesterState::Chapter1_AddDrop, 0);
     CHECK(d.Active());
@@ -29,14 +29,14 @@ TEST_CASE("OpenNpcDialogSub loads victim Ch1 (a) opener, line-only") {
 }
 
 // OpenNpcDialogSub 遇到未知 npcId 時對話維持未啟用。
-TEST_CASE("OpenNpcDialogSub unknown npcId leaves dialog inactive") {
+TEST_CASE("OpenNpcDialogSub 遇到未知 npcId 時對話維持未啟用") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "nobody", SemesterState::Chapter1_AddDrop, 0);
     CHECK_FALSE(d.Active());
 }
 
 // OpenNpcDialogSub 載入西裝學長 Ch1 (a) 開場白的第一行。
-TEST_CASE("OpenNpcDialogSub suit_senior Ch1 (a) opener first line") {
+TEST_CASE("OpenNpcDialogSub 載入 suit_senior Ch1 (a) 開場白第一行") {
     DialogState d;
     nccu::OpenNpcDialogSub(d, "suit_senior",
                            SemesterState::Chapter1_AddDrop, 0);
@@ -45,7 +45,7 @@ TEST_CASE("OpenNpcDialogSub suit_senior Ch1 (a) opener first line") {
 }
 
 // 3 參數版 OpenNpcDialog：苦主 Ch1 顯示開場白與 2 個選項，選 (b) 後續播放。
-TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
+TEST_CASE("3 參數版 OpenNpcDialog 苦主 Ch1：開場白 + 2 選項，選 (b) 後續播放") {
     DialogState d;
     nccu::OpenNpcDialog(d, "victim", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
@@ -72,7 +72,7 @@ TEST_CASE("3-arg OpenNpcDialog victim Ch1: opener + 2 choices, (b) plays") {
 }
 
 // 3 參數版 OpenNpcDialog：福利社阿姨 Ch1 顯示開場白與買傘等選項。
-TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
+TEST_CASE("3 參數版 OpenNpcDialog 福利社阿姨 Ch1：開場白 + 買傘選項") {
     DialogState d;
     nccu::OpenNpcDialog(d, "shop_auntie", SemesterState::Chapter1_AddDrop);
     CHECK(d.Active());
@@ -100,7 +100,7 @@ TEST_CASE("3-arg OpenNpcDialog shop_auntie Ch1: opener + buy-umbrella choice") {
 // Ch1 福利社阿姨 (d) 請咖啡 選項是 Flag_BoughtCoffeeForAuntie_Ch1 的種子
 //（Ch1→Ch4 的支線）。選擇它必須設定該旗標並加 5 karma；少了 chapter1.md 的
 // (d) 子狀態與選項開場路徑，此選項就不存在，對其存在的 REQUIRE 會失敗。
-TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
+TEST_CASE("Ch1 福利社阿姨請咖啡選項種下 BoughtCoffeeForAuntie") {
     DialogState d;
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
@@ -127,7 +127,7 @@ TEST_CASE("B3: Ch1 shop_auntie coffee choice seeds BoughtCoffeeForAuntie") {
 // 不得重複加 5 karma（不能刷分）。守門邏輯在 ApplyDialogChoice（玩家已滿足
 // 的自設旗標選項是惰性的）。惰性的 (b)/(c) 風味選項（karma +0／無旗標）仍可
 // 重選——也驗證它們同樣不會改動 karma。
-TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
+TEST_CASE("福利社阿姨請咖啡是一次性的（不能重複刷 karma）") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p.GetKarma();
 
@@ -177,7 +177,7 @@ TEST_CASE("Item 5a: shop_auntie coffee is once-only (no karma re-farm)") {
 }
 
 // ResolveOpenerSubState：助教的開場子狀態由跑腿任務旗標決定。
-TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
+TEST_CASE("ResolveOpenerSubState：助教的開場子狀態由跑腿任務旗標決定") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("ta", Ch1, p) == 0);   // 初始
@@ -188,7 +188,7 @@ TEST_CASE("ResolveOpenerSubState: ta gated by fetch-quest flags") {
 }
 
 // ResolveOpenerSubState：苦主的回顧開場由承諾／給傘旗標決定。
-TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") {
+TEST_CASE("ResolveOpenerSubState：苦主的回顧開場由承諾／給傘旗標決定") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("victim", Ch1, p) == 0);  // (a) 初始
@@ -201,7 +201,7 @@ TEST_CASE("ResolveOpenerSubState: victim recap gated by promise / grant flags") 
 }
 
 // ResolveOpenerSubState：非任務 NPC 永遠是 subState 0。
-TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
+TEST_CASE("ResolveOpenerSubState：非任務 NPC 永遠是 subState 0") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK(nccu::ResolveOpenerSubState("bookworm", Ch1, p) == 0);
@@ -211,7 +211,7 @@ TEST_CASE("ResolveOpenerSubState: non-quest NPC always subState 0") {
 }
 
 // Player overload：助教獎勵的 karma／旗標只套用一次。
-TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
+TEST_CASE("Player 重載：助教獎勵的 karma／旗標只套用一次") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagFoundForm);
@@ -232,7 +232,7 @@ TEST_CASE("Player overload: ta reward applies karma/flag exactly once") {
 }
 
 // Player overload：助教在無旗標時是純台詞的開場。
-TEST_CASE("Player overload: ta with no flag is the line-only intro") {
+TEST_CASE("Player 重載：助教在無旗標時是純台詞的開場") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p2{nccu::engine::math::Vec2{0, 0}};
     const int k0 = p2.GetKarma();
@@ -246,7 +246,7 @@ TEST_CASE("Player overload: ta with no flag is the line-only intro") {
 }
 
 // Player overload：苦主在無旗標時仍會開啟 1b-2 的選項。
-TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
+TEST_CASE("Player 重載：苦主在無旗標時仍會開啟 1b-2 的選項") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     DialogState d;
@@ -259,7 +259,7 @@ TEST_CASE("Player overload: victim no flag still opens the 1b-2 choice") {
 }
 
 // Player overload：苦主在已有承諾旗標時是純台詞的回顧。
-TEST_CASE("Player overload: victim with promise flag is line-only recap") {
+TEST_CASE("Player 重載：苦主在已有承諾旗標時是純台詞的回顧") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.SetFlag(nccu::kFlagPromisedVictim);
@@ -282,7 +282,7 @@ TEST_CASE("Player overload: victim with promise flag is line-only recap") {
 //（Chapter2Quest 的 Ch2 ScoldedSenior 連鎖現在對 karma 中性）。關鍵旗標保留，
 // 沒有任何分支變死；只有定調與 karma 正負號改變。第一人稱視角：選項標籤不帶
 //「玩家」主詞。
-TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
+TEST_CASE("Ch1 suit_senior 選項 0 (b) 種下 Flag_ScoldedSenior（+3）") {
     const auto Ch1 = SemesterState::Chapter1_AddDrop;
     DialogState d;
     Player p{nccu::engine::math::Vec2{0, 0}};
@@ -324,7 +324,7 @@ TEST_CASE("T1/F2: Ch1 suit_senior choice 0 (b) seeds Flag_ScoldedSenior (+3)") {
 }
 
 // Ch2 西裝學長在 Flag_ScoldedSenior 時導向 (c) 冷淡分支。
-TEST_CASE("F2: Ch2 suit_senior routes to (c) cold when Flag_ScoldedSenior") {
+TEST_CASE("Ch2 suit_senior 在 Flag_ScoldedSenior 時導向 (c) 冷淡分支") {
     // 原本是只讀取而無設定者的旗標；Ch1 (b) 指正路徑會設定它，使此分支觸發。
     const auto Ch2 = SemesterState::Chapter2_Midterms;
     Player p{nccu::engine::math::Vec2{0, 0}};

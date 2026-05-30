@@ -23,7 +23,7 @@ constexpr auto kCh2 = SemesterState::Chapter2_Midterms;
 }  // namespace
 
 // Ch2 西裝學長的開場依 Ch1 漣漪旗標路由：預設 (a)、HelpedSenior→(b)、ScoldedSenior→(c)。
-TEST_CASE("ResolveOpenerSubState: Ch2 西裝學長 routes by Ch1 ripple flag") {
+TEST_CASE("ResolveOpenerSubState：Ch2 西裝學長依 Ch1 漣漪旗標路由") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("suit_senior", kCh2, p) == 0);  // (a)
     p.SetFlag(nccu::kFlagHelpedSenior);
@@ -35,7 +35,7 @@ TEST_CASE("ResolveOpenerSubState: Ch2 西裝學長 routes by Ch1 ripple flag") {
 }
 
 // Ch2 助教開場：HelpedTA→(b)，但同時持有 ProfessorTrap 時 (c) 取代 (a)/(b)；Ch1 路由不受影響。
-TEST_CASE("ResolveOpenerSubState: Ch2 助教 — ProfessorTrap outranks HelpedTA") {
+TEST_CASE("ResolveOpenerSubState：Ch2 助教 — ProfessorTrap 優先於 HelpedTA") {
     Player p = MakePlayer();
     CHECK(nccu::ResolveOpenerSubState("ta", kCh2, p) == 0);           // (a)
 
@@ -58,8 +58,8 @@ TEST_CASE("ResolveOpenerSubState: Ch2 助教 — ProfessorTrap outranks HelpedTA
 }
 
 // Ch2 漣漪每章只結算一次：學長 +3、學長保持距離為 karma 中性、助教 ProfTrap -10、助教 HelpedTA 純資訊不計分。
-TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
-    SUBCASE("西裝學長 HelpedSenior -> +3 once") {
+TEST_CASE("TryApplyCh2Ripple：每章 Ch2 恰好結算一次 ±3 / -10") {
+    SUBCASE("西裝學長 HelpedSenior -> +3 一次") {
         Player p = MakePlayer();
         const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHelpedSenior);
@@ -68,7 +68,7 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);   // 再次對話
         CHECK(p.GetKarma() == k0 + 3);                     // 不加倍
     }
-    SUBCASE("西裝學長 ScoldedSenior -> karma-neutral, key set once") {
+    SUBCASE("西裝學長 ScoldedSenior -> karma 中性，鍵只設一次") {
         // Ch1 (b) 的指正屬理性發言（+3），因此 Ch2 的「保持距離」漣漪不再用 -3
         // 把它扣回——此漣漪為 karma 中性（輕微尷尬，不是懲罰）。但仍會設下
         // 一次性鍵，讓這條支線只結算一次。
@@ -81,7 +81,7 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);
         CHECK(p.GetKarma() == k0);
     }
-    SUBCASE("助教 ProfessorTrap -> -10 once") {
+    SUBCASE("助教 ProfessorTrap -> -10 一次") {
         Player p = MakePlayer();
         const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHasProfessorTrap);
@@ -90,7 +90,7 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
         nccu::TryApplyCh2Ripple(p, "ta", kCh2);
         CHECK(p.GetKarma() == k0 - 10);
     }
-    SUBCASE("助教 HelpedTA only -> no karma, no key (info ripple)") {
+    SUBCASE("助教 僅 HelpedTA -> 不計 karma、不設鍵（純資訊漣漪）") {
         Player p = MakePlayer();
         const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHelpedTACh1);
@@ -98,7 +98,7 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
         CHECK(p.GetKarma() == k0);
         CHECK_FALSE(p.HasFlag(nccu::kFlagCh2RippledTA));
     }
-    SUBCASE("no ripple flag / wrong state / wrong npc -> no-op") {
+    SUBCASE("無漣漪旗標／章節不符／對象不符 -> 無操作") {
         Player p = MakePlayer();
         const int k0 = p.GetKarma();
         nccu::TryApplyCh2Ripple(p, "suit_senior", kCh2);          // 沒旗標
@@ -111,7 +111,7 @@ TEST_CASE("TryApplyCh2Ripple: lands ±3 / -10 exactly once per Ch2") {
 }
 
 // 開場的自動套用對已路由的漣漪不重複計分：開場加 0、實際 +3 只由 TryApplyCh2Ripple 結算一次。
-TEST_CASE("No double: opener auto-apply contributes nothing on a routed ripple") {
+TEST_CASE("不重複計分：開場自動套用對已路由的漣漪加 0") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     Player p = MakePlayer();
     nccu::DialogState d;

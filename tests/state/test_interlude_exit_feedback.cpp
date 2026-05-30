@@ -50,7 +50,7 @@ std::size_t Count(const std::vector<std::string>& v, const char* needle) {
 } // namespace
 
 // 固定南側帶狀區的判定，避免日後調整區域常數時悄悄讓整套測試失效。
-TEST_CASE("InInterludeExitZone: south band detection still pins") {
+TEST_CASE("InInterludeExitZone：固定南側帶狀區的判定") {
     // y=1910 是跨入帶狀區的第一幀；入口點（kInterludeEntry, y=1500）不在
     // 區內，因此玩家抵達時不會自動觸發。
     CHECK(nccu::InInterludeExitZone(Vec2{500.0f, 1910.0f}));
@@ -58,7 +58,7 @@ TEST_CASE("InInterludeExitZone: south band detection still pins") {
 }
 
 // 首次進入帶狀區會發佈一次提示，之後重複呼叫不再發佈（具冪等性）。
-TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
+TEST_CASE("MaybeAnnounceInterludeExit：首次發佈一次，之後具冪等性") {
     EventBus::Instance().Clear();
     std::vector<std::string> texts;
     auto sub = SubscribeToAll(texts);
@@ -80,7 +80,7 @@ TEST_CASE("MaybeAnnounceInterludeExit: publishes once, then idempotent") {
 }
 
 // 鎖存生命週期：每次進入幕間時重置，跨入帶狀區時再次觸發。
-TEST_CASE("Interlude-visit latch lifecycle: reset on entry, fire on cross") {
+TEST_CASE("幕間造訪 latch 生命週期：進入時重置，跨入帶狀區時觸發") {
     EventBus::Instance().Clear();
     std::vector<std::string> texts;
     auto sub = SubscribeToAll(texts);

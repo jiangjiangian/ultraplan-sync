@@ -46,7 +46,7 @@ bool HasColor(const CountingRenderer& s, nccu::engine::math::Color want) {
 
 // 任務物件的算繪是型別感知的：紙張類（申請書／筆記）畫白色紙張，苦主的傘畫
 // 共用的藍色雨傘圖形。任務物件只畫矩形，絕不畫 sprite 或文字（架構規則）。
-TEST_CASE("QuestFlagPickup::Render: a paper quest item draws a WHITE sheet") {
+TEST_CASE("QuestFlagPickup::Render：紙張類任務物件畫白色紙張") {
     QuestFlagPickup form(nccu::engine::math::Vec2{120.0f, 80.0f}, nccu::kFlagFoundForm);
     CountingRenderer spy;
     form.Render(spy);
@@ -60,7 +60,7 @@ TEST_CASE("QuestFlagPickup::Render: a paper quest item draws a WHITE sheet") {
 }
 
 // 苦主的透明傘畫成藍色雨傘圖形。
-TEST_CASE("QuestFlagPickup::Render: the 苦主 umbrella draws the BLUE umbrella glyph") {
+TEST_CASE("QuestFlagPickup::Render：苦主的透明傘畫成藍色雨傘圖形") {
     // Ch1 苦主的透明傘會設定 Flag_HasVictimUmbrella，必須算繪成真傘（藍色），
     // 與世界中的雨傘／結局卡片所用的是同一個共用圖形，而非黃色方塊。
     QuestFlagPickup umb(nccu::engine::math::Vec2{200.0f, 300.0f},

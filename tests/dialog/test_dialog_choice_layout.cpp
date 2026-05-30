@@ -53,7 +53,7 @@ nccu::DialogState OpenFinaleMenu() {
 } // namespace
 
 // Ch4 終局選單在寬對話框下每個選項算繪成一列。
-TEST_CASE("5b: Ch4 finale menu renders one row per option at the wide box") {
+TEST_CASE("Ch4 終局選單在寬對話框下每個選項算繪成一列") {
     nccu::DialogState d = OpenFinaleMenu();
     REQUIRE(d.AtChoice());
     REQUIRE(d.Choices().size() == 3);
@@ -72,7 +72,7 @@ TEST_CASE("5b: Ch4 finale menu renders one row per option at the wide box") {
 }
 
 // 恰好只有一個選項帶 "> " 被選中標記。
-TEST_CASE("5b: exactly one option carries the '> ' selected-row marker") {
+TEST_CASE("恰好只有一個選項帶 '> ' 被選中列標記") {
     nccu::DialogState d = OpenFinaleMenu();
     PosSpy s;
     nccu::DrawDialog(s, d);
@@ -87,7 +87,7 @@ TEST_CASE("5b: exactly one option carries the '> ' selected-row marker") {
 }
 
 // 被選中標記會跟著選項游標移動。
-TEST_CASE("5b: selected marker follows the choice cursor") {
+TEST_CASE("被選中標記跟著選項游標移動") {
     nccu::DialogState d = OpenFinaleMenu();
     d.MoveChoice(1);                     // 游標 -> 選項 1
     PosSpy s;
@@ -99,7 +99,7 @@ TEST_CASE("5b: selected marker follows the choice cursor") {
 }
 
 // 選項之間有額外間隔（非等距）。
-TEST_CASE("5b: an inter-choice gap separates options (not equal pitch)") {
+TEST_CASE("選項之間有額外間隔（非等距）") {
     nccu::DialogState d = OpenFinaleMenu();
     PosSpy s;
     nccu::DrawDialog(s, d);
@@ -114,7 +114,7 @@ TEST_CASE("5b: an inter-choice gap separates options (not equal pitch)") {
 }
 
 // 三個終局選項能容納於 110px 對話面板內。
-TEST_CASE("5b: three finale options fit inside the 110px dialog panel") {
+TEST_CASE("三個終局選項能容納於 110px 對話面板內") {
     nccu::DialogState d = OpenFinaleMenu();
     PosSpy s;
     nccu::DrawDialog(s, d);

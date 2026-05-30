@@ -255,8 +255,7 @@ std::string Hex(int cp) {
 // ---------------------------------------------------------------------------
 // (A) 掃描到的每個中文碼位都能被有效圖集涵蓋。
 // ---------------------------------------------------------------------------
-TEST_CASE("UI-B-1: every src/include literal + docs/content CJK glyph is in "
-          "the font atlas") {
+TEST_CASE("每個 src/include 字面與 docs/content 的中文字都在字型圖集中") {
     const std::set<int> ascii = [] {
         std::set<int> s;
         for (int c = 32; c <= 126; ++c) s.insert(c);
@@ -310,8 +309,7 @@ TEST_CASE("UI-B-1: every src/include literal + docs/content CJK glyph is in "
 // 這條使全新 clone 的後備路徑（docs/content 不存在）同樣防豆腐，也是抓出「敬」的
 // 那條。
 // ---------------------------------------------------------------------------
-TEST_CASE("UI-B-1: every source-literal-only glyph (absent from docs/content) "
-          "is baked into UiLiteralChars()") {
+TEST_CASE("每個僅出現在原始碼字面（不在 docs/content）的字形都烘進 UiLiteralChars()") {
     const std::set<int> ui      = UiLiteralCodepoints();
     const std::set<int> content = ScanContent();
     std::string diag;
@@ -336,7 +334,7 @@ TEST_CASE("UI-B-1: every source-literal-only glyph (absent from docs/content) "
 // 把先前缺漏的特定字形以具名方式固定，使粗心地退回 Font.h 區段時能以可讀的失敗
 // 被抓到，獨立於上面的廣泛掃描。「敬」是預告字。
 // ---------------------------------------------------------------------------
-TEST_CASE("UI-B-1: the previously-tofu source-literal glyphs are now baked") {
+TEST_CASE("先前變豆腐的原始碼字面字形現已烘入") {
     const std::set<int> ui = UiLiteralCodepoints();
     // 敬 刺 君 含 扶 毫 央 櫃 牽 羊 加上兩個中文彎引號 “ ”
     const std::string newlyBaked = "敬刺君含扶毫央櫃牽羊"

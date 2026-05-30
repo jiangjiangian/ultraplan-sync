@@ -63,7 +63,7 @@ void DirtyTheRun(World& w) {
 } // namespace
 
 // 重啟把 karma／金錢／旗標／消耗品重置為全新遊戲。
-TEST_CASE("Restart resets karma/money/flags/consumables to a fresh game") {
+TEST_CASE("重啟把業力／金錢／旗標／消耗品重置為全新遊戲") {
     // 第 1 輪：建立、弄髒，再用 RAII 拆掉此輪範圍。
     {
         World w("", /*loadSprites=*/false);
@@ -91,7 +91,7 @@ TEST_CASE("Restart resets karma/money/flags/consumables to a fresh game") {
 }
 
 // 重啟不會使 EventBus 處理器懸空，也不會重複訂閱。
-TEST_CASE("Restart does not dangle or double-subscribe EventBus handlers") {
+TEST_CASE("重啟不會使 EventBus 處理器懸空或重複訂閱") {
     // 外部計數探針。在每一輪 controller 解構子的 Clear() 之後，於該輪內重新訂閱，
     // 故它只計入當前這一輪的派送（eventbus_isolation 監聽器也會在 case 邊界清空，
     // 故第 0 輪也從乾淨狀態開始）。

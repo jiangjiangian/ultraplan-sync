@@ -68,7 +68,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 // 長按 E 超過 300 ms 會快速推進對話；連點 E（邊緣觸發）仍然可用。
-TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
+TEST_CASE("長按 E 超過 300 ms 快速推進對話；連點 E 仍然可用") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);    // 固定 60 fps 以求決定性
     EventBus::Instance().Clear();
 
@@ -84,7 +84,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
     REQUIRE(world.Dialog().Active());
     CHECK(world.Dialog().CurrentLine() == "L0");
 
-    SUBCASE("edge-E still steps once per tap (mash path preserved)") {
+    SUBCASE("連點 E 每次仍只推進一步（保留連點路徑）") {
         in.Tap(Key::E);
         Frame(controller, in);                       // L0 -> L1
         CHECK(world.Dialog().Active());
@@ -100,7 +100,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
         CHECK(world.Dialog().CurrentLine() == "L2");
     }
 
-    SUBCASE("hold-E for >= 300 ms then auto-advances on a frame guard") {
+    SUBCASE("長按 E 達 300 ms 後在幀守門下自動推進") {
         // 第 0 幀：按下 E（邊緣觸發）-> L0 推進到 L1。第一幀的按下走既有的邊緣
         // 路徑；按住計時從這一幀起開始累積（IsDown 為 true）。
         in.Hold(Key::E);
@@ -125,7 +125,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
         Frame(controller, in);
     }
 
-    SUBCASE("releasing E resets the hold timer; can't accumulate across presses") {
+    SUBCASE("放開 E 重置按住計時；不會跨次按下累積") {
         // 按住 10 幀（約 167 ms），放開，再按住——計時必須從 0 重新開始，
         // 不可接續先前的累積。
         in.Hold(Key::E);
@@ -157,7 +157,7 @@ TEST_CASE("H2 hold-E fast-advances dialog past 300 ms; edge-E still works") {
 }
 
 // 退格鍵強制讓 HUD 提示過期（跳過提示）。
-TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
+TEST_CASE("退格鍵強制讓 HUD 提示過期（跳過提示）") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
@@ -166,7 +166,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
     TestInput in;
     nccu::engine::input::Input::SetSource(&in);
 
-    SUBCASE("Backspace on a fresh toast snaps HudAge to kHudTtl") {
+    SUBCASE("對新提示按退格鍵把 HudAge 直接跳到 kHudTtl") {
         world.SetHudMessage("transient banner");
         REQUIRE_FALSE(world.HudMessage().empty());
         REQUIRE(world.HudAge() == doctest::Approx(0.0f));
@@ -182,7 +182,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         CHECK(world.HudAge() >= nccu::kHudTtl);
     }
 
-    SUBCASE("Backspace with no toast is a no-op (no spurious mutation)") {
+    SUBCASE("無提示時按退格鍵是空操作（不產生多餘改動）") {
         REQUIRE(world.HudMessage().empty());
         const float ageBefore = world.HudAge();
 
@@ -196,7 +196,7 @@ TEST_CASE("H2 Backspace force-expires the HUD toast (SC 2.2.2 skip-toast)") {
         CHECK_FALSE(world.HudExpired());
     }
 
-    SUBCASE("Backspace is gated by Backspace alone — Enter/E don't dismiss") {
+    SUBCASE("關閉只由退格鍵觸發——Enter／E 不會關閉") {
         world.SetHudMessage("transient banner");
         REQUIRE_FALSE(world.HudExpired());
 

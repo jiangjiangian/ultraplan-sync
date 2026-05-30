@@ -37,12 +37,12 @@ bool HasNpcId(const World& w, const char* id) {
 } // namespace
 
 // Flag_ScoldedSenior 應把西裝學長從 Ch4 名冊隱藏；若另有 Flag_HelpedSenior 則他回歸。
-TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
+TEST_CASE("Flag_ScoldedSenior 把 suit_senior 從 Ch4 隱藏") {
     World w("", /*loadSprites=*/false);
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    SUBCASE("ScoldedSenior alone removes suit_senior from Ch4") {
+    SUBCASE("僅 ScoldedSenior 會把 suit_senior 從 Ch4 移除") {
         p->SetFlag(nccu::kFlagScoldedSenior);
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
 
@@ -54,7 +54,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
         CHECK_FALSE(HasNpcId(w, "suit_senior"));
     }
 
-    SUBCASE("ScoldedSenior + HelpedSenior re-introduces suit_senior") {
+    SUBCASE("ScoldedSenior + HelpedSenior 讓 suit_senior 回歸") {
         // 玩家在 Ch2 修補了關係（回呼）。
         p->SetFlag(nccu::kFlagScoldedSenior);
         p->SetFlag(nccu::kFlagHelpedSenior);
@@ -67,7 +67,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
         CHECK(HasNpcId(w, "shop_auntie"));
     }
 
-    SUBCASE("Neither flag: default Ch4 roster has every archetype") {
+    SUBCASE("兩個旗標都沒有：預設 Ch4 名冊含全部原型") {
         // 沒翻臉也沒回呼——完整 5 個原型的高張力 Ch4。
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
 
@@ -78,7 +78,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
         CHECK(HasNpcId(w, "shop_auntie"));
     }
 
-    SUBCASE("HelpedSenior alone is the default — suit_senior stays") {
+    SUBCASE("僅 HelpedSenior 即為預設 — suit_senior 留下") {
         // 從未對學長翻臉的玩家應一直能見到他。
         p->SetFlag(nccu::kFlagHelpedSenior);
         w.RespawnChapterRoster(SemesterState::Chapter4_Finals);
@@ -88,7 +88,7 @@ TEST_CASE("M7: Flag_ScoldedSenior hides suit_senior from Ch4") {
 }
 
 // 過濾僅限 Ch4：Ch2／Ch3 仍保留 suit_senior，且來回切換章節不會造成名冊殘留。
-TEST_CASE("M7: filter is Ch4-only — other chapters keep suit_senior") {
+TEST_CASE("過濾僅限 Ch4 — 其他章節仍保留 suit_senior") {
     // Ch2／Ch3 名冊為了漣漪敘事仍包含 suit_senior（isQuestGiver=false）；
     // 即使旗標條件成立，此過濾也不得外溢到那些章節。
     World w("", /*loadSprites=*/false);

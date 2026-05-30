@@ -21,7 +21,7 @@ constexpr float kDt = 1.0f / 60.0f;   // harness 的固定步進
 }
 
 // 靜止型 NPC 永遠算繪 idle 格（col 1, row 0）。
-TEST_CASE("Stationary archetype NPC always renders the idle cell (col 1, row 0)") {
+TEST_CASE("靜止型 NPC 永遠算繪 idle 格（col 1, row 0）") {
     NPC npc(nccu::engine::math::Vec2{500.0f, 500.0f},
             std::vector<std::string>{"hi"}, /*isQuestGiver=*/true, "ta");
     // Before any Update.
@@ -34,7 +34,7 @@ TEST_CASE("Stationary archetype NPC always renders the idle cell (col 1, row 0)"
 }
 
 // 校慶繞圈跑者會播放行走動畫，並朝向其移動方向。
-TEST_CASE("校慶 circular runner walk-animates and faces its motion") {
+TEST_CASE("校慶繞圈跑者播放行走動畫，並朝向其移動方向") {
     NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});
     // 圓心放在起點下方，使第一個切線方向的步伐朝向已知方向；angularSpeed
     // 為正代表逆時針。
@@ -62,7 +62,7 @@ TEST_CASE("校慶 circular runner walk-animates and faces its motion") {
 }
 
 // 環境遊走 NPC 一旦真的移動，就會離開 idle 姿勢。
-TEST_CASE("Ambient wanderer leaves the idle pose once it actually moves") {
+TEST_CASE("環境遊走 NPC 一旦真的移動就離開 idle 姿勢") {
     NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});
     npc.EnableWander(/*speed=*/40.0f, /*seed=*/12345u);  // 決定性 PRNG
     // 未設定遊走遮罩，所以它在開闊地自由移動，大多數幀都會位移、行走動畫推進。
@@ -95,7 +95,7 @@ TEST_CASE("Ambient wanderer leaves the idle pose once it actually moves") {
 // 因此：
 //   * 修正後（facing = wanderDir_）：列維持 0（下），穩定、不抖。
 //   * 有 bug 時（facing = step）：列為 2（右），且會隨被擋軸交替而閃爍。
-TEST_CASE("A-T1: a wall-sliding wanderer holds ONE stable facing row (no jitter)") {
+TEST_CASE("貼牆滑行的遊走者維持單一穩定的朝向列（不抖動）") {
     constexpr float kEdge = 2048.0f - 24.0f;   // kSize - kPlayerHeight
     NPC npc(nccu::engine::math::Vec2{1500.0f, kEdge}, {});   // 緊貼地板
     npc.EnableWander(/*speed=*/40.0f, /*seed=*/51u);  // 第一個朝向 {1,1}
@@ -126,7 +126,7 @@ TEST_CASE("A-T1: a wall-sliding wanderer holds ONE stable facing row (no jitter)
 }
 
 // 暫停（無位移）的遊走者顯示 idle 欄。
-TEST_CASE("A paused wanderer (no displacement) shows the idle column") {
+TEST_CASE("暫停（無位移）的遊走者顯示 idle 欄") {
     // 製造停頓：建立一個遊走者，但只檢視淨位移為零的幀——那些幀必須算繪 idle
     // 欄（moving_ 為 false 時 Update 會把 animStep_ 重設為 0）。
     NPC npc(nccu::engine::math::Vec2{1000.0f, 1000.0f}, {});

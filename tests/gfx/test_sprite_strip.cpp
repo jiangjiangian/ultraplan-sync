@@ -28,7 +28,7 @@ static std::vector<int> Sample(int n, int ticks) {
 }
 
 // n=4 時產生來回三角序列 0,1,2,3,2,1,0,1,...；週期為 2*(n-1)=6 刻度。
-TEST_CASE("FrameAt: n=4 yields the ping-pong triangle 0,1,2,3,2,1,0,1,...") {
+TEST_CASE("FrameAt：n=4 時產生來回三角序列 0,1,2,3,2,1,0,1,...") {
     // 第 7 個取樣（索引 6）回到 0，之後循環重複。
     const std::vector<int> expected =
         {0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1};
@@ -36,7 +36,7 @@ TEST_CASE("FrameAt: n=4 yields the ping-pong triangle 0,1,2,3,2,1,0,1,...") {
 }
 
 // 頂點為 n-1，每個週期恰好碰到一次。
-TEST_CASE("FrameAt: apex is n-1 and is hit exactly once per period") {
+TEST_CASE("FrameAt：頂點為 n-1，每個週期恰好碰到一次") {
     // n=4：只有刻度 3（及 3 + 6k）回傳 3；鄰格皆為 2。
     CHECK(FrameAt(2.0, 4, 1.0) == 2);
     CHECK(FrameAt(3.0, 4, 1.0) == 3);   // 頂點
@@ -45,7 +45,7 @@ TEST_CASE("FrameAt: apex is n-1 and is hit exactly once per period") {
 }
 
 // 長時間取樣下索引永遠落在 [0, n-1]。
-TEST_CASE("FrameAt: never leaves [0, n-1] across a long span") {
+TEST_CASE("FrameAt：長時間取樣下索引永遠落在 [0, n-1]") {
     for (int n = 2; n <= 8; ++n) {
         for (int k = 0; k < 500; ++k) {
             const int f = FrameAt(static_cast<double>(k), n, 1.0);
@@ -56,13 +56,13 @@ TEST_CASE("FrameAt: never leaves [0, n-1] across a long span") {
 }
 
 // 兩格圖條來回 0,1,0,1,...（週期 2）。
-TEST_CASE("FrameAt: two-frame strip bounces 0,1,0,1,... (period 2)") {
+TEST_CASE("FrameAt：兩格圖條來回 0,1,0,1,...（週期 2）") {
     const std::vector<int> expected = {0, 1, 0, 1, 0, 1};
     CHECK(Sample(2, 6) == expected);
 }
 
 // 退化輸入皆安全且為全函式，一律回傳第 0 格。
-TEST_CASE("FrameAt: degenerate inputs are total and safe → frame 0") {
+TEST_CASE("FrameAt：退化輸入皆安全且為全函式，一律回傳第 0 格") {
     CHECK(FrameAt(5.0, 1, 6.0) == 0);    // 單格圖條即靜態
     CHECK(FrameAt(5.0, 0, 6.0) == 0);    // 無任何格
     CHECK(FrameAt(5.0, -3, 6.0) == 0);   // 無意義的格數
@@ -73,7 +73,7 @@ TEST_CASE("FrameAt: degenerate inputs are total and safe → frame 0") {
 }
 
 // 負時間也不會產生負索引。
-TEST_CASE("FrameAt: negative time never produces a negative index") {
+TEST_CASE("FrameAt：負時間也不會產生負索引") {
     for (int k = -50; k < 0; ++k) {
         const int f = FrameAt(static_cast<double>(k), 4, 1.0);
         CHECK(f >= 0);
@@ -82,7 +82,7 @@ TEST_CASE("FrameAt: negative time never produces a negative index") {
 }
 
 // fps 控制每格持續幾個刻度。
-TEST_CASE("FrameAt: fps controls how many ticks per frame advance") {
+TEST_CASE("FrameAt：fps 控制每格持續幾個刻度") {
     // fps=6 時每格持續 1/6 秒，故 t 在 [0,1/6) 為第 0 格、[1/6,2/6) 為第 1 格。
     CHECK(FrameAt(0.0,        8, 6.0) == 0);
     CHECK(FrameAt(0.10,       8, 6.0) == 0);   // 仍 < 1/6
@@ -91,7 +91,7 @@ TEST_CASE("FrameAt: fps controls how many ticks per frame advance") {
 }
 
 // StripSourceRect 由左至右切割水平圖條。
-TEST_CASE("StripSourceRect: slices a horizontal strip left-to-right") {
+TEST_CASE("StripSourceRect：由左至右切割水平圖條") {
     // 256x40 圖條共 8 格 -> 每格 32x40，沿 x 軸排列。
     const Rect r0 = StripSourceRect(0, 8, 256, 40);
     CHECK(r0.x == doctest::Approx(0.0f));
@@ -109,14 +109,14 @@ TEST_CASE("StripSourceRect: slices a horizontal strip left-to-right") {
 }
 
 // frameCount<=0 時退化為整張貼圖。
-TEST_CASE("StripSourceRect: frameCount<=0 degenerates to the whole texture") {
+TEST_CASE("StripSourceRect：frameCount<=0 時退化為整張貼圖") {
     const Rect r = StripSourceRect(0, 0, 100, 50);
     CHECK(r.width == doctest::Approx(100.0f));
     CHECK(r.height == doctest::Approx(50.0f));
 }
 
 // DecorationDestRect 以錨點置中，較長邊縮放為 drawScale。
-TEST_CASE("DecorationDestRect: centred on the anchor, longer side == drawScale") {
+TEST_CASE("DecorationDestRect：以錨點置中，較長邊縮放為 drawScale") {
     DecorationDef d{SemesterState::Chapter3_SportsDay, Vec2{100.0f, 200.0f},
                     "x", /*frameCount=*/8, /*drawScale=*/40.0f, /*fps=*/8.0};
     // 256x64 貼圖共 8 格 -> 一格 32x64；較長邊（64，高）縮放至 40 -> 比例 0.625 -> w=20, h=40。
@@ -129,7 +129,7 @@ TEST_CASE("DecorationDestRect: centred on the anchor, longer side == drawScale")
 }
 
 // 寬大於高的格子，將寬縮放為 drawScale。
-TEST_CASE("DecorationDestRect: wider-than-tall frame scales its width to drawScale") {
+TEST_CASE("DecorationDestRect：寬大於高的格子將寬縮放為 drawScale") {
     DecorationDef d{SemesterState::Chapter2_Midterms, Vec2{0.0f, 0.0f},
                     "x", /*frameCount=*/4, /*drawScale=*/80.0f, /*fps=*/6.0};
     // 400x50 貼圖共 4 格 -> 一格 100x50；較長邊為 100（寬）-> 比例 0.8 -> w=80, h=40。
@@ -139,7 +139,7 @@ TEST_CASE("DecorationDestRect: wider-than-tall frame scales its width to drawSca
 }
 
 // 釘住 kDecorations 裝飾物的擺放：chiikawa 在學霸附近、貓在綜院西側（避免被建築遮擋）。
-TEST_CASE("A-T2 kDecorations: chiikawa near the 學霸, cat WEST of the 綜院") {
+TEST_CASE("kDecorations：chiikawa 在學霸附近、貓在綜院西側") {
     // 此表是 View 讀取的唯一來源；釘住擺放位置與章節，讓誤改在此被攔下。
     //
     // 擺放理由：

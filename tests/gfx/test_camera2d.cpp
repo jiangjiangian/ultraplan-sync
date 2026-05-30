@@ -11,7 +11,7 @@ using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 // 預設值：offset/target/rotation 皆為零，zoom 為 1.0。
-TEST_CASE("Camera2D defaults: zero offset/target/rotation, zoom 1.0") {
+TEST_CASE("Camera2D 預設值：offset/target/rotation 皆為零，zoom 為 1.0") {
     Camera2D c;
     CHECK(c.offset.x   == doctest::Approx(0.0f));
     CHECK(c.offset.y   == doctest::Approx(0.0f));
@@ -22,7 +22,7 @@ TEST_CASE("Camera2D defaults: zero offset/target/rotation, zoom 1.0") {
 }
 
 // Follow 將 target 設為世界目標、offset 設為螢幕中心，並回傳 *this。
-TEST_CASE("Camera2D::Follow sets target = world target and offset = screen center") {
+TEST_CASE("Camera2D::Follow 將 target 設為世界目標、offset 設為螢幕中心") {
     Camera2D c;
     auto& ret = c.Follow(Vec2{1000.0f, 500.0f}, Vec2{400.0f, 225.0f});
     CHECK(&ret == &c);
@@ -33,7 +33,7 @@ TEST_CASE("Camera2D::Follow sets target = world target and offset = screen cente
 }
 
 // WithZoom 與 WithRotation 為可串接的流暢式設定器。
-TEST_CASE("Camera2D::WithZoom + WithRotation are fluent setters") {
+TEST_CASE("Camera2D::WithZoom 與 WithRotation 為可串接的流暢式設定器") {
     Camera2D c;
     auto& ret = c.WithZoom(2.0f).WithRotation(45.0f);
     CHECK(&ret == &c);

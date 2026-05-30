@@ -36,7 +36,7 @@ bool SubHasLine(std::string_view npc, int sub, const std::string& needle) {
 }  // namespace
 
 // 改寫後的 chapter2.md 反應式子狀態確實載入了對應台詞。
-TEST_CASE("B5: chapter2.md re-authored reactive substates load the line") {
+TEST_CASE("chapter2.md 改寫後的反應式子狀態確實載入對應台詞") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 
@@ -51,11 +51,11 @@ TEST_CASE("B5: chapter2.md re-authored reactive substates load the line") {
 }
 
 // Ch2 路由只在各自的旗標下才會抵達對應的反應式子狀態。
-TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
+TEST_CASE("Ch2 路由只在各自旗標下才抵達對應的反應式子狀態") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 
-    SUBCASE("學霸: cursed-umbrella -> (b), else (a)") {
+    SUBCASE("學霸：持詛咒傘 -> (b)，否則 (a)") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 0);  // (a)
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
@@ -64,13 +64,13 @@ TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
         p.SetFlag(nccu::kFlagBookwormRecovered);
         CHECK(nccu::ResolveOpenerSubState("bookworm", kCh2, p) == 3);  // (d)
     }
-    SUBCASE("福利社阿姨: ugly-umbrella -> (b), else (a)") {
+    SUBCASE("福利社阿姨：持醜傘 -> (b)，否則 (a)") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh2, p) == 0);
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
         CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh2, p) == 1);
     }
-    SUBCASE("苦主: promise -> (c); ugly-only -> (d); promise wins") {
+    SUBCASE("苦主：承諾 -> (c)；僅持醜傘 -> (d)；承諾勝出") {
         Player p = MakePlayer();
         CHECK(nccu::ResolveOpenerSubState("victim", kCh2, p) == 0);    // (a)
         p.SetFlag(nccu::kFlagBoughtUglyUmbrella);
@@ -81,11 +81,11 @@ TEST_CASE("B5: Ch2 routing reaches each reactive substate only for its flag") {
 }
 
 // OpenNpcDialog 端到端能開啟對應的反應式台詞（學霸詛咒 (b)、苦主承諾 (c)），且 (a) 預設不含詛咒台詞。
-TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
+TEST_CASE("OpenNpcDialog 端到端開啟對應的反應式台詞") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::dialog::Reload();
 
-    SUBCASE("學霸 cursed: first line is the routed (b) opener, line-only") {
+    SUBCASE("學霸詛咒：首行是路由到的 (b) 開場，純台詞") {
         Player p = MakePlayer();
         // 硬性關卡：學霸在見到圖書館管理員（Flag_MetLibrarian）前是無法互動的——
         // 一開始找他只會看到他趴著，並有提示指向櫃台。先見過管理員，這個子案例
@@ -104,7 +104,7 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
         }
         CHECK(sawCursed);                                     // 台詞有顯示
     }
-    SUBCASE("苦主 promise: (c) recap reaches the callback line") {
+    SUBCASE("苦主承諾：(c) 重述會抵達回呼台詞") {
         Player p = MakePlayer();
         p.SetFlag(nccu::kFlagPromisedVictim);
         nccu::DialogState d;
@@ -119,7 +119,7 @@ TEST_CASE("B5: OpenNpcDialog opens the reactive line end-to-end") {
         }
         CHECK(sawPromise);
     }
-    SUBCASE("no flag: 學霸 default (a) has NO cursed line") {
+    SUBCASE("無旗標：學霸預設 (a) 不含詛咒台詞") {
         Player p = MakePlayer();
         nccu::DialogState d;
         nccu::OpenNpcDialog(d, p, "bookworm", kCh2);

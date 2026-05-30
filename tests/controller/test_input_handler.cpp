@@ -71,7 +71,7 @@ constexpr float kFrameDt = 1.0f / 60.0f;       // 約 16.67 ms——固定值
 } // namespace
 
 // 單格 tap 的 edge-E 觸發一次推進。
-TEST_CASE("InputHandler: edge-E fires advance on a one-frame tap") {
+TEST_CASE("InputHandler：單格 tap 的 edge-E 觸發一次推進") {
     StubInput stub;
     ScopedInputSource scope(&stub);
     nccu::InputHandler ih;
@@ -91,7 +91,7 @@ TEST_CASE("InputHandler: edge-E fires advance on a one-frame tap") {
 }
 
 // 長按 E 未滿 300 ms 不會自動推進。
-TEST_CASE("InputHandler: holding E under 300 ms does NOT auto-advance") {
+TEST_CASE("InputHandler：長按 E 未滿 300 ms 不會自動推進") {
     StubInput stub;
     ScopedInputSource scope(&stub);
     nccu::InputHandler ih;
@@ -110,7 +110,7 @@ TEST_CASE("InputHandler: holding E under 300 ms does NOT auto-advance") {
 }
 
 // 長按 E 超過 300 ms 後，依冷卻節奏自動推進。
-TEST_CASE("InputHandler: holding E past 300 ms then cooldown-paced auto") {
+TEST_CASE("InputHandler：長按 E 超過 300 ms 後依冷卻節奏自動推進") {
     StubInput stub;
     ScopedInputSource scope(&stub);
     nccu::InputHandler ih;
@@ -132,7 +132,7 @@ TEST_CASE("InputHandler: holding E past 300 ms then cooldown-paced auto") {
 }
 
 // 兩次長按之間放開會重置計時。
-TEST_CASE("InputHandler: release between holds resets the timer") {
+TEST_CASE("InputHandler：兩次長按之間放開會重置計時") {
     StubInput stub;
     ScopedInputSource scope(&stub);
     nccu::InputHandler ih;
@@ -156,7 +156,7 @@ TEST_CASE("InputHandler: release between holds resets the timer") {
 }
 
 // ResetDialogAdvance 會清除長按計時與冷卻。
-TEST_CASE("InputHandler: ResetDialogAdvance clears hold + cooldown") {
+TEST_CASE("InputHandler：ResetDialogAdvance 清除長按計時與冷卻") {
     StubInput stub;
     ScopedInputSource scope(&stub);
     nccu::InputHandler ih;
@@ -177,7 +177,7 @@ TEST_CASE("InputHandler: ResetDialogAdvance clears hold + cooldown") {
 }
 
 // 同一格同時有 edge 與已達長按條件時，只走 edge 路徑、不重複觸發。
-TEST_CASE("InputHandler: edge + hold on the SAME frame double-fires nothing") {
+TEST_CASE("InputHandler：同一格同時有 edge 與長按時不重複觸發") {
     // 守護 edge-或-auto 的二擇一：剛按下的 E 若恰好也滿足「已按夠久」條件（罕見，但
     // Reset 後可能發生），只觸發 edge 路徑；跳過 auto 路徑，使單次按下絕不會把對話一次
     // 推進兩行。

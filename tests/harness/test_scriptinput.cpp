@@ -15,7 +15,7 @@ using nccu::ScriptInput;
 using nccu::engine::input::Key;
 
 // down/up 的按住與 edge 語意對應 raylib。
-TEST_CASE("ScriptInput: down/up hold and edge semantics mirror raylib") {
+TEST_CASE("ScriptInput：down/up 的按住與 edge 語意對應 raylib") {
     std::istringstream src(
         "# comment line ignored\n"
         "0 down D\n"
@@ -46,7 +46,7 @@ TEST_CASE("ScriptInput: down/up hold and edge semantics mirror raylib") {
 }
 
 // press 是單格 tap，下一格自動放開。
-TEST_CASE("ScriptInput: press is a one-frame tap auto-released next frame") {
+TEST_CASE("ScriptInput：press 是單格 tap，下一格自動放開") {
     std::istringstream src("5 press E\n");
     ScriptInput in;
     in.Load(src);
@@ -66,7 +66,7 @@ TEST_CASE("ScriptInput: press is a one-frame tap auto-released next frame") {
 }
 
 // quit 指令在其指定格才設定 WantsQuit，之前不會。
-TEST_CASE("ScriptInput: quit directive sets WantsQuit at its frame, not before") {
+TEST_CASE("ScriptInput：quit 指令在其指定格才設定 WantsQuit，之前不會") {
     std::istringstream src("2 quit\n");
     ScriptInput in;
     in.Load(src);
@@ -77,7 +77,7 @@ TEST_CASE("ScriptInput: quit directive sets WantsQuit at its frame, not before")
 }
 
 // 具名鍵與字母可解析；垃圾行被略過。
-TEST_CASE("ScriptInput: named keys and letters parse; junk lines are skipped") {
+TEST_CASE("ScriptInput：具名鍵與字母可解析，垃圾行被略過") {
     std::istringstream src(
         "garbage that is not a directive\n"
         "0 down Space\n"

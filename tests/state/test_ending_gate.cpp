@@ -23,7 +23,7 @@ using nccu::IsEndingState;
 // 純屬敘事鋪陳，不影響判定。SemesterStateMachine 不可移動，故每個 case 都就地建構。
 
 // 在第四章以外的任何章節，都不會觸發任何結局判定。
-TEST_CASE("ending gate: no gate fires outside Chapter4_Finals") {
+TEST_CASE("結局判定：在 Chapter4_Finals 以外不會觸發任何結局") {
     for (auto s : {SemesterState::Chapter1_AddDrop,
                    SemesterState::Interlude_Market,
                    SemesterState::Chapter2_Midterms,
@@ -44,7 +44,7 @@ TEST_CASE("ending gate: no gate fires outside Chapter4_Finals") {
 }
 
 // 結局 A：業力>80 且持有真傘且體諒助教，三項皆滿足才到結局 A。
-TEST_CASE("ending gate A: karma>80 + TrueUmbrella + 體諒 -> Ending A") {
+TEST_CASE("結局 A：karma>80 + TrueUmbrella + 體諒 -> Ending A") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -56,8 +56,8 @@ TEST_CASE("ending gate A: karma>80 + TrueUmbrella + 體諒 -> Ending A") {
 }
 
 // 結局 A：缺任一條件就不會到 A（缺體諒時停留第四章，其餘缺項落到 D）。
-TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
-    SUBCASE("no 體諒 (no Flag_ConsoledTA) -> not A, and without it, stays Ch4") {
+TEST_CASE("結局 A：缺任一條件就不會到 Ending A") {
+    SUBCASE("無體諒（無 Flag_ConsoledTA）-> 非 A，且因此停留 Ch4") {
         // 業力>80 + 持真傘但從未選擇體諒：A 需三項齊備，且沒有 Flag_ConsoledTA
         // 時 D 判定也不觸發，故此狀態（尚未做最終選擇）正確停留第四章直到玩家決定。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
@@ -66,7 +66,7 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
-    SUBCASE("no TrueUmbrella but 體諒+karma>80 -> Ending D (G1), not A") {
+    SUBCASE("無 TrueUmbrella 但體諒+karma>80 -> Ending D，非 A") {
         // 已選體諒但缺少奪回的真傘：落到苦澀的 D（風雨同行），而非 A。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
@@ -74,7 +74,7 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);
     }
-    SUBCASE("karma not > 80 but 體諒+持真傘 -> Ending D (G1), not A") {
+    SUBCASE("karma 未 > 80 但體諒+持真傘 -> Ending D，非 A") {
         // 已選體諒、持真傘，但業力落在 [0,80]：到 D。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;   // 預設約 50
@@ -85,15 +85,15 @@ TEST_CASE("ending gate A: any one condition missing -> not Ending A") {
 }
 
 // 結局 B：拿了詛咒傘，或業力低於零。
-TEST_CASE("ending gate B: cursed umbrella OR karma<0 -> Ending B") {
-    SUBCASE("cursed") {
+TEST_CASE("結局 B：拿了詛咒傘或 karma<0 -> Ending B") {
+    SUBCASE("詛咒傘") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
         p.SetFlag(nccu::kFlagTookCursedUmbrella);
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);
     }
-    SUBCASE("karma below zero") {
+    SUBCASE("業力低於零") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(-200);                    // 夾為 -100（< 0）
@@ -103,7 +103,7 @@ TEST_CASE("ending gate B: cursed umbrella OR karma<0 -> Ending B") {
 }
 
 // 結局 C：買了醜傘。
-TEST_CASE("ending gate C: bought the ugly umbrella -> Ending C") {
+TEST_CASE("結局 C：買了醜傘 -> Ending C") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -113,7 +113,7 @@ TEST_CASE("ending gate C: bought the ugly umbrella -> Ending C") {
 }
 
 // 第一章阿姨那段買傘純屬敘事鋪陳，不會單獨觸發結局 C。
-TEST_CASE("ending gate: Ch1 阿姨 (c) buy is a pure narrative seed (audit F1)") {
+TEST_CASE("結局判定：Ch1 阿姨買傘純屬敘事鋪陳，不會觸發 Ending C") {
     // 第一章那個橋段不會在玩家狀態留下任何旗標；唯有第四章集英樓商人設下的
     // Flag_BoughtUglyUmbrella 才會觸發結局 C。此處保證：單走第一章那段不會到 C。
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
@@ -126,7 +126,7 @@ TEST_CASE("ending gate: Ch1 阿姨 (c) buy is a pure narrative seed (audit F1)")
 }
 
 // 結局判定的優先順序：A > B > C。
-TEST_CASE("ending gate: precedence A > B > C") {
+TEST_CASE("結局判定：優先順序 A > B > C") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -141,7 +141,7 @@ TEST_CASE("ending gate: precedence A > B > C") {
 }
 
 // 沒有任何旗標時，停留在第四章。
-TEST_CASE("ending gate: no flags -> stays in Ch4") {
+TEST_CASE("結局判定：沒有任何旗標時停留在 Ch4") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -156,8 +156,8 @@ TEST_CASE("ending gate: no flags -> stays in Ch4") {
 // A/B/C 任一條件，於是 CheckEndingGates 全部落空、永遠卡在第四章。一個無法通關的
 // 狀態是嚴重缺陷。修正：做出最終選擇後判定即為完全 —— 冷漠選擇 → B（屠龍者終成
 // 惡龍），體諒但不完美 → 視業力與真傘落到 C 或 D。
-TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
-    SUBCASE("cold finale (質問/強硬, honest spine) -> Ending B") {
+TEST_CASE("結局判定：助教最終橋段為完全判定，不會落空卡關") {
+    SUBCASE("冷漠結尾（質問/強硬、誠實路線）-> Ending B") {
         // 完整誠實路線（高業力、已奪回真傘），但選擇不體諒助教。修正前此情境
         // 會落空於每一道判定而卡關。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
@@ -169,7 +169,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_B);   // 修正前：卡在第四章
     }
-    SUBCASE("體諒 but karma<=80 (not-perfect honest) -> Ending D (G1)") {
+    SUBCASE("體諒但 karma<=80（不完美的誠實）-> Ending D") {
         // 體諒但業力落在 [0,80]：風雨同行（破傘），而非破財消災。仍為完全（會落到結局）。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;  // 業力約 50
@@ -179,7 +179,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);
     }
-    SUBCASE("體諒 + karma>80 but no TrueUmbrella -> Ending D (G1)") {
+    SUBCASE("體諒 + karma>80 但無 TrueUmbrella -> Ending D") {
         // 體諒、高業力，但缺奪回的真傘：錯過 A，落到較溫暖的 D，而非買單的 C。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
@@ -190,7 +190,7 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Ending_D);
     }
-    SUBCASE("precedence: cold finale never overrides an earned A") {
+    SUBCASE("優先順序：冷漠結尾絕不凌駕已達成的 A") {
         // 已選體諒且完整達成 -> A 仍勝出（雖設了最終選擇旗標，但 Flag_ConsoledTA
         // 也設了，故 coldFinale=false）。
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
@@ -205,12 +205,12 @@ TEST_CASE("ending gate: 助教 finale is TOTAL — no fall-through soft-lock") {
 }
 
 // 在和助教對話前的第四章自由探索期間，玩家不會被推進任何結局。
-TEST_CASE("ending gate: pre-finale Ch4 free-roam is byte-unchanged") {
+TEST_CASE("結局判定：助教對話前的 Ch4 自由探索不會被推進結局") {
     // C 的預設分支嚴格以 Flag_TaFinaleChoiceMade 為條件，因此在和助教對話之前
     // 探索第四章的玩家絕不會被硬塞進結局。只達成部分 A 條件、或完全空白且未設
     // 最終選擇旗標的狀態，都必須停留第四章（對照先前「缺任一條件」/「無旗標」
     // 的保證，這裡用新的完全判定邏輯再驗一次，鎖住關鍵的判定鑰匙而非僅快樂路徑）。
-    SUBCASE("karma>80 + TrueUmbrella, finale NOT yet made -> stays Ch4") {
+    SUBCASE("karma>80 + TrueUmbrella，尚未做最終選擇 -> 停留 Ch4") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
         p.AddKarma(100); p.SetFlag(nccu::kFlagHasTrueUmbrella);
@@ -218,7 +218,7 @@ TEST_CASE("ending gate: pre-finale Ch4 free-roam is byte-unchanged") {
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
         CHECK(m.Current() == SemesterState::Chapter4_Finals);
     }
-    SUBCASE("no flags, finale NOT made -> stays Ch4") {
+    SUBCASE("無旗標，尚未做最終選擇 -> 停留 Ch4") {
         SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
         Player p{nccu::engine::math::Vec2{0, 0}}; nccu::DialogState d;
         nccu::CheckEndingGates(EventBus::Instance(), p, m, d);
@@ -228,7 +228,7 @@ TEST_CASE("ending gate: pre-finale Ch4 free-roam is byte-unchanged") {
 
 // 結局不可突兀：對話／旁白還在畫面上時，CheckEndingGates 會延後判定（避免
 // 「按下選項後突然跳結局」），等對話框關閉後的下一次輪詢才落到結局。
-TEST_CASE("G2: ending gate DEFERS behind an active dialog, then resolves on close") {
+TEST_CASE("結局判定：對話進行中會延後，關閉後才落到結局") {
     SemesterStateMachine m; m.Transition(SemesterState::Chapter4_Finals);
     Player p{nccu::engine::math::Vec2{0, 0}};
     nccu::DialogState d;
@@ -272,7 +272,7 @@ SemesterState ResolveCh4(int karma, bool trueUmb, bool consoled,
 }  // namespace
 
 // 四種結局判定樹 A -> B -> D -> C 的逐項對照表。
-TEST_CASE("G1: the A->B->D->C ending tree") {
+TEST_CASE("A->B->D->C 結局判定樹的逐項對照") {
     using S = SemesterState;
     // A — 業力>80 + 持真傘 + 體諒。
     CHECK(ResolveCh4(100, true,  true,  true,  false, false) == S::Ending_A);
@@ -295,7 +295,7 @@ TEST_CASE("G1: the A->B->D->C ending tree") {
 }
 
 // 一旦做出最終選擇，判定即為完全：必落到某結局、永不卡關。
-TEST_CASE("G1: the gate is TOTAL once the finale choice is made (no soft-lock)") {
+TEST_CASE("做出最終選擇後判定即為完全：必落到某結局、永不卡關") {
     using S = SemesterState;
     // 在設定 Flag_TaFinaleChoiceMade（唯一可能「卡住」的前提）下，窮舉所有
     // 與最終結局相關旗標的組合：判定必定離開第四章。這是四結局判定樹的可通關性

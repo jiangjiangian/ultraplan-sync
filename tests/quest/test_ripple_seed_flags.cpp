@@ -17,7 +17,7 @@
 // 以下案例釘住「在領取點種下旗標」以及其專一性。
 
 // 領取 ProfessorTrapUmbrella 會種下 Flag_HasProfessorTrap（只一次，第二次領取為無操作）。
-TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
+TEST_CASE("領取 ProfessorTrapUmbrella 種下 Flag_HasProfessorTrap 一次") {
     EventBus::Instance().Clear();
     Player p{nccu::engine::math::Vec2{0, 0}};
     CHECK_FALSE(p.HasFlag(nccu::kFlagHasProfessorTrap));
@@ -33,7 +33,7 @@ TEST_CASE("ProfessorTrapUmbrella claim seeds Flag_HasProfessorTrap once") {
 }
 
 // 領取 CursedUmbrella 會種下 Flag_TookCursedUmbrella 並提升污染值；karma 在撿取當下不變、污染值不重複提升。
-TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)") {
+TEST_CASE("領取 CursedUmbrella 種下 Flag_TookCursedUmbrella 並提升污染值") {
     // 此前的做法是在撿取時一次性扣 -30 karma；現在把 karma 代價從撿取移到
     // 各章的污染衰減（在 SceneRouter 進入 Ch2/3/4 時）。旗標與 Ending B 路徑維持不變。
     EventBus::Instance().Clear();
@@ -58,7 +58,7 @@ TEST_CASE("CursedUmbrella claim seeds Flag_TookCursedUmbrella + bumps taint (P2)
 // 第二個進入點，契約要求方法本身也要守門（縱深防禦）。無守門的 TrueUmbrella 在
 // 第二次呼叫時會重發 UmbrellaClaimed——由於 Ch1/Ch3 的事件接線會因該事件推進學期，
 // 這是潛在的重複轉場風險。
-TEST_CASE("TrueUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
+TEST_CASE("TrueUmbrella::BeClaimed 具冪等性（不會重複發 UmbrellaClaimed）") {
     EventBus::Instance().Clear();
     int claimed = 0;
     EventBus::Instance().Subscribe(EventType::UmbrellaClaimed,
@@ -77,7 +77,7 @@ TEST_CASE("TrueUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
 }
 
 // FragileUmbrella::BeClaimed 同樣具冪等性，第二次呼叫不得重發 UmbrellaClaimed。
-TEST_CASE("FragileUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)") {
+TEST_CASE("FragileUmbrella::BeClaimed 具冪等性（不會重複發 UmbrellaClaimed）") {
     EventBus::Instance().Clear();
     int claimed = 0;
     EventBus::Instance().Subscribe(EventType::UmbrellaClaimed,
@@ -96,7 +96,7 @@ TEST_CASE("FragileUmbrella::BeClaimed is idempotent (no double UmbrellaClaimed)"
 }
 
 // 好傘／脆傘不會種下任何漣漪旗標（保證壞傘旗標的專一性）。
-TEST_CASE("The good/fragile umbrellas do NOT seed the ripple flags") {
+TEST_CASE("好傘／脆傘不會種下任何漣漪旗標") {
     EventBus::Instance().Clear();
     Player p{nccu::engine::math::Vec2{0, 0}};
 

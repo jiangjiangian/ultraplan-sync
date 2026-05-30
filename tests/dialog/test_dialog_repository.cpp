@@ -31,7 +31,7 @@
 using nccu::SemesterState;
 
 // SetRepository(nullptr) 時 Entries() 走預設實例。
-TEST_CASE("Phase 2.5: SetRepository(nullptr) routes through the default instance") {
+TEST_CASE("SetRepository(nullptr) 時 Entries() 走預設實例") {
     // 先還原預設，避免先前呼叫過 SetRepository 的案例外溢到這裡。
     nccu::dialog::SetRepository(nullptr);
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
@@ -45,7 +45,7 @@ TEST_CASE("Phase 2.5: SetRepository(nullptr) routes through the default instance
 }
 
 // SetRepository(&myRepo) 把 Entries 改導到該實例。
-TEST_CASE("Phase 2.5: SetRepository(&myRepo) reroutes Entries to that instance") {
+TEST_CASE("SetRepository(&myRepo) 把 Entries 改導到該實例") {
     nccu::dialog::SetRepository(nullptr);   // 從乾淨狀態開始
 
     // 建一個指向同一個 fixture 目錄的私有 repository 以便有內容可查詢。
@@ -68,7 +68,7 @@ TEST_CASE("Phase 2.5: SetRepository(&myRepo) reroutes Entries to that instance")
 }
 
 // 每個實例的快取彼此隔離（不同內容目錄）。
-TEST_CASE("Phase 2.5: per-instance caches are isolated (different content dirs)") {
+TEST_CASE("每個實例的快取彼此隔離（不同內容目錄）") {
     nccu::dialog::SetRepository(nullptr);
 
     // 兩個 repository——一個指向真正的 fixture，另一個指向不存在的目錄。
@@ -95,7 +95,7 @@ TEST_CASE("Phase 2.5: per-instance caches are isolated (different content dirs)"
 }
 
 // 對某個實例 Reload() 不會使另一個實例失效。
-TEST_CASE("Phase 2.5: Reload() on one instance does not invalidate another") {
+TEST_CASE("對某個實例 Reload() 不會使另一個實例失效") {
     nccu::dialog::SetRepository(nullptr);
 
     nccu::dialog::DialogRepository repoA;

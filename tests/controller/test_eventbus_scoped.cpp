@@ -28,7 +28,7 @@ Event Msg(std::string text) {
 } // namespace
 
 // Subscription 離開作用域後即取消訂閱，之後不再被派送。
-TEST_CASE("Subscription out of scope unsubscribes (no later delivery)") {
+TEST_CASE("Subscription 離開作用域即取消訂閱（之後不再被派送）") {
     int hits = 0;
 
     {
@@ -45,7 +45,7 @@ TEST_CASE("Subscription out of scope unsubscribes (no later delivery)") {
 }
 
 // 作用域 Subscription 可避免懸空捕捉造成的 use-after-free。
-TEST_CASE("Scoped Subscription prevents the B1/B2 dangling-capture UAF") {
+TEST_CASE("作用域 Subscription 可避免懸空捕捉造成的 use-after-free") {
     // 重現懸空捕捉的陷阱：handler 以參考捕捉呼叫端擁有的狀態，而該狀態之後被銷毀。
     // 在舊的「raw Subscribe + 手動 Clear」模型下，若忘了在捕捉物銷毀前 Clear()，下一次
     // Publish 就會 use-after-free。將 handler 交給作用域 Subscription，可使訂閱與被捕捉
@@ -80,10 +80,10 @@ TEST_CASE("Scoped Subscription prevents the B1/B2 dangling-capture UAF") {
 }
 
 // 移動 Subscription 會轉移所有權，不會重複取消訂閱。
-TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
+TEST_CASE("移動 Subscription 會轉移所有權，不會重複取消訂閱") {
     int hits = 0;
 
-    SUBCASE("move-construct") {
+    SUBCASE("移動建構") {
         EventBus::Subscription a = EventBus::Instance().ScopedSubscribe(
             EventType::ShowMessage, [&](const Event&) { ++hits; });
 
@@ -98,7 +98,7 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
         // 存活的訂閱。
     }
 
-    SUBCASE("move-assign over a live subscription") {
+    SUBCASE("對存活中的訂閱做移動指派") {
         int otherHits = 0;
         EventBus::Subscription a = EventBus::Instance().ScopedSubscribe(
             EventType::ShowMessage, [&](const Event&) { ++hits; });
@@ -116,7 +116,7 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
         CHECK(otherHits == 0);       // b 原本的 handler 已被取消訂閱
     }
 
-    SUBCASE("destroying both copies removes the handler exactly once") {
+    SUBCASE("銷毀兩個複本只移除 handler 恰好一次") {
         {
             EventBus::Subscription a = EventBus::Instance().ScopedSubscribe(
                 EventType::ShowMessage, [&](const Event&) { ++hits; });
@@ -130,7 +130,7 @@ TEST_CASE("Subscription move transfers ownership, no double-unsubscribe") {
 }
 
 // ScopedSubscribe 與 raw Subscribe / Clear 可並存。
-TEST_CASE("ScopedSubscribe coexists with raw Subscribe / Clear") {
+TEST_CASE("ScopedSubscribe 與 raw Subscribe / Clear 可並存") {
     int rawHits    = 0;
     int scopedHits = 0;
 

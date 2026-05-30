@@ -63,7 +63,7 @@ void Frame(GameController& c, TestInput& in) {
 }  // namespace
 
 // 暫停選單的「說明」會開啟／關閉說明遮罩，且整段期間模擬凍結。
-TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
+TEST_CASE("暫停選單的說明開啟／關閉說明遮罩，模擬凍結") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 
@@ -160,7 +160,7 @@ TEST_CASE("REQ#9: pause menu 說明 opens/closes a help overlay, sim frozen") {
 // 固定：(a) 兩頁、(b) 分頁視圖加收尾行等於扁平的 kGameHelpLines（使逐項走訪
 // 扁平清單的字形掃描不致過時）、(c) 新的經濟／使用提示存在、(d) 每行都在面板的
 // 字寬上限內。
-TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
+TEST_CASE("GameHelp 被拆成兩個一致的分頁") {
     CHECK(nccu::kGameHelpPageCount == 2);
     REQUIRE(nccu::kGameHelpPages.size() == 2);
 
@@ -201,7 +201,7 @@ TEST_CASE("U2-T4: GameHelp is split into two consistent pages") {
 // 透過 GameController 真實輸入迴圈驅動以固定接線。頁碼是純 UI 狀態
 // （World::HelpPage），不被序列化（工具不輸出游標／頁碼），故分頁說明讓
 // state.jsonl 維持逐位元相同 —— 整段期間模擬同樣凍結。
-TEST_CASE("U2-T4: ←/→ page the 說明 overlay; page resets on open, sim frozen") {
+TEST_CASE("←／→ 翻動說明遮罩；開啟時頁碼重置，模擬凍結") {
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
     EventBus::Instance().Clear();
 

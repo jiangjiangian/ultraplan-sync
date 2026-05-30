@@ -17,7 +17,7 @@ using nccu::World;
 // 以及驗證金幣確實會被生成到世界中。
 
 // AddMoney 只在 300 軟上限封頂，不設下限；負數扣款與 DeductMoney 不受上限影響。
-TEST_CASE("Player::AddMoney clamps at the 300 soft cap, never the floor") {
+TEST_CASE("Player::AddMoney 只在 300 軟上限封頂，從不設下限") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     REQUIRE(p.GetMoney() == 100);
 
@@ -38,7 +38,7 @@ TEST_CASE("Player::AddMoney clamps at the 300 soft cap, never the floor") {
 }
 
 // ClearConsumables 應清空整個消耗品背包（章節結束時的「當章用完」行為）。
-TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
+TEST_CASE("Player::ClearConsumables 清空整個消耗品背包") {
     Player p{nccu::engine::math::Vec2{0, 0}};
     p.AddConsumable("HotPack").AddConsumable("HotPack");
     p.AddConsumable("EnergyDrink");
@@ -51,7 +51,7 @@ TEST_CASE("Player::ClearConsumables wipes the whole inventory") {
 }
 
 // 各章 CashPickup 金額表：Ch1 共 50、Ch2 共 40（防卡關下限 >35），其餘章節為空。
-TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
+TEST_CASE("ChapterPickups：Ch1 約 50、Ch2 防卡關 >35，其餘為空") {
     const auto& ch1 = nccu::ChapterPickups(SemesterState::Chapter1_AddDrop);
     REQUIRE(ch1.size() == 5);
     int total = 0;
@@ -74,7 +74,7 @@ TEST_CASE("ChapterPickups: Ch1 ~50, Ch2 anti-softlock >35, others empty") {
 }
 
 // World 應確實生成 Ch1 的 5 枚金幣（總值 50），證明經濟迴圈有接上世界生成。
-TEST_CASE("World actually spawns the Ch1 CashPickups (loop is wired)") {
+TEST_CASE("World 確實生成 Ch1 的 CashPickup（迴圈已接上）") {
     World w("", /*loadSprites=*/false);
     int coins = 0;
     int coinValue = 0;

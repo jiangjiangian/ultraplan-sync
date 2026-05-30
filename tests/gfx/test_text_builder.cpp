@@ -12,7 +12,7 @@ using namespace nccu::engine::render;
 using namespace nccu::engine::math;
 
 // 流暢式設定器 At/Size/Color 設定後狀態應被保存。
-TEST_CASE("TextBuilder fluent setters preserve state") {
+TEST_CASE("TextBuilder 流暢式設定器設定後狀態應被保存") {
     TextBuilder t{"hi"};
     t.At(Vec2{10, 20}).Size(16).Color(Colors::Red);
     CHECK(t.GetPosition().x == doctest::Approx(10.0f));
@@ -22,14 +22,14 @@ TEST_CASE("TextBuilder fluent setters preserve state") {
 }
 
 // 預設值：位置 (0,0)、字級 10、顏色黑。
-TEST_CASE("TextBuilder defaults: pos (0,0), size 10, color black") {
+TEST_CASE("TextBuilder 預設值：位置 (0,0)、字級 10、顏色黑") {
     TextBuilder t{"x"};
     CHECK(t.GetSize() == 10);
     CHECK(t.GetColor() == Colors::Black);
 }
 
 // 串接時各設定器回傳自身參考。
-TEST_CASE("TextBuilder chaining returns self by reference") {
+TEST_CASE("TextBuilder 串接時各設定器回傳自身參考") {
     TextBuilder t{"x"};
     auto& ref = t.At(Vec2{1, 1}).Size(5).Color(Colors::Blue);
     CHECK(&ref == &t);

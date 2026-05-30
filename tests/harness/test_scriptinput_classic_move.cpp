@@ -36,7 +36,7 @@ using nccu::engine::input::Key;
 // 不得每格都把 W/A/S/D SynthUp（這會釋放 Advance() 剛按住的鍵），否則經由 harness 的 classic
 // WASD 移動會失效。本測試驅動迴圈所用的同一個 Advance()/ResolvePlan() 配對，並斷言按住的鍵
 // 存活。
-TEST_CASE("ScriptInput: classic `down` survives ResolvePlan when plan is empty") {
+TEST_CASE("ScriptInput：plan 為空時 classic 的 `down` 能在 ResolvePlan 後存活") {
     std::istringstream src(
         "# classic-only timeline: no plan verbs => plan_ is empty\n"
         "0 down D\n"
@@ -77,7 +77,7 @@ TEST_CASE("ScriptInput: classic `down` survives ResolvePlan when plan is empty")
 // 仍須流經解析器（含其 `!world` 閒置與 `planPc_ >= plan_.size()` 計畫耗盡等路徑，修正未動到
 // 它們）。驅動方式與 test_scriptinput_plan.cpp 所用的 harness 迴圈相同：每格 Advance() 後
 // ResolvePlan(prevSnapshot)，快照落後一格。
-TEST_CASE("ScriptInput: minimal plan verbs still resolve after the I4 fix") {
+TEST_CASE("ScriptInput：最小的計畫動詞腳本仍能正常解析") {
     nccu::dialog::SetContentDir(TEST_CONTENT_DIR);
     nccu::engine::platform::Time::SetFixedStep(1.0f / 60.0f);
 

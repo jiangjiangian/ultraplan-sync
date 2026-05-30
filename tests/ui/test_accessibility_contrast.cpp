@@ -56,7 +56,7 @@ constexpr Color kHelpPanel{18, 20, 28, 245};
 }  // namespace
 
 // 暫停選單提示色已不再是 DarkGray。
-TEST_CASE("D3 fix: pause-menu hint colour is not DarkGray anymore") {
+TEST_CASE("暫停選單提示色已不再是 DarkGray") {
     CHECK(kPauseHintColor != Colors::DarkGray);
     // 較省的充分檢查：比中灰更亮。
     CHECK(kPauseHintColor.r > 128);
@@ -65,7 +65,7 @@ TEST_CASE("D3 fix: pause-menu hint colour is not DarkGray anymore") {
 }
 
 // 180 灰在暫停面板上達到 SC 1.4.3 AA（4.5:1）。
-TEST_CASE("D3 fix: 180-grey on the pause panel meets SC 1.4.3 AA (4.5:1)") {
+TEST_CASE("180 灰在暫停面板上達到 AA 對比 4.5:1") {
     const double ratio = Ratio(kPauseHintColor, kPausePanel);
     CHECK(ratio >= 4.5);
     // 預估約 7:1；此處容許一小段數值區間。
@@ -73,14 +73,14 @@ TEST_CASE("D3 fix: 180-grey on the pause panel meets SC 1.4.3 AA (4.5:1)") {
 }
 
 // 180 灰在說明面板上達到 SC 1.4.3 AA（4.5:1）。
-TEST_CASE("D3 fix: 180-grey on the help panel meets SC 1.4.3 AA (4.5:1)") {
+TEST_CASE("180 灰在說明面板上達到 AA 對比 4.5:1") {
     const double ratio = Ratio(kPauseHintColor, kHelpPanel);
     CHECK(ratio >= 4.5);
     CHECK(ratio >= 6.5);
 }
 
 // 基準對照：修正前的 DarkGray 配色未達 WCAG AA。
-TEST_CASE("D3 baseline: the pre-fix DarkGray pairing FAILS WCAG AA") {
+TEST_CASE("修正前的 DarkGray 配色未通過 WCAG AA") {
     // 舊的「DarkGray 配暫停面板」必須低於 4.5:1 的 AA 門檻 —— 這正是當初被標記的
     // 原因。若此 CHECK 哪天看到 >= 4.5，代表亮度計算被改寫、或 DarkGray 被重新
     // 定義，兩者都該由人工審視。在 WCAG sRGB 公式下，DarkGray(80,80,80) 配

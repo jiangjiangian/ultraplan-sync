@@ -62,7 +62,7 @@ CountingRenderer DrawOf() {
 // 四種雨傘必須看起來明顯不同。每個 UmbrellaStyle 都畫出自己獨特的輪廓、配上
 // 自己鮮明且彼此分得開的色調，同時維持純矩形的向量圖形（無 sprite／文字——
 // 符合 MVC：View 依物件自身的資料算繪）。
-TEST_CASE("REQ#9: the four umbrellas each render a DISTINCT glyph") {
+TEST_CASE("四種雨傘各自算繪出明顯不同的圖形") {
     const CountingRenderer t = DrawOf<TrueUmbrella>();
     const CountingRenderer f = DrawOf<FragileUmbrella>();
     const CountingRenderer p = DrawOf<ProfessorTrapUmbrella>();
@@ -91,7 +91,7 @@ TEST_CASE("REQ#9: the four umbrellas each render a DISTINCT glyph") {
 
 // 每把傘鮮明的色調必須相距夠遠。驗證每一對傘面色調的通道差總和夠大，
 // 在地圖上才不會被混淆。
-TEST_CASE("REQ#9: umbrella canopy tints are boldly separated") {
+TEST_CASE("各把傘的傘面色調彼此相距夠遠") {
     auto canopy = [](const CountingRenderer& s) {
         // 對每種款式而言，rects[0] 都是最上方的傘面色塊，其顏色就是
         // 該把傘的標誌色調。

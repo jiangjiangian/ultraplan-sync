@@ -17,7 +17,7 @@ constexpr auto kCh4 = SemesterState::Chapter4_Finals;
 }  // namespace
 
 // 學長 +10 只在 (b) 路徑（HelpedSenior 且 karma>70）發生，且每章只一次。
-TEST_CASE("TryApplyCh4Ripple: 學長 +10 only on the (b) route, once") {
+TEST_CASE("TryApplyCh4Ripple：學長 +10 只在 (b) 路徑發生，且只一次") {
     Player p = MakePlayer();
     const int k0 = p.GetKarma();
 
@@ -41,7 +41,7 @@ TEST_CASE("TryApplyCh4Ripple: 學長 +10 only on the (b) route, once") {
 }
 
 // 學霸 +5 在 BookwormRecovered 時發生，且每章只一次。
-TEST_CASE("TryApplyCh4Ripple: 學霸 +5 on BookwormRecovered, once") {
+TEST_CASE("TryApplyCh4Ripple：學霸於 BookwormRecovered 時 +5，且只一次") {
     Player p = MakePlayer();
     const int k0 = p.GetKarma();
     nccu::TryApplyCh4Ripple(p, "bookworm", kCh4);
@@ -54,20 +54,20 @@ TEST_CASE("TryApplyCh4Ripple: 學霸 +5 on BookwormRecovered, once") {
 }
 
 // 助教的 +10（HelpedTA）與 -15（ProfTrap）彼此獨立，可同時生效（淨 -5），且各自只一次。
-TEST_CASE("TryApplyCh4Ripple: 助教 +10 / -15 are INDEPENDENT (L235)") {
-    SUBCASE("HelpedTA only -> +10") {
+TEST_CASE("TryApplyCh4Ripple：助教 +10 / -15 彼此獨立") {
+    SUBCASE("僅 HelpedTA -> +10") {
         Player p = MakePlayer(); const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHelpedTACh1);
         nccu::TryApplyCh4Ripple(p, "ta", kCh4);
         CHECK(p.GetKarma() == k0 + 10);
     }
-    SUBCASE("ProfTrap only -> -15") {
+    SUBCASE("僅 ProfTrap -> -15") {
         Player p = MakePlayer(); const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHasProfessorTrap);
         nccu::TryApplyCh4Ripple(p, "ta", kCh4);
         CHECK(p.GetKarma() == k0 - 15);
     }
-    SUBCASE("both -> +10 AND -15 (net -5), each once") {
+    SUBCASE("兩者皆有 -> +10 且 -15（淨 -5），各只一次") {
         Player p = MakePlayer(); const int k0 = p.GetKarma();
         p.SetFlag(nccu::kFlagHelpedTACh1);
         p.SetFlag(nccu::kFlagHasProfessorTrap);
@@ -80,7 +80,7 @@ TEST_CASE("TryApplyCh4Ripple: 助教 +10 / -15 are INDEPENDENT (L235)") {
 
 // 福利社阿姨的 Ch1→Ch4 漣漪：Ch1 阿姨 (d) 請咖啡選項種下的
 // Flag_BoughtCoffeeForAuntie_Ch1，在 Ch4 兌現為 +3 的「直接情報」回呼，只一次。
-TEST_CASE("B3 TryApplyCh4Ripple: 福利社阿姨 +3 on coffee flag, once") {
+TEST_CASE("TryApplyCh4Ripple：福利社阿姨於咖啡旗標時 +3，且只一次") {
     Player p = MakePlayer();
     const int k0 = p.GetKarma();
     // Ch1 沒請咖啡 -> 走間接情報路徑，沒有 +3。
@@ -105,7 +105,7 @@ TEST_CASE("B3 TryApplyCh4Ripple: 福利社阿姨 +3 on coffee flag, once") {
 }
 
 // Ch4 阿姨對話依 Ch1 咖啡旗標路由：買過咖啡走 (a) 直接情報，否則走 (d) 間接情報。
-TEST_CASE("B3 ResolveOpenerSubState: Ch4 shop_auntie coffee routing") {
+TEST_CASE("ResolveOpenerSubState：Ch4 shop_auntie 依咖啡旗標路由") {
     Player p = MakePlayer();
     // Ch1 沒請咖啡 -> (d) 間接情報。
     CHECK(nccu::ResolveOpenerSubState("shop_auntie", kCh4, p) == 3);
@@ -115,7 +115,7 @@ TEST_CASE("B3 ResolveOpenerSubState: Ch4 shop_auntie coffee routing") {
 }
 
 // 章節不符或對象不符時，Ch4 漣漪一律為無操作。
-TEST_CASE("TryApplyCh4Ripple: wrong state / wrong npc -> no-op") {
+TEST_CASE("TryApplyCh4Ripple：章節不符／對象不符 -> 無操作") {
     Player p = MakePlayer();
     const int k0 = p.GetKarma();
     p.SetFlag(nccu::kFlagHelpedSenior);

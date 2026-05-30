@@ -18,7 +18,7 @@ constexpr auto kCh3 = SemesterState::Chapter3_SportsDay;
 }  // namespace
 
 // Ch3 各 NPC 的開場子狀態依前章旗標路由（bookworm／ta／victim／suit_senior），且 Ch2 路由不受影響。
-TEST_CASE("ResolveOpenerSubState: Ch3 ripple routes by Ch1/Ch2 flags") {
+TEST_CASE("ResolveOpenerSubState：Ch3 漣漪依 Ch1/Ch2 旗標路由") {
     Player p = MakePlayer();
 
     // bookworm：預設為 (b) 未救回，Ch2 救回後變 (a)。
@@ -50,7 +50,7 @@ TEST_CASE("ResolveOpenerSubState: Ch3 ripple routes by Ch1/Ch2 flags") {
 }
 
 // ProfessorTrap 在 Ch3 造成 -10，每章只一次；且此鍵與 Ch2 的扣分鍵彼此獨立計算。
-TEST_CASE("TryApplyCh3Ripple: ProfessorTrap -> -10 once per Ch3, key-independent") {
+TEST_CASE("TryApplyCh3Ripple：ProfessorTrap 每章 Ch3 -10 一次，且鍵彼此獨立") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     const int k0 = p.GetKarma();

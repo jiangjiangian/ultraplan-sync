@@ -21,7 +21,7 @@
 #endif
 
 // 市集十攤橫跨廣場排成兩排各五。
-TEST_CASE("market stalls form two rows of five across the plaza") {
+TEST_CASE("市集攤位橫跨廣場排成兩排各五攤") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
     const auto& m = nccu::ChapterVendors(
@@ -53,7 +53,7 @@ TEST_CASE("market stalls form two rows of five across the plaza") {
 }
 
 // 每個市集攤位都對應到「不同」的精靈。
-TEST_CASE("REQ#6: every market stall maps to a DISTINCT sprite") {
+TEST_CASE("每個市集攤位都對應到相異的精靈") {
     nccu::SetVendorContentDir(TEST_CONTENT_DIR);
     nccu::ReloadVendors();
     const auto& m = nccu::ChapterVendors(
