@@ -55,8 +55,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     "${INCLUDE_DIR}"
     "${INCLUDE_DIR}/game")
 
-# 可執行的遊戲就是 ./build/OOP_Raylib_Lab（即 project 名稱，add_executable 的預設輸出
-# 名），測試二進位為 ./build/OOP_Raylib_Lab_tests——與 README 的指令一致。
+# 可執行的遊戲輸出為 ./build/umbrella、測試二進位為 ./build/umbrella_test（皆以 OUTPUT_NAME
+# 指定，與 README 的指令一致）；CMake 內部目標名仍為 OOP_Raylib_Lab / OOP_Raylib_Lab_tests。
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME umbrella)
 
 # Add a static lib for the gameplay code IF any non-main .cpp files exist.
 # Early in development the lib may be empty; we add it lazily so configure succeeds.
@@ -88,6 +89,7 @@ enable_testing()
 file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tests/*.cpp")
 if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+    set_target_properties(${PROJECT_NAME}_tests PROPERTIES OUTPUT_NAME umbrella_test)
     target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}_lib doctest::doctest)
     target_compile_definitions(${PROJECT_NAME}_tests PRIVATE
         TEST_FIXTURES_DIR="${CMAKE_SOURCE_DIR}/tests/fixtures"

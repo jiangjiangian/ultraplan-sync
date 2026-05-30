@@ -96,9 +96,9 @@ Please Create a Github Repository of your own, and submit it's URL on Moodle.
 
 ```bash
 cmake -B build && cmake --build build      # 設定並編譯（含遊戲與測試）
-./build/OOP_Raylib_Lab           # 執行遊戲
-ctest --test-dir build                      # 跑測試（CTest，目標名 unit_tests）
-./build/OOP_Raylib_Lab_tests           # 或直接執行 doctest 測試二進位
+./build/umbrella                           # 執行遊戲
+ctest --test-dir build                     # 跑測試（CTest，目標名 unit_tests）
+./build/umbrella_test                      # 或直接執行 doctest 測試二進位
 ```
 
 CMake 以 `GLOB_RECURSE` 掃描 `src/`、`tests/`，並在建置時把整個
