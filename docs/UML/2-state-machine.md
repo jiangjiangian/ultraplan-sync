@@ -75,21 +75,23 @@ stateDiagram-v2
         四維道市集 --> 購買道具 : 花費金幣 (Vendor TryBuy)
         四維道市集 --> 歸還管理員的傘 : 選擇性 責任感 +10
     }
-    Interlude_Market --> Chapter2_Midterms : 走入南側觸發區 (InterludeReturnTo)
+    Interlude_Market --> Chapter2_Midterms : 走入觸發區（InterludeReturnTo == Ch2）
 
     state Chapter2_Midterms {
         [*] --> 圖書館掉傘
         圖書館掉傘 --> 喚醒學霸 : 提神飲料 (ConsumeOne)
         喚醒學霸 --> 找回傘2 : 蒐齊散落筆記 + 致謝
     }
-    Chapter2_Midterms --> Chapter3_SportsDay : Flag_Ch2Cleared 對話關閉後推進
+    Chapter2_Midterms --> Interlude_Market : Flag_Ch2Cleared 對話關閉後（returnTo Ch3）
+    Interlude_Market --> Chapter3_SportsDay : 走入觸發區（InterludeReturnTo == Ch3）
 
     state Chapter3_SportsDay {
         [*] --> 校慶掉傘
         校慶掉傘 --> 繞操場一圈 : Flag_SportsLapDone
         繞操場一圈 --> 找回傘3 : C系學姊揭示位置後現傘
     }
-    Chapter3_SportsDay --> Chapter4_Finals : 找回傘3
+    Chapter3_SportsDay --> Interlude_Market : 找回傘3 / Flag_Ch3Cleared（returnTo Ch4）
+    Interlude_Market --> Chapter4_Finals : 走入觸發區（InterludeReturnTo == Ch4）
 
     state Chapter4_Finals {
         [*] --> 終局暴雨 : 入章清空持傘 (傘再度失蹤)
@@ -116,6 +118,11 @@ stateDiagram-v2
     Ending_C --> [*] : 「再也不會有人拿錯你的傘了。」
 ```
 
+> **幕間市集是共用的轉運站**：每一章通關後都會先回到 `Interlude_Market`，再由
+> `InterludeReturnTo` 決定下一站（Ch1→Ch2、Ch2→Ch3、Ch3→Ch4）。狀態機只有一個市集
+> 狀態物件，被重複進出三次；上圖刻意畫出三條「進市集 / 出市集」的邊，與
+> `ChapterGate.cpp`、`EventWiring.h` 的轉場一致（亦對應 Report §3.4 的章節脊柱）。
+>
 > **相對舊版的改動**：新增第四個結局 **Ending_D 風雨同行**（選了「體諒」但 karma≤80 →
 > `FragileBroken` 破傘）。結局判定不再只掛在對話確認當下，而是每個非對話幀輪詢
 > `CheckEndingGates`；舊的「Ch1 買醜傘 → C」sibling-if 已移除，真正的 C 觸發點改為

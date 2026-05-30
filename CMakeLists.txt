@@ -5,10 +5,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# 警告旗標只套用在「我們自己的」目標上。raylib 由 FetchContent 取得並從原始碼編譯：
+# 若把 -Wall -Wextra -Wpedantic 設成全域（add_compile_options），連 raylib 的 .c 都會
+# 吃到，於是 build 時噴出一大堆第三方警告（那些不是我們的程式的問題）。改成存進
+# PROJECT_WARNING_FLAGS 變數，於各目標建立後再以 target_compile_options 個別套用。
 if(MSVC)
-    add_compile_options(/W4)
+    set(PROJECT_WARNING_FLAGS /W4)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    set(PROJECT_WARNING_FLAGS -Wall -Wextra -Wpedantic)
 endif()
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -54,6 +58,7 @@ add_executable(${PROJECT_NAME} "${SRC_DIR}/app/main.cpp")
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${INCLUDE_DIR}"
     "${INCLUDE_DIR}/game")
+target_compile_options(${PROJECT_NAME} PRIVATE ${PROJECT_WARNING_FLAGS})
 
 # 可執行的遊戲輸出為 ./build/umbrella、測試二進位為 ./build/umbrella_test（皆以 OUTPUT_NAME
 # 指定，與 README 的指令一致）；CMake 內部目標名仍為 OOP_Raylib_Lab / OOP_Raylib_Lab_tests。
@@ -68,6 +73,7 @@ if(GAME_SOURCES)
     add_library(${PROJECT_NAME}_lib ${GAME_SOURCES})
     target_include_directories(${PROJECT_NAME}_lib PUBLIC "${INCLUDE_DIR}")
     target_link_libraries(${PROJECT_NAME}_lib PUBLIC raylib)
+    target_compile_options(${PROJECT_NAME}_lib PRIVATE ${PROJECT_WARNING_FLAGS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_lib)
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
@@ -91,6 +97,7 @@ if(TEST_SOURCES AND TARGET ${PROJECT_NAME}_lib)
     add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
     set_target_properties(${PROJECT_NAME}_tests PROPERTIES OUTPUT_NAME umbrella_test)
     target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}_lib doctest::doctest)
+    target_compile_options(${PROJECT_NAME}_tests PRIVATE ${PROJECT_WARNING_FLAGS})
     target_compile_definitions(${PROJECT_NAME}_tests PRIVATE
         TEST_FIXTURES_DIR="${CMAKE_SOURCE_DIR}/tests/fixtures"
         TEST_CONTENT_DIR="${CMAKE_SOURCE_DIR}/docs/content"
