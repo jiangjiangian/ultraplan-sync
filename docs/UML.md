@@ -3,7 +3,12 @@
 本檔為《尋傘記》(C++20 / Raylib 5.5，俯視角敘事 RPG) 的系統架構與 UML 分析。它聚焦
 Assignment 5 評分項目 #7「UML Class Diagram」，並隨程式碼演進更新到目前的實作
 （含正在為 Assignment #6「吸血鬼倖存者」生存玩法鋪路的 ISystem 模擬管線與 `IMortal`
-角色介面）。所有圖以 Mermaid 撰寫，可在 GitHub / VS Code / Typora 直接渲染。
+角色介面）。所有圖以 Mermaid 撰寫；每張圖刻意拆到 ≤ 8 個類別以符合 GitHub 的
+Mermaid 渲染上限。**若你的 GitHub 仍對某張圖顯示「資訊過多無法渲染」**，有三個解法：
+(1) 把該圖的 ` ```mermaid ` 原始碼貼到 <https://mermaid.live> 直接檢視／匯出圖片；
+(2) 在本機以 mermaid-cli 預先渲染成圖片再內嵌：
+`npx -y @mermaid-js/mermaid-cli -i docs/UML.md -o docs/uml.svg`；
+(3) 用 VS Code 的 Markdown Preview Mermaid 外掛（離線即可渲染，不受 GitHub 上限限制）。
 
 > **為什麼把類別圖拆成好幾張？**
 > 早期版本把約 40 個類別塞進「一張」`classDiagram`。Mermaid／GitHub 會把整張圖
@@ -185,7 +190,7 @@ classDiagram
 ### 1a. 道具子樹（傘、消耗品、撿取物、看板）
 
 5 把傘共用同一個 `TransparentUmbrella` 抽象基底，外觀靠 `UmbrellaStyle` 區分（Domed /
-Broken / Spiked / Drooping），但各自覆寫純虛擬 `beClaimed()` 帶來不同後果——這是
+Broken / Spiked / Drooping），但各自覆寫純虛擬 `BeClaimed()` 帶來不同後果——這是
 **Template Method**。`ProfessorTrapUmbrella` 是第 5 把「陷阱傘」（非企劃原四把之一）。
 消耗品 `ConsumableItem` 同樣是中間層，多型動詞改為 `Consume()`（在「使用」時才生效，
 撿起只入袋）。`DlcSign` 刻意直接掛在 `GameObject` 下（它不是可撿的 `Item`）。
@@ -203,22 +208,38 @@ classDiagram
         #style: UmbrellaStyle
         +Render(r: IRenderer&)
         +Interact(initiator: Player*)
-        +beClaimed(player: Player*)*
+        +BeClaimed(player: Player*)*
     }
     class TrueUmbrella {
-        +beClaimed(player: Player*)
+        +BeClaimed(player: Player*)
     }
     class FragileUmbrella {
         -leakRate: float
-        +beClaimed(player: Player*)
+        +BeClaimed(player: Player*)
     }
     class ProfessorTrapUmbrella {
         -spawnedEnemiesCount: int
-        +beClaimed(player: Player*)
+        +BeClaimed(player: Player*)
     }
     class CursedUmbrella {
         -karmaPenalty: int
-        +beClaimed(player: Player*)
+        +BeClaimed(player: Player*)
+    }
+    Item <|-- TransparentUmbrella
+    TransparentUmbrella <|-- TrueUmbrella
+    TransparentUmbrella <|-- FragileUmbrella
+    TransparentUmbrella <|-- ProfessorTrapUmbrella
+    TransparentUmbrella <|-- CursedUmbrella
+```
+
+消耗品（中間層 `ConsumableItem`，多型動詞 `Consume()`）、撿取物與看板另成一張（同樣掛在 `Item` 下，`DlcSign` 例外直接掛 `GameObject`）：
+
+```mermaid
+classDiagram
+    direction TB
+    class Item {
+        <<Abstract>>
+        +OnPickup(player: Player*)*
     }
     class ConsumableItem {
         <<Abstract>>
@@ -248,15 +269,9 @@ classDiagram
         +Render(r: IRenderer&)
         +Interact(initiator: Player*)
     }
-
-    Item <|-- TransparentUmbrella
     Item <|-- ConsumableItem
     Item <|-- CashPickup
     Item <|-- QuestFlagPickup
-    TransparentUmbrella <|-- TrueUmbrella
-    TransparentUmbrella <|-- FragileUmbrella
-    TransparentUmbrella <|-- ProfessorTrapUmbrella
-    TransparentUmbrella <|-- CursedUmbrella
     ConsumableItem <|-- EnergyDrink
     ConsumableItem <|-- HotPack
     ConsumableItem <|-- WaterproofSpray
@@ -271,14 +286,14 @@ classDiagram
 
 | 類別 | 檔案 |
 |---|---|
-| `GameObject` / `Character` / `Item` | `include/entities/{GameObject,Character,Item}.h` |
-| `Roles.h`（`IUpdatable`/`IDrawable`/`IInteractable`/`IMortal`/`WithRoles`/`ForEachRole`） | `include/entities/Roles.h` |
-| `Player` | `include/entities/Player.h` + `src/entities/Player.cpp` |
-| `NPC` | `include/entities/NPC.h` + `src/entities/NPC.cpp` |
-| `TransparentUmbrella` + 4 葉類別 | `include/entities/{TransparentUmbrella,TrueUmbrella,FragileUmbrella,ProfessorTrapUmbrella,CursedUmbrella}.h` |
-| `ConsumableItem` + 3 葉類別 | `include/entities/{ConsumableItem,EnergyDrink,HotPack,WaterproofSpray}.h` |
-| `CashPickup` / `QuestFlagPickup` / `DlcSign` | `include/entities/{CashPickup,QuestFlagPickup,DlcSign}.h` |
-| `GameObjectFactory`（`ObjectType` 列舉 → 12 種） | `include/controller/GameObjectFactory.h` + `src/controller/GameObjectFactory.cpp` |
+| `GameObject` / `Character` / `Item` | `include/engine/core/GameObject.h`、`include/game/entities/{Character,Item}.h` |
+| `Roles.h`（`IUpdatable`/`IDrawable`/`IInteractable`/`IMortal`/`WithRoles`/`ForEachRole`） | `include/engine/core/Roles.h` |
+| `Player` | `include/game/entities/Player.h` + `src/game/entities/Player.cpp` |
+| `NPC` | `include/game/entities/NPC.h` + `src/game/entities/NPC.cpp` |
+| `TransparentUmbrella` + 4 葉類別 | `include/game/entities/{TransparentUmbrella,TrueUmbrella,FragileUmbrella,ProfessorTrapUmbrella,CursedUmbrella}.h` |
+| `ConsumableItem` + 3 葉類別 | `include/game/entities/{ConsumableItem,EnergyDrink,HotPack,WaterproofSpray}.h` |
+| `CashPickup` / `QuestFlagPickup` / `DlcSign` | `include/game/entities/{CashPickup,QuestFlagPickup,DlcSign}.h` |
+| `GameObjectFactory`（`ObjectType` 列舉 → 12 種） | `include/game/controller/GameObjectFactory.h` + `src/game/controller/GameObjectFactory.cpp` |
 
 ---
 
@@ -404,7 +419,7 @@ stateDiagram-v2
 > `FragileBroken` 破傘）。結局判定不再只掛在對話確認當下，而是每個非對話幀輪詢
 > `CheckEndingGates`；舊的「Ch1 買醜傘 → C」sibling-if 已移除，真正的 C 觸發點改為
 > Ch4 集英樓便利商店的 `Vendor`（設 `Flag_BoughtUglyUmbrella`）。詳見
-> `src/state/EndingGate.cpp`。
+> `src/game/state/EndingGate.cpp`。
 
 ---
 
@@ -700,11 +715,11 @@ classDiagram
 
 ## 6. 系統互動：循序圖（Sequence Diagrams）
 
-### 6a. E 互動 → 多型 beClaimed → EventBus（保留並更新自原版）
+### 6a. E 互動 → 多型 BeClaimed → EventBus（保留並更新自原版）
 
 展示玩家按 `E` 與一把未知透明傘互動時，**多型動態綁定 + Observer 解耦** 如何協作。
 注意：互動偵測現在發生在 `GameController::DispatchInteract()`（E-probe reach box），
-傘的具體後果由 vtable 綁定到 `CursedUmbrella::beClaimed`，再經 `EventBus` 廣播；物件
+傘的具體後果由 vtable 綁定到 `CursedUmbrella::BeClaimed`，再經 `EventBus` 廣播；物件
 不立即刪除，改標記 `isActive_=false`，於幀末 `World::Sweep()` 統一清除。
 
 ```mermaid
@@ -722,7 +737,7 @@ sequenceDiagram
     Note over GC: ForEachActiveExcept(objects, player, ...)<br/>找到 CheckCollision 命中的 GameObject
     GC->>U: o.AsInteractable()->Interact(player)
     Note over U,C: vtable 動態綁定到 CursedUmbrella
-    U->>C: beClaimed(player)
+    U->>C: BeClaimed(player)
     C->>P: AddKarma(-30) / SetHeldUmbrella(Cursed)
     C->>Bus: Publish(UmbrellaClaimed)
     C->>Bus: Publish(KarmaChanged)
@@ -771,7 +786,7 @@ sequenceDiagram
 | 模式 | 落點 | 角色 |
 |---|---|---|
 | **Factory Method** | `GameObjectFactory::Create(ObjectType, Vec2)` | 由 `ObjectType` 列舉動態產生 12 種具體 `GameObject`（4 傘 + 3 消耗品 + Vendor + 3 種金幣 + Player） |
-| **Template Method** | `TransparentUmbrella::beClaimed`（純虛）、`ConsumableItem::Consume`（純虛） | 傘的 4 子類別提供 4 種被拾取行為；消耗品 3 子類別提供 3 種使用效果 |
+| **Template Method** | `TransparentUmbrella::BeClaimed`（純虛）、`ConsumableItem::Consume`（純虛） | 傘的 4 子類別提供 4 種被拾取行為；消耗品 3 子類別提供 3 種使用效果 |
 | **Observer** | `EventBus::Subscribe` / `ScopedSubscribe` / `Publish` | UI/HUD 訂閱 `ShowMessage`、`KarmaChanged`、`UmbrellaClaimed`、`EnteredBuilding`、`PickupAcquired`；`Subscription` 為 RAII 退訂 token (H1) |
 | **State** | `SemesterStateMachine` + `IChapterState` 的 5 個具體章節狀態 | 學期 5 章 + 4 結局（結局以哨兵記錄，非狀態物件）之間的轉換 |
 | **Strategy / Pipeline（新）** | `ISystem::Run` 的 5 個 stage（Survival/Movement/Collision/Spawn/Sweep），由 `GameController` 依序執行 | 把原本約 793 行 god-method 拆成可組合、可重排、可單獨測試的 model 端 stage；Assignment #6 生存玩法可直接擴充 `CollisionSystem`／加 Spawner |

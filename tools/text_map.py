@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
-"""text_map.py — text↔flag↔code dependency map for 《尋傘記》.
+"""text_map.py — 《尋傘記》的「文字↔旗標↔程式碼」相依關係圖。
 
-Game text lives in TWO homes, which is what makes "will this dialogue logic
-break?" hard to see:
-  - narrative dialogue   → docs/content/*.md   (runtime-loaded by DialogLoader)
-  - UI / system strings  → src/ + include/      (.h/.cpp string literals)
-  - branch LOGIC          → Flag_* set in one place, read in another
+遊戲文字分散在兩處，這正是「改了這段對話邏輯會不會壞掉」難以一眼看出的
+原因：
+  - 敘事對話        → docs/content/*.md  （執行期由 DialogLoader 載入）
+  - UI／系統字串    → src/ + include/    （.h/.cpp 內的字串字面值）
+  - 分支邏輯        → Flag_* 在某處設定、又在另一處讀取
 
-This tool stitches those together. For every Flag_* it records WHERE it is
-SET (a content `Flag_X = true` directive, a code SetFlag, OR a data-driven
-wire — a "Flag_X" literal handed to a DialogChoice / pickup ctor) and WHERE
-it is READ (HasFlag, by string literal OR a resolved `kFlag* = "Flag_*"`
-constant). So editing one file shows the related files, and it surfaces:
-  - SET but never READ  → dead flag / dead dialogue branch (B3 class)
-  - READ but never SET  → orphan gate (a branch that can never fire)
+本工具把這些串接起來。對每個 Flag_*，它都記錄「在哪裡被設定」（content 內
+的 `Flag_X = true` 指令、程式碼裡的 SetFlag，或是資料驅動的接線——交給
+DialogChoice／拾取物建構子的 "Flag_X" 字面值）以及「在哪裡被讀取」（HasFlag，
+不論是字串字面值或解析後的 `kFlag* = "Flag_*"` 常數）。因此改動任一檔案就能
+看出相關檔案，並會浮現：
+  - 有設定卻從未讀取 → 死旗標／死對話分支
+  - 有讀取卻從未設定 → 孤兒關卡（永遠觸發不到的分支）
 
-Flag names reach SetFlag/HasFlag three ways here, all handled:
-  1. string literal:   SetFlag("Flag_X") / HasFlag("Flag_X")
-  2. named constant:   kFlagX = "Flag_X"; HasFlag(kFlagX)
-  3. data-driven wire: DialogChoice{.., "Flag_X", ..}; SetFlag(choice.setsFlag)
-                       QuestFlagPickup(pos, "Flag_X")  → SetFlag(flagName_)
+旗標名會以三種方式抵達 SetFlag／HasFlag，皆已處理：
+  1. 字串字面值：  SetFlag("Flag_X") / HasFlag("Flag_X")
+  2. 具名常數：    kFlagX = "Flag_X"; HasFlag(kFlagX)
+  3. 資料驅動接線：DialogChoice{.., "Flag_X", ..}; SetFlag(choice.setsFlag)
+                   QuestFlagPickup(pos, "Flag_X")  → SetFlag(flagName_)
 
-Emits docs/text-map.md (mermaid + tables + drift). No LLM, no deps — same
-spirit as tools/docs_graph.py. LangGraph would be the wrong tool: this is
-deterministic static analysis, not an agent workflow.
+輸出 docs/text-map.md（mermaid + 表格 + 漂移警告）。純靜態分析，不需 LLM 或
+外部相依套件，與 tools/docs_graph.py 同一思路。
 
-Usage:  python3 tools/text_map.py [out.md]      # default docs/text-map.md
+用法：  python3 tools/text_map.py [out.md]      # 預設 docs/text-map.md
 """
 from __future__ import annotations
 import re
@@ -46,16 +45,30 @@ CJK_LITERAL_RX = re.compile(r'"[^"\n]*[㐀-鿿＀-￯][^"\n]*"')
 
 
 def rel(p: Path) -> str:
+    """回傳路徑相對於專案根目錄的字串。
+
+    參數：
+        p：絕對路徑。
+    回傳：
+        相對於 ROOT 的路徑字串。
+    """
     return str(p.relative_to(ROOT))
 
 
 def code_files() -> list[Path]:
+    """蒐集要掃描的 C++ 原始碼檔清單。
+
+    無參數。
+    回傳：
+        CODE_DIRS 底下所有 .cpp／.h 檔的路徑清單，已排除 build 與
+        harness 目錄。
+    """
     out = []
     for base in CODE_DIRS:
         for p in sorted(base.rglob("*")):
-            # Skip build artifacts and the harness: the harness only LISTS
-            # flag literals for the state.jsonl dump (instrumentation), not
-            # real set/read logic, so it would pollute the set-sites.
+            # 略過建置產物與測試框架：harness 只是為了 state.jsonl 傾印而
+            # 「列出」旗標字面值（屬於儀器化），並非真正的設定／讀取邏輯，
+            # 納入會污染設定點。
             if p.suffix in (".cpp", ".h") and "build" not in p.parts \
                     and "harness" not in p.parts:
                 out.append(p)
@@ -63,7 +76,14 @@ def code_files() -> list[Path]:
 
 
 def call_args(line: str, fn: str) -> list[str]:
-    """Tokens passed to fn( on this line: the "Flag_X" literal or a kConst."""
+    """擷取本行傳給 fn( 的引數：可能是 "Flag_X" 字面值或某個 kConst 常數。
+
+    參數：
+        line：原始碼的一行文字。
+        fn：要比對的函式名稱（例如 HasFlag、SetFlag）。
+    回傳：
+        (kind, value) 元組清單，kind 為 "lit"（字面值）或 "const"（常數）。
+    """
     out = []
     for m in re.finditer(re.escape(fn) + r'\(\s*([^),]+)', line):
         arg = m.group(1).strip()
@@ -76,13 +96,19 @@ def call_args(line: str, fn: str) -> list[str]:
 
 
 def main() -> int:
+    """主流程：建立旗標的設定／讀取點索引並寫出 text-map.md。
+
+    無參數。掃描 docs/content 與 src／include，把每個 Flag_* 的設定點、
+    讀取點與內容檔歸檔，再組出文字分佈說明、mermaid 圖、旗標表與漂移
+    警告寫入輸出檔，回傳行程結束碼 0。
+    """
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
 
-    # flag -> kind -> set(files)
+    # 結構：flag -> kind -> 檔案集合
     sites: dict[str, dict[str, set[str]]] = defaultdict(lambda: defaultdict(set))
     ui_files: set[str] = set()
 
-    # ---- content ----
+    # ---- 內容檔 ----
     content_files = sorted(CONTENT.glob("*.md"))
     for p in content_files:
         text = p.read_text(encoding="utf-8", errors="replace")
@@ -92,7 +118,7 @@ def main() -> int:
         for fl in set(FLAG_RX.findall(text)):
             sites[fl]["content"].add(name)
 
-    # ---- code: pass 1, resolve kName -> Flag_X ----
+    # ---- 程式碼：第 1 趟，解析 kName -> Flag_X ----
     const_map: dict[str, str] = {}
     code_text: dict[str, str] = {}
     for p in code_files():
@@ -103,7 +129,7 @@ def main() -> int:
         if CJK_LITERAL_RX.search(t):
             ui_files.add(rel(p))
 
-    # ---- code: pass 2, classify per line ----
+    # ---- 程式碼：第 2 趟，逐行分類 ----
     def resolve(tok):
         kind, val = tok
         return val if kind == "lit" else const_map.get(val)
@@ -120,8 +146,8 @@ def main() -> int:
                 sites[fl]["read"].add(name)
             for fl in filter(None, sets):
                 sites[fl]["set"].add(name)
-            # any remaining literal NOT consumed by HasFlag = a set-wire
-            # (DialogChoice payload / pickup ctor → SetFlag(var) elsewhere)
+            # 其餘未被 HasFlag 取用的字面值即視為設定接線
+            # （DialogChoice 載荷／拾取物建構子 → 在別處 SetFlag(var)）
             consumed = set(filter(None, reads)) | set(filter(None, sets))
             for fl in FLAG_LIT_RX.findall(line):
                 if fl not in consumed and "HasFlag" not in line:
