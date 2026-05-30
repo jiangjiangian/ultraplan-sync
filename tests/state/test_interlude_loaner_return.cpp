@@ -46,7 +46,7 @@ bool HasReturnMarker(const World& w) {
 } // namespace
 
 // 歸還管理員的傘給一次 +10 業力並清除借傘；重複互動不再加分（冪等）。
-TEST_CASE("G-3: returning 管理員的傘 grants +10 ONCE, clears the loaner") {
+TEST_CASE("歸還管理員的傘給一次 +10 業力並清除借傘（冪等）") {
     EventBus::Instance().Clear();
     Player p = MakePlayer();
     GiveLoaner(p);
@@ -74,7 +74,7 @@ TEST_CASE("G-3: returning 管理員的傘 grants +10 ONCE, clears the loaner") {
 }
 
 // 歸還只在第二章→第三章的市集、且對正確 NPC、持有借傘時才生效。
-TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker") {
+TEST_CASE("歸還只在 Ch2→Ch3 市集、對正確 NPC、持有借傘時才生效") {
     EventBus::Instance().Clear();
 
     // 回程目的地不對的市集（例如第一章→第二章，returnTo 是第二章）：
@@ -121,8 +121,7 @@ TEST_CASE("G-3: the loaner-return is scoped to the Ch2→Ch3 market + the marker
 }
 
 // 歸還點地標只在第二章→第三章的市集、且持有借傘時生成，且僅生成一次。
-TEST_CASE("G-3: the return-point marker spawns ONLY in the Ch2→Ch3 market "
-          "while holding the loaner") {
+TEST_CASE("歸還點地標只在 Ch2→Ch3 市集且持有借傘時生成，且僅一次") {
     World w("", /*loadSprites=*/false);
 
     // 第一章（無幕間）：無地標。
@@ -152,7 +151,7 @@ TEST_CASE("G-3: the return-point marker spawns ONLY in the Ch2→Ch3 market "
 }
 
 // 跳過歸還是安全的 — 借傘會在進入第三章時自動清除。
-TEST_CASE("G-3: skipping the return is safe — the loaner auto-clears on Ch3") {
+TEST_CASE("跳過歸還是安全的：借傘會在進入 Ch3 時自動清除") {
     // 地標只在持有借傘時出現；若玩家直接走過，SceneRouter 進第三章的重置仍會
     // 清空手持的傘（無業力）。此處固定「歸還純屬可選、絕非關卡門檻」：從不歸還
     // 的玩家照樣在進第三章時失去傘並繼續遊戲。

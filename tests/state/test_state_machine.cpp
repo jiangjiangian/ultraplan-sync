@@ -10,14 +10,14 @@ using nccu::SemesterState;
 using nccu::SemesterStateMachine;
 
 // 狀態機建立後預設停在第一章。
-TEST_CASE("SemesterStateMachine starts in Chapter1_AddDrop") {
+TEST_CASE("SemesterStateMachine 建立後預設停在 Chapter1_AddDrop") {
     SemesterStateMachine m;
     CHECK(m.Current() == SemesterState::Chapter1_AddDrop);
     CHECK(m.CurrentName() == "第一章 加退選");
 }
 
 // Transition 會切換到指定列舉狀態，並更新對應的顯示名稱。
-TEST_CASE("SemesterStateMachine: Transition follows enum") {
+TEST_CASE("SemesterStateMachine：Transition 會切換到指定列舉狀態並更新名稱") {
     SemesterStateMachine m;
     m.Transition(SemesterState::Interlude_Market);
     CHECK(m.Current() == SemesterState::Interlude_Market);
@@ -29,7 +29,7 @@ TEST_CASE("SemesterStateMachine: Transition follows enum") {
 }
 
 // 轉移到任一結局狀態後，CurrentName 會回報對應的結局名稱。
-TEST_CASE("SemesterStateMachine: endings drop state_ and report ending name") {
+TEST_CASE("SemesterStateMachine：轉移到結局狀態後 CurrentName 回報結局名稱") {
     SemesterStateMachine m;
     m.Transition(SemesterState::Ending_A);
     CHECK(m.Current() == SemesterState::Ending_A);
@@ -48,7 +48,7 @@ TEST_CASE("SemesterStateMachine: endings drop state_ and report ending name") {
 }
 
 // Update 在任何狀態下呼叫都安全，即使結局狀態下內部 state_ 為空。
-TEST_CASE("SemesterStateMachine::Update is safe at every state") {
+TEST_CASE("SemesterStateMachine::Update 在任何狀態下呼叫都安全") {
     SemesterStateMachine m;
     m.Update(0.016f);
     m.Transition(SemesterState::Ending_A);

@@ -44,7 +44,7 @@ struct Spy final : nccu::engine::render::IRenderer {
 // 避免日後回退。
 
 // 佈局會沿帶狀區產生虛線段。
-TEST_CASE("InterludeExitMarker: layout produces dashes along the band") {
+TEST_CASE("InterludeExitMarker：佈局會沿帶狀區產生虛線段") {
     // 相位為 0 的確定性佈局至少要產生一段虛線；若回退成空清單（迴圈零步、
     // 邊界差一），整個視覺會悄悄消失。
     const auto L = nccu::LayoutInterludeExitMarker(0.0f);
@@ -66,7 +66,7 @@ TEST_CASE("InterludeExitMarker: layout produces dashes along the band") {
 }
 
 // 虛線橫跨整條走廊，因此會有多段。
-TEST_CASE("InterludeExitMarker: spans the corridor (multiple dashes)") {
+TEST_CASE("InterludeExitMarker：虛線橫跨整條走廊（多段）") {
     // 走廊寬 1800 px（150..1950）。以 40px 虛線 + 20px 間隔（週期 60）計算，
     // 完整一輪約有 30 段。此處設一個寬鬆下界，確保日後調整虛線尺寸時仍能
     // 真正「鋪滿走廊」。
@@ -75,7 +75,7 @@ TEST_CASE("InterludeExitMarker: spans the corridor (multiple dashes)") {
 }
 
 // 相位 0 與相位等於一個完整週期時，結果相同（具週期性）。
-TEST_CASE("InterludeExitMarker: phase 0 ≡ phase period (periodic)") {
+TEST_CASE("InterludeExitMarker：相位 0 與相位等於一個完整週期時結果相同（週期性）") {
     // 相位參數以虛線週期取模；相位等於一個完整週期時，產生的虛線清單必須與
     // 相位 0 相同 — 否則動畫累加器會隨時間讓視覺漂移。
     const float period = nccu::kInterludeMarkerDashLen +
@@ -91,7 +91,7 @@ TEST_CASE("InterludeExitMarker: phase 0 ≡ phase period (periodic)") {
 }
 
 // 相位偏移會把虛線往東移動相位對應的像素數。
-TEST_CASE("InterludeExitMarker: phase shifts dashes east by phase pixels") {
+TEST_CASE("InterludeExitMarker：相位偏移會把虛線往東移動相位對應的像素數") {
     // 一個小於間隔長度的相位偏移，會把每段未被裁切虛線的前緣往東移動恰好
     // 該量 — 即視覺上的流動效果。
     const auto A = nccu::LayoutInterludeExitMarker(0.0f);
@@ -109,7 +109,7 @@ TEST_CASE("InterludeExitMarker: phase shifts dashes east by phase pixels") {
 }
 
 // 每段虛線繪製兩個矩形：陰影 + 金色本體。
-TEST_CASE("InterludeExitMarker: draw emits shadow+gold per dash") {
+TEST_CASE("InterludeExitMarker：每段虛線繪製陰影+金色本體兩個矩形") {
     // 繪製器對每段虛線畫兩個矩形（陰影 + 金色本體），與任務指示器採用相同的
     // 兩道繪製手法。若回退而漏掉陰影，仍會畫出東西，但在明亮地磚上會看不清。
     Spy spy;
@@ -122,7 +122,7 @@ TEST_CASE("InterludeExitMarker: draw emits shadow+gold per dash") {
 }
 
 // 金色本體用 #FFC83D，陰影為深色半透明。
-TEST_CASE("InterludeExitMarker: gold body uses #FFC83D, shadow is dark") {
+TEST_CASE("InterludeExitMarker：金色本體用 #FFC83D，陰影為深色半透明") {
     // 固定顏色契約 — 此金色與任務指示器面板一致，使兩種視覺提示共用同一調色盤。
     Spy spy;
     nccu::DrawInterludeExitMarker(spy, 0.0f);
@@ -148,7 +148,7 @@ TEST_CASE("InterludeExitMarker: gold body uses #FFC83D, shadow is dark") {
 }
 
 // 地標必須位於出口區的北緣。
-TEST_CASE("InterludeExitMarker: marker lives at the exit zone NORTH edge") {
+TEST_CASE("InterludeExitMarker：地標必須位於出口區的北緣") {
     // 地標必須落在出口區的門檻（y==minY）而非其下方 — 否則玩家會在看到線之前
     // 就已跨入觸發帶，違背「提前預警」的用意。
     Spy spy;
