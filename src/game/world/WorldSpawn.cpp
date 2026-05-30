@@ -24,11 +24,15 @@
 #include <string_view>
 #include <vector>
 
-// SpawnChapterNpcs + 4 個自我閘控的 MaybeSpawn 輔助函式 + SpawnChapterQuestItems
-// 從 World.cpp 抽出（847->220 行）。它們是 World 的成員，此處「只」放實作。.h 的
-// 宣告與每個成員存取皆未變動——C++ 允許將類別實作依檔案分割，CMake 的 GLOB 也會自動
-// 納入此 TU。行為完全不變；所有成員狀態變動（objects_、chapterRoster_、ch*Spawned_）
-// 皆與它們所取代的內聯區塊逐位元相同。
+/**
+ * @file WorldSpawn.cpp
+ * @brief World 的章節生成實作：SpawnChapterNpcs、四個自我閘控的 MaybeSpawn 輔助函式，
+ *        以及 SpawnChapterQuestItems。
+ *
+ * 這些都是 World 的成員，僅為控制單檔長度而與 World.cpp 拆到獨立 TU；類別宣告與成員
+ * 存取皆不變。所有成員狀態變動（objects_、chapterRoster_、ch*Spawned_）的語意，與拆分
+ * 前完全一致。
+ */
 
 namespace nccu {
 

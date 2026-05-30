@@ -76,16 +76,12 @@ const std::vector<VendorPlacement>& BuildInterlude() {
 
 }  // namespace
 
-// Ch2 圖書館地下室自動販賣機 (chapter2.md 學霸 (c-fail) / §五.3): the
-// anti-softlock fallback so a player who did not buy an EnergyDrink in
-// the market can still wake 學霸. One stall, EnergyDrink at the same 35
-// the market charges (unlimited stock — a machine never sells out). A
-// hand-written 3-field VendorConfig literal (the pinned aggregate
-// contract). Positioned at the 中正圖書館 front (just south of the
-// library rect, beside the 管理員 desk) so the "圖書館地下室自販機" name
-// matches where it stands — the old (660,1850) south-band spot sat
-// ~1.3k px from the library it is named after (caught by
-// map_registry.py's Ch2 vendor↔中正圖書館 expectation check).
+// Ch2 圖書館地下室自動販賣機：防卡關的後備手段，讓沒在市集買到 EnergyDrink
+// 的玩家仍能喚醒學霸。單一攤位，EnergyDrink 售價與市集相同（35），庫存無限——
+// 販賣機不會售罄。以手寫的三欄位 VendorConfig 字面常數建構。位置擺在中正圖書館
+// 正面（圖書館矩形南緣、管理員櫃台旁），使「圖書館地下室自販機」這個名稱與其
+// 所在地相符——舊的南側帶狀位置距它命名所指的圖書館約 1.3k px（曾被地圖檢查的
+// Ch2 攤販對中正圖書館 的預期檢查抓到）。
 const std::vector<VendorPlacement>& Chapter2Vendors() {
     static const std::vector<VendorPlacement> kCh2 = {
         VendorPlacement{
@@ -100,19 +96,14 @@ const std::vector<VendorPlacement>& Chapter2Vendors() {
     return kCh2;
 }
 
-// Ch4 集英樓便利商店 (chapter4.md L11/L295): the Ending C trigger.
-// One stall selling the 超醜螢光綠雨傘; the buy SetFlag's
-// Flag_BoughtUglyUmbrella (VendorItem::setsFlag, S5e-2b) and
-// CheckEndingGates routes Ending C. Price is a fixed 100 — the
-// chapter4.md「花光所有遊戲幣」is flavour, not a mechanic (a
-// money-equal price would be fragile); unlimited stock. The ugly
-// umbrella is deliberately NOT in the Interlude market (kept here so
-// Ending C stays a Ch4 集英樓 act, per SCRIPT_HANDOFF / C.1).
-// Rendered as a vending machine (player request) and moved to the west
-// face of 集英樓 (1524,1353)-(1748,1545) so it finally stands AT the
-// 集英樓 it is named after — the old (1180,1725) spot sat ~340 px west,
-// nowhere near the building (position audit). Machine 3 art distinguishes
-// it from the Ch2 圖書館 machine (Machine 1).
+// Ch4 集英樓便利商店：Ending C 的觸發點。單一攤位販售超醜螢光綠雨傘；購買時
+// 透過 VendorItem::setsFlag 設定 kFlagBoughtUglyUmbrella，CheckEndingGates 據此
+// 導向 Ending C。價格固定為 100——劇本中「花光所有遊戲幣」是氛圍敘述而非機制
+// （以等同身上金錢的價格會很脆弱）；庫存無限。這把醜傘刻意「不」放進市集插曲，
+// 留在此處，使 Ending C 維持為 Ch4 集英樓 的橋段。渲染為販賣機，並移到集英樓
+// 矩形 (1524,1353)-(1748,1545) 的西側面，使其終於座落在命名所指的集英樓——舊的
+// 位置偏西約 340 px，離該建物很遠。採用 Machine 3 的美術以與 Ch2 圖書館販賣機
+//（Machine 1）區隔。
 const std::vector<VendorPlacement>& Chapter4Vendors() {
     static const std::vector<VendorPlacement> kCh4 = {
         VendorPlacement{
@@ -133,12 +124,12 @@ const std::vector<VendorPlacement>& ChapterVendors(SemesterState state) {
     if (state == SemesterState::Interlude_Market) return BuildInterlude();
     if (state == SemesterState::Chapter2_Midterms) return Chapter2Vendors();
     if (state == SemesterState::Chapter4_Finals)   return Chapter4Vendors();
-    return kNone;  // Ch3 has no incidental Vendor (its quest is NPC trades)
+    return kNone;  // Ch3 沒有附帶的 Vendor（其任務是 NPC 之間的物物交換）
 }
 
 void SetVendorContentDir(std::string dir) {
     VendorContentDir() = std::move(dir);
-    InterludeCache().reset();   // dir change invalidates the parse
+    InterludeCache().reset();   // 目錄改變即令先前的解析結果失效
 }
 
 void ReloadVendors() {

@@ -9,8 +9,19 @@
 
 #include <string>
 
+/**
+ * @file MenuAffordance.cpp
+ * @brief HUD 右上角的選單提示：恆亮的「M 選單」小標籤，告知玩家有戲內選單可開。
+ */
+
 namespace nccu {
 
+/**
+ * @brief 繪製右上角的選單提示標籤。
+ *
+ * 提示遊戲存在可開啟的選單（「M 選單」）；以深色面板襯底，使其在任何地圖底磚上都
+ * 清楚可讀。選單本身開啟時隱藏此提示（選單會取代它），避免重複顯示。
+ */
 void DrawMenuAffordance(nccu::engine::render::IRenderer& r,
                         const World& world,
                         float screenW,
@@ -18,9 +29,6 @@ void DrawMenuAffordance(nccu::engine::render::IRenderer& r,
     using namespace nccu::engine::render;
     using namespace nccu::engine::math;
 
-    // Top-right affordance: a small always-on hint that an in-game menu
-    // exists ("M 選單"). Panel-backed so it stays legible on any tile;
-    // hidden while the menu itself is open (the menu replaces it).
     if (world.MenuOpen()) return;
 
     constexpr float kAffSize = 14.0f;
@@ -29,7 +37,7 @@ void DrawMenuAffordance(nccu::engine::render::IRenderer& r,
     int glyphs = 0;
     for (unsigned char c : aff)
         if ((c & 0xC0) != 0x80) ++glyphs;
-    // "M " is 1 narrow + 選單 2 wide → estimate width generously.
+    // 「M 」為 1 個窄字＋選單 2 個全形寬字，故寬度估計取寬鬆值以容納全形格。
     const float tw = static_cast<float>(glyphs) * kAffSize;
     const float panelW = tw + kPad * 2.0f;
     const float panelH = kAffSize + kPad * 2.0f;

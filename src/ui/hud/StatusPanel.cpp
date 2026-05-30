@@ -129,8 +129,7 @@ void DrawStatusPanel(nccu::engine::render::IRenderer& r, const World& world) {
         y += kLineH;
     }
     if (p) {
-        // Gold so the purse reads at a glance and matches the coin
-        // motif; stays on the dark panel so it pops on any map tile.
+        // 金色使錢包一眼可讀且呼應金幣意象；畫在深色面板上，故在任何地圖底磚上都突出。
         TextBuilder{mbuf}
             .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::Gold).Draw();
         y += kLineH;
@@ -144,8 +143,7 @@ void DrawStatusPanel(nccu::engine::render::IRenderer& r, const World& world) {
         .At(Vec2{kHudX, y}).Size(kHudSize).Color(Colors::Gold).Draw();
     y += kLineH;
     if (p) {
-        // Rain readout colour ramps with the meter so the rising risk
-        // is legible at a glance (tiers mirror the vignette below).
+        // 降雨讀數的顏色隨計量值漸變，使上升中的風險一眼可辨（等級對應下方的暗角效果）。
         const float rm = p->GetRainMeter();
         const Color rc = rm >= 85.0f ? Colors::Red
                        : rm >= 60.0f ? Colors::Gold

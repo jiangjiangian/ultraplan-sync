@@ -5,10 +5,14 @@
 #include "engine/math/Vec2.h"
 #include <cmath>
 
-// 校慶運動會的三個跑圈輔助函式，從 World.cpp 抽到獨立 TU——它們是 World 的成員，
-// 此處「只」放實作；宣告與成員存取皆未變動。UpdateSportsLap 由模擬管線每幀呼叫，
-// 讀寫玩家身上的跑圈進度狀態；兩個 const 取值器則餵給 HUD 的跑圈環。
-// 行為完全不變；仍是同樣的 atan2 + π 取最短角差 + 寫入跑圈完成旗標。
+/**
+ * @file WorldSportsLap.cpp
+ * @brief World 的校慶運動會跑圈邏輯：UpdateSportsLap 每幀累計繞圈角度並於滿圈時設旗標，
+ *        兩個 const 取值器則把進度餵給 HUD 的跑圈環。
+ *
+ * 為控制單檔長度而與 World.cpp 拆到獨立 TU；皆為 World 的成員，宣告與成員存取皆不變。
+ * 以 atan2 取角度、加減 π 求最短有號角差，避免跨越 ±π 邊界時誤算方向。
+ */
 
 namespace nccu {
 
