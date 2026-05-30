@@ -438,7 +438,7 @@ Controller 以固定順序執行，並透過 `SimContext` 串接。這正是 Ass
 classDiagram
     direction TB
     class World {
-        -objects: vector~unique_ptr~GameObject~~
+        -objects: ObjectList
         -player: Player*
         -semester: SemesterStateMachine
         -terrainMask: CollisionMask
@@ -452,7 +452,7 @@ classDiagram
     }
     class GameController {
         -world: World&
-        -advanceSystems: vector~unique_ptr~ISystem~~
+        -advanceSystems: vector~ISystem~
         -sweep: SweepSystem
         -sceneRouter: SceneRouter
         -input: InputHandler
@@ -502,7 +502,7 @@ classDiagram
     ISystem <|.. CollisionSystem
     ISystem <|.. SpawnSystem
     ISystem <|.. SweepSystem
-    GameController o-- "1..*" ISystem : ordered pipeline
+    GameController o-- ISystem : ordered pipeline (1..*)
     GameController ..> SimContext : threads per frame
     GameController --> World : mutates
     GameController ..> QuestHookTable : RunInteractHooks
