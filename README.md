@@ -112,7 +112,7 @@ ctest --test-dir build      # 或透過 CTest 執行
 
 本專案為 GitHub Classroom 課程作業。以下保留原始作業規格與繳交說明。
 
-- **Due:** 2026/5/12 23:59:59
+- **Due:** 2026/6/9 23:59:59
 - **Author:** jiangjiangian
 - **Contact:** <iansu0924@gmail.com>
 
