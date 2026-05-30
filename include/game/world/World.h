@@ -8,7 +8,7 @@
 #include "game/state/SemesterStateMachine.h"
 #include "game/world/BuildingTracker.h"
 #include "game/world/CollisionMask.h"
-#include "game/world/WorldOptions.h"  // Plan P2 step 4: ctor-injected accessibility flags
+#include "game/world/WorldOptions.h"  // 由建構子注入的無障礙旗標
 #include "game/dialog/DialogState.h"
 #include <memory>
 #include <string>

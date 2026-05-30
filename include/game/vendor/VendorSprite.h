@@ -20,7 +20,7 @@ namespace nccu {
  *     路徑為十個攤位挑出同一張 sprite）。
  *   - 退路（PIPOYA 資源包缺席時——即乾淨 clone／評分重建——由 PickNpcSprite 原樣
  *     回傳）是依生成索引挑選、外觀彼此分明的精選 sprite，在實際隨附的 sprite
- *     （school_uniform_3/* 與三個 npc/* 角色，不新增美術）間循環取用。舊版對每個
+ *     （school_uniform_3 與三個 npc 角色，不新增美術）間循環取用。舊版對每個
  *     攤位都用同一張 shop_auntie.png，故乾淨 clone 會畫出十個一模一樣的分身——正是
  *     回報的缺陷。
  */
