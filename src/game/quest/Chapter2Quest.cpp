@@ -71,11 +71,16 @@ void TryRescueBookworm(EventBus& bus, Player& player,
     }
 
     // 章節內容學霸 (d) `// karma +5` + 第二章結算旗標 Flag_BookwormRecovered。交換內容：
-    // 筆記 <-> 玩家的傘。走另一條路徑：(d) 引用區塊不帶 `Flag_… = true` 註記，故開場的
-    // 一次性套用絕不會觸發它——它在「此處」、於任務完成的程式碼點設下（與 QuestFlagPickup
-    // ／換回傘 的先例一致：程式碼設下里程碑旗標，(d) 對話只是致謝回顧）。此處不消耗能量
-    // 飲料——它已在上方喚醒步驟用掉。
-    player.AddKarma(5).SetFlag(kFlagBookwormRecovered);
+    // 筆記 <-> 玩家的傘——學霸把真傘還回玩家手上（SetHeldUmbrella(True)：手持列＋自動遮蔽）。
+    // 刻意「不」設 Flag_HasTrueUmbrella（進入下一章即清除，且結局閘只在 Ch4 讀它），故無結局
+    // 後果——只是讓背包誠實顯示「換回的真傘」。若玩家同時持有管理員借傘，借傘是另一條由
+    // Flag_LibrarianUmbrella 驅動的獨立列，與真傘並存、互不覆蓋（見 BuildInventoryRows）。
+    // 走另一條路徑：(d) 引用區塊不帶 `Flag_… = true` 註記，故開場的一次性套用絕不會觸發它
+    // ——它在「此處」、於任務完成的程式碼點設下（與 QuestFlagPickup／換回傘 的先例一致：程式碼
+    // 設下里程碑旗標，(d) 對話只是致謝回顧）。此處不消耗能量飲料——它已在上方喚醒步驟用掉。
+    player.AddKarma(5)
+          .SetHeldUmbrella(HeldUmbrella::True)
+          .SetFlag(kFlagBookwormRecovered);
     // 背包洩漏修正：3 份筆記現在作為交換的一部分「交還」給學霸——故它們必須「離開」背包。
     // BuildInventoryRows 純由 Flag_FoundNote1/2/3 衍生出任務紙張（學霸的筆記 xN）那一列
     //（見 ItemCatalog.cpp）；若不清除，歸還筆記「之後」在市集背包中仍會看到那一列。在此、
@@ -109,12 +114,14 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
     if (player.HasFlag(kFlagLibrarianUmbrella)) return;  // 只一次——不堆疊
 
     // 章節內容管理員 (b)「（遞過一把折疊傘）這個先拿著，別在外面淋著。」：玩家現在「持有」
-    // 管理員的傘。SetHeldUmbrella 記錄持有種類「且」設下 HasUmbrella(true)，使「在戶外且
-    // 撐傘」的降雨路徑（ApplyRainSheltered）在玩家尋找 3 份筆記期間維持緩慢淋濕。刻意「不」
-    // 設 Flag_HasTrueUmbrella——借傘絕不可單憑自身解鎖結局 A。口白的交付台詞位於 (b) 行
-    //（DialogOpener 在 Flag_Bookworm 時把管理員路由到 (b)），故此處不需內聯 ShowMessage
-    //（那會與 (b) 場景重複）。
-    player.SetHeldUmbrella(HeldUmbrella::Loaner);
+    // 管理員的傘。借傘純由 Flag_LibrarianUmbrella 表示（背包列由它驅動，見 BuildInventoryRows），
+    // 遮蔽則靠 SetHasUmbrella(true)——使「在戶外且撐傘」的降雨路徑（ApplyRainSheltered）在玩家
+    // 尋找 3 份筆記期間維持緩慢淋濕。刻意「不」佔用 heldUmbrella_ 槽（也就不是某種 HeldUmbrella），
+    // 使稍後換回的真傘（TryRescueBookworm 設 HeldUmbrella::True）能與借傘並存、互不覆蓋——正是
+    // 回報的「借傘在插曲段蓋過真傘」缺陷的根因修正。同樣刻意「不」設 Flag_HasTrueUmbrella——借傘
+    // 絕不可單憑自身解鎖結局 A。口白的交付台詞位於 (b) 行（DialogOpener 在 Flag_Bookworm 時把
+    // 管理員路由到 (b)），故此處不需內聯 ShowMessage（那會與 (b) 場景重複）。
+    player.SetHasUmbrella(true);
     player.SetFlag(kFlagLibrarianUmbrella);
 }
 
@@ -137,18 +144,19 @@ void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
         return;
     }
 
-    // 防禦性：標記只在玩家持有借傘時生成，但同時重新檢查旗標「與」持有種類，使偶然的對話
-    // 無法在沒有真正交還管理員的傘的情況下給予 +10。
-    if (!player.HasFlag(kFlagLibrarianUmbrella) ||
-        player.HeldUmbrellaKind() != HeldUmbrella::Loaner) {
+    // 防禦性：標記只在玩家持有借傘時生成，但仍重新檢查旗標，使偶然的對話無法在沒有真正
+    // 持借傘的情況下給予 +10。借傘現純由旗標表示（不再佔 heldUmbrella_），故只查旗標即可。
+    if (!player.HasFlag(kFlagLibrarianUmbrella)) {
         return;
     }
 
-    // 責任感的回報：把借傘交還。業力 +10、清空持有的傘（SetHasUmbrella(false) 同時也清除
-    // heldUmbrella_）、清除借出閂鎖，並設下一次性旗標使其恰好觸發一次。「不」動到任何結局
-    // 旗標——借傘從來就不是 Flag_HasTrueUmbrella，故結局 A 不受影響。
+    // 責任感的回報：把借傘交還。業力 +10、清除借出閂鎖，並設下一次性旗標使其恰好觸發一次。
+    // 遮蔽只在玩家「別無其他持有傘」時關閉：若此時手上仍握著換回的真傘（HeldUmbrella::True），
+    // 保留遮蔽與該手持列——歸還借傘絕不可順手弄丟真傘（回報缺陷的另一半）。「不」動到任何
+    // 結局旗標——借傘從來就不是 Flag_HasTrueUmbrella，故結局 A 不受影響。
+    const bool keepShelter = player.HeldUmbrellaKind() != HeldUmbrella::None;
     player.AddKarma(10)
-          .SetHasUmbrella(false)
+          .SetHasUmbrella(keepShelter)
           .ClearFlag(kFlagLibrarianUmbrella)
           .SetFlag(kFlagLibrarianUmbrellaReturned);
     bus.Publish(Event{
@@ -159,12 +167,19 @@ void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
 
 bool Ch2IndicatorVisible(std::string_view npcId, bool isQuestGiver,
                          const Player& player) {
-    const bool woken     = player.HasFlag(kFlagBookworm);
-    const bool recovered = player.HasFlag(kFlagBookwormRecovered);
+    const bool metLibrarian = player.HasFlag(kFlagMetLibrarian);
+    const bool woken        = player.HasFlag(kFlagBookworm);
+    const bool recovered    = player.HasFlag(kFlagBookwormRecovered);
+    // 順序：管理員 → 學霸 →（缺飲料時 自販機）→ 學霸。
     if (npcId == "librarian")
-        return !woken;                 // 鏈起點：在學霸被喚醒前都亮起
+        return !metLibrarian;          // 鏈頭：見到管理員取得線索前都亮，之後熄滅
     if (npcId == "bookworm")
-        return woken && !recovered;    // 喚醒後亮起，直到換回
+        return metLibrarian && !recovered;   // 見管理員後亮，貫穿喚醒→撿筆記→換回
+    if (npcId == kNpcCh2Vendor)
+        // 自販機：見管理員後、學霸尚未喚醒、且手上沒有提神飲料時，作為「先去買瓶飲料」的
+        // 中繼指引亮起；一旦持有飲料（或學霸已喚醒）即熄滅（「有就略過」）。
+        return metLibrarian && !woken &&
+               player.ConsumableCount("EnergyDrink") == 0;
     // 其餘任何 NPC：維持不變——尊重其名冊的 isQuestGiver 位元。
     return isQuestGiver;
 }

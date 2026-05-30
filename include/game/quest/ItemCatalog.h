@@ -34,9 +34,9 @@ inline constexpr const char* kItemTrueUmbrella  = "__umbrella_true__";
 inline constexpr const char* kItemCursedUmbrella = "__umbrella_cursed__";
 inline constexpr const char* kItemUglyUmbrella  = "__umbrella_ugly__";
 inline constexpr const char* kItemVictimUmbrella = "__umbrella_victim__";
-// 其餘 HeldUmbrella 種類的手持傘哨兵，使背包能顯示玩家實際能撐在頭上的「每一把」
-// 傘（破傘／陷阱傘地上拾取物與 Ch2 管理員的傘借傘），以 HeldUmbrellaKind() 為鍵而
-// 非持久的結局旗標。
+// 其餘手持傘哨兵，使背包能顯示玩家實際能撐在頭上的「每一把」傘（破傘／陷阱傘地上
+// 拾取物以 HeldUmbrellaKind() 為鍵而非持久結局旗標）。Ch2 管理員的借傘則由
+// Flag_LibrarianUmbrella 旗標驅動其背包列（不佔 heldUmbrella_ 槽，故能與換回的真傘並存）。
 inline constexpr const char* kItemFragileUmbrella  = "__umbrella_fragile__";
 inline constexpr const char* kItemProfTrapUmbrella = "__umbrella_proftrap__";
 inline constexpr const char* kItemLoanerUmbrella   = "__umbrella_loaner__";

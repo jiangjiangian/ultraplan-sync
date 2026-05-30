@@ -313,7 +313,7 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
     //   • FSM 位於插曲段，且
     //   • 此市集會返回第三章（InterludeReturnTo == Chapter3_SportsDay）——這是唯一仍可能
     //     手持第二章借傘的市集，且
-    //   • 玩家「仍」持有借傘（Flag_LibrarianUmbrella + HeldUmbrella::Loaner），且
+    //   • 玩家「仍」持有借傘（Flag_LibrarianUmbrella），且
     //   • 借傘尚未歸還（Flag_…Returned）。
     // 每次插曲段造訪一次性（interludeReturnSpawned_）。記入名冊，故下次狀態切換時清掃。
     // 若玩家始終不歸還，借傘仍會在進入第三章時自動清除（SceneRouter）且無業力——歸還它是
@@ -324,7 +324,6 @@ bool World::MaybeSpawnInterludeLibrarianReturn() {
         return false;
     if (!player_) return false;
     if (!player_->HasFlag(kFlagLibrarianUmbrella)) return false;
-    if (player_->HeldUmbrellaKind() != HeldUmbrella::Loaner) return false;
     if (player_->HasFlag(kFlagLibrarianUmbrellaReturned)) return false;
 
     // (820,560)：經遮罩驗證為「嚴格」可行走（100%，四個鄰格皆 100%），且可由插曲段入口

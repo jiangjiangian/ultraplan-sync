@@ -1,4 +1,5 @@
 #include "game/quest/ChapterVendors.h"
+#include "game/quest/Chapter2Quest.h"   // 提供 kNpcCh2Vendor（自販機「!」判定共用鍵）
 #include "game/quest/Flags.h"
 #include "game/vendor/VendorLoader.h"
 #include "engine/math/Vec2.h"
@@ -90,7 +91,8 @@ const std::vector<VendorPlacement>& Chapter2Vendors() {
                          .stock = {VendorItem{"EnergyDrink", 35}},
                          .spriteOverride = "resources/assets/Pixel Art "
                              "Vending Machines Pack/Machine 1/"
-                             "Vending Machine 1.1.png"},
+                             "Vending Machine 1.1.png",
+                         .npcId = kNpcCh2Vendor},   // 缺飲料時亮「!」指引玩家來買
             nccu::engine::math::Vec2{980.0f, 560.0f}},
     };
     return kCh2;

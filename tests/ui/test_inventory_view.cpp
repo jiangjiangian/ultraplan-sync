@@ -255,8 +255,9 @@ TEST_CASE("SetHasUmbrella(false) 移除傘列，即使結局旗標仍存在") {
     CHECK(p.HeldUmbrellaKind() == HeldUmbrella::None);
 }
 
-// 每種撐在頭上的傘都對應恰好一列道具表（含破傘／陷阱傘／管理員的傘）；
-// None／Victim 不產生手持種類的列（Victim 屬攜帶，透過其任務旗標顯示）。
+// 每種撐在頭上的傘都對應恰好一列道具表（含破傘／陷阱傘）；None／Victim 不產生手持
+// 種類的列（Victim 屬攜帶，透過其任務旗標顯示）。Ch2 管理員的借傘不在此列——它由
+// Flag_LibrarianUmbrella 旗標驅動其背包列（見 test_ch2_quest），而非 HeldUmbrella 種類。
 TEST_CASE("每種 HeldUmbrella 都對應其道具表列") {
     struct Case { HeldUmbrella kind; const char* item; };
     const Case cases[] = {
@@ -265,7 +266,6 @@ TEST_CASE("每種 HeldUmbrella 都對應其道具表列") {
         {HeldUmbrella::Ugly,          nccu::kItemUglyUmbrella},
         {HeldUmbrella::Fragile,       nccu::kItemFragileUmbrella},
         {HeldUmbrella::ProfessorTrap, nccu::kItemProfTrapUmbrella},
-        {HeldUmbrella::Loaner,        nccu::kItemLoanerUmbrella},
     };
     for (const auto& c : cases) {
         Player p{nccu::engine::math::Vec2{0, 0}};

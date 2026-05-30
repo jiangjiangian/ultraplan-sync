@@ -104,6 +104,7 @@ TEST_CASE("走完整條章節主線時 roster 換班不會讓任何 NPC 外洩")
 
         const auto expected = ChapterNpcIdSet(s);
         for (const auto& o : w.Objects()) {
+            if (o->IsVendor()) continue;       // 攤販來自 ChapterVendors（非 NPC 名冊）
             const std::string id{o->NpcId()};
             if (id.empty()) continue;          // 環境學生 / Player
             CHECK(expected.count(id) == 1);    // 只屬於當前章節

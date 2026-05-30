@@ -42,7 +42,8 @@ std::vector<std::string> Vendor::BuildDialogLines(const VendorConfig& config) {
 }
 
 Vendor::Vendor(nccu::engine::math::Vec2 position, VendorConfig config)
-    : NPC(position, BuildDialogLines(config), /*isQuestGiver=*/false),
+    : NPC(position, BuildDialogLines(config), /*isQuestGiver=*/false,
+          config.npcId),   // 透傳身分（多半為空；Ch2 自販機用它參與「!」判定）
       config_(std::move(config)) {}
 
 bool Vendor::TryBuy(Player* player, std::size_t stockIndex) {

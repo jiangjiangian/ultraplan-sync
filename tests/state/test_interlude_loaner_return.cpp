@@ -30,9 +30,10 @@ namespace {
 
 Player MakePlayer() { return Player{nccu::engine::math::Vec2{0.0f, 0.0f}}; }
 
-// 讓玩家進入「持有第二章借傘」的狀態。
+// 讓玩家進入「持有第二章借傘」的狀態。借傘純由旗標表示（遮蔽靠 SetHasUmbrella），
+// 不佔 heldUmbrella_ 槽——與 TryLendLibrarianUmbrella 的實際授予一致。
 void GiveLoaner(Player& p) {
-    p.SetHeldUmbrella(HeldUmbrella::Loaner);
+    p.SetHasUmbrella(true);
     p.SetFlag(nccu::kFlagLibrarianUmbrella);
 }
 
@@ -86,7 +87,7 @@ TEST_CASE("歸還只在 Ch2→Ch3 市集、對正確 NPC、持有借傘時才生
             p, nccu::kNpcLibrarianReturn, SemesterState::Interlude_Market,
             SemesterState::Chapter2_Midterms);
         CHECK(p.GetKarma() == 50);
-        CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);   // 仍持有
+        CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrella));   // 仍持有借傘
     }
     // 狀態不對（非幕間）：不給分。
     {
@@ -96,7 +97,7 @@ TEST_CASE("歸還只在 Ch2→Ch3 市集、對正確 NPC、持有借傘時才生
             p, nccu::kNpcLibrarianReturn, SemesterState::Chapter2_Midterms,
             SemesterState::Chapter3_SportsDay);
         CHECK(p.GetKarma() == 50);
-        CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);
+        CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrella));
     }
     // NPC id 不對（同市集的另一個 NPC）：不給分。
     {
@@ -106,7 +107,7 @@ TEST_CASE("歸還只在 Ch2→Ch3 市集、對正確 NPC、持有借傘時才生
             p, "shop_auntie", SemesterState::Interlude_Market,
             SemesterState::Chapter3_SportsDay);
         CHECK(p.GetKarma() == 50);
-        CHECK(p.HeldUmbrellaKind() == HeldUmbrella::Loaner);
+        CHECK(p.HasFlag(nccu::kFlagLibrarianUmbrella));
     }
     // 手上沒有借傘（空手）：不給分，也不會誤設旗標。
     {
@@ -160,8 +161,8 @@ TEST_CASE("跳過歸還是安全的：借傘會在進入 Ch3 時自動清除") {
     w.Semester().Transition(SemesterState::Interlude_Market);
     GiveLoaner(*w.GetPlayer());
 
-    // 未執行歸還。借傘在幕間中仍被持有。
-    CHECK(w.GetPlayer()->HeldUmbrellaKind() == HeldUmbrella::Loaner);
+    // 未執行歸還。借傘在幕間中仍被持有（旗標仍在）。
+    CHECK(w.GetPlayer()->HasFlag(nccu::kFlagLibrarianUmbrella));
     // （實際的進第三章清除是 SceneRouter 的 SetHasUmbrella(false)，由章節轉移
     // 測試涵蓋；此處只斷言「不歸還」不會留下業力欠債或已歸還旗標 — 即它是個
     // 無副作用的略過，而非卡關。）

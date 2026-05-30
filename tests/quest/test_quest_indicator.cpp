@@ -124,32 +124,41 @@ TEST_CASE("Ch1 的「!」序列 苦主 -> 西裝學長 -> 苦主") {
     CHECK(nccu::Ch1IndicatorVisible("some_future_giver", /*isQuestGiver=*/true, q));
 }
 
-// Ch2 主線「!」依主線順序在圖書館管理員與學霸之間移動；學霸雖在名冊中 isQuestGiver=false 仍會亮。
-TEST_CASE("QuestIndicatorVisible Ch2 的「!」序列 管理員 -> 學霸") {
+// Ch2 主線「!」順序：管理員 → 學霸 →（缺飲料時 自販機）→ 學霸。學霸／自販機雖在名冊中
+// isQuestGiver=false 仍會亮（以 npcId 為鍵）。
+TEST_CASE("QuestIndicatorVisible Ch2 的「!」序列 管理員 → 學霸 →（自販機）→ 學霸") {
     Player p = MakePlayer();
-    // 進場：管理員（鏈頭）亮，學霸暗（引導玩家先找管理員）。
+    const char* kVend = nccu::kNpcCh2Vendor;
+
+    // 進場：管理員（鏈頭）亮，學霸與自販機暗（先引導玩家去找管理員）。
     CHECK(nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
-    CHECK_FALSE(
-        nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible(kVend, /*isQuestGiver=*/false, kCh2, p));
 
-    // 叫醒學霸：鏈頭熄滅、「!」移到學霸——即使他的名冊旗標為 FALSE。
-    p.SetFlag(nccu::kFlagBookworm);
-    CHECK_FALSE(
-        nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+    // 見過管理員：鏈頭熄滅、「!」移到學霸；手上沒飲料 → 自販機也亮（「先去買瓶飲料」的中繼）。
+    p.SetFlag(nccu::kFlagMetLibrarian);
+    CHECK_FALSE(nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
     CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK(nccu::QuestIndicatorVisible(kVend, /*isQuestGiver=*/false, kCh2, p));
 
-    // 學霸在撿筆記與換回的過程中持續亮著……
+    // 有了提神飲料 → 自販機熄滅（「有就略過」），學霸仍亮。
+    p.AddConsumable("EnergyDrink");
+    CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible(kVend, /*isQuestGiver=*/false, kCh2, p));
+
+    // 叫醒學霸後：自販機永遠熄滅（喚醒已完成），學霸貫穿撿筆記與換回持續亮著。
+    p.SetFlag(nccu::kFlagBookworm);
+    CHECK_FALSE(nccu::QuestIndicatorVisible(kVend, /*isQuestGiver=*/false, kCh2, p));
     p.SetFlag(nccu::kFlagFoundNote1);
     p.SetFlag(nccu::kFlagFoundNote2);
     p.SetFlag(nccu::kFlagFoundNote3);
     CHECK(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
 
-    // ……直到換回完成 -> 熄滅。
+    // ……直到換回完成 → 全部熄滅。
     p.SetFlag(nccu::kFlagBookwormRecovered);
-    CHECK_FALSE(
-        nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
-    CHECK_FALSE(
-        nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible("bookworm", /*isQuestGiver=*/false, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible("librarian", /*isQuestGiver=*/true, kCh2, p));
+    CHECK_FALSE(nccu::QuestIndicatorVisible(kVend, /*isQuestGiver=*/false, kCh2, p));
 }
 
 // 非主線的 Ch2 NPC 維持其名冊旗標（閘門只對兩個主線 NPC 特例處理，其餘直接沿用 isQuestGiver）。

@@ -370,6 +370,7 @@ TEST_CASE("每次轉場都關閉其 npcs[] 落差（完整主幹）") {
         // 不殘留前一章的 NPC：每個觀察到的 NPC 都必須在新章節的生成表中。
         for (const auto& o : w.Objects()) {
             if (!o || !o->IsActive()) continue;
+            if (o->IsVendor()) continue;   // 攤販來自 ChapterVendors（非 NPC 名冊）；其 npcId 不在此表
             const std::string id{o->NpcId()};
             if (id.empty()) continue;
             bool inExpected = false;

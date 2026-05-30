@@ -122,7 +122,7 @@ public:
      *
      * 一個小型歸還點 NPC（kNpcLibrarianReturn）出現在中正圖書館前，且僅當下列全部成
      * 立：位於第二章往第三章的市集（InterludeReturnTo() == Chapter3_SportsDay）、玩家
-     * 仍持有管理員借出的傘（Flag_LibrarianUmbrella 且 HeldUmbrella::Loaner）、且尚未歸
+     * 仍持有管理員借出的傘（Flag_LibrarianUmbrella）、且尚未歸
      * 還（Flag_LibrarianUmbrellaReturned）。每次造訪幕間僅生成一次
      * （interludeReturnSpawned_）；納入名冊追蹤，下次狀態變更時被 Sweep。即使不歸還，
      * 借出的傘也會在進入第三章時自動清除——歸還純粹是責任感 +10 的可選路徑。

@@ -190,7 +190,6 @@ const char* HeldUmbrellaItem(HeldUmbrella kind) {
         case HeldUmbrella::Ugly:          return kItemUglyUmbrella;
         case HeldUmbrella::Fragile:       return kItemFragileUmbrella;
         case HeldUmbrella::ProfessorTrap: return kItemProfTrapUmbrella;
-        case HeldUmbrella::Loaner:        return kItemLoanerUmbrella;
         // 苦主攜帶的傘經其任務旗標顯示，而非持有種類（它不提供遮蔽），故無持有種類列。
         case HeldUmbrella::Victim:
         case HeldUmbrella::None:          return nullptr;
@@ -262,6 +261,13 @@ std::vector<InventoryRow> BuildInventoryRows(const Player& player) {
     // 真傘，使背包乾淨地換列。
     if (player.HasFlag(kFlagHasVictimUmbrella))
         PushRow(rows, kItemVictimUmbrella, 0, /*usable=*/false);
+
+    // Ch2 圖書館管理員的借傘——由旗標驅動的「獨立」列，與上方手持型雨傘並列而非覆蓋它。
+    // 借傘提供遮蔽（lend 時 SetHasUmbrella(true)）卻不佔用 heldUmbrella_ 槽，故換回的真傘
+    //（HeldUmbrella::True 顯示於上方手持列）與借傘能在插曲段同時列出。歸還
+    //（TryReturnLibrarianUmbrella）或進入下一章（SceneRouter 清旗標）後本列消失。
+    if (player.HasFlag(kFlagLibrarianUmbrella))
+        PushRow(rows, kItemLoanerUmbrella, 0, /*usable=*/false);
 
     // 玩家在本輪已找到的任務紙張（只供檢視）。
     if (player.HasFlag(kFlagFoundForm))

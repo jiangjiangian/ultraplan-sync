@@ -200,15 +200,17 @@ TEST_CASE("SettleSideEffects 進入 Ch3 時清除手持的傘") {
     Player* p = w.GetPlayer();
     REQUIRE(p != nullptr);
 
-    // Ch3 接在 Ch2 之後；假裝有把 Ch2 借來的傘殘留。
-    p->SetHeldUmbrella(HeldUmbrella::Loaner);
-    REQUIRE(p->HeldUmbrellaKind() == HeldUmbrella::Loaner);
+    // Ch3 接在 Ch2 之後；假裝有把 Ch2 借來的傘殘留（旗標驅動、遮蔽開啟）。
+    p->SetHasUmbrella(true);
+    p->SetFlag(nccu::kFlagLibrarianUmbrella);
+    REQUIRE(p->HasFlag(nccu::kFlagLibrarianUmbrella));
 
     w.Semester().Transition(SemesterState::Chapter3_SportsDay);
     r.SettleSideEffects(w);
 
     CHECK_FALSE(p->HasUmbrella());
-    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);   // 借來的傘消失
+    CHECK(p->HeldUmbrellaKind() == HeldUmbrella::None);
+    CHECK_FALSE(p->HasFlag(nccu::kFlagLibrarianUmbrella));   // 借傘旗標一併清除
     EventBus::Instance().Clear();
 }
 

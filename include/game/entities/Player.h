@@ -20,11 +20,12 @@
  * Flag_BoughtUglyUmbrella）分離。那些旗標整場遊戲常駐（EndingGate 讀它們挑 A/B/C，且後兩
  * 者從不清除），故無法回答「此刻背包裡是哪把傘」：Ch4 進場 SetHasUmbrella(false) 之後，舊
  * 的以旗標為鍵的背包仍會顯示玩家已不再持有的詛咒／醜傘列。此列舉追蹤即時握傘，使背包反映你
- * 「實際」握的傘（並在失去的瞬間消失），同時結局旗標不受影響。None 表示空手。Loaner 為 Ch2
- * 圖書館管理員的傘：能遮雨但「非」真傘（不帶 Flag_HasTrueUmbrella）。
+ * 「實際」握的傘（並在失去的瞬間消失），同時結局旗標不受影響。None 表示空手。Ch2 圖書館管理員
+ * 的「借傘」刻意「不」是這裡的一種：它純由 Flag_LibrarianUmbrella 驅動、遮蔽靠 SetHasUmbrella，
+ * 使換回的真傘（True）能與借傘並存——兩者各自一列背包，互不覆蓋。
  */
 enum class HeldUmbrella { None, True, Cursed, Ugly, Victim, Fragile,
-                          ProfessorTrap, Loaner };
+                          ProfessorTrap };
 
 /**
  * @brief 由玩家操控的角色，繼承自可移動的 Character。

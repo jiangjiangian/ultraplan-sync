@@ -42,6 +42,10 @@ class DialogState;                  // 結束輪詢以 Active() 查詢
 /// 傘）。單一來源，使生成、鉤子與對話分流不致漂移。
 inline constexpr const char* kNpcLibrarianReturn = "librarian_return";
 
+/// Ch2 圖書館地下室自販機的 npcId（透過 VendorConfig::npcId 設於 ChapterVendors）。
+/// 單一來源，使攤位設定與 Ch2IndicatorVisible 的「!」判定共用同一鍵、不致漂移。
+inline constexpr const char* kNpcCh2Vendor = "ch2_vending";
+
 /**
  * @brief 三頁學霸筆記是否已全數收齊。
  * @param player 玩家（讀取三個筆記旗標）。
@@ -119,10 +123,11 @@ void TryMeetLibrarian(Player& player, std::string_view npcId,
  * (b) 台詞播放時抵達。透過 kFlagLibrarianUmbrella 達成冪等，再次對話絕不疊加雨
  * 傘。
  *
- * 效果：SetHeldUmbrella(HeldUmbrella::Loaner)——玩家現在「手持」管理員的傘（一列
- * 背包傘列，其描述說明撐著時自動減緩雨量），且 HasUmbrella() 轉為 true，使既有的
- * 「戶外＋持傘」ApplyRainSheltered 減緩生效。它「不」設 Flag_HasTrueUmbrella——借
- * 傘明確不是真傘，故它本身永遠無法滿足 Ending A 的持傘條件。
+ * 效果：SetFlag(kFlagLibrarianUmbrella) + SetHasUmbrella(true)——借傘純由旗標表示
+ *（一列由它驅動的背包傘列，描述說明撐著時自動減緩雨量），遮蔽則由 HasUmbrella() 轉
+ * true 使既有的「戶外＋持傘」ApplyRainSheltered 減緩生效。刻意「不」佔用 heldUmbrella_
+ * 槽，使稍後換回的真傘能與借傘並存、互不覆蓋。它「不」設 Flag_HasTrueUmbrella——借傘
+ * 明確不是真傘，故它本身永遠無法滿足 Ending A 的持傘條件。
  */
 void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
                               SemesterState state);
@@ -146,11 +151,11 @@ void TryLendLibrarianUmbrella(Player& player, std::string_view npcId,
  *   - 情境不符：不在 Interlude、不是 Ch2→Ch3 市集、或不是歸還點 npcId → no-op。
  *   - 已歸還：已設 kFlagLibrarianUmbrellaReturned → 重播一句收尾 ShowMessage（再
  *     次對話友善），不給第二次業力。
- *   - 歸還：仍持借傘（Flag_LibrarianUmbrella ＋ HeldUmbrella::Loaner）→ 業力 +10、
- *     清空手持傘（SetHasUmbrella(false)）與 Flag_LibrarianUmbrella、設已歸還鎖
- *     鍵、發致謝 ShowMessage。「不」授予任何影響結局的傘旗標（借傘從來不是真
- *     傘）。玩家若略過，借傘仍會在進入 Ch3 時自動清除（無業力）——故此為純粹正
- *     向的選做選擇，絕非死鎖。
+ *   - 歸還：仍持借傘（Flag_LibrarianUmbrella）→ 業力 +10、清除 Flag_LibrarianUmbrella、
+ *     設已歸還鎖鍵、發致謝 ShowMessage。遮蔽只在玩家別無其他持有傘時關閉：若手上仍握
+ *     著換回的真傘則保留它（歸還借傘絕不弄丟真傘）。「不」授予任何影響結局的傘旗標（借
+ *     傘從來不是真傘）。玩家若略過，借傘仍會在進入 Ch3 時自動清除（無業力）——故此為純
+ *     粹正向的選做選擇，絕非死鎖。
  */
 void TryReturnLibrarianUmbrella(EventBus& bus, Player& player,
                                 std::string_view npcId, SemesterState state,
@@ -181,17 +186,20 @@ void TryApplyCh2Ripple(Player& player, std::string_view npcId,
  * @param player       玩家（讀取喚醒／復原旗標）。
  * @return 該 NPC 此幀是否應顯示「!」。
  *
- * 主線為 圖書館管理員(線索) → 學霸(喚醒) → [撿三頁筆記] → 學霸(換回)。「!」依主
- * 線順序推進：
- *   - 圖書館管理員（librarian）：鏈頭，自進入章節起亮燈，直到學霸被喚醒
- *     （kFlagBookworm）。她給出指向羅馬廣場的線索；學霸醒來後她任務完成、熄燈。
- *   - 學霸（bookworm）：「僅」在他被喚醒後亮燈，並貫穿撿筆記與換回，直到
- *     Flag_BookwormRecovered。喚醒前他是暗的（「!」先引導玩家去找管理員），正如
+ * 主線為 圖書館管理員(線索) → 學霸(喚醒) → [撿三頁筆記] → 學霸(換回)，自販機則在
+ * 缺飲料時作為中繼。「!」依此順序推進：
+ *   - 圖書館管理員（librarian）：鏈頭，自進入章節起亮燈，直到玩家與她對話取得線索
+ *     （kFlagMetLibrarian）後熄燈——此後「!」交給學霸。
+ *   - 學霸（bookworm）：見過管理員後即亮燈，貫穿喚醒→撿筆記→換回，直到
+ *     Flag_BookwormRecovered。見管理員前他是暗的（「!」先引導玩家去找管理員），正如
  *     Ch3 的 B 在 A 完成交易前保持暗的。
- * 純以 npcId 為鍵（「非」名冊位）：Ch2 名冊出貨學霸為 isQuestGiver=false，故
- * QuestIndicatorVisible 必須在「不」AND isQuestGiver 的情況下查詢本函式（與 Ch4
- * 終盤閘門相同），否則學霸永不亮燈。其他 npcId 一律回傳其 isQuestGiver 位，使非
- * 主線 NPC 不受影響。View 在 state==Chapter2_Midterms 時呼叫它。
+ *   - 圖書館地下室自販機（kNpcCh2Vendor）：見過管理員、學霸尚未喚醒、且手上沒有提神
+ *     飲料時亮燈，作為「先去買瓶飲料喚醒學霸」的中繼指引；持有飲料（或學霸已喚醒）即
+ *     熄燈（「有就略過」）。
+ * 三者皆純以 npcId 為鍵（「非」名冊位）：Ch2 名冊出貨學霸為 isQuestGiver=false、自販機
+ * 為攤販，故 QuestIndicatorVisible 必須在「不」AND isQuestGiver 的情況下查詢本函式（與
+ * Ch4 終盤閘門相同），否則它們永不亮燈。其他 npcId 一律回傳其 isQuestGiver 位，使非主線
+ * NPC 不受影響。View 在 state==Chapter2_Midterms 時呼叫它。
  */
 [[nodiscard]] bool Ch2IndicatorVisible(std::string_view npcId,
                                        bool isQuestGiver,

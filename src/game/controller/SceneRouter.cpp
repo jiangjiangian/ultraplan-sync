@@ -82,6 +82,10 @@ void SceneRouter::SettleSideEffects(World& world) {
         if (Player* ip = world.GetPlayer()) {
             ip->SetHasUmbrella(false);
             ip->ClearFlag(kFlagHasTrueUmbrella);
+            // 連同清掉 Ch2 管理員借傘旗標：玩家若在插曲段沒主動歸還借傘，進入下一章時它
+            // 也一併消失（背包的借傘列隨之清掉），與「傘又掉了」字卡一致——歸還只是可選的
+            // 責任感 +10 加分路線，略過絕不卡關。
+            ip->ClearFlag(kFlagLibrarianUmbrella);
             // 受詛咒污染的衰減：每進入一個編號章節，從業力扣除 -5 * cursedTaint_。
             // 污染為 0 的局完全略過 AddKarma 呼叫（不發 KarmaChanged），使非詛咒
             // 的試玩與標準答案逐位元相同；污染 = 1 的局在 Ch2/Ch3/Ch4 進入時各扣

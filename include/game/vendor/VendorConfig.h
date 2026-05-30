@@ -69,6 +69,16 @@ struct VendorConfig {
      * 的 Pipoya 單格——機台美術是單張圖，不是角色表。
      */
     std::string              spriteOverride{};
+
+    /**
+     * @brief 選用的攤販身分字串，透傳給基底 NPC 的 NpcId()。
+     *
+     * "" 時與舊版一致：攤販 NpcId() 為空，互動仍只走 IsVendor() → 購買選單（E 互動以
+     * IsVendor() 優先分派，故設了 npcId 也不會改變購買流程）。設定後，攤販便能參與
+     * 以 npcId 為鍵的任務「!」判定（QuestIndicatorVisible）——Ch2 圖書館地下室自販機
+     * 用它（kNpcCh2Vendor）在玩家缺提神飲料時亮燈，指引去買飲料喚醒學霸。
+     */
+    std::string              npcId{};
 };
 
 #endif // VENDOR_CONFIG_H_
