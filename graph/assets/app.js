@@ -91,12 +91,14 @@
     return true;
   }
   function applyFilters(relayout){
+    var vis = {};   // 先算進 JS map，別在 batch 內回讀 cy style（可能 stale）
     cy.batch(function(){
-      cy.nodes().forEach(function(n){ n.style("display", nodeVisible(n.data()) ? "element" : "none"); });
+      cy.nodes().forEach(function(n){
+        var v = nodeVisible(n.data()); vis[n.id()] = v;
+        n.style("display", v ? "element" : "none");
+      });
       cy.edges().forEach(function(e){
-        var d = e.data(), ok = edgeOn[d.etype]
-          && cy.getElementById(d.source).style("display") !== "none"
-          && cy.getElementById(d.target).style("display") !== "none";
+        var d = e.data(), ok = edgeOn[d.etype] && vis[d.source] && vis[d.target];
         e.style("display", ok ? "element" : "none");
       });
     });
