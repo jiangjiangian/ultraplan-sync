@@ -430,9 +430,10 @@ def build() -> dict:
     # --- 4.5 檔案節點落地 + 容器歸屬邊 ---
     for path, meta in file_meta.items():
         clean = {k: v for k, v in meta.items() if not k.startswith("_")}
-        # 程式檔有逐檔知識頁（graph/wiki/files/<flat>.md）→ 連到 GitHub 渲染檢視
-        if meta["ntype"] in ("header", "source", "test"):
-            clean["wiki"] = WIKI_BLOB + "files/" + path.replace("/", "__") + ".md"
+        # 凡是有逐檔知識頁（graph/wiki/files/<flat>.md）的檔案 → 連到 GitHub 渲染檢視
+        _flat = path.replace("/", "__") + ".md"
+        if (WIKI / "files" / _flat).exists():
+            clean["wiki"] = WIKI_BLOB + "files/" + _flat
         nodes.append({"data": clean})
         d, b = meta["domain"], meta["bucket"]
         if b:

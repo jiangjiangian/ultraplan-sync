@@ -929,7 +929,8 @@ window.GRAPH_DATA = {
      "ext": ".md",
      "loc": 0,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/README.md"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/README.md",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__README.md.md"
     }
    },
    {
@@ -5293,7 +5294,8 @@ window.GRAPH_DATA = {
      "ext": ".md",
      "loc": 0,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/README.md"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/README.md",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__README.md.md"
     }
    },
    {
@@ -6596,7 +6598,8 @@ window.GRAPH_DATA = {
      "ext": ".md",
      "loc": 0,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/README.md"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/README.md",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__README.md.md"
     }
    },
    {
@@ -7178,7 +7181,8 @@ window.GRAPH_DATA = {
      "ext": ".md",
      "loc": 0,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/fixtures/dialog_sample.md"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/fixtures/dialog_sample.md",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__fixtures__dialog_sample.md.md"
     }
    },
    {
