@@ -17,8 +17,8 @@ sources: [docs/UML/7-gof.md, docs/UML/1-entities.md, docs/UML/6-sequence.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/game/entities/ConsumableItem.h` | `ConsumableItem` | [node](../../index.html#node=file:include/game/entities/ConsumableItem.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h) |
-| `include/game/entities/TransparentUmbrella.h` | `TransparentUmbrella` | [node](../../index.html#node=file:include/game/entities/TransparentUmbrella.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TransparentUmbrella.h) |
+| `include/game/entities/ConsumableItem.h` | `ConsumableItem` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/entities/ConsumableItem.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h) |
+| `include/game/entities/TransparentUmbrella.h` | `TransparentUmbrella` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/entities/TransparentUmbrella.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TransparentUmbrella.h) |
 
 ## 相關概念
 
@@ -29,4 +29,4 @@ sources: [docs/UML/7-gof.md, docs/UML/1-entities.md, docs/UML/6-sequence.md]
 [`docs/UML/7-gof.md`](../../../docs/UML/7-gof.md) · [`docs/UML/1-entities.md`](../../../docs/UML/1-entities.md) · [`docs/UML/6-sequence.md`](../../../docs/UML/6-sequence.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=pat-template)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=pat-template)

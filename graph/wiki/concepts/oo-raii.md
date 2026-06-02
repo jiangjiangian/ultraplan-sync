@@ -17,8 +17,8 @@ sources: [docs/UML/4-gfx.md, docs/UML/8-solid.md, docs/UML/6-sequence.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/engine/events/EventBus.h` | `Event`, `EventBus`, `Subscription`, `Slot` | [node](../../index.html#node=file:include/engine/events/EventBus.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventBus.h) |
-| `include/engine/render/Texture.h` | `Texture`, `TextureCache` | [node](../../index.html#node=file:include/engine/render/Texture.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Texture.h) |
+| `include/engine/events/EventBus.h` | `Event`, `EventBus`, `Subscription`, `Slot` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/events/EventBus.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventBus.h) |
+| `include/engine/render/Texture.h` | `Texture`, `TextureCache` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/Texture.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Texture.h) |
 
 ## 相關概念
 
@@ -29,4 +29,4 @@ sources: [docs/UML/4-gfx.md, docs/UML/8-solid.md, docs/UML/6-sequence.md]
 [`docs/UML/4-gfx.md`](../../../docs/UML/4-gfx.md) · [`docs/UML/8-solid.md`](../../../docs/UML/8-solid.md) · [`docs/UML/6-sequence.md`](../../../docs/UML/6-sequence.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=oo-raii)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=oo-raii)

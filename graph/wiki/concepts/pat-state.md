@@ -17,8 +17,8 @@ sources: [docs/UML/2-state-machine.md, docs/UML/7-gof.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/game/state/SemesterState.h` | `IChapterState` | [node](../../index.html#node=file:include/game/state/SemesterState.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterState.h) |
-| `include/game/state/SemesterStateMachine.h` | `SemesterStateMachine` | [node](../../index.html#node=file:include/game/state/SemesterStateMachine.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterStateMachine.h) |
+| `include/game/state/SemesterState.h` | `IChapterState` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/state/SemesterState.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterState.h) |
+| `include/game/state/SemesterStateMachine.h` | `SemesterStateMachine` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/state/SemesterStateMachine.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterStateMachine.h) |
 
 ## 相關概念
 
@@ -29,4 +29,4 @@ sources: [docs/UML/2-state-machine.md, docs/UML/7-gof.md]
 [`docs/UML/2-state-machine.md`](../../../docs/UML/2-state-machine.md) · [`docs/UML/7-gof.md`](../../../docs/UML/7-gof.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=pat-state)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=pat-state)

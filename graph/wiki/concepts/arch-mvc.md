@@ -17,9 +17,9 @@ sources: [docs/UML/0-layer-map.md, docs/UML/3-mvc-isystem.md, docs/UML/8-solid.m
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/game/controller/GameController.h` | `GameController` | [node](../../index.html#node=file:include/game/controller/GameController.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameController.h) |
-| `include/game/world/World.h` | `World` | [node](../../index.html#node=file:include/game/world/World.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/World.h) |
-| `include/ui/View.h` | `View`, `BuildingSprite`, `DrawRef`, `DecorationSprite` | [node](../../index.html#node=file:include/ui/View.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/View.h) |
+| `include/game/controller/GameController.h` | `GameController` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/controller/GameController.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameController.h) |
+| `include/game/world/World.h` | `World` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/world/World.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/World.h) |
+| `include/ui/View.h` | `View`, `BuildingSprite`, `DrawRef`, `DecorationSprite` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/ui/View.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/View.h) |
 
 ## 相關概念
 
@@ -30,4 +30,4 @@ sources: [docs/UML/0-layer-map.md, docs/UML/3-mvc-isystem.md, docs/UML/8-solid.m
 [`docs/UML/0-layer-map.md`](../../../docs/UML/0-layer-map.md) · [`docs/UML/3-mvc-isystem.md`](../../../docs/UML/3-mvc-isystem.md) · [`docs/UML/8-solid.md`](../../../docs/UML/8-solid.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=arch-mvc)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=arch-mvc)

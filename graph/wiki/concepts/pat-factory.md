@@ -17,7 +17,7 @@ sources: [docs/UML/7-gof.md, docs/UML/1-entities.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/game/controller/GameObjectFactory.h` | `GameObjectFactory` | [node](../../index.html#node=file:include/game/controller/GameObjectFactory.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectFactory.h) |
+| `include/game/controller/GameObjectFactory.h` | `GameObjectFactory` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/controller/GameObjectFactory.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectFactory.h) |
 
 ## 相關概念
 
@@ -28,4 +28,4 @@ sources: [docs/UML/7-gof.md, docs/UML/1-entities.md]
 [`docs/UML/7-gof.md`](../../../docs/UML/7-gof.md) · [`docs/UML/1-entities.md`](../../../docs/UML/1-entities.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=pat-factory)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=pat-factory)

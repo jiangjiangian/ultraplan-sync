@@ -9,11 +9,12 @@
 
 ## 怎麼看
 
-- **線上（GitHub Pages）**：到 repo **Settings → Pages**，Source 選 `main` 分支 `/ (root)`，
-  存檔後開 `https://jiangjiangian.github.io/ultraplan-sync/graph/`。
-- **本機**：直接用瀏覽器開 `graph/index.html` 即可（資料以 `data/graph-data.js` 內嵌，
-  不需架站、不需網路；Cytoscape 已 vendored 在 `vendor/`）。
-- **純讀文字**：從 [`wiki/index.md`](wiki/index.md) 進入。
+- **線上公開網站（推薦）**：<https://jiangjiangian.github.io/ultraplan-sync/>
+  —— 由 `.github/workflows/pages.yml` 自動部署（push 到 `main` 觸發；`configure-pages`
+  的 `enablement` 會自動開啟 Pages，免手動設定）。任何人都能直接開，不需下載或 clone。
+- **本機**：直接用瀏覽器開 `graph/index.html`（已是單一自足檔，CSS/JS/資料全內嵌，
+  不需架站、不需網路）。
+- **純讀文字**：從 [`wiki/index.md`](wiki/index.md) 進入（GitHub 會渲染）。
 
 ### 操作
 拖曳平移、滾輪縮放、點節點看細節（含 `#include`、被誰 include、繼承、原始碼與 wiki 連結）、

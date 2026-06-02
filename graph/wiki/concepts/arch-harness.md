@@ -17,10 +17,10 @@ sources: [docs/UML/5-harness.md, docs/UML/8-solid.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/engine/input/Input.h` | `InputSource`, `LiveInput`, `Input` | [node](../../index.html#node=file:include/engine/input/Input.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Input.h) |
-| `include/engine/platform/Harness.h` | `Harness` | [node](../../index.html#node=file:include/engine/platform/Harness.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Harness.h) |
-| `include/engine/platform/ScriptInput.h` | `ScriptInput`, `Directive`, `Step` | [node](../../index.html#node=file:include/engine/platform/ScriptInput.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/ScriptInput.h) |
-| `include/engine/platform/Time.h` | `Time` | [node](../../index.html#node=file:include/engine/platform/Time.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Time.h) |
+| `include/engine/input/Input.h` | `InputSource`, `LiveInput`, `Input` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/input/Input.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Input.h) |
+| `include/engine/platform/Harness.h` | `Harness` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/platform/Harness.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Harness.h) |
+| `include/engine/platform/ScriptInput.h` | `ScriptInput`, `Directive`, `Step` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/platform/ScriptInput.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/ScriptInput.h) |
+| `include/engine/platform/Time.h` | `Time` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/platform/Time.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Time.h) |
 
 ## 相關概念
 
@@ -31,4 +31,4 @@ sources: [docs/UML/5-harness.md, docs/UML/8-solid.md]
 [`docs/UML/5-harness.md`](../../../docs/UML/5-harness.md) · [`docs/UML/8-solid.md`](../../../docs/UML/8-solid.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=arch-harness)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=arch-harness)

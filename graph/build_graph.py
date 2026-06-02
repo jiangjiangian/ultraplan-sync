@@ -46,6 +46,9 @@ WIKI = GRAPH / "wiki"
 REPO = "jiangjiangian/ultraplan-sync"
 BRANCH = "main"
 BLOB = f"https://github.com/{REPO}/blob/{BRANCH}/"
+# graph/ 會被部署成 GitHub Pages 的網站根目錄；wiki 的 .md 在 GitHub 上看（會渲染）。
+PAGES = "https://jiangjiangian.github.io/ultraplan-sync/"
+WIKI_BLOB = BLOB + "graph/wiki/"
 
 # include 解析的根（對應 CMakeLists 的 target_include_directories）
 INCLUDE_ROOTS = ["include", "include/game"]
@@ -72,7 +75,9 @@ def git_files() -> list[str]:
         ["git", "ls-files", "-z"], cwd=ROOT,
         capture_output=True, text=True, check=True,
     ).stdout
-    return [p for p in out.split("\0") if p]
+    # 排除 graph/ 自身：知識圖譜記錄的是「專案」，不該把產生圖譜的工具
+    # （含 vendored cytoscape.min.js、wiki 頁）也畫進去（避免自我遞迴與雜訊）。
+    return [p for p in out.split("\0") if p and not p.startswith("graph/")]
 
 
 CODE_EXT = {".cpp", ".h", ".hpp", ".cc", ".cxx"}
@@ -420,7 +425,7 @@ def build() -> dict:
         nodes.append({"data": {
             "id": c["id"], "label": c["label"], "kind": c["kind"],
             "summary": c["summary"],
-            "wiki": f"wiki/concepts/{c['id']}.md"}})
+            "wiki": WIKI_BLOB + f"concepts/{c['id']}.md"}})
 
     # --- 4.5 檔案節點落地 + 容器歸屬邊 ---
     for path, meta in file_meta.items():
@@ -524,7 +529,7 @@ def write_wiki(graph: dict) -> None:
                 nd = nodes.get(t, {})
                 classes = ", ".join(f"`{x}`" for x in nd.get("classes", [])) or "—"
                 L.append(f"| `{nd.get('path', '?')}` | {classes} | "
-                         f"[node](../../index.html#node={enc(t)}) · [src]({nd.get('github', '#')}) |")
+                         f"[node]({PAGES}#node={enc(t)}) · [src]({nd.get('github', '#')}) |")
             L.append("")
         rel = pr.get("related", [])
         if rel:
@@ -533,7 +538,7 @@ def write_wiki(graph: dict) -> None:
         if pr.get("sources"):
             L += ["## 來源（設計文件）", "", _src_links(pr["sources"]), ""]
         L += ["---",
-              f"[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node={c['id']})"]
+              f"[← wiki 索引](../index.md) · [🕸 互動圖譜]({PAGES}#node={c['id']})"]
         (WIKI / "concepts" / f"{c['id']}.md").write_text("\n".join(L), encoding="utf-8")
 
     # ---- 領域頁（檔案表自動帶出，保證與真實檔案同步）----
@@ -547,7 +552,7 @@ def write_wiki(graph: dict) -> None:
         L = ["---", f"id: domain-{dom}", "type: domain", f"title: {dom}", "---", "",
              f"# 領域：{DOMAIN_LABEL.get(dom, dom)}", "", f"> {intro}", "",
              f"共 **{total}** 個檔案，分 {len(buckets)} 個 bucket。"
-             f"[在互動圖譜中檢視 →](../../index.html#node=domain:{dom})", ""]
+             f"[在互動圖譜中檢視 →]({PAGES}#node=domain:{dom})", ""]
         for bucket in sorted(buckets):
             fs = sorted(buckets[bucket], key=lambda x: x["path"])
             L += [f"## {dom}/{bucket}  ({len(fs)})", "",
@@ -555,7 +560,7 @@ def write_wiki(graph: dict) -> None:
             for nd in fs:
                 classes = ", ".join(f"`{x}`" for x in nd.get("classes", [])) or "—"
                 L.append(f"| `{nd['path']}` | {classes} | "
-                         f"[node](../../index.html#node={enc(nd['id'])}) · [src]({nd['github']}) |")
+                         f"[node]({PAGES}#node={enc(nd['id'])}) · [src]({nd['github']}) |")
             L.append("")
         L += ["---", "[← wiki 索引](../index.md)"]
         (WIKI / "domains" / f"{dom}.md").write_text("\n".join(L), encoding="utf-8")
@@ -596,7 +601,7 @@ def write_outputs(graph: dict) -> None:
                   "|---|---|---|---|---|---|"]
         for m in sorted(by_dom[dom], key=lambda x: x["path"]):
             classes = ", ".join(f"`{c}`" for c in m.get("classes", [])) or "—"
-            link = (f"[node](../index.html#node={enc(m['id'])}) · "
+            link = (f"[node]({PAGES}#node={enc(m['id'])}) · "
                     f"[src]({m['github']})")
             lines.append(
                 f"| `{m['path']}` | {m['ntype']} | {m['bucket'] or '—'} | "
@@ -618,7 +623,9 @@ def main(argv: list[str]) -> int:
               f"nodes={c['nodes_total']} edges={c['edges_total']}")
         return 0
     write_outputs(graph)
-    print(f"wrote graph/data/*.json + graph/wiki/files-index.md")
+    import bundle  # 把 CSS/JS/資料內嵌成單一自足 index.html（雙擊即可看）
+    bundle.main()
+    print("wrote graph/data/*.json + graph/wiki/* + 自足 index.html")
     print(f"  files={c['files']}  nodes={c['nodes_total']}  edges={c['edges_total']}  "
           f"concepts={c['concept_nodes']}  buckets={c['bucket_nodes']}")
     print(f"  edge types: {', '.join(graph['meta']['edge_types'])}")

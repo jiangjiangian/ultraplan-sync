@@ -17,7 +17,7 @@ sources: [docs/UML/1-entities.md, docs/UML/8-solid.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/engine/core/Roles.h` | `IUpdatable`, `IDrawable`, `IInteractable`, `IMortal`, `WithRoles` | [node](../../index.html#node=file:include/engine/core/Roles.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/Roles.h) |
+| `include/engine/core/Roles.h` | `IUpdatable`, `IDrawable`, `IInteractable`, `IMortal`, `WithRoles` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/core/Roles.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/Roles.h) |
 
 ## 相關概念
 
@@ -28,4 +28,4 @@ sources: [docs/UML/1-entities.md, docs/UML/8-solid.md]
 [`docs/UML/1-entities.md`](../../../docs/UML/1-entities.md) · [`docs/UML/8-solid.md`](../../../docs/UML/8-solid.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=oo-crtp)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=oo-crtp)

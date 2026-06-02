@@ -377,7 +377,7 @@ window.GRAPH_DATA = {
      "label": "Factory Method",
      "kind": "pattern",
      "summary": "GameObjectFactory::Create(ObjectType) 由列舉動態產生 12 種具體 GameObject。",
-     "wiki": "wiki/concepts/pat-factory.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-factory.md"
     }
    },
    {
@@ -386,7 +386,7 @@ window.GRAPH_DATA = {
      "label": "Template Method",
      "kind": "pattern",
      "summary": "TransparentUmbrella::BeClaimed 與 ConsumableItem::Consume 為純虛擬骨架，子類別填行為。",
-     "wiki": "wiki/concepts/pat-template.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-template.md"
     }
    },
    {
@@ -395,7 +395,7 @@ window.GRAPH_DATA = {
      "label": "Observer",
      "kind": "pattern",
      "summary": "EventBus Subscribe/Publish 解耦事件；Subscription 為 RAII 退訂 token。",
-     "wiki": "wiki/concepts/pat-observer.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-observer.md"
     }
    },
    {
@@ -404,7 +404,7 @@ window.GRAPH_DATA = {
      "label": "State",
      "kind": "pattern",
      "summary": "SemesterStateMachine 持有 IChapterState；五個章節狀態切換，四結局以哨兵記錄。",
-     "wiki": "wiki/concepts/pat-state.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-state.md"
     }
    },
    {
@@ -413,7 +413,7 @@ window.GRAPH_DATA = {
      "label": "Strategy / Pipeline",
      "kind": "pattern",
      "summary": "ISystem::Run 的五個 stage（Survival/Movement/Collision/Spawn/Sweep）由 Controller 依序執行。",
-     "wiki": "wiki/concepts/pat-strategy.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-strategy.md"
     }
    },
    {
@@ -422,7 +422,7 @@ window.GRAPH_DATA = {
      "label": "Singleton",
      "kind": "pattern",
      "summary": "EventBus::Instance() 全域事件匯流排（shared_mutex 僅護 handler list）。",
-     "wiki": "wiki/concepts/pat-singleton.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-singleton.md"
     }
    },
    {
@@ -431,7 +431,7 @@ window.GRAPH_DATA = {
      "label": "Command / Table（資料化）",
      "kind": "pattern",
      "summary": "QuestHookTable 把 ~14 個內嵌互動鉤子改為一張有序、自我把關的資料表（OCP）。",
-     "wiki": "wiki/concepts/pat-command.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/pat-command.md"
     }
    },
    {
@@ -440,7 +440,7 @@ window.GRAPH_DATA = {
      "label": "CRTP static mixin",
      "kind": "principle",
      "summary": "WithRoles<Derived,Base> 以 std::derived_from + if constexpr 在編譯期實作 As*() 能力查詢，取代 dynamic_cast。",
-     "wiki": "wiki/concepts/oo-crtp.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/oo-crtp.md"
     }
    },
    {
@@ -449,7 +449,7 @@ window.GRAPH_DATA = {
      "label": "角色介面（ISP）",
      "kind": "principle",
      "summary": "Roles.h 把胖介面拆成 IUpdatable / IDrawable / IInteractable / IMortal，葉類別只實作扮演的角色。",
-     "wiki": "wiki/concepts/oo-isp-roles.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/oo-isp-roles.md"
     }
    },
    {
@@ -458,7 +458,7 @@ window.GRAPH_DATA = {
      "label": "RAII / 記憶體安全",
      "kind": "principle",
      "summary": "物件以 unique_ptr 持有；Texture/Font/Subscription 皆 RAII；移除採 isActive 旗標 + 幀末 Sweep（mark-then-sweep）。",
-     "wiki": "wiki/concepts/oo-raii.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/oo-raii.md"
     }
    },
    {
@@ -467,7 +467,7 @@ window.GRAPH_DATA = {
      "label": "MVC 核心",
      "kind": "architecture",
      "summary": "World＝純資料 Model、View＝只讀模型繪圖、GameController＝收輸入＋跑模擬＋接事件。",
-     "wiki": "wiki/concepts/arch-mvc.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/arch-mvc.md"
     }
    },
    {
@@ -476,7 +476,7 @@ window.GRAPH_DATA = {
      "label": "ISystem 模擬管線",
      "kind": "architecture",
      "summary": "每幀邏輯拆成可插拔的 ISystem stage，透過 SimContext 串接；god-method 解體。",
-     "wiki": "wiki/concepts/arch-isystem.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/arch-isystem.md"
     }
    },
    {
@@ -485,7 +485,7 @@ window.GRAPH_DATA = {
      "label": "DIP：IRenderer",
      "kind": "architecture",
      "summary": "所有 raylib Draw* 關在 IRenderer 後；Model 端只認 IRenderer&，永不 include raylib（架構紅線）。",
-     "wiki": "wiki/concepts/arch-dip-renderer.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/arch-dip-renderer.md"
     }
    },
    {
@@ -494,7 +494,7 @@ window.GRAPH_DATA = {
      "label": "決定性 autoplay（Harness）",
      "kind": "architecture",
      "summary": "InputSource 抽象（LiveInput/ScriptInput）＋ Time 固定 1/60 步 ⇒ 同腳本 byte-identical state.jsonl；正常遊玩旁路。",
-     "wiki": "wiki/concepts/arch-harness.md"
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/concepts/arch-harness.md"
     }
    },
    {

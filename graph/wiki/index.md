@@ -8,7 +8,7 @@ title: 《尋傘記》知識圖譜 · wiki 索引
 
 這是整個 repo 的「知識地圖」。它把 **每一個版控檔案**（共 500 個，一個都不漏）、
 **OO 概念 / 設計模式**、以及檔案之間的 **相依關係**（`#include`、類別繼承、模式落點、
-領域依賴）整理成一張 [**可互動的知識圖譜**](../index.html) 與這套互相連結的 wiki 頁面。
+領域依賴）整理成一張 [**可互動的知識圖譜**](https://jiangjiangian.github.io/ultraplan-sync/) 與這套互相連結的 wiki 頁面。
 
 > 設計取自兩個參考專案：互動圖譜的形式學自李宏毅老師頻道地圖（Cytoscape 知識圖譜），
 > 而「LLM 增量維護的持久 wiki、typed 頁面、`[[wikilink]]` 交叉參照、來源可追溯」
@@ -18,7 +18,7 @@ title: 《尋傘記》知識圖譜 · wiki 索引
 
 | 想做的事 | 去哪 |
 |---|---|
-| **互動探索整張圖**（搜尋 / 篩選 / 預設檢視） | [🕸 互動知識圖譜 `index.html`](../index.html) |
+| **互動探索整張圖**（搜尋 / 篩選 / 預設檢視） | [🕸 互動知識圖譜 `index.html`](https://jiangjiangian.github.io/ultraplan-sync/) |
 | 讀一段架構總覽（這專案怎麼搭起來的） | [📐 架構總覽 overview.md](overview.md) |
 | 想知道「圖怎麼建的、節點/邊是什麼意思」 | [🧬 圖譜結構 schema.md](schema.md) |
 | 查**某一個檔案** | [🗂 全檔索引 files-index.md](files-index.md)（每檔一列、含深連結） |

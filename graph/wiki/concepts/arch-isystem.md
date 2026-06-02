@@ -17,7 +17,7 @@ sources: [docs/UML/3-mvc-isystem.md, docs/UML/6-sequence.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/game/controller/SimSystem.h` | `SimContext`, `ISystem`, `SurvivalSystem`, `MovementSystem`, `CollisionSystem`, `SpawnSystem`, `SweepSystem` | [node](../../index.html#node=file:include/game/controller/SimSystem.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SimSystem.h) |
+| `include/game/controller/SimSystem.h` | `SimContext`, `ISystem`, `SurvivalSystem`, `MovementSystem`, `CollisionSystem`, `SpawnSystem`, `SweepSystem` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/controller/SimSystem.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SimSystem.h) |
 
 ## 相關概念
 
@@ -28,4 +28,4 @@ sources: [docs/UML/3-mvc-isystem.md, docs/UML/6-sequence.md]
 [`docs/UML/3-mvc-isystem.md`](../../../docs/UML/3-mvc-isystem.md) · [`docs/UML/6-sequence.md`](../../../docs/UML/6-sequence.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=arch-isystem)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=arch-isystem)

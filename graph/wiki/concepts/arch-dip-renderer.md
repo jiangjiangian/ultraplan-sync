@@ -17,8 +17,8 @@ sources: [docs/UML/4-gfx.md, docs/UML/8-solid.md]
 
 | 檔案 | 類別 | 連結 |
 |---|---|---|
-| `include/engine/render/IRenderer.h` | `IRenderer` | [node](../../index.html#node=file:include/engine/render/IRenderer.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/IRenderer.h) |
-| `include/engine/render/RaylibRenderer.h` | `RaylibRenderer` | [node](../../index.html#node=file:include/engine/render/RaylibRenderer.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h) |
+| `include/engine/render/IRenderer.h` | `IRenderer` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/IRenderer.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/IRenderer.h) |
+| `include/engine/render/RaylibRenderer.h` | `RaylibRenderer` | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/RaylibRenderer.h) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h) |
 
 ## 相關概念
 
@@ -29,4 +29,4 @@ sources: [docs/UML/4-gfx.md, docs/UML/8-solid.md]
 [`docs/UML/4-gfx.md`](../../../docs/UML/4-gfx.md) · [`docs/UML/8-solid.md`](../../../docs/UML/8-solid.md)
 
 ---
-[← wiki 索引](../index.md) · [🕸 互動圖譜](../../index.html#node=arch-dip-renderer)
+[← wiki 索引](../index.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/#node=arch-dip-renderer)

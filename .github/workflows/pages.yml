@@ -1,0 +1,41 @@
+name: Deploy knowledge graph to GitHub Pages
+
+# 把 graph/ 部署成公開網站：https://jiangjiangian.github.io/ultraplan-sync/
+# 使用 configure-pages 的 enablement，第一次跑就會「自動開啟」Pages，
+# 不需要任何人手動到 Settings 切換。
+
+on:
+  push:
+    branches: [main]
+    paths: ['graph/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages (auto-enable)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload graph/ as the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: graph
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

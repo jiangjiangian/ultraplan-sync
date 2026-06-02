@@ -69,4 +69,4 @@ python3 graph/build_graph.py --check  # 只驗證完整性，不寫檔
 `build_graph.py` 增加 `--file-pages` 即可逐檔輸出（預設關閉以免灌爆繳交分支）。
 
 ---
-[← wiki 索引](index.md) · [📐 架構總覽](overview.md) · [🕸 互動圖譜](../index.html)
+[← wiki 索引](index.md) · [📐 架構總覽](overview.md) · [🕸 互動圖譜](https://jiangjiangian.github.io/ultraplan-sync/)
