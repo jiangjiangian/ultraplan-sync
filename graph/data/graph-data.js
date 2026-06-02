@@ -1,0 +1,25292 @@
+// 自動產生 by graph/build_graph.py — 請勿手改。
+window.GRAPH_DATA = {
+ "elements": {
+  "nodes": [
+   {
+    "data": {
+     "id": "domain:app",
+     "label": "app · 組裝根",
+     "kind": "domain",
+     "domain": "app"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:docs",
+     "label": "docs · 設計文件",
+     "kind": "domain",
+     "domain": "docs"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:engine",
+     "label": "engine · 引擎層",
+     "kind": "domain",
+     "domain": "engine"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:game",
+     "label": "game · 遊戲邏輯（Model）",
+     "kind": "domain",
+     "domain": "game"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:resources",
+     "label": "resources · 執行期資產",
+     "kind": "domain",
+     "domain": "resources"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:root",
+     "label": "root · 專案根",
+     "kind": "domain",
+     "domain": "root"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:tests",
+     "label": "tests · 測試",
+     "kind": "domain",
+     "domain": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:tools",
+     "label": "tools · 離線管線",
+     "kind": "domain",
+     "domain": "tools"
+    }
+   },
+   {
+    "data": {
+     "id": "domain:ui",
+     "label": "ui · 視圖層（View）",
+     "kind": "domain",
+     "domain": "ui"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:app/scenes",
+     "label": "app/scenes",
+     "kind": "bucket",
+     "domain": "app",
+     "bucket": "scenes"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:docs/UML",
+     "label": "docs/UML",
+     "kind": "bucket",
+     "domain": "docs",
+     "bucket": "UML"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:docs/content",
+     "label": "docs/content",
+     "kind": "bucket",
+     "domain": "docs",
+     "bucket": "content"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/audio",
+     "label": "engine/audio",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "audio"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/core",
+     "label": "engine/core",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "core"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/events",
+     "label": "engine/events",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "events"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/input",
+     "label": "engine/input",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "input"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/math",
+     "label": "engine/math",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "math"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/platform",
+     "label": "engine/platform",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "platform"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:engine/render",
+     "label": "engine/render",
+     "kind": "bucket",
+     "domain": "engine",
+     "bucket": "render"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/controller",
+     "label": "game/controller",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "controller"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/dialog",
+     "label": "game/dialog",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "dialog"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/entities",
+     "label": "game/entities",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "entities"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/gfx",
+     "label": "game/gfx",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "gfx"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/quest",
+     "label": "game/quest",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "quest"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/state",
+     "label": "game/state",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "state"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/vendor",
+     "label": "game/vendor",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "vendor"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:game/world",
+     "label": "game/world",
+     "kind": "bucket",
+     "domain": "game",
+     "bucket": "world"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:resources/assets",
+     "label": "resources/assets",
+     "kind": "bucket",
+     "domain": "resources",
+     "bucket": "assets"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/controller",
+     "label": "tests/controller",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "controller"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/dialog",
+     "label": "tests/dialog",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "dialog"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/entities",
+     "label": "tests/entities",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "entities"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/fixtures",
+     "label": "tests/fixtures",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "fixtures"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/gfx",
+     "label": "tests/gfx",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "gfx"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/harness",
+     "label": "tests/harness",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "harness"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/quest",
+     "label": "tests/quest",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "quest"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/state",
+     "label": "tests/state",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "state"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/ui",
+     "label": "tests/ui",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "ui"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/vendor",
+     "label": "tests/vendor",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "vendor"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:tests/world",
+     "label": "tests/world",
+     "kind": "bucket",
+     "domain": "tests",
+     "bucket": "world"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:ui/hud",
+     "label": "ui/hud",
+     "kind": "bucket",
+     "domain": "ui",
+     "bucket": "hud"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:ui/overlay",
+     "label": "ui/overlay",
+     "kind": "bucket",
+     "domain": "ui",
+     "bucket": "overlay"
+    }
+   },
+   {
+    "data": {
+     "id": "bucket:ui/world",
+     "label": "ui/world",
+     "kind": "bucket",
+     "domain": "ui",
+     "bucket": "world"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-factory",
+     "label": "Factory Method",
+     "kind": "pattern",
+     "summary": "GameObjectFactory::Create(ObjectType) 由列舉動態產生 12 種具體 GameObject。",
+     "wiki": "wiki/concepts/pat-factory.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-template",
+     "label": "Template Method",
+     "kind": "pattern",
+     "summary": "TransparentUmbrella::BeClaimed 與 ConsumableItem::Consume 為純虛擬骨架，子類別填行為。",
+     "wiki": "wiki/concepts/pat-template.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-observer",
+     "label": "Observer",
+     "kind": "pattern",
+     "summary": "EventBus Subscribe/Publish 解耦事件；Subscription 為 RAII 退訂 token。",
+     "wiki": "wiki/concepts/pat-observer.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-state",
+     "label": "State",
+     "kind": "pattern",
+     "summary": "SemesterStateMachine 持有 IChapterState；五個章節狀態切換，四結局以哨兵記錄。",
+     "wiki": "wiki/concepts/pat-state.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-strategy",
+     "label": "Strategy / Pipeline",
+     "kind": "pattern",
+     "summary": "ISystem::Run 的五個 stage（Survival/Movement/Collision/Spawn/Sweep）由 Controller 依序執行。",
+     "wiki": "wiki/concepts/pat-strategy.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-singleton",
+     "label": "Singleton",
+     "kind": "pattern",
+     "summary": "EventBus::Instance() 全域事件匯流排（shared_mutex 僅護 handler list）。",
+     "wiki": "wiki/concepts/pat-singleton.md"
+    }
+   },
+   {
+    "data": {
+     "id": "pat-command",
+     "label": "Command / Table（資料化）",
+     "kind": "pattern",
+     "summary": "QuestHookTable 把 ~14 個內嵌互動鉤子改為一張有序、自我把關的資料表（OCP）。",
+     "wiki": "wiki/concepts/pat-command.md"
+    }
+   },
+   {
+    "data": {
+     "id": "oo-crtp",
+     "label": "CRTP static mixin",
+     "kind": "principle",
+     "summary": "WithRoles<Derived,Base> 以 std::derived_from + if constexpr 在編譯期實作 As*() 能力查詢，取代 dynamic_cast。",
+     "wiki": "wiki/concepts/oo-crtp.md"
+    }
+   },
+   {
+    "data": {
+     "id": "oo-isp-roles",
+     "label": "角色介面（ISP）",
+     "kind": "principle",
+     "summary": "Roles.h 把胖介面拆成 IUpdatable / IDrawable / IInteractable / IMortal，葉類別只實作扮演的角色。",
+     "wiki": "wiki/concepts/oo-isp-roles.md"
+    }
+   },
+   {
+    "data": {
+     "id": "oo-raii",
+     "label": "RAII / 記憶體安全",
+     "kind": "principle",
+     "summary": "物件以 unique_ptr 持有；Texture/Font/Subscription 皆 RAII；移除採 isActive 旗標 + 幀末 Sweep（mark-then-sweep）。",
+     "wiki": "wiki/concepts/oo-raii.md"
+    }
+   },
+   {
+    "data": {
+     "id": "arch-mvc",
+     "label": "MVC 核心",
+     "kind": "architecture",
+     "summary": "World＝純資料 Model、View＝只讀模型繪圖、GameController＝收輸入＋跑模擬＋接事件。",
+     "wiki": "wiki/concepts/arch-mvc.md"
+    }
+   },
+   {
+    "data": {
+     "id": "arch-isystem",
+     "label": "ISystem 模擬管線",
+     "kind": "architecture",
+     "summary": "每幀邏輯拆成可插拔的 ISystem stage，透過 SimContext 串接；god-method 解體。",
+     "wiki": "wiki/concepts/arch-isystem.md"
+    }
+   },
+   {
+    "data": {
+     "id": "arch-dip-renderer",
+     "label": "DIP：IRenderer",
+     "kind": "architecture",
+     "summary": "所有 raylib Draw* 關在 IRenderer 後；Model 端只認 IRenderer&，永不 include raylib（架構紅線）。",
+     "wiki": "wiki/concepts/arch-dip-renderer.md"
+    }
+   },
+   {
+    "data": {
+     "id": "arch-harness",
+     "label": "決定性 autoplay（Harness）",
+     "kind": "architecture",
+     "summary": "InputSource 抽象（LiveInput/ScriptInput）＋ Time 固定 1/60 步 ⇒ 同腳本 byte-identical state.jsonl；正常遊玩旁路。",
+     "wiki": "wiki/concepts/arch-harness.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:.github/.keep",
+     "label": ".keep",
+     "kind": "file",
+     "path": ".github/.keep",
+     "ntype": "config",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".keep",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/.github/.keep"
+    }
+   },
+   {
+    "data": {
+     "id": "file:.gitignore",
+     "label": ".gitignore",
+     "kind": "file",
+     "path": ".gitignore",
+     "ntype": "config",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".gitignore",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/.gitignore"
+    }
+   },
+   {
+    "data": {
+     "id": "file:CMakeLists.txt",
+     "label": "CMakeLists.txt",
+     "kind": "file",
+     "path": "CMakeLists.txt",
+     "ntype": "build",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".txt",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/CMakeLists.txt"
+    }
+   },
+   {
+    "data": {
+     "id": "file:CREDITS.md",
+     "label": "CREDITS.md",
+     "kind": "file",
+     "path": "CREDITS.md",
+     "ntype": "doc",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/CREDITS.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:Doxyfile",
+     "label": "Doxyfile",
+     "kind": "file",
+     "path": "Doxyfile",
+     "ntype": "build",
+     "domain": "root",
+     "bucket": "",
+     "ext": "",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/Doxyfile"
+    }
+   },
+   {
+    "data": {
+     "id": "file:README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "README.md",
+     "ntype": "doc",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "docs/README.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/Report.md",
+     "label": "Report.md",
+     "kind": "file",
+     "path": "docs/Report.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/Report.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/0-layer-map.md",
+     "label": "0-layer-map.md",
+     "kind": "file",
+     "path": "docs/UML/0-layer-map.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/0-layer-map.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/1-entities.md",
+     "label": "1-entities.md",
+     "kind": "file",
+     "path": "docs/UML/1-entities.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/1-entities.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/2-state-machine.md",
+     "label": "2-state-machine.md",
+     "kind": "file",
+     "path": "docs/UML/2-state-machine.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/2-state-machine.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/3-mvc-isystem.md",
+     "label": "3-mvc-isystem.md",
+     "kind": "file",
+     "path": "docs/UML/3-mvc-isystem.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/3-mvc-isystem.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/4-gfx.md",
+     "label": "4-gfx.md",
+     "kind": "file",
+     "path": "docs/UML/4-gfx.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/4-gfx.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/5-harness.md",
+     "label": "5-harness.md",
+     "kind": "file",
+     "path": "docs/UML/5-harness.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/5-harness.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/6-sequence.md",
+     "label": "6-sequence.md",
+     "kind": "file",
+     "path": "docs/UML/6-sequence.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/6-sequence.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/7-gof.md",
+     "label": "7-gof.md",
+     "kind": "file",
+     "path": "docs/UML/7-gof.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/7-gof.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/8-solid.md",
+     "label": "8-solid.md",
+     "kind": "file",
+     "path": "docs/UML/8-solid.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/8-solid.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/UML/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "docs/UML/README.md",
+     "ntype": "doc",
+     "domain": "docs",
+     "bucket": "UML",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/UML/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/chapter1.md",
+     "label": "chapter1.md",
+     "kind": "file",
+     "path": "docs/content/chapter1.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/chapter1.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/chapter2.md",
+     "label": "chapter2.md",
+     "kind": "file",
+     "path": "docs/content/chapter2.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/chapter2.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/chapter3.md",
+     "label": "chapter3.md",
+     "kind": "file",
+     "path": "docs/content/chapter3.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/chapter3.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/chapter4.md",
+     "label": "chapter4.md",
+     "kind": "file",
+     "path": "docs/content/chapter4.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/chapter4.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/ending_a.md",
+     "label": "ending_a.md",
+     "kind": "file",
+     "path": "docs/content/ending_a.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/ending_a.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/ending_b.md",
+     "label": "ending_b.md",
+     "kind": "file",
+     "path": "docs/content/ending_b.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/ending_b.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/ending_c.md",
+     "label": "ending_c.md",
+     "kind": "file",
+     "path": "docs/content/ending_c.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/ending_c.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/interlude_market.md",
+     "label": "interlude_market.md",
+     "kind": "file",
+     "path": "docs/content/interlude_market.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/interlude_market.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:docs/content/voice_bible.md",
+     "label": "voice_bible.md",
+     "kind": "file",
+     "path": "docs/content/voice_bible.md",
+     "ntype": "content",
+     "domain": "docs",
+     "bucket": "content",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/docs/content/voice_bible.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "include/README.md",
+     "ntype": "doc",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/IScene.h",
+     "label": "IScene.h",
+     "kind": "file",
+     "path": "include/app/IScene.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 98,
+     "classes": [
+      "SceneCommand",
+      "IScene"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/IScene.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/SceneBootstrap.h",
+     "label": "SceneBootstrap.h",
+     "kind": "file",
+     "path": "include/app/SceneBootstrap.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 39,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneBootstrap.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/SceneManager.h",
+     "label": "SceneManager.h",
+     "kind": "file",
+     "path": "include/app/SceneManager.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 91,
+     "classes": [
+      "SceneManager"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneManager.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/scenes/CharacterSelectScene.h",
+     "label": "CharacterSelectScene.h",
+     "kind": "file",
+     "path": "include/app/scenes/CharacterSelectScene.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".h",
+     "loc": 45,
+     "classes": [
+      "CharacterSelectScene"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/CharacterSelectScene.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/scenes/GameplayScene.h",
+     "label": "GameplayScene.h",
+     "kind": "file",
+     "path": "include/app/scenes/GameplayScene.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".h",
+     "loc": 79,
+     "classes": [
+      "GameplayScene"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/GameplayScene.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/scenes/LoadingScene.h",
+     "label": "LoadingScene.h",
+     "kind": "file",
+     "path": "include/app/scenes/LoadingScene.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".h",
+     "loc": 42,
+     "classes": [
+      "LoadingScene"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/LoadingScene.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/app/scenes/TitleScene.h",
+     "label": "TitleScene.h",
+     "kind": "file",
+     "path": "include/app/scenes/TitleScene.h",
+     "ntype": "header",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".h",
+     "loc": 50,
+     "classes": [
+      "TitleScene"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/TitleScene.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/audio/AudioDevice.h",
+     "label": "AudioDevice.h",
+     "kind": "file",
+     "path": "include/engine/audio/AudioDevice.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "audio",
+     "ext": ".h",
+     "loc": 49,
+     "classes": [
+      "AudioDevice"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/audio/AudioDevice.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/audio/AudioManager.h",
+     "label": "AudioManager.h",
+     "kind": "file",
+     "path": "include/engine/audio/AudioManager.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "audio",
+     "ext": ".h",
+     "loc": 48,
+     "classes": [
+      "AudioManager"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/audio/AudioManager.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/core/GameObject.h",
+     "label": "GameObject.h",
+     "kind": "file",
+     "path": "include/engine/core/GameObject.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "core",
+     "ext": ".h",
+     "loc": 145,
+     "classes": [
+      "GameObject"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/GameObject.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/core/Roles.h",
+     "label": "Roles.h",
+     "kind": "file",
+     "path": "include/engine/core/Roles.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "core",
+     "ext": ".h",
+     "loc": 151,
+     "classes": [
+      "IUpdatable",
+      "IDrawable",
+      "IInteractable",
+      "IMortal",
+      "WithRoles"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/Roles.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/events/EventBus.h",
+     "label": "EventBus.h",
+     "kind": "file",
+     "path": "include/engine/events/EventBus.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "events",
+     "ext": ".h",
+     "loc": 144,
+     "classes": [
+      "Event",
+      "EventBus",
+      "Subscription",
+      "Slot"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventBus.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/events/EventSink.h",
+     "label": "EventSink.h",
+     "kind": "file",
+     "path": "include/engine/events/EventSink.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "events",
+     "ext": ".h",
+     "loc": 39,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventSink.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/events/HudSlot.h",
+     "label": "HudSlot.h",
+     "kind": "file",
+     "path": "include/engine/events/HudSlot.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "events",
+     "ext": ".h",
+     "loc": 31,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/HudSlot.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/input/Input.h",
+     "label": "Input.h",
+     "kind": "file",
+     "path": "include/engine/input/Input.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "input",
+     "ext": ".h",
+     "loc": 70,
+     "classes": [
+      "InputSource",
+      "LiveInput",
+      "Input"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Input.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/input/Key.h",
+     "label": "Key.h",
+     "kind": "file",
+     "path": "include/engine/input/Key.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "input",
+     "ext": ".h",
+     "loc": 42,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Key.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/math/Color.h",
+     "label": "Color.h",
+     "kind": "file",
+     "path": "include/engine/math/Color.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "math",
+     "ext": ".h",
+     "loc": 58,
+     "classes": [
+      "Color"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Color.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/math/Rect.h",
+     "label": "Rect.h",
+     "kind": "file",
+     "path": "include/engine/math/Rect.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "math",
+     "ext": ".h",
+     "loc": 49,
+     "classes": [
+      "Rect"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Rect.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/math/Vec2.h",
+     "label": "Vec2.h",
+     "kind": "file",
+     "path": "include/engine/math/Vec2.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "math",
+     "ext": ".h",
+     "loc": 48,
+     "classes": [
+      "Vec2"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Vec2.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/platform/Harness.h",
+     "label": "Harness.h",
+     "kind": "file",
+     "path": "include/engine/platform/Harness.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".h",
+     "loc": 97,
+     "classes": [
+      "Harness"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Harness.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/platform/ScriptInput.h",
+     "label": "ScriptInput.h",
+     "kind": "file",
+     "path": "include/engine/platform/ScriptInput.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".h",
+     "loc": 131,
+     "classes": [
+      "ScriptInput",
+      "Directive",
+      "Step"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/ScriptInput.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/platform/Time.h",
+     "label": "Time.h",
+     "kind": "file",
+     "path": "include/engine/platform/Time.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".h",
+     "loc": 36,
+     "classes": [
+      "Time"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Time.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/platform/WorkingDir.h",
+     "label": "WorkingDir.h",
+     "kind": "file",
+     "path": "include/engine/platform/WorkingDir.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".h",
+     "loc": 39,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/WorkingDir.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/Camera2D.h",
+     "label": "Camera2D.h",
+     "kind": "file",
+     "path": "include/engine/render/Camera2D.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 64,
+     "classes": [
+      "Camera2D"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Camera2D.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/CameraScope.h",
+     "label": "CameraScope.h",
+     "kind": "file",
+     "path": "include/engine/render/CameraScope.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 44,
+     "classes": [
+      "CameraScope"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/CameraScope.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/DrawScope.h",
+     "label": "DrawScope.h",
+     "kind": "file",
+     "path": "include/engine/render/DrawScope.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 34,
+     "classes": [
+      "DrawScope"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/DrawScope.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/Font.h",
+     "label": "Font.h",
+     "kind": "file",
+     "path": "include/engine/render/Font.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 341,
+     "classes": [
+      "FontState"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Font.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/IRenderer.h",
+     "label": "IRenderer.h",
+     "kind": "file",
+     "path": "include/engine/render/IRenderer.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 56,
+     "classes": [
+      "IRenderer"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/IRenderer.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/ImageDecoder.h",
+     "label": "ImageDecoder.h",
+     "kind": "file",
+     "path": "include/engine/render/ImageDecoder.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 44,
+     "classes": [
+      "DecodedImage"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/ImageDecoder.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/RaylibRenderer.h",
+     "label": "RaylibRenderer.h",
+     "kind": "file",
+     "path": "include/engine/render/RaylibRenderer.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 42,
+     "classes": [
+      "RaylibRenderer"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/Renderer.h",
+     "label": "Renderer.h",
+     "kind": "file",
+     "path": "include/engine/render/Renderer.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 117,
+     "classes": [
+      "Renderer",
+      "nccu",
+      "nccu",
+      "nccu"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Renderer.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/TextBuilder.h",
+     "label": "TextBuilder.h",
+     "kind": "file",
+     "path": "include/engine/render/TextBuilder.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 91,
+     "classes": [
+      "TextBuilder",
+      "nccu",
+      "nccu",
+      "nccu"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/TextBuilder.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/Texture.h",
+     "label": "Texture.h",
+     "kind": "file",
+     "path": "include/engine/render/Texture.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 190,
+     "classes": [
+      "Texture",
+      "TextureCache"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Texture.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/engine/render/Window.h",
+     "label": "Window.h",
+     "kind": "file",
+     "path": "include/engine/render/Window.h",
+     "ntype": "header",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".h",
+     "loc": 76,
+     "classes": [
+      "Window",
+      "Builder"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Window.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/DialogChoiceApply.h",
+     "label": "DialogChoiceApply.h",
+     "kind": "file",
+     "path": "include/game/controller/DialogChoiceApply.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 29,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/DialogChoiceApply.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/EventWiring.h",
+     "label": "EventWiring.h",
+     "kind": "file",
+     "path": "include/game/controller/EventWiring.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 158,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/EventWiring.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/GameController.h",
+     "label": "GameController.h",
+     "kind": "file",
+     "path": "include/game/controller/GameController.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 105,
+     "classes": [
+      "GameController"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameController.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/GameObjectFactory.h",
+     "label": "GameObjectFactory.h",
+     "kind": "file",
+     "path": "include/game/controller/GameObjectFactory.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 50,
+     "classes": [
+      "GameObjectFactory"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectFactory.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/GameObjectQueries.h",
+     "label": "GameObjectQueries.h",
+     "kind": "file",
+     "path": "include/game/controller/GameObjectQueries.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 43,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectQueries.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/InputHandler.h",
+     "label": "InputHandler.h",
+     "kind": "file",
+     "path": "include/game/controller/InputHandler.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 75,
+     "classes": [
+      "InputHandler"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/InputHandler.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/InteractDispatch.h",
+     "label": "InteractDispatch.h",
+     "kind": "file",
+     "path": "include/game/controller/InteractDispatch.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 37,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/InteractDispatch.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/SceneRouter.h",
+     "label": "SceneRouter.h",
+     "kind": "file",
+     "path": "include/game/controller/SceneRouter.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 110,
+     "classes": [
+      "SceneRouter"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SceneRouter.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/SimSystem.h",
+     "label": "SimSystem.h",
+     "kind": "file",
+     "path": "include/game/controller/SimSystem.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 113,
+     "classes": [
+      "SimContext",
+      "ISystem",
+      "SurvivalSystem",
+      "MovementSystem",
+      "CollisionSystem",
+      "SpawnSystem",
+      "SweepSystem"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SimSystem.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/VendorMenu.h",
+     "label": "VendorMenu.h",
+     "kind": "file",
+     "path": "include/game/controller/VendorMenu.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 53,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/VendorMenu.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/screens/DialogScreen.h",
+     "label": "DialogScreen.h",
+     "kind": "file",
+     "path": "include/game/controller/screens/DialogScreen.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 41,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/DialogScreen.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/screens/EndingScreen.h",
+     "label": "EndingScreen.h",
+     "kind": "file",
+     "path": "include/game/controller/screens/EndingScreen.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 30,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/EndingScreen.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/screens/InventoryScreen.h",
+     "label": "InventoryScreen.h",
+     "kind": "file",
+     "path": "include/game/controller/screens/InventoryScreen.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 33,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/InventoryScreen.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/controller/screens/PauseScreen.h",
+     "label": "PauseScreen.h",
+     "kind": "file",
+     "path": "include/game/controller/screens/PauseScreen.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".h",
+     "loc": 34,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/PauseScreen.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogLayout.h",
+     "label": "DialogLayout.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogLayout.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 72,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogLayout.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogLoader.h",
+     "label": "DialogLoader.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogLoader.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 51,
+     "classes": [
+      "SubEntry",
+      "LoadedChapter"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogLoader.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogOpener.h",
+     "label": "DialogOpener.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogOpener.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 71,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogOpener.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogRepository.h",
+     "label": "DialogRepository.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogRepository.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 70,
+     "classes": [
+      "DialogRepository"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogRepository.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogSource.h",
+     "label": "DialogSource.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogSource.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 70,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogSource.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogState.h",
+     "label": "DialogState.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogState.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 103,
+     "classes": [
+      "DialogChoice",
+      "DialogState"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogState.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/dialog/DialogView.h",
+     "label": "DialogView.h",
+     "kind": "file",
+     "path": "include/game/dialog/DialogView.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".h",
+     "loc": 27,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogView.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/CashPickup.h",
+     "label": "CashPickup.h",
+     "kind": "file",
+     "path": "include/game/entities/CashPickup.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 53,
+     "classes": [
+      "CashPickup"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CashPickup.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/Character.h",
+     "label": "Character.h",
+     "kind": "file",
+     "path": "include/game/entities/Character.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 65,
+     "classes": [
+      "Character"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Character.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/ConsumableItem.h",
+     "label": "ConsumableItem.h",
+     "kind": "file",
+     "path": "include/game/entities/ConsumableItem.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 79,
+     "classes": [
+      "ConsumableItem"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/CursedUmbrella.h",
+     "label": "CursedUmbrella.h",
+     "kind": "file",
+     "path": "include/game/entities/CursedUmbrella.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 35,
+     "classes": [
+      "CursedUmbrella"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CursedUmbrella.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/DlcSign.h",
+     "label": "DlcSign.h",
+     "kind": "file",
+     "path": "include/game/entities/DlcSign.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 55,
+     "classes": [
+      "DlcSign"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/DlcSign.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/EnergyDrink.h",
+     "label": "EnergyDrink.h",
+     "kind": "file",
+     "path": "include/game/entities/EnergyDrink.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 34,
+     "classes": [
+      "EnergyDrink"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/EnergyDrink.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/FragileUmbrella.h",
+     "label": "FragileUmbrella.h",
+     "kind": "file",
+     "path": "include/game/entities/FragileUmbrella.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 38,
+     "classes": [
+      "FragileUmbrella"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/FragileUmbrella.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/HotPack.h",
+     "label": "HotPack.h",
+     "kind": "file",
+     "path": "include/game/entities/HotPack.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 36,
+     "classes": [
+      "HotPack"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/HotPack.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/Item.h",
+     "label": "Item.h",
+     "kind": "file",
+     "path": "include/game/entities/Item.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 46,
+     "classes": [
+      "Item"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Item.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/NPC.h",
+     "label": "NPC.h",
+     "kind": "file",
+     "path": "include/game/entities/NPC.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 198,
+     "classes": [
+      "NPC",
+      "RenderCell"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/NPC.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/Personas.h",
+     "label": "Personas.h",
+     "kind": "file",
+     "path": "include/game/entities/Personas.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 70,
+     "classes": [
+      "Persona",
+      "CharacterSelectResult"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Personas.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/Player.h",
+     "label": "Player.h",
+     "kind": "file",
+     "path": "include/game/entities/Player.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 303,
+     "classes": [
+      "Player"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Player.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "label": "ProfessorTrapUmbrella.h",
+     "kind": "file",
+     "path": "include/game/entities/ProfessorTrapUmbrella.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 38,
+     "classes": [
+      "ProfessorTrapUmbrella"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ProfessorTrapUmbrella.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/QuestFlagPickup.h",
+     "label": "QuestFlagPickup.h",
+     "kind": "file",
+     "path": "include/game/entities/QuestFlagPickup.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 71,
+     "classes": [
+      "QuestFlagPickup"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/QuestFlagPickup.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/TransparentUmbrella.h",
+     "label": "TransparentUmbrella.h",
+     "kind": "file",
+     "path": "include/game/entities/TransparentUmbrella.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 108,
+     "classes": [
+      "TransparentUmbrella"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TransparentUmbrella.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/TrueUmbrella.h",
+     "label": "TrueUmbrella.h",
+     "kind": "file",
+     "path": "include/game/entities/TrueUmbrella.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 31,
+     "classes": [
+      "TrueUmbrella"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TrueUmbrella.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/entities/WaterproofSpray.h",
+     "label": "WaterproofSpray.h",
+     "kind": "file",
+     "path": "include/game/entities/WaterproofSpray.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".h",
+     "loc": 34,
+     "classes": [
+      "WaterproofSpray"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/WaterproofSpray.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/Bounds.h",
+     "label": "Bounds.h",
+     "kind": "file",
+     "path": "include/game/gfx/Bounds.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 38,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/Bounds.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/Decorations.h",
+     "label": "Decorations.h",
+     "kind": "file",
+     "path": "include/game/gfx/Decorations.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 69,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/Decorations.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/MaskLoader.h",
+     "label": "MaskLoader.h",
+     "kind": "file",
+     "path": "include/game/gfx/MaskLoader.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 62,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/MaskLoader.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/SpriteStrip.h",
+     "label": "SpriteStrip.h",
+     "kind": "file",
+     "path": "include/game/gfx/SpriteStrip.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 125,
+     "classes": [
+      "DecorationDef"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/SpriteStrip.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/UmbrellaGlyph.h",
+     "label": "UmbrellaGlyph.h",
+     "kind": "file",
+     "path": "include/game/gfx/UmbrellaGlyph.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 148,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/UmbrellaGlyph.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/gfx/WalkCycle.h",
+     "label": "WalkCycle.h",
+     "kind": "file",
+     "path": "include/game/gfx/WalkCycle.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "gfx",
+     "ext": ".h",
+     "loc": 61,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/WalkCycle.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/Chapter1Quest.h",
+     "label": "Chapter1Quest.h",
+     "kind": "file",
+     "path": "include/game/quest/Chapter1Quest.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 163,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter1Quest.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/Chapter2Quest.h",
+     "label": "Chapter2Quest.h",
+     "kind": "file",
+     "path": "include/game/quest/Chapter2Quest.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 211,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter2Quest.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/Chapter3Quest.h",
+     "label": "Chapter3Quest.h",
+     "kind": "file",
+     "path": "include/game/quest/Chapter3Quest.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 97,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter3Quest.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/Chapter4Quest.h",
+     "label": "Chapter4Quest.h",
+     "kind": "file",
+     "path": "include/game/quest/Chapter4Quest.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 116,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter4Quest.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ChapterGate.h",
+     "label": "ChapterGate.h",
+     "kind": "file",
+     "path": "include/game/quest/ChapterGate.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 36,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterGate.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ChapterPickups.h",
+     "label": "ChapterPickups.h",
+     "kind": "file",
+     "path": "include/game/quest/ChapterPickups.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 71,
+     "classes": [
+      "PickupPlacement"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterPickups.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ChapterQuestItems.h",
+     "label": "ChapterQuestItems.h",
+     "kind": "file",
+     "path": "include/game/quest/ChapterQuestItems.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 109,
+     "classes": [
+      "QuestItemPlacement"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterQuestItems.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ChapterSpawns.h",
+     "label": "ChapterSpawns.h",
+     "kind": "file",
+     "path": "include/game/quest/ChapterSpawns.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 156,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterSpawns.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ChapterVendors.h",
+     "label": "ChapterVendors.h",
+     "kind": "file",
+     "path": "include/game/quest/ChapterVendors.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 54,
+     "classes": [
+      "VendorPlacement"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterVendors.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/Flags.h",
+     "label": "Flags.h",
+     "kind": "file",
+     "path": "include/game/quest/Flags.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 81,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Flags.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/InventoryPaging.h",
+     "label": "InventoryPaging.h",
+     "kind": "file",
+     "path": "include/game/quest/InventoryPaging.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 24,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/InventoryPaging.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/ItemCatalog.h",
+     "label": "ItemCatalog.h",
+     "kind": "file",
+     "path": "include/game/quest/ItemCatalog.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 157,
+     "classes": [
+      "ItemInfo",
+      "InventoryRow"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ItemCatalog.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/NpcSpawns.h",
+     "label": "NpcSpawns.h",
+     "kind": "file",
+     "path": "include/game/quest/NpcSpawns.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 161,
+     "classes": [
+      "NpcSpawn"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/NpcSpawns.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/PipoyaRoster.h",
+     "label": "PipoyaRoster.h",
+     "kind": "file",
+     "path": "include/game/quest/PipoyaRoster.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 82,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/PipoyaRoster.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/QuestHookTable.h",
+     "label": "QuestHookTable.h",
+     "kind": "file",
+     "path": "include/game/quest/QuestHookTable.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 89,
+     "classes": [
+      "QuestHook"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestHookTable.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/QuestIndicator.h",
+     "label": "QuestIndicator.h",
+     "kind": "file",
+     "path": "include/game/quest/QuestIndicator.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 50,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestIndicator.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/quest/QuestObjective.h",
+     "label": "QuestObjective.h",
+     "kind": "file",
+     "path": "include/game/quest/QuestObjective.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".h",
+     "loc": 112,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestObjective.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/Chapter1AddDrop.h",
+     "label": "Chapter1AddDrop.h",
+     "kind": "file",
+     "path": "include/game/state/Chapter1AddDrop.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 28,
+     "classes": [
+      "Chapter1AddDrop"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter1AddDrop.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/Chapter2Midterms.h",
+     "label": "Chapter2Midterms.h",
+     "kind": "file",
+     "path": "include/game/state/Chapter2Midterms.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 27,
+     "classes": [
+      "Chapter2Midterms"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter2Midterms.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/Chapter3SportsDay.h",
+     "label": "Chapter3SportsDay.h",
+     "kind": "file",
+     "path": "include/game/state/Chapter3SportsDay.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 27,
+     "classes": [
+      "Chapter3SportsDay"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter3SportsDay.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/Chapter4Finals.h",
+     "label": "Chapter4Finals.h",
+     "kind": "file",
+     "path": "include/game/state/Chapter4Finals.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 27,
+     "classes": [
+      "Chapter4Finals"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter4Finals.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/ChapterToast.h",
+     "label": "ChapterToast.h",
+     "kind": "file",
+     "path": "include/game/state/ChapterToast.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 89,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/ChapterToast.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/EndingGate.h",
+     "label": "EndingGate.h",
+     "kind": "file",
+     "path": "include/game/state/EndingGate.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 32,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/EndingGate.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/EndingMenuModel.h",
+     "label": "EndingMenuModel.h",
+     "kind": "file",
+     "path": "include/game/state/EndingMenuModel.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 54,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/EndingMenuModel.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/GameHelpPages.h",
+     "label": "GameHelpPages.h",
+     "kind": "file",
+     "path": "include/game/state/GameHelpPages.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 25,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/GameHelpPages.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/InterludeExit.h",
+     "label": "InterludeExit.h",
+     "kind": "file",
+     "path": "include/game/state/InterludeExit.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 44,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeExit.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/InterludeExitMarker.h",
+     "label": "InterludeExitMarker.h",
+     "kind": "file",
+     "path": "include/game/state/InterludeExitMarker.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 109,
+     "classes": [
+      "InterludeExitMarkerDash",
+      "InterludeExitMarkerLayout"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeExitMarker.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/InterludeMarket.h",
+     "label": "InterludeMarket.h",
+     "kind": "file",
+     "path": "include/game/state/InterludeMarket.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 28,
+     "classes": [
+      "InterludeMarket"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeMarket.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/SemesterState.h",
+     "label": "SemesterState.h",
+     "kind": "file",
+     "path": "include/game/state/SemesterState.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 57,
+     "classes": [
+      "IChapterState"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterState.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/state/SemesterStateMachine.h",
+     "label": "SemesterStateMachine.h",
+     "kind": "file",
+     "path": "include/game/state/SemesterStateMachine.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".h",
+     "loc": 67,
+     "classes": [
+      "SemesterStateMachine"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterStateMachine.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/vendor/Vendor.h",
+     "label": "Vendor.h",
+     "kind": "file",
+     "path": "include/game/vendor/Vendor.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".h",
+     "loc": 63,
+     "classes": [
+      "Vendor"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/Vendor.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/vendor/VendorConfig.h",
+     "label": "VendorConfig.h",
+     "kind": "file",
+     "path": "include/game/vendor/VendorConfig.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".h",
+     "loc": 85,
+     "classes": [
+      "VendorItem",
+      "VendorConfig"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorConfig.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/vendor/VendorLoader.h",
+     "label": "VendorLoader.h",
+     "kind": "file",
+     "path": "include/game/vendor/VendorLoader.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".h",
+     "loc": 40,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorLoader.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/vendor/VendorMessages.h",
+     "label": "VendorMessages.h",
+     "kind": "file",
+     "path": "include/game/vendor/VendorMessages.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".h",
+     "loc": 44,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorMessages.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/vendor/VendorSprite.h",
+     "label": "VendorSprite.h",
+     "kind": "file",
+     "path": "include/game/vendor/VendorSprite.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".h",
+     "loc": 79,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorSprite.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/BuildingTracker.h",
+     "label": "BuildingTracker.h",
+     "kind": "file",
+     "path": "include/game/world/BuildingTracker.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 72,
+     "classes": [
+      "BuildingTracker"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/BuildingTracker.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/Buildings.h",
+     "label": "Buildings.h",
+     "kind": "file",
+     "path": "include/game/world/Buildings.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 65,
+     "classes": [
+      "Building"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Buildings.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/CollisionMask.h",
+     "label": "CollisionMask.h",
+     "kind": "file",
+     "path": "include/game/world/CollisionMask.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 88,
+     "classes": [
+      "CollisionMask"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/CollisionMask.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/HudTiming.h",
+     "label": "HudTiming.h",
+     "kind": "file",
+     "path": "include/game/world/HudTiming.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 26,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/HudTiming.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/Obstacles.h",
+     "label": "Obstacles.h",
+     "kind": "file",
+     "path": "include/game/world/Obstacles.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 27,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Obstacles.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/Physics.h",
+     "label": "Physics.h",
+     "kind": "file",
+     "path": "include/game/world/Physics.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 57,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Physics.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/TexturePreload.h",
+     "label": "TexturePreload.h",
+     "kind": "file",
+     "path": "include/game/world/TexturePreload.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 117,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/TexturePreload.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/World.h",
+     "label": "World.h",
+     "kind": "file",
+     "path": "include/game/world/World.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 440,
+     "classes": [
+      "World"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/World.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/WorldConfig.h",
+     "label": "WorldConfig.h",
+     "kind": "file",
+     "path": "include/game/world/WorldConfig.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 23,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/WorldConfig.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/game/world/WorldOptions.h",
+     "label": "WorldOptions.h",
+     "kind": "file",
+     "path": "include/game/world/WorldOptions.h",
+     "ntype": "header",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 39,
+     "classes": [
+      "WorldOptions"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/WorldOptions.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/ChapterCard.h",
+     "label": "ChapterCard.h",
+     "kind": "file",
+     "path": "include/ui/ChapterCard.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 145,
+     "classes": [
+      "ChapterCardState"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/ChapterCard.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/CharacterSelect.h",
+     "label": "CharacterSelect.h",
+     "kind": "file",
+     "path": "include/ui/CharacterSelect.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 15,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/CharacterSelect.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/EndingView.h",
+     "label": "EndingView.h",
+     "kind": "file",
+     "path": "include/ui/EndingView.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 79,
+     "classes": [
+      "EndingSummary"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/EndingView.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/GameHelp.h",
+     "label": "GameHelp.h",
+     "kind": "file",
+     "path": "include/ui/GameHelp.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 151,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/GameHelp.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/HelpPageView.h",
+     "label": "HelpPageView.h",
+     "kind": "file",
+     "path": "include/ui/HelpPageView.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 53,
+     "classes": [
+      "HelpPageStyle"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/HelpPageView.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/InventoryView.h",
+     "label": "InventoryView.h",
+     "kind": "file",
+     "path": "include/ui/InventoryView.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 57,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/InventoryView.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/MessageView.h",
+     "label": "MessageView.h",
+     "kind": "file",
+     "path": "include/ui/MessageView.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 42,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/MessageView.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/PressLatch.h",
+     "label": "PressLatch.h",
+     "kind": "file",
+     "path": "include/ui/PressLatch.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 48,
+     "classes": [
+      "PressLatch"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/PressLatch.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/QuestGiverIndicator.h",
+     "label": "QuestGiverIndicator.h",
+     "kind": "file",
+     "path": "include/ui/QuestGiverIndicator.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 80,
+     "classes": [
+      "QuestGiverIndicatorLayout"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/QuestGiverIndicator.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/RainHud.h",
+     "label": "RainHud.h",
+     "kind": "file",
+     "path": "include/ui/RainHud.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 30,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/RainHud.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/ReducedMotion.h",
+     "label": "ReducedMotion.h",
+     "kind": "file",
+     "path": "include/ui/ReducedMotion.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 51,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/ReducedMotion.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/View.h",
+     "label": "View.h",
+     "kind": "file",
+     "path": "include/ui/View.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".h",
+     "loc": 126,
+     "classes": [
+      "View",
+      "BuildingSprite",
+      "DrawRef",
+      "DecorationSprite"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/View.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/hud/ObjectiveBar.h",
+     "label": "ObjectiveBar.h",
+     "kind": "file",
+     "path": "include/ui/hud/ObjectiveBar.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".h",
+     "loc": 33,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/ObjectiveBar.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/hud/RainVignette.h",
+     "label": "RainVignette.h",
+     "kind": "file",
+     "path": "include/ui/hud/RainVignette.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".h",
+     "loc": 31,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/RainVignette.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/hud/SportsLapRing.h",
+     "label": "SportsLapRing.h",
+     "kind": "file",
+     "path": "include/ui/hud/SportsLapRing.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".h",
+     "loc": 30,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/SportsLapRing.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/hud/StatusPanel.h",
+     "label": "StatusPanel.h",
+     "kind": "file",
+     "path": "include/ui/hud/StatusPanel.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".h",
+     "loc": 30,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/StatusPanel.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/overlay/HelpOverlay.h",
+     "label": "HelpOverlay.h",
+     "kind": "file",
+     "path": "include/ui/overlay/HelpOverlay.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".h",
+     "loc": 31,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/HelpOverlay.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/overlay/MenuAffordance.h",
+     "label": "MenuAffordance.h",
+     "kind": "file",
+     "path": "include/ui/overlay/MenuAffordance.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".h",
+     "loc": 33,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/MenuAffordance.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/overlay/PauseMenu.h",
+     "label": "PauseMenu.h",
+     "kind": "file",
+     "path": "include/ui/overlay/PauseMenu.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".h",
+     "loc": 33,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/PauseMenu.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/world/QuestGiverIndicators.h",
+     "label": "QuestGiverIndicators.h",
+     "kind": "file",
+     "path": "include/ui/world/QuestGiverIndicators.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 30,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/QuestGiverIndicators.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:include/ui/world/SportsLapTrack.h",
+     "label": "SportsLapTrack.h",
+     "kind": "file",
+     "path": "include/ui/world/SportsLapTrack.h",
+     "ntype": "header",
+     "domain": "ui",
+     "bucket": "world",
+     "ext": ".h",
+     "loc": 29,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/SportsLapTrack.h",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "resources/README.md",
+     "ntype": "other",
+     "domain": "resources",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1 (No Glass).png",
+     "label": "Vending Machine 1.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1.png",
+     "label": "Vending Machine 1.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2 (No Glass).png",
+     "label": "Vending Machine 1.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2.png",
+     "label": "Vending Machine 1.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3 (No Glass).png",
+     "label": "Vending Machine 1.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3.png",
+     "label": "Vending Machine 1.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4 (No Glass).png",
+     "label": "Vending Machine 1.4 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.4%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4.png",
+     "label": "Vending Machine 1.4.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%201/Vending%20Machine%201.4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1 (No Glass).png",
+     "label": "Vending Machine 2.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1.png",
+     "label": "Vending Machine 2.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2 (No Glass).png",
+     "label": "Vending Machine 2.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2.png",
+     "label": "Vending Machine 2.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3 (No Glass).png",
+     "label": "Vending Machine 2.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3.png",
+     "label": "Vending Machine 2.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4 (No Glass).png",
+     "label": "Vending Machine 2.4 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.4%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4.png",
+     "label": "Vending Machine 2.4.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%202/Vending%20Machine%202.4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1 (No Glass).png",
+     "label": "Vending Machine 3.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1.png",
+     "label": "Vending Machine 3.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2 (No Glass).png",
+     "label": "Vending Machine 3.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2.png",
+     "label": "Vending Machine 3.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3 (No Glass).png",
+     "label": "Vending Machine 3.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3.png",
+     "label": "Vending Machine 3.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%203/Vending%20Machine%203.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1 (No Glass).png",
+     "label": "Vending Machine 4.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1.png",
+     "label": "Vending Machine 4.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2 (No Glass).png",
+     "label": "Vending Machine 4.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2.png",
+     "label": "Vending Machine 4.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3 (No Glass).png",
+     "label": "Vending Machine 4.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3.png",
+     "label": "Vending Machine 4.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%204/Vending%20Machine%204.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1 (No Glass).png",
+     "label": "Vending Machine 5.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1.png",
+     "label": "Vending Machine 5.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2 (No Glass).png",
+     "label": "Vending Machine 5.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2.png",
+     "label": "Vending Machine 5.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3 (No Glass).png",
+     "label": "Vending Machine 5.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3.png",
+     "label": "Vending Machine 5.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4 (No Glass).png",
+     "label": "Vending Machine 5.4 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.4%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4.png",
+     "label": "Vending Machine 5.4.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%205/Vending%20Machine%205.4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1 (No Glass).png",
+     "label": "Vending Machine 6.1 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.1%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1.png",
+     "label": "Vending Machine 6.1.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.1.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2 (No Glass).png",
+     "label": "Vending Machine 6.2 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.2%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2.png",
+     "label": "Vending Machine 6.2.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3 (No Glass).png",
+     "label": "Vending Machine 6.3 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.3%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3.png",
+     "label": "Vending Machine 6.3.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.3.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4 (No Glass).png",
+     "label": "Vending Machine 6.4 (No Glass).png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4 (No Glass).png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.4%20%28No%20Glass%29.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4.png",
+     "label": "Vending Machine 6.4.png",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Machine%206/Vending%20Machine%206.4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/Pixel Art Vending Machines Pack/Pixel Art Vending Machines Pack.txt",
+     "label": "Pixel Art Vending Machines Pack.txt",
+     "kind": "file",
+     "path": "resources/assets/Pixel Art Vending Machines Pack/Pixel Art Vending Machines Pack.txt",
+     "ntype": "other",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".txt",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/Pixel%20Art%20Vending%20Machines%20Pack/Pixel%20Art%20Vending%20Machines%20Pack.txt"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/中正圖書館.png",
+     "label": "中正圖書館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/中正圖書館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E4%B8%AD%E6%AD%A3%E5%9C%96%E6%9B%B8%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/中正圖書館_nb2.png",
+     "label": "中正圖書館_nb2.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/中正圖書館_nb2.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E4%B8%AD%E6%AD%A3%E5%9C%96%E6%9B%B8%E9%A4%A8_nb2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/井塘樓.png",
+     "label": "井塘樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/井塘樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E4%BA%95%E5%A1%98%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/商學院.png",
+     "label": "商學院.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/商學院.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%95%86%E5%AD%B8%E9%99%A2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/四維堂.png",
+     "label": "四維堂.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/四維堂.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%9B%9B%E7%B6%AD%E5%A0%82.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/大仁樓.png",
+     "label": "大仁樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/大仁樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%A4%A7%E4%BB%81%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/大勇樓.png",
+     "label": "大勇樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/大勇樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%A4%A7%E5%8B%87%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/大智樓.png",
+     "label": "大智樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/大智樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%A4%A7%E6%99%BA%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/學思樓.png",
+     "label": "學思樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/學思樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%AD%B8%E6%80%9D%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/志希樓.png",
+     "label": "志希樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/志希樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E5%BF%97%E5%B8%8C%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/操場.png",
+     "label": "操場.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/操場.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%93%8D%E5%A0%B4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/新聞館.png",
+     "label": "新聞館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/新聞館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%96%B0%E8%81%9E%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/果夫樓.png",
+     "label": "果夫樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/果夫樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%9E%9C%E5%A4%AB%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/校友服務中心.png",
+     "label": "校友服務中心.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/校友服務中心.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%A0%A1%E5%8F%8B%E6%9C%8D%E5%8B%99%E4%B8%AD%E5%BF%83.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/樂活小舖.png",
+     "label": "樂活小舖.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/樂活小舖.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%A8%82%E6%B4%BB%E5%B0%8F%E8%88%96.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/樂活館.png",
+     "label": "樂活館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/樂活館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%A8%82%E6%B4%BB%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/正門.png",
+     "label": "正門.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/正門.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%AD%A3%E9%96%80.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/正門1.png",
+     "label": "正門1.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/正門1.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%AD%A3%E9%96%801.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/法學院.png",
+     "label": "法學院.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/法學院.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%B3%95%E5%AD%B8%E9%99%A2.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/游泳館.png",
+     "label": "游泳館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/游泳館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E6%B8%B8%E6%B3%B3%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/研究大樓.png",
+     "label": "研究大樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/研究大樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E7%A0%94%E7%A9%B6%E5%A4%A7%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/綜合院館.png",
+     "label": "綜合院館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/綜合院館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E7%B6%9C%E5%90%88%E9%99%A2%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/羅馬廣場.png",
+     "label": "羅馬廣場.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/羅馬廣場.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E7%BE%85%E9%A6%AC%E5%BB%A3%E5%A0%B4.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/行政大樓.png",
+     "label": "行政大樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/行政大樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E8%A1%8C%E6%94%BF%E5%A4%A7%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/資訊大樓.png",
+     "label": "資訊大樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/資訊大樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E8%B3%87%E8%A8%8A%E5%A4%A7%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/集英樓.png",
+     "label": "集英樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/集英樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E9%9B%86%E8%8B%B1%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/風雩樓.png",
+     "label": "風雩樓.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/風雩樓.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E9%A2%A8%E9%9B%A9%E6%A8%93.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/風雩走廊.png",
+     "label": "風雩走廊.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/風雩走廊.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E9%A2%A8%E9%9B%A9%E8%B5%B0%E5%BB%8A.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/buildings_3d_trimmed/體育館.png",
+     "label": "體育館.png",
+     "kind": "file",
+     "path": "resources/assets/buildings_3d_trimmed/體育館.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/buildings_3d_trimmed/%E9%AB%94%E8%82%B2%E9%A4%A8.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/decorations/cat_strip.png",
+     "label": "cat_strip.png",
+     "kind": "file",
+     "path": "resources/assets/decorations/cat_strip.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/decorations/cat_strip.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/decorations/chiikawa_strip.png",
+     "label": "chiikawa_strip.png",
+     "kind": "file",
+     "path": "resources/assets/decorations/chiikawa_strip.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/decorations/chiikawa_strip.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/fonts/OFL.txt",
+     "label": "OFL.txt",
+     "kind": "file",
+     "path": "resources/assets/fonts/OFL.txt",
+     "ntype": "other",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".txt",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/fonts/OFL.txt"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/fonts/cjk.ttf",
+     "label": "cjk.ttf",
+     "kind": "file",
+     "path": "resources/assets/fonts/cjk.ttf",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".ttf",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/fonts/cjk.ttf"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/collision_mask.png",
+     "label": "collision_mask.png",
+     "kind": "file",
+     "path": "resources/assets/maps/collision_mask.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/collision_mask.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/collision_mask_base.png",
+     "label": "collision_mask_base.png",
+     "kind": "file",
+     "path": "resources/assets/maps/collision_mask_base.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/collision_mask_base.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap.png",
+     "label": "worldmap.png",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_2d.png",
+     "label": "worldmap_2d.png",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_2d.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_2d.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_2d_thumb.jpeg",
+     "label": "worldmap_2d_thumb.jpeg",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_2d_thumb.jpeg",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".jpeg",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_2d_thumb.jpeg"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_base.png",
+     "label": "worldmap_base.png",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_base.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_base.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_base_thumb.jpeg",
+     "label": "worldmap_base_thumb.jpeg",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_base_thumb.jpeg",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".jpeg",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_base_thumb.jpeg"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_overview.png",
+     "label": "worldmap_overview.png",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_overview.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_overview.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/maps/worldmap_overview_thumb.jpeg",
+     "label": "worldmap_overview_thumb.jpeg",
+     "kind": "file",
+     "path": "resources/assets/maps/worldmap_overview_thumb.jpeg",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".jpeg",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/maps/worldmap_overview_thumb.jpeg"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/ATTRIBUTIONS.md",
+     "label": "ATTRIBUTIONS.md",
+     "kind": "file",
+     "path": "resources/assets/sprites/ATTRIBUTIONS.md",
+     "ntype": "other",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/ATTRIBUTIONS.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/npc/shop_auntie.png",
+     "label": "shop_auntie.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/npc/shop_auntie.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/npc/shop_auntie.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/npc/suit_senior.png",
+     "label": "suit_senior.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/npc/suit_senior.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/npc/suit_senior.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/npc/ta.png",
+     "label": "ta.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/npc/ta.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/npc/ta.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_01.png",
+     "label": "female_01.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_01.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_01.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_02.png",
+     "label": "female_02.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_02.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_02.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_03.png",
+     "label": "female_03.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_03.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_03.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_04.png",
+     "label": "female_04.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_04.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_04.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_05.png",
+     "label": "female_05.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_05.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_05.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_06.png",
+     "label": "female_06.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_06.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_06.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_07.png",
+     "label": "female_07.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_07.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_07.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_08.png",
+     "label": "female_08.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_08.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_08.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_09.png",
+     "label": "female_09.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_09.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_09.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_10.png",
+     "label": "female_10.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_10.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_10.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_11.png",
+     "label": "female_11.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_11.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_11.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_12.png",
+     "label": "female_12.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_12.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_12.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_13.png",
+     "label": "female_13.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_13.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_13.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_14.png",
+     "label": "female_14.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_14.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_14.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_15.png",
+     "label": "female_15.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_15.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_15.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_16.png",
+     "label": "female_16.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_16.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_16.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_17.png",
+     "label": "female_17.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_17.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_17.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/female_18.png",
+     "label": "female_18.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/female_18.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/female_18.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_01.png",
+     "label": "male_01.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_01.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_01.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_02.png",
+     "label": "male_02.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_02.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_02.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_03.png",
+     "label": "male_03.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_03.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_03.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_04.png",
+     "label": "male_04.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_04.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_04.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_05.png",
+     "label": "male_05.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_05.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_05.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_06.png",
+     "label": "male_06.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_06.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_06.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_07.png",
+     "label": "male_07.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_07.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_07.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_08.png",
+     "label": "male_08.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_08.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_08.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_09.png",
+     "label": "male_09.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_09.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_09.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_10.png",
+     "label": "male_10.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_10.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_10.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_11.png",
+     "label": "male_11.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_11.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_11.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_12.png",
+     "label": "male_12.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_12.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_12.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:resources/assets/sprites/school_uniform_3/male_13.png",
+     "label": "male_13.png",
+     "kind": "file",
+     "path": "resources/assets/sprites/school_uniform_3/male_13.png",
+     "ntype": "asset",
+     "domain": "resources",
+     "bucket": "assets",
+     "ext": ".png",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_13.png"
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "src/README.md",
+     "ntype": "doc",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/SceneBootstrap.cpp",
+     "label": "SceneBootstrap.cpp",
+     "kind": "file",
+     "path": "src/app/SceneBootstrap.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 64,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/SceneBootstrap.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/SceneManager.cpp",
+     "label": "SceneManager.cpp",
+     "kind": "file",
+     "path": "src/app/SceneManager.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 107,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/SceneManager.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/main.cpp",
+     "label": "main.cpp",
+     "kind": "file",
+     "path": "src/app/main.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 84,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/main.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "label": "CharacterSelectScene.cpp",
+     "kind": "file",
+     "path": "src/app/scenes/CharacterSelectScene.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".cpp",
+     "loc": 144,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/CharacterSelectScene.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/scenes/GameplayScene.cpp",
+     "label": "GameplayScene.cpp",
+     "kind": "file",
+     "path": "src/app/scenes/GameplayScene.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".cpp",
+     "loc": 116,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/GameplayScene.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/scenes/LoadingScene.cpp",
+     "label": "LoadingScene.cpp",
+     "kind": "file",
+     "path": "src/app/scenes/LoadingScene.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".cpp",
+     "loc": 75,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/LoadingScene.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/app/scenes/TitleScene.cpp",
+     "label": "TitleScene.cpp",
+     "kind": "file",
+     "path": "src/app/scenes/TitleScene.cpp",
+     "ntype": "source",
+     "domain": "app",
+     "bucket": "scenes",
+     "ext": ".cpp",
+     "loc": 156,
+     "classes": [
+      "MenuItem"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/TitleScene.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/audio/AudioDevice.cpp",
+     "label": "AudioDevice.cpp",
+     "kind": "file",
+     "path": "src/engine/audio/AudioDevice.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "audio",
+     "ext": ".cpp",
+     "loc": 13,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/audio/AudioDevice.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/audio/AudioManager.cpp",
+     "label": "AudioManager.cpp",
+     "kind": "file",
+     "path": "src/engine/audio/AudioManager.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "audio",
+     "ext": ".cpp",
+     "loc": 22,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/audio/AudioManager.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/events/EventBus.cpp",
+     "label": "EventBus.cpp",
+     "kind": "file",
+     "path": "src/engine/events/EventBus.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "events",
+     "ext": ".cpp",
+     "loc": 86,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/events/EventBus.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/events/EventSink.cpp",
+     "label": "EventSink.cpp",
+     "kind": "file",
+     "path": "src/engine/events/EventSink.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "events",
+     "ext": ".cpp",
+     "loc": 21,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/events/EventSink.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/platform/Harness.cpp",
+     "label": "Harness.cpp",
+     "kind": "file",
+     "path": "src/engine/platform/Harness.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".cpp",
+     "loc": 334,
+     "classes": [
+      "HarnessState"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/Harness.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/platform/ScriptInput.cpp",
+     "label": "ScriptInput.cpp",
+     "kind": "file",
+     "path": "src/engine/platform/ScriptInput.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".cpp",
+     "loc": 171,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/ScriptInput.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/platform/ScriptResolver.cpp",
+     "label": "ScriptResolver.cpp",
+     "kind": "file",
+     "path": "src/engine/platform/ScriptResolver.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "platform",
+     "ext": ".cpp",
+     "loc": 247,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/ScriptResolver.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/engine/render/ImageDecoder.cpp",
+     "label": "ImageDecoder.cpp",
+     "kind": "file",
+     "path": "src/engine/render/ImageDecoder.cpp",
+     "ntype": "source",
+     "domain": "engine",
+     "bucket": "render",
+     "ext": ".cpp",
+     "loc": 40,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/render/ImageDecoder.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/DialogChoiceApply.cpp",
+     "label": "DialogChoiceApply.cpp",
+     "kind": "file",
+     "path": "src/game/controller/DialogChoiceApply.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 21,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/DialogChoiceApply.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/GameController.cpp",
+     "label": "GameController.cpp",
+     "kind": "file",
+     "path": "src/game/controller/GameController.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 244,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/GameController.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/GameObjectFactory.cpp",
+     "label": "GameObjectFactory.cpp",
+     "kind": "file",
+     "path": "src/game/controller/GameObjectFactory.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 35,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/GameObjectFactory.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/InputHandler.cpp",
+     "label": "InputHandler.cpp",
+     "kind": "file",
+     "path": "src/game/controller/InputHandler.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 38,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/InputHandler.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/InteractDispatch.cpp",
+     "label": "InteractDispatch.cpp",
+     "kind": "file",
+     "path": "src/game/controller/InteractDispatch.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 95,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/InteractDispatch.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/SceneRouter.cpp",
+     "label": "SceneRouter.cpp",
+     "kind": "file",
+     "path": "src/game/controller/SceneRouter.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 102,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/SceneRouter.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/SimSystems.cpp",
+     "label": "SimSystems.cpp",
+     "kind": "file",
+     "path": "src/game/controller/SimSystems.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 112,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/SimSystems.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/VendorMenu.cpp",
+     "label": "VendorMenu.cpp",
+     "kind": "file",
+     "path": "src/game/controller/VendorMenu.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 36,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/VendorMenu.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/screens/DialogScreen.cpp",
+     "label": "DialogScreen.cpp",
+     "kind": "file",
+     "path": "src/game/controller/screens/DialogScreen.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 171,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/DialogScreen.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/screens/EndingScreen.cpp",
+     "label": "EndingScreen.cpp",
+     "kind": "file",
+     "path": "src/game/controller/screens/EndingScreen.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 37,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/EndingScreen.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "label": "InventoryScreen.cpp",
+     "kind": "file",
+     "path": "src/game/controller/screens/InventoryScreen.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 73,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/InventoryScreen.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/controller/screens/PauseScreen.cpp",
+     "label": "PauseScreen.cpp",
+     "kind": "file",
+     "path": "src/game/controller/screens/PauseScreen.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 85,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/PauseScreen.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogLayout.cpp",
+     "label": "DialogLayout.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogLayout.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 212,
+     "classes": [
+      "Range"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogLayout.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogLoader.cpp",
+     "label": "DialogLoader.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogLoader.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 354,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogLoader.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogOpener.cpp",
+     "label": "DialogOpener.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogOpener.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 448,
+     "classes": [
+      "DispatchEntry"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogOpener.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogSource.cpp",
+     "label": "DialogSource.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogSource.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 141,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogSource.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogState.cpp",
+     "label": "DialogState.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogState.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 92,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogState.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/dialog/DialogView.cpp",
+     "label": "DialogView.cpp",
+     "kind": "file",
+     "path": "src/game/dialog/DialogView.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 61,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogView.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/CashPickup.cpp",
+     "label": "CashPickup.cpp",
+     "kind": "file",
+     "path": "src/game/entities/CashPickup.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 42,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/CashPickup.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/CursedUmbrella.cpp",
+     "label": "CursedUmbrella.cpp",
+     "kind": "file",
+     "path": "src/game/entities/CursedUmbrella.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 27,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/CursedUmbrella.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/DlcSign.cpp",
+     "label": "DlcSign.cpp",
+     "kind": "file",
+     "path": "src/game/entities/DlcSign.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 57,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/DlcSign.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/EnergyDrink.cpp",
+     "label": "EnergyDrink.cpp",
+     "kind": "file",
+     "path": "src/game/entities/EnergyDrink.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 14,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/EnergyDrink.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/FragileUmbrella.cpp",
+     "label": "FragileUmbrella.cpp",
+     "kind": "file",
+     "path": "src/game/entities/FragileUmbrella.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 14,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/FragileUmbrella.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/HotPack.cpp",
+     "label": "HotPack.cpp",
+     "kind": "file",
+     "path": "src/game/entities/HotPack.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 14,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/HotPack.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/NPC.cpp",
+     "label": "NPC.cpp",
+     "kind": "file",
+     "path": "src/game/entities/NPC.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 224,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/NPC.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/Player.cpp",
+     "label": "Player.cpp",
+     "kind": "file",
+     "path": "src/game/entities/Player.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 180,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/Player.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "label": "ProfessorTrapUmbrella.cpp",
+     "kind": "file",
+     "path": "src/game/entities/ProfessorTrapUmbrella.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 20,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/ProfessorTrapUmbrella.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/QuestFlagPickup.cpp",
+     "label": "QuestFlagPickup.cpp",
+     "kind": "file",
+     "path": "src/game/entities/QuestFlagPickup.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 104,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/QuestFlagPickup.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/TransparentUmbrella.cpp",
+     "label": "TransparentUmbrella.cpp",
+     "kind": "file",
+     "path": "src/game/entities/TransparentUmbrella.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 44,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/TransparentUmbrella.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/TrueUmbrella.cpp",
+     "label": "TrueUmbrella.cpp",
+     "kind": "file",
+     "path": "src/game/entities/TrueUmbrella.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 26,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/TrueUmbrella.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/entities/WaterproofSpray.cpp",
+     "label": "WaterproofSpray.cpp",
+     "kind": "file",
+     "path": "src/game/entities/WaterproofSpray.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 15,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/WaterproofSpray.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/Chapter1Quest.cpp",
+     "label": "Chapter1Quest.cpp",
+     "kind": "file",
+     "path": "src/game/quest/Chapter1Quest.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 163,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter1Quest.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/Chapter2Quest.cpp",
+     "label": "Chapter2Quest.cpp",
+     "kind": "file",
+     "path": "src/game/quest/Chapter2Quest.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 223,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter2Quest.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/Chapter3Quest.cpp",
+     "label": "Chapter3Quest.cpp",
+     "kind": "file",
+     "path": "src/game/quest/Chapter3Quest.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 128,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter3Quest.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/Chapter4Quest.cpp",
+     "label": "Chapter4Quest.cpp",
+     "kind": "file",
+     "path": "src/game/quest/Chapter4Quest.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 131,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter4Quest.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/ChapterGate.cpp",
+     "label": "ChapterGate.cpp",
+     "kind": "file",
+     "path": "src/game/quest/ChapterGate.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 52,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ChapterGate.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/ChapterVendors.cpp",
+     "label": "ChapterVendors.cpp",
+     "kind": "file",
+     "path": "src/game/quest/ChapterVendors.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 142,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ChapterVendors.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/ItemCatalog.cpp",
+     "label": "ItemCatalog.cpp",
+     "kind": "file",
+     "path": "src/game/quest/ItemCatalog.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 297,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ItemCatalog.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/QuestHookTable.cpp",
+     "label": "QuestHookTable.cpp",
+     "kind": "file",
+     "path": "src/game/quest/QuestHookTable.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 65,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/QuestHookTable.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/quest/QuestIndicator.cpp",
+     "label": "QuestIndicator.cpp",
+     "kind": "file",
+     "path": "src/game/quest/QuestIndicator.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 46,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/QuestIndicator.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/state/EndingGate.cpp",
+     "label": "EndingGate.cpp",
+     "kind": "file",
+     "path": "src/game/state/EndingGate.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 96,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/state/EndingGate.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/state/SemesterStateMachine.cpp",
+     "label": "SemesterStateMachine.cpp",
+     "kind": "file",
+     "path": "src/game/state/SemesterStateMachine.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 99,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/state/SemesterStateMachine.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/vendor/Vendor.cpp",
+     "label": "Vendor.cpp",
+     "kind": "file",
+     "path": "src/game/vendor/Vendor.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 110,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/vendor/Vendor.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/vendor/VendorLoader.cpp",
+     "label": "VendorLoader.cpp",
+     "kind": "file",
+     "path": "src/game/vendor/VendorLoader.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 219,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/vendor/VendorLoader.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/BuildingTracker.cpp",
+     "label": "BuildingTracker.cpp",
+     "kind": "file",
+     "path": "src/game/world/BuildingTracker.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 29,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/BuildingTracker.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/TerrainMask.cpp",
+     "label": "TerrainMask.cpp",
+     "kind": "file",
+     "path": "src/game/world/TerrainMask.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 19,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/TerrainMask.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/World.cpp",
+     "label": "World.cpp",
+     "kind": "file",
+     "path": "src/game/world/World.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 146,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/World.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/WorldOptions.cpp",
+     "label": "WorldOptions.cpp",
+     "kind": "file",
+     "path": "src/game/world/WorldOptions.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 27,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldOptions.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/WorldSpawn.cpp",
+     "label": "WorldSpawn.cpp",
+     "kind": "file",
+     "path": "src/game/world/WorldSpawn.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 344,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldSpawn.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/game/world/WorldSportsLap.cpp",
+     "label": "WorldSportsLap.cpp",
+     "kind": "file",
+     "path": "src/game/world/WorldSportsLap.cpp",
+     "ntype": "source",
+     "domain": "game",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 59,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldSportsLap.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/ChapterCard.cpp",
+     "label": "ChapterCard.cpp",
+     "kind": "file",
+     "path": "src/ui/ChapterCard.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 225,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/ChapterCard.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/EndingView.cpp",
+     "label": "EndingView.cpp",
+     "kind": "file",
+     "path": "src/ui/EndingView.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 427,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/EndingView.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/HelpPageView.cpp",
+     "label": "HelpPageView.cpp",
+     "kind": "file",
+     "path": "src/ui/HelpPageView.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 73,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/HelpPageView.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/InventoryView.cpp",
+     "label": "InventoryView.cpp",
+     "kind": "file",
+     "path": "src/ui/InventoryView.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 257,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/InventoryView.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/MessageView.cpp",
+     "label": "MessageView.cpp",
+     "kind": "file",
+     "path": "src/ui/MessageView.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 112,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/MessageView.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/View.cpp",
+     "label": "View.cpp",
+     "kind": "file",
+     "path": "src/ui/View.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "",
+     "ext": ".cpp",
+     "loc": 368,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/View.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/hud/ObjectiveBar.cpp",
+     "label": "ObjectiveBar.cpp",
+     "kind": "file",
+     "path": "src/ui/hud/ObjectiveBar.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".cpp",
+     "loc": 60,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/ObjectiveBar.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/hud/RainVignette.cpp",
+     "label": "RainVignette.cpp",
+     "kind": "file",
+     "path": "src/ui/hud/RainVignette.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".cpp",
+     "loc": 44,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/RainVignette.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/hud/SportsLapRing.cpp",
+     "label": "SportsLapRing.cpp",
+     "kind": "file",
+     "path": "src/ui/hud/SportsLapRing.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".cpp",
+     "loc": 49,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/SportsLapRing.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/hud/StatusPanel.cpp",
+     "label": "StatusPanel.cpp",
+     "kind": "file",
+     "path": "src/ui/hud/StatusPanel.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "hud",
+     "ext": ".cpp",
+     "loc": 158,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/StatusPanel.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/overlay/HelpOverlay.cpp",
+     "label": "HelpOverlay.cpp",
+     "kind": "file",
+     "path": "src/ui/overlay/HelpOverlay.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".cpp",
+     "loc": 48,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/HelpOverlay.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/overlay/MenuAffordance.cpp",
+     "label": "MenuAffordance.cpp",
+     "kind": "file",
+     "path": "src/ui/overlay/MenuAffordance.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".cpp",
+     "loc": 52,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/MenuAffordance.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/overlay/PauseMenu.cpp",
+     "label": "PauseMenu.cpp",
+     "kind": "file",
+     "path": "src/ui/overlay/PauseMenu.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "overlay",
+     "ext": ".cpp",
+     "loc": 80,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/PauseMenu.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "label": "QuestGiverIndicators.cpp",
+     "kind": "file",
+     "path": "src/ui/world/QuestGiverIndicators.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 45,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/world/QuestGiverIndicators.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:src/ui/world/SportsLapTrack.cpp",
+     "label": "SportsLapTrack.cpp",
+     "kind": "file",
+     "path": "src/ui/world/SportsLapTrack.cpp",
+     "ntype": "source",
+     "domain": "ui",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 66,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/world/SportsLapTrack.cpp",
+     "wiki": null
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "tests/README.md",
+     "ntype": "doc",
+     "domain": "tests",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_eventbus.cpp",
+     "label": "test_eventbus.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_eventbus.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 58,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_eventbus_isolation.cpp",
+     "label": "test_eventbus_isolation.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_eventbus_isolation.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 43,
+     "classes": [
+      "EventBusIsolation"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_isolation.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_eventbus_scoped.cpp",
+     "label": "test_eventbus_scoped.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_eventbus_scoped.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 161,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_scoped.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_factory.cpp",
+     "label": "test_factory.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_factory.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 68,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_factory.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "label": "test_i35_interact_vendor.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_i35_interact_vendor.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 367,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i35_interact_vendor.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_i6_interact_reach.cpp",
+     "label": "test_i6_interact_reach.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_i6_interact_reach.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 164,
+     "classes": [
+      "Outcome"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i6_interact_reach.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_input_handler.cpp",
+     "label": "test_input_handler.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_input_handler.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 203,
+     "classes": [
+      "StubInput",
+      "ScopedInputSource"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_input_handler.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_scene_router.cpp",
+     "label": "test_scene_router.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_scene_router.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 332,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_scene_router.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/controller/test_sim_systems.cpp",
+     "label": "test_sim_systems.cpp",
+     "kind": "file",
+     "path": "tests/controller/test_sim_systems.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "controller",
+     "ext": ".cpp",
+     "loc": 198,
+     "classes": [
+      "Fixture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_sim_systems.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_box_render.cpp",
+     "label": "test_dialog_box_render.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_box_render.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 64,
+     "classes": [
+      "Spy"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_box_render.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "label": "test_dialog_choice_layout.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_choice_layout.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 128,
+     "classes": [
+      "PosSpy",
+      "T"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_choice_layout.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_content_dir.cpp",
+     "label": "test_dialog_content_dir.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_content_dir.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 23,
+     "classes": [
+      "DialogContentDirInit"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_content_dir.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_layout.cpp",
+     "label": "test_dialog_layout.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_layout.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 226,
+     "classes": [
+      "Spy"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_layout.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_loader.cpp",
+     "label": "test_dialog_loader.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_loader.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 99,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_loader.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_opener.cpp",
+     "label": "test_dialog_opener.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_opener.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 338,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_opener.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_repository.cpp",
+     "label": "test_dialog_repository.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_repository.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 126,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_repository.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_skip.cpp",
+     "label": "test_dialog_skip.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_skip.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 221,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_skip.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_source.cpp",
+     "label": "test_dialog_source.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_source.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 134,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_source.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/dialog/test_dialog_state.cpp",
+     "label": "test_dialog_state.cpp",
+     "kind": "file",
+     "path": "tests/dialog/test_dialog_state.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "dialog",
+     "ext": ".cpp",
+     "loc": 136,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_state.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_cashpickup.cpp",
+     "label": "test_cashpickup.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_cashpickup.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 107,
+     "classes": [
+      "MessageCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cashpickup.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_consumable.cpp",
+     "label": "test_consumable.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_consumable.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 263,
+     "classes": [
+      "MessageCapture",
+      "Row"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_consumable.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_cursed_taint.cpp",
+     "label": "test_cursed_taint.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_cursed_taint.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 103,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cursed_taint.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_dlc_sign.cpp",
+     "label": "test_dlc_sign.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_dlc_sign.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 140,
+     "classes": [
+      "MessageCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_dlc_sign.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_npc.cpp",
+     "label": "test_npc.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_npc.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 80,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_npc_animation.cpp",
+     "label": "test_npc_animation.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_npc_animation.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 148,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_animation.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_npc_loaddialog.cpp",
+     "label": "test_npc_loaddialog.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_npc_loaddialog.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 38,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_loaddialog.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_player.cpp",
+     "label": "test_player.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_player.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 39,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_player_core.cpp",
+     "label": "test_player_core.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_player_core.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 131,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player_core.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_quest_pickup.cpp",
+     "label": "test_quest_pickup.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_quest_pickup.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 28,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_quest_pickup_render.cpp",
+     "label": "test_quest_pickup_render.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_quest_pickup_render.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 80,
+     "classes": [
+      "CountingRenderer",
+      "RectCall"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup_render.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_rain_survival.cpp",
+     "label": "test_rain_survival.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_rain_survival.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 290,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_rain_survival.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_roles.cpp",
+     "label": "test_roles.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_roles.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 204,
+     "classes": [
+      "Bare"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_roles.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/entities/test_umbrella_render.cpp",
+     "label": "test_umbrella_render.cpp",
+     "kind": "file",
+     "path": "tests/entities/test_umbrella_render.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "entities",
+     "ext": ".cpp",
+     "loc": 115,
+     "classes": [
+      "CountingRenderer",
+      "RectCall"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_umbrella_render.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/fixtures/dialog_sample.md",
+     "label": "dialog_sample.md",
+     "kind": "file",
+     "path": "tests/fixtures/dialog_sample.md",
+     "ntype": "doc",
+     "domain": "tests",
+     "bucket": "fixtures",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/fixtures/dialog_sample.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_bounds.cpp",
+     "label": "test_bounds.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_bounds.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 40,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_bounds.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_camera2d.cpp",
+     "label": "test_camera2d.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_camera2d.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 43,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_camera2d_clamp.cpp",
+     "label": "test_camera2d_clamp.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_camera2d_clamp.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 56,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d_clamp.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_color.cpp",
+     "label": "test_color.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_color.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 54,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_color.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_rect.cpp",
+     "label": "test_rect.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_rect.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 55,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_rect.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_sprite_strip.cpp",
+     "label": "test_sprite_strip.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_sprite_strip.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 176,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_sprite_strip.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_text_builder.cpp",
+     "label": "test_text_builder.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_text_builder.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 37,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_text_builder.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_texture_cache.cpp",
+     "label": "test_texture_cache.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_texture_cache.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 79,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_texture_cache.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_vec2.cpp",
+     "label": "test_vec2.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_vec2.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 55,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_vec2.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/gfx/test_walk_cycle.cpp",
+     "label": "test_walk_cycle.cpp",
+     "kind": "file",
+     "path": "tests/gfx/test_walk_cycle.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "gfx",
+     "ext": ".cpp",
+     "loc": 63,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_walk_cycle.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/harness/test_scriptinput.cpp",
+     "label": "test_scriptinput.cpp",
+     "kind": "file",
+     "path": "tests/harness/test_scriptinput.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "harness",
+     "ext": ".cpp",
+     "loc": 95,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "label": "test_scriptinput_classic_move.cpp",
+     "kind": "file",
+     "path": "tests/harness/test_scriptinput_classic_move.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "harness",
+     "ext": ".cpp",
+     "loc": 114,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_classic_move.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/harness/test_scriptinput_plan.cpp",
+     "label": "test_scriptinput_plan.cpp",
+     "kind": "file",
+     "path": "tests/harness/test_scriptinput_plan.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "harness",
+     "ext": ".cpp",
+     "loc": 235,
+     "classes": [
+      "Frame"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_plan.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "label": "test_ch1_flavor_crowd.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch1_flavor_crowd.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 153,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_flavor_crowd.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch1_quest.cpp",
+     "label": "test_ch1_quest.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch1_quest.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 393,
+     "classes": [
+      "Capture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_quest.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "label": "test_ch1_spine_reachable.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch1_spine_reachable.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 227,
+     "classes": [
+      "SpineResult"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_spine_reachable.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch2_quest.cpp",
+     "label": "test_ch2_quest.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch2_quest.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 370,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_quest.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "label": "test_ch2_reactive_substates.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch2_reactive_substates.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 135,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_reactive_substates.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch2_ripple.cpp",
+     "label": "test_ch2_ripple.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch2_ripple.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 131,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_ripple.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch3_quest.cpp",
+     "label": "test_ch3_quest.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch3_quest.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 255,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_quest.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch3_ripple.cpp",
+     "label": "test_ch3_ripple.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch3_ripple.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 84,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_ripple.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "label": "test_ch3_umbrella_reveal.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch3_umbrella_reveal.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 116,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_umbrella_reveal.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "label": "test_ch4_ending_confession.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_ending_confession.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 188,
+     "classes": [
+      "TestInput",
+      "Ch4Fixture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ending_confession.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_finale.cpp",
+     "label": "test_ch4_finale.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_finale.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 127,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "label": "test_ch4_finale_exit.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_finale_exit.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 151,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale_exit.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "label": "test_ch4_gentle_umbrella.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_gentle_umbrella.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 137,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_gentle_umbrella.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_ripple.cpp",
+     "label": "test_ch4_ripple.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_ripple.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 128,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ripple.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ch4_routing.cpp",
+     "label": "test_ch4_routing.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ch4_routing.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 101,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_routing.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter2_roster.cpp",
+     "label": "test_chapter2_roster.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter2_roster.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 66,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter2_roster.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter3_roster.cpp",
+     "label": "test_chapter3_roster.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter3_roster.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 68,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter3_roster.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter4_roster.cpp",
+     "label": "test_chapter4_roster.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter4_roster.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 56,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_roster.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "label": "test_chapter4_senior_skip.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter4_senior_skip.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 113,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_senior_skip.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter_gate.cpp",
+     "label": "test_chapter_gate.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter_gate.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 55,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_gate.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter_questitems.cpp",
+     "label": "test_chapter_questitems.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter_questitems.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 184,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_questitems.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter_spawns.cpp",
+     "label": "test_chapter_spawns.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter_spawns.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 180,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spawns.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter_spine.cpp",
+     "label": "test_chapter_spine.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter_spine.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 127,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spine.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_chapter_transitions.cpp",
+     "label": "test_chapter_transitions.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_chapter_transitions.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 385,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_transitions.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_economy_loop.cpp",
+     "label": "test_economy_loop.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_economy_loop.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 90,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_economy_loop.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_loadchapter_chapter1.cpp",
+     "label": "test_loadchapter_chapter1.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_loadchapter_chapter1.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 147,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_loadchapter_chapter1.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_quest_hook_table.cpp",
+     "label": "test_quest_hook_table.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_quest_hook_table.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 69,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_hook_table.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_quest_indicator.cpp",
+     "label": "test_quest_indicator.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_quest_indicator.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 173,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_indicator.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "label": "test_ripple_seed_flags.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_ripple_seed_flags.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 114,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ripple_seed_flags.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_spawn_reachability.cpp",
+     "label": "test_spawn_reachability.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_spawn_reachability.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 165,
+     "classes": [
+      "Spot"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_spawn_reachability.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "label": "test_suit_senior_oneshot.cpp",
+     "kind": "file",
+     "path": "tests/quest/test_suit_senior_oneshot.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "quest",
+     "ext": ".cpp",
+     "loc": 93,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_suit_senior_oneshot.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_ending_gate.cpp",
+     "label": "test_ending_gate.cpp",
+     "kind": "file",
+     "path": "tests/state/test_ending_gate.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 318,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_ending_gate.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_interlude_exit.cpp",
+     "label": "test_interlude_exit.cpp",
+     "kind": "file",
+     "path": "tests/state/test_interlude_exit.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 66,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "label": "test_interlude_exit_feedback.cpp",
+     "kind": "file",
+     "path": "tests/state/test_interlude_exit_feedback.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 119,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_feedback.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_interlude_exit_marker.cpp",
+     "label": "test_interlude_exit_marker.cpp",
+     "kind": "file",
+     "path": "tests/state/test_interlude_exit_marker.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 167,
+     "classes": [
+      "Spy",
+      "RectCall",
+      "TextCall"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_marker.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_interlude_loaner_return.cpp",
+     "label": "test_interlude_loaner_return.cpp",
+     "kind": "file",
+     "path": "tests/state/test_interlude_loaner_return.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 172,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_loaner_return.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/state/test_state_machine.cpp",
+     "label": "test_state_machine.cpp",
+     "kind": "file",
+     "path": "tests/state/test_state_machine.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "state",
+     "ext": ".cpp",
+     "loc": 57,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_state_machine.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_accessibility_contrast.cpp",
+     "label": "test_accessibility_contrast.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_accessibility_contrast.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 91,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_accessibility_contrast.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_chapter_card.cpp",
+     "label": "test_chapter_card.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_chapter_card.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 237,
+     "classes": [
+      "Spy"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_chapter_card.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_ending_card_render.cpp",
+     "label": "test_ending_card_render.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_ending_card_render.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 302,
+     "classes": [
+      "Spy"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_card_render.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_ending_menu.cpp",
+     "label": "test_ending_menu.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_ending_menu.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 235,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_menu.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "label": "test_font_ui_glyph_scan.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_font_ui_glyph_scan.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 155,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyph_scan.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_font_ui_glyphs.cpp",
+     "label": "test_font_ui_glyphs.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_font_ui_glyphs.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 93,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyphs.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_font_ui_literal_scan.cpp",
+     "label": "test_font_ui_literal_scan.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_font_ui_literal_scan.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 349,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_literal_scan.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_hud_reset.cpp",
+     "label": "test_hud_reset.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_hud_reset.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 76,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_hud_reset.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_inventory_view.cpp",
+     "label": "test_inventory_view.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_inventory_view.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 505,
+     "classes": [
+      "Spy",
+      "Case"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_inventory_view.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_karma_toast.cpp",
+     "label": "test_karma_toast.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_karma_toast.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 147,
+     "classes": [
+      "KarmaCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_karma_toast.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_large_targets.cpp",
+     "label": "test_large_targets.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_large_targets.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 104,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_large_targets.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_menu_help.cpp",
+     "label": "test_menu_help.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_menu_help.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 260,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_menu_help.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_message_view.cpp",
+     "label": "test_message_view.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_message_view.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 166,
+     "classes": [
+      "Spy"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_message_view.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "label": "test_pause_menu_toggle.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_pause_menu_toggle.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 331,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_pause_menu_toggle.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_press_latch.cpp",
+     "label": "test_press_latch.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_press_latch.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 74,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_press_latch.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "label": "test_quest_giver_indicator.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_quest_giver_indicator.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 145,
+     "classes": [
+      "Spy",
+      "RectCall",
+      "TextCall",
+      "StubObj"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_quest_giver_indicator.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_rain_hud_redundant.cpp",
+     "label": "test_rain_hud_redundant.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_rain_hud_redundant.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 81,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_rain_hud_redundant.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_reduced_motion.cpp",
+     "label": "test_reduced_motion.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_reduced_motion.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 108,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_reduced_motion.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_restart_safety.cpp",
+     "label": "test_restart_safety.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_restart_safety.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 142,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_restart_safety.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/ui/test_two_hud_channels.cpp",
+     "label": "test_two_hud_channels.cpp",
+     "kind": "file",
+     "path": "tests/ui/test_two_hud_channels.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "ui",
+     "ext": ".cpp",
+     "loc": 232,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_two_hud_channels.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/vendor/test_vendor.cpp",
+     "label": "test_vendor.cpp",
+     "kind": "file",
+     "path": "tests/vendor/test_vendor.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 139,
+     "classes": [
+      "VendorCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "label": "test_vendor_centred_cluster.cpp",
+     "kind": "file",
+     "path": "tests/vendor/test_vendor_centred_cluster.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 81,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_centred_cluster.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/vendor/test_vendor_decline.cpp",
+     "label": "test_vendor_decline.cpp",
+     "kind": "file",
+     "path": "tests/vendor/test_vendor_decline.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 158,
+     "classes": [
+      "TestInput"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_decline.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/vendor/test_vendor_inventory.cpp",
+     "label": "test_vendor_inventory.cpp",
+     "kind": "file",
+     "path": "tests/vendor/test_vendor_inventory.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 154,
+     "classes": [
+      "MsgCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_inventory.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/vendor/test_vendor_loader.cpp",
+     "label": "test_vendor_loader.cpp",
+     "kind": "file",
+     "path": "tests/vendor/test_vendor_loader.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "vendor",
+     "ext": ".cpp",
+     "loc": 115,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_loader.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/world/test_building_tracker.cpp",
+     "label": "test_building_tracker.cpp",
+     "kind": "file",
+     "path": "tests/world/test_building_tracker.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 177,
+     "classes": [
+      "EventCapture"
+     ],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_building_tracker.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/world/test_collision_mask.cpp",
+     "label": "test_collision_mask.cpp",
+     "kind": "file",
+     "path": "tests/world/test_collision_mask.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 110,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_collision_mask.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/world/test_physics.cpp",
+     "label": "test_physics.cpp",
+     "kind": "file",
+     "path": "tests/world/test_physics.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 123,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_physics.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tests/world/test_world_chapter_roster.cpp",
+     "label": "test_world_chapter_roster.cpp",
+     "kind": "file",
+     "path": "tests/world/test_world_chapter_roster.cpp",
+     "ntype": "test",
+     "domain": "tests",
+     "bucket": "world",
+     "ext": ".cpp",
+     "loc": 176,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_world_chapter_roster.cpp"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/README.md",
+     "label": "README.md",
+     "kind": "file",
+     "path": "tools/README.md",
+     "ntype": "doc",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/README.md"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/composite_worldmap.py",
+     "label": "composite_worldmap.py",
+     "kind": "file",
+     "path": "tools/composite_worldmap.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/composite_worldmap.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/docs_graph.py",
+     "label": "docs_graph.py",
+     "kind": "file",
+     "path": "tools/docs_graph.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/docs_graph.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/gif_to_strip.py",
+     "label": "gif_to_strip.py",
+     "kind": "file",
+     "path": "tools/gif_to_strip.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/gif_to_strip.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/strip_plots.py",
+     "label": "strip_plots.py",
+     "kind": "file",
+     "path": "tools/strip_plots.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/strip_plots.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/text_map.py",
+     "label": "text_map.py",
+     "kind": "file",
+     "path": "tools/text_map.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/text_map.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/tiled_to_world.py",
+     "label": "tiled_to_world.py",
+     "kind": "file",
+     "path": "tools/tiled_to_world.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/tiled_to_world.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/trim_3d.py",
+     "label": "trim_3d.py",
+     "kind": "file",
+     "path": "tools/trim_3d.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/trim_3d.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:tools/trim_tiles.py",
+     "label": "trim_tiles.py",
+     "kind": "file",
+     "path": "tools/trim_tiles.py",
+     "ntype": "tool",
+     "domain": "tools",
+     "bucket": "",
+     "ext": ".py",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tools/trim_tiles.py"
+    }
+   },
+   {
+    "data": {
+     "id": "file:遊戲企劃與敘事架構.md",
+     "label": "遊戲企劃與敘事架構.md",
+     "kind": "file",
+     "path": "遊戲企劃與敘事架構.md",
+     "ntype": "doc",
+     "domain": "root",
+     "bucket": "",
+     "ext": ".md",
+     "loc": 0,
+     "classes": [],
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/%E9%81%8A%E6%88%B2%E4%BC%81%E5%8A%83%E8%88%87%E6%95%98%E4%BA%8B%E6%9E%B6%E6%A7%8B.md"
+    }
+   }
+  ],
+  "edges": [
+   {
+    "data": {
+     "id": "e0",
+     "source": "file:.github/.keep",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e1",
+     "source": "file:.gitignore",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e2",
+     "source": "file:CMakeLists.txt",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e3",
+     "source": "file:CREDITS.md",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e4",
+     "source": "file:Doxyfile",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e5",
+     "source": "file:README.md",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e6",
+     "source": "file:docs/README.md",
+     "target": "domain:docs",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e7",
+     "source": "file:docs/Report.md",
+     "target": "domain:docs",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e8",
+     "source": "file:docs/UML/0-layer-map.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e9",
+     "source": "bucket:docs/UML",
+     "target": "domain:docs",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e10",
+     "source": "file:docs/UML/1-entities.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e11",
+     "source": "file:docs/UML/2-state-machine.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e12",
+     "source": "file:docs/UML/3-mvc-isystem.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e13",
+     "source": "file:docs/UML/4-gfx.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e14",
+     "source": "file:docs/UML/5-harness.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e15",
+     "source": "file:docs/UML/6-sequence.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e16",
+     "source": "file:docs/UML/7-gof.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e17",
+     "source": "file:docs/UML/8-solid.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e18",
+     "source": "file:docs/UML/README.md",
+     "target": "bucket:docs/UML",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e19",
+     "source": "file:docs/content/chapter1.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e20",
+     "source": "bucket:docs/content",
+     "target": "domain:docs",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e21",
+     "source": "file:docs/content/chapter2.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e22",
+     "source": "file:docs/content/chapter3.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e23",
+     "source": "file:docs/content/chapter4.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e24",
+     "source": "file:docs/content/ending_a.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e25",
+     "source": "file:docs/content/ending_b.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e26",
+     "source": "file:docs/content/ending_c.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e27",
+     "source": "file:docs/content/interlude_market.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e28",
+     "source": "file:docs/content/voice_bible.md",
+     "target": "bucket:docs/content",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e29",
+     "source": "file:include/README.md",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e30",
+     "source": "file:include/app/IScene.h",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e31",
+     "source": "file:include/app/SceneBootstrap.h",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e32",
+     "source": "file:include/app/SceneManager.h",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e33",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e34",
+     "source": "bucket:app/scenes",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e35",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e36",
+     "source": "file:include/app/scenes/LoadingScene.h",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e37",
+     "source": "file:include/app/scenes/TitleScene.h",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e38",
+     "source": "file:include/engine/audio/AudioDevice.h",
+     "target": "bucket:engine/audio",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e39",
+     "source": "bucket:engine/audio",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e40",
+     "source": "file:include/engine/audio/AudioManager.h",
+     "target": "bucket:engine/audio",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e41",
+     "source": "file:include/engine/core/GameObject.h",
+     "target": "bucket:engine/core",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e42",
+     "source": "bucket:engine/core",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e43",
+     "source": "file:include/engine/core/Roles.h",
+     "target": "bucket:engine/core",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e44",
+     "source": "file:include/engine/events/EventBus.h",
+     "target": "bucket:engine/events",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e45",
+     "source": "bucket:engine/events",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e46",
+     "source": "file:include/engine/events/EventSink.h",
+     "target": "bucket:engine/events",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e47",
+     "source": "file:include/engine/events/HudSlot.h",
+     "target": "bucket:engine/events",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e48",
+     "source": "file:include/engine/input/Input.h",
+     "target": "bucket:engine/input",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e49",
+     "source": "bucket:engine/input",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e50",
+     "source": "file:include/engine/input/Key.h",
+     "target": "bucket:engine/input",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e51",
+     "source": "file:include/engine/math/Color.h",
+     "target": "bucket:engine/math",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e52",
+     "source": "bucket:engine/math",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e53",
+     "source": "file:include/engine/math/Rect.h",
+     "target": "bucket:engine/math",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e54",
+     "source": "file:include/engine/math/Vec2.h",
+     "target": "bucket:engine/math",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e55",
+     "source": "file:include/engine/platform/Harness.h",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e56",
+     "source": "bucket:engine/platform",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e57",
+     "source": "file:include/engine/platform/ScriptInput.h",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e58",
+     "source": "file:include/engine/platform/Time.h",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e59",
+     "source": "file:include/engine/platform/WorkingDir.h",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e60",
+     "source": "file:include/engine/render/Camera2D.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e61",
+     "source": "bucket:engine/render",
+     "target": "domain:engine",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e62",
+     "source": "file:include/engine/render/CameraScope.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e63",
+     "source": "file:include/engine/render/DrawScope.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e64",
+     "source": "file:include/engine/render/Font.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e65",
+     "source": "file:include/engine/render/IRenderer.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e66",
+     "source": "file:include/engine/render/ImageDecoder.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e67",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e68",
+     "source": "file:include/engine/render/Renderer.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e69",
+     "source": "file:include/engine/render/TextBuilder.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e70",
+     "source": "file:include/engine/render/Texture.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e71",
+     "source": "file:include/engine/render/Window.h",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e72",
+     "source": "file:include/game/controller/DialogChoiceApply.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e73",
+     "source": "bucket:game/controller",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e74",
+     "source": "file:include/game/controller/EventWiring.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e75",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e76",
+     "source": "file:include/game/controller/GameObjectFactory.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e77",
+     "source": "file:include/game/controller/GameObjectQueries.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e78",
+     "source": "file:include/game/controller/InputHandler.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e79",
+     "source": "file:include/game/controller/InteractDispatch.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e80",
+     "source": "file:include/game/controller/SceneRouter.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e81",
+     "source": "file:include/game/controller/SimSystem.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e82",
+     "source": "file:include/game/controller/VendorMenu.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e83",
+     "source": "file:include/game/controller/screens/DialogScreen.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e84",
+     "source": "file:include/game/controller/screens/EndingScreen.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e85",
+     "source": "file:include/game/controller/screens/InventoryScreen.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e86",
+     "source": "file:include/game/controller/screens/PauseScreen.h",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e87",
+     "source": "file:include/game/dialog/DialogLayout.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e88",
+     "source": "bucket:game/dialog",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e89",
+     "source": "file:include/game/dialog/DialogLoader.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e90",
+     "source": "file:include/game/dialog/DialogOpener.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e91",
+     "source": "file:include/game/dialog/DialogRepository.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e92",
+     "source": "file:include/game/dialog/DialogSource.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e93",
+     "source": "file:include/game/dialog/DialogState.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e94",
+     "source": "file:include/game/dialog/DialogView.h",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e95",
+     "source": "file:include/game/entities/CashPickup.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e96",
+     "source": "bucket:game/entities",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e97",
+     "source": "file:include/game/entities/Character.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e98",
+     "source": "file:include/game/entities/ConsumableItem.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e99",
+     "source": "file:include/game/entities/CursedUmbrella.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e100",
+     "source": "file:include/game/entities/DlcSign.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e101",
+     "source": "file:include/game/entities/EnergyDrink.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e102",
+     "source": "file:include/game/entities/FragileUmbrella.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e103",
+     "source": "file:include/game/entities/HotPack.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e104",
+     "source": "file:include/game/entities/Item.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e105",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e106",
+     "source": "file:include/game/entities/Personas.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e107",
+     "source": "file:include/game/entities/Player.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e108",
+     "source": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e109",
+     "source": "file:include/game/entities/QuestFlagPickup.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e110",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e111",
+     "source": "file:include/game/entities/TrueUmbrella.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e112",
+     "source": "file:include/game/entities/WaterproofSpray.h",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e113",
+     "source": "file:include/game/gfx/Bounds.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e114",
+     "source": "bucket:game/gfx",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e115",
+     "source": "file:include/game/gfx/Decorations.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e116",
+     "source": "file:include/game/gfx/MaskLoader.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e117",
+     "source": "file:include/game/gfx/SpriteStrip.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e118",
+     "source": "file:include/game/gfx/UmbrellaGlyph.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e119",
+     "source": "file:include/game/gfx/WalkCycle.h",
+     "target": "bucket:game/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e120",
+     "source": "file:include/game/quest/Chapter1Quest.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e121",
+     "source": "bucket:game/quest",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e122",
+     "source": "file:include/game/quest/Chapter2Quest.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e123",
+     "source": "file:include/game/quest/Chapter3Quest.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e124",
+     "source": "file:include/game/quest/Chapter4Quest.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e125",
+     "source": "file:include/game/quest/ChapterGate.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e126",
+     "source": "file:include/game/quest/ChapterPickups.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e127",
+     "source": "file:include/game/quest/ChapterQuestItems.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e128",
+     "source": "file:include/game/quest/ChapterSpawns.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e129",
+     "source": "file:include/game/quest/ChapterVendors.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e130",
+     "source": "file:include/game/quest/Flags.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e131",
+     "source": "file:include/game/quest/InventoryPaging.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e132",
+     "source": "file:include/game/quest/ItemCatalog.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e133",
+     "source": "file:include/game/quest/NpcSpawns.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e134",
+     "source": "file:include/game/quest/PipoyaRoster.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e135",
+     "source": "file:include/game/quest/QuestHookTable.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e136",
+     "source": "file:include/game/quest/QuestIndicator.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e137",
+     "source": "file:include/game/quest/QuestObjective.h",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e138",
+     "source": "file:include/game/state/Chapter1AddDrop.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e139",
+     "source": "bucket:game/state",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e140",
+     "source": "file:include/game/state/Chapter2Midterms.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e141",
+     "source": "file:include/game/state/Chapter3SportsDay.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e142",
+     "source": "file:include/game/state/Chapter4Finals.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e143",
+     "source": "file:include/game/state/ChapterToast.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e144",
+     "source": "file:include/game/state/EndingGate.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e145",
+     "source": "file:include/game/state/EndingMenuModel.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e146",
+     "source": "file:include/game/state/GameHelpPages.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e147",
+     "source": "file:include/game/state/InterludeExit.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e148",
+     "source": "file:include/game/state/InterludeExitMarker.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e149",
+     "source": "file:include/game/state/InterludeMarket.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e150",
+     "source": "file:include/game/state/SemesterState.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e151",
+     "source": "file:include/game/state/SemesterStateMachine.h",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e152",
+     "source": "file:include/game/vendor/Vendor.h",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e153",
+     "source": "bucket:game/vendor",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e154",
+     "source": "file:include/game/vendor/VendorConfig.h",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e155",
+     "source": "file:include/game/vendor/VendorLoader.h",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e156",
+     "source": "file:include/game/vendor/VendorMessages.h",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e157",
+     "source": "file:include/game/vendor/VendorSprite.h",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e158",
+     "source": "file:include/game/world/BuildingTracker.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e159",
+     "source": "bucket:game/world",
+     "target": "domain:game",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e160",
+     "source": "file:include/game/world/Buildings.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e161",
+     "source": "file:include/game/world/CollisionMask.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e162",
+     "source": "file:include/game/world/HudTiming.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e163",
+     "source": "file:include/game/world/Obstacles.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e164",
+     "source": "file:include/game/world/Physics.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e165",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e166",
+     "source": "file:include/game/world/World.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e167",
+     "source": "file:include/game/world/WorldConfig.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e168",
+     "source": "file:include/game/world/WorldOptions.h",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e169",
+     "source": "file:include/ui/ChapterCard.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e170",
+     "source": "file:include/ui/CharacterSelect.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e171",
+     "source": "file:include/ui/EndingView.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e172",
+     "source": "file:include/ui/GameHelp.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e173",
+     "source": "file:include/ui/HelpPageView.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e174",
+     "source": "file:include/ui/InventoryView.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e175",
+     "source": "file:include/ui/MessageView.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e176",
+     "source": "file:include/ui/PressLatch.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e177",
+     "source": "file:include/ui/QuestGiverIndicator.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e178",
+     "source": "file:include/ui/RainHud.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e179",
+     "source": "file:include/ui/ReducedMotion.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e180",
+     "source": "file:include/ui/View.h",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e181",
+     "source": "file:include/ui/hud/ObjectiveBar.h",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e182",
+     "source": "bucket:ui/hud",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e183",
+     "source": "file:include/ui/hud/RainVignette.h",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e184",
+     "source": "file:include/ui/hud/SportsLapRing.h",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e185",
+     "source": "file:include/ui/hud/StatusPanel.h",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e186",
+     "source": "file:include/ui/overlay/HelpOverlay.h",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e187",
+     "source": "bucket:ui/overlay",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e188",
+     "source": "file:include/ui/overlay/MenuAffordance.h",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e189",
+     "source": "file:include/ui/overlay/PauseMenu.h",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e190",
+     "source": "file:include/ui/world/QuestGiverIndicators.h",
+     "target": "bucket:ui/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e191",
+     "source": "bucket:ui/world",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e192",
+     "source": "file:include/ui/world/SportsLapTrack.h",
+     "target": "bucket:ui/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e193",
+     "source": "file:resources/README.md",
+     "target": "domain:resources",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e194",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e195",
+     "source": "bucket:resources/assets",
+     "target": "domain:resources",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e196",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e197",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e198",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e199",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e200",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e201",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e202",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 1/Vending Machine 1.4.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e203",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e204",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e205",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e206",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e207",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e208",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e209",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e210",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 2/Vending Machine 2.4.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e211",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e212",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e213",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e214",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e215",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e216",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 3/Vending Machine 3.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e217",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e218",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e219",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e220",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e221",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e222",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 4/Vending Machine 4.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e223",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e224",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e225",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e226",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e227",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e228",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e229",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e230",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 5/Vending Machine 5.4.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e231",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e232",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e233",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e234",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e235",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e236",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.3.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e237",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4 (No Glass).png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e238",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Machine 6/Vending Machine 6.4.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e239",
+     "source": "file:resources/assets/Pixel Art Vending Machines Pack/Pixel Art Vending Machines Pack.txt",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e240",
+     "source": "file:resources/assets/buildings_3d_trimmed/中正圖書館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e241",
+     "source": "file:resources/assets/buildings_3d_trimmed/中正圖書館_nb2.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e242",
+     "source": "file:resources/assets/buildings_3d_trimmed/井塘樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e243",
+     "source": "file:resources/assets/buildings_3d_trimmed/商學院.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e244",
+     "source": "file:resources/assets/buildings_3d_trimmed/四維堂.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e245",
+     "source": "file:resources/assets/buildings_3d_trimmed/大仁樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e246",
+     "source": "file:resources/assets/buildings_3d_trimmed/大勇樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e247",
+     "source": "file:resources/assets/buildings_3d_trimmed/大智樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e248",
+     "source": "file:resources/assets/buildings_3d_trimmed/學思樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e249",
+     "source": "file:resources/assets/buildings_3d_trimmed/志希樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e250",
+     "source": "file:resources/assets/buildings_3d_trimmed/操場.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e251",
+     "source": "file:resources/assets/buildings_3d_trimmed/新聞館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e252",
+     "source": "file:resources/assets/buildings_3d_trimmed/果夫樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e253",
+     "source": "file:resources/assets/buildings_3d_trimmed/校友服務中心.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e254",
+     "source": "file:resources/assets/buildings_3d_trimmed/樂活小舖.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e255",
+     "source": "file:resources/assets/buildings_3d_trimmed/樂活館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e256",
+     "source": "file:resources/assets/buildings_3d_trimmed/正門.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e257",
+     "source": "file:resources/assets/buildings_3d_trimmed/正門1.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e258",
+     "source": "file:resources/assets/buildings_3d_trimmed/法學院.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e259",
+     "source": "file:resources/assets/buildings_3d_trimmed/游泳館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e260",
+     "source": "file:resources/assets/buildings_3d_trimmed/研究大樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e261",
+     "source": "file:resources/assets/buildings_3d_trimmed/綜合院館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e262",
+     "source": "file:resources/assets/buildings_3d_trimmed/羅馬廣場.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e263",
+     "source": "file:resources/assets/buildings_3d_trimmed/行政大樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e264",
+     "source": "file:resources/assets/buildings_3d_trimmed/資訊大樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e265",
+     "source": "file:resources/assets/buildings_3d_trimmed/集英樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e266",
+     "source": "file:resources/assets/buildings_3d_trimmed/風雩樓.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e267",
+     "source": "file:resources/assets/buildings_3d_trimmed/風雩走廊.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e268",
+     "source": "file:resources/assets/buildings_3d_trimmed/體育館.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e269",
+     "source": "file:resources/assets/decorations/cat_strip.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e270",
+     "source": "file:resources/assets/decorations/chiikawa_strip.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e271",
+     "source": "file:resources/assets/fonts/OFL.txt",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e272",
+     "source": "file:resources/assets/fonts/cjk.ttf",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e273",
+     "source": "file:resources/assets/maps/collision_mask.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e274",
+     "source": "file:resources/assets/maps/collision_mask_base.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e275",
+     "source": "file:resources/assets/maps/worldmap.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e276",
+     "source": "file:resources/assets/maps/worldmap_2d.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e277",
+     "source": "file:resources/assets/maps/worldmap_2d_thumb.jpeg",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e278",
+     "source": "file:resources/assets/maps/worldmap_base.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e279",
+     "source": "file:resources/assets/maps/worldmap_base_thumb.jpeg",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e280",
+     "source": "file:resources/assets/maps/worldmap_overview.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e281",
+     "source": "file:resources/assets/maps/worldmap_overview_thumb.jpeg",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e282",
+     "source": "file:resources/assets/sprites/ATTRIBUTIONS.md",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e283",
+     "source": "file:resources/assets/sprites/npc/shop_auntie.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e284",
+     "source": "file:resources/assets/sprites/npc/suit_senior.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e285",
+     "source": "file:resources/assets/sprites/npc/ta.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e286",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_01.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e287",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_02.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e288",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_03.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e289",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_04.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e290",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_05.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e291",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_06.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e292",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_07.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e293",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_08.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e294",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_09.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e295",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_10.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e296",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_11.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e297",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_12.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e298",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_13.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e299",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_14.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e300",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_15.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e301",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_16.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e302",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_17.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e303",
+     "source": "file:resources/assets/sprites/school_uniform_3/female_18.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e304",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_01.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e305",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_02.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e306",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_03.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e307",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_04.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e308",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_05.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e309",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_06.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e310",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_07.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e311",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_08.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e312",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_09.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e313",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_10.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e314",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_11.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e315",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_12.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e316",
+     "source": "file:resources/assets/sprites/school_uniform_3/male_13.png",
+     "target": "bucket:resources/assets",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e317",
+     "source": "file:src/README.md",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e318",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e319",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e320",
+     "source": "file:src/app/main.cpp",
+     "target": "domain:app",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e321",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e322",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e323",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e324",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "bucket:app/scenes",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e325",
+     "source": "file:src/engine/audio/AudioDevice.cpp",
+     "target": "bucket:engine/audio",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e326",
+     "source": "file:src/engine/audio/AudioManager.cpp",
+     "target": "bucket:engine/audio",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e327",
+     "source": "file:src/engine/events/EventBus.cpp",
+     "target": "bucket:engine/events",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e328",
+     "source": "file:src/engine/events/EventSink.cpp",
+     "target": "bucket:engine/events",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e329",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e330",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e331",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "bucket:engine/platform",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e332",
+     "source": "file:src/engine/render/ImageDecoder.cpp",
+     "target": "bucket:engine/render",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e333",
+     "source": "file:src/game/controller/DialogChoiceApply.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e334",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e335",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e336",
+     "source": "file:src/game/controller/InputHandler.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e337",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e338",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e339",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e340",
+     "source": "file:src/game/controller/VendorMenu.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e341",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e342",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e343",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e344",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "bucket:game/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e345",
+     "source": "file:src/game/dialog/DialogLayout.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e346",
+     "source": "file:src/game/dialog/DialogLoader.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e347",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e348",
+     "source": "file:src/game/dialog/DialogSource.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e349",
+     "source": "file:src/game/dialog/DialogState.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e350",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e351",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e352",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e353",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e354",
+     "source": "file:src/game/entities/EnergyDrink.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e355",
+     "source": "file:src/game/entities/FragileUmbrella.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e356",
+     "source": "file:src/game/entities/HotPack.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e357",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e358",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e359",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e360",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e361",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e362",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e363",
+     "source": "file:src/game/entities/WaterproofSpray.cpp",
+     "target": "bucket:game/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e364",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e365",
+     "source": "file:src/game/quest/Chapter2Quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e366",
+     "source": "file:src/game/quest/Chapter3Quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e367",
+     "source": "file:src/game/quest/Chapter4Quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e368",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e369",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e370",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e371",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e372",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "bucket:game/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e373",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e374",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "bucket:game/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e375",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e376",
+     "source": "file:src/game/vendor/VendorLoader.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e377",
+     "source": "file:src/game/world/BuildingTracker.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e378",
+     "source": "file:src/game/world/TerrainMask.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e379",
+     "source": "file:src/game/world/World.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e380",
+     "source": "file:src/game/world/WorldOptions.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e381",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e382",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "bucket:game/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e383",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e384",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e385",
+     "source": "file:src/ui/HelpPageView.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e386",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e387",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e388",
+     "source": "file:src/ui/View.cpp",
+     "target": "domain:ui",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e389",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e390",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e391",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e392",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "bucket:ui/hud",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e393",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e394",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e395",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "bucket:ui/overlay",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e396",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "bucket:ui/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e397",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "bucket:ui/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e398",
+     "source": "file:tests/README.md",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e399",
+     "source": "file:tests/controller/test_eventbus.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e400",
+     "source": "bucket:tests/controller",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e401",
+     "source": "file:tests/controller/test_eventbus_isolation.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e402",
+     "source": "file:tests/controller/test_eventbus_scoped.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e403",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e404",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e405",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e406",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e407",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e408",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "bucket:tests/controller",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e409",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e410",
+     "source": "bucket:tests/dialog",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e411",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e412",
+     "source": "file:tests/dialog/test_dialog_content_dir.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e413",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e414",
+     "source": "file:tests/dialog/test_dialog_loader.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e415",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e416",
+     "source": "file:tests/dialog/test_dialog_repository.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e417",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e418",
+     "source": "file:tests/dialog/test_dialog_source.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e419",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "bucket:tests/dialog",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e420",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e421",
+     "source": "bucket:tests/entities",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e422",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e423",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e424",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e425",
+     "source": "file:tests/entities/test_npc.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e426",
+     "source": "file:tests/entities/test_npc_animation.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e427",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e428",
+     "source": "file:tests/entities/test_player.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e429",
+     "source": "file:tests/entities/test_player_core.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e430",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e431",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e432",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e433",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e434",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "bucket:tests/entities",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e435",
+     "source": "file:tests/fixtures/dialog_sample.md",
+     "target": "bucket:tests/fixtures",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e436",
+     "source": "bucket:tests/fixtures",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e437",
+     "source": "file:tests/gfx/test_bounds.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e438",
+     "source": "bucket:tests/gfx",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e439",
+     "source": "file:tests/gfx/test_camera2d.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e440",
+     "source": "file:tests/gfx/test_camera2d_clamp.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e441",
+     "source": "file:tests/gfx/test_color.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e442",
+     "source": "file:tests/gfx/test_rect.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e443",
+     "source": "file:tests/gfx/test_sprite_strip.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e444",
+     "source": "file:tests/gfx/test_text_builder.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e445",
+     "source": "file:tests/gfx/test_texture_cache.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e446",
+     "source": "file:tests/gfx/test_vec2.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e447",
+     "source": "file:tests/gfx/test_walk_cycle.cpp",
+     "target": "bucket:tests/gfx",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e448",
+     "source": "file:tests/harness/test_scriptinput.cpp",
+     "target": "bucket:tests/harness",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e449",
+     "source": "bucket:tests/harness",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e450",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "bucket:tests/harness",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e451",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "bucket:tests/harness",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e452",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e453",
+     "source": "bucket:tests/quest",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e454",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e455",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e456",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e457",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e458",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e459",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e460",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e461",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e462",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e463",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e464",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e465",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e466",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e467",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e468",
+     "source": "file:tests/quest/test_chapter2_roster.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e469",
+     "source": "file:tests/quest/test_chapter3_roster.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e470",
+     "source": "file:tests/quest/test_chapter4_roster.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e471",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e472",
+     "source": "file:tests/quest/test_chapter_gate.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e473",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e474",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e475",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e476",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e477",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e478",
+     "source": "file:tests/quest/test_loadchapter_chapter1.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e479",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e480",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e481",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e482",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e483",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "bucket:tests/quest",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e484",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e485",
+     "source": "bucket:tests/state",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e486",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e487",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e488",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e489",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e490",
+     "source": "file:tests/state/test_state_machine.cpp",
+     "target": "bucket:tests/state",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e491",
+     "source": "file:tests/ui/test_accessibility_contrast.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e492",
+     "source": "bucket:tests/ui",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e493",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e494",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e495",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e496",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e497",
+     "source": "file:tests/ui/test_font_ui_glyphs.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e498",
+     "source": "file:tests/ui/test_font_ui_literal_scan.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e499",
+     "source": "file:tests/ui/test_hud_reset.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e500",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e501",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e502",
+     "source": "file:tests/ui/test_large_targets.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e503",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e504",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e505",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e506",
+     "source": "file:tests/ui/test_press_latch.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e507",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e508",
+     "source": "file:tests/ui/test_rain_hud_redundant.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e509",
+     "source": "file:tests/ui/test_reduced_motion.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e510",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e511",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "bucket:tests/ui",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e512",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "bucket:tests/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e513",
+     "source": "bucket:tests/vendor",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e514",
+     "source": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "target": "bucket:tests/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e515",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "bucket:tests/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e516",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "bucket:tests/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e517",
+     "source": "file:tests/vendor/test_vendor_loader.cpp",
+     "target": "bucket:tests/vendor",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e518",
+     "source": "file:tests/world/test_building_tracker.cpp",
+     "target": "bucket:tests/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e519",
+     "source": "bucket:tests/world",
+     "target": "domain:tests",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e520",
+     "source": "file:tests/world/test_collision_mask.cpp",
+     "target": "bucket:tests/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e521",
+     "source": "file:tests/world/test_physics.cpp",
+     "target": "bucket:tests/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e522",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "bucket:tests/world",
+     "etype": "in-bucket"
+    }
+   },
+   {
+    "data": {
+     "id": "e523",
+     "source": "file:tools/README.md",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e524",
+     "source": "file:tools/composite_worldmap.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e525",
+     "source": "file:tools/docs_graph.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e526",
+     "source": "file:tools/gif_to_strip.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e527",
+     "source": "file:tools/strip_plots.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e528",
+     "source": "file:tools/text_map.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e529",
+     "source": "file:tools/tiled_to_world.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e530",
+     "source": "file:tools/trim_3d.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e531",
+     "source": "file:tools/trim_tiles.py",
+     "target": "domain:tools",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e532",
+     "source": "file:遊戲企劃與敘事架構.md",
+     "target": "domain:root",
+     "etype": "in-domain"
+    }
+   },
+   {
+    "data": {
+     "id": "e533",
+     "source": "file:include/app/SceneManager.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e534",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e535",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e536",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "file:include/ui/CharacterSelect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e537",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "file:include/ui/PressLatch.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e538",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e539",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/engine/audio/AudioDevice.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e540",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/engine/audio/AudioManager.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e541",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e542",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e543",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/ui/CharacterSelect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e544",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/ui/View.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e545",
+     "source": "file:include/app/scenes/LoadingScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e546",
+     "source": "file:include/app/scenes/TitleScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e547",
+     "source": "file:include/app/scenes/TitleScene.h",
+     "target": "file:include/ui/PressLatch.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e548",
+     "source": "file:include/engine/audio/AudioManager.h",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e549",
+     "source": "file:include/engine/core/GameObject.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e550",
+     "source": "file:include/engine/core/GameObject.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e551",
+     "source": "file:include/engine/core/GameObject.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e552",
+     "source": "file:include/engine/events/EventBus.h",
+     "target": "file:include/engine/events/HudSlot.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e553",
+     "source": "file:include/engine/events/EventSink.h",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e554",
+     "source": "file:include/engine/input/Input.h",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e555",
+     "source": "file:include/engine/math/Rect.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e556",
+     "source": "file:include/engine/platform/ScriptInput.h",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e557",
+     "source": "file:include/engine/render/Camera2D.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e558",
+     "source": "file:include/engine/render/CameraScope.h",
+     "target": "file:include/engine/render/Camera2D.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e559",
+     "source": "file:include/engine/render/IRenderer.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e560",
+     "source": "file:include/engine/render/IRenderer.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e561",
+     "source": "file:include/engine/render/IRenderer.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e562",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e563",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "file:include/engine/render/Renderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e564",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e565",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e566",
+     "source": "file:include/engine/render/Renderer.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e567",
+     "source": "file:include/engine/render/Renderer.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e568",
+     "source": "file:include/engine/render/Renderer.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e569",
+     "source": "file:include/engine/render/Renderer.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e570",
+     "source": "file:include/engine/render/TextBuilder.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e571",
+     "source": "file:include/engine/render/TextBuilder.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e572",
+     "source": "file:include/engine/render/TextBuilder.h",
+     "target": "file:include/engine/render/Font.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e573",
+     "source": "file:include/game/controller/EventWiring.h",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e574",
+     "source": "file:include/game/controller/EventWiring.h",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e575",
+     "source": "file:include/game/controller/EventWiring.h",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e576",
+     "source": "file:include/game/controller/EventWiring.h",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e577",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e578",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e579",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/game/controller/InputHandler.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e580",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/game/controller/SceneRouter.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e581",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e582",
+     "source": "file:include/game/controller/GameController.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e583",
+     "source": "file:include/game/controller/GameObjectFactory.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e584",
+     "source": "file:include/game/controller/GameObjectFactory.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e585",
+     "source": "file:include/game/controller/GameObjectQueries.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e586",
+     "source": "file:include/game/controller/InputHandler.h",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e587",
+     "source": "file:include/game/controller/InputHandler.h",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e588",
+     "source": "file:include/game/controller/SceneRouter.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e589",
+     "source": "file:include/game/controller/SimSystem.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e590",
+     "source": "file:include/game/controller/SimSystem.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e591",
+     "source": "file:include/game/dialog/DialogOpener.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e592",
+     "source": "file:include/game/dialog/DialogRepository.h",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e593",
+     "source": "file:include/game/dialog/DialogRepository.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e594",
+     "source": "file:include/game/dialog/DialogSource.h",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e595",
+     "source": "file:include/game/dialog/DialogSource.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e596",
+     "source": "file:include/game/dialog/DialogView.h",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e597",
+     "source": "file:include/game/entities/CashPickup.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e598",
+     "source": "file:include/game/entities/CashPickup.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e599",
+     "source": "file:include/game/entities/Character.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e600",
+     "source": "file:include/game/entities/Character.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e601",
+     "source": "file:include/game/entities/ConsumableItem.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e602",
+     "source": "file:include/game/entities/ConsumableItem.h",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e603",
+     "source": "file:include/game/entities/CursedUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e604",
+     "source": "file:include/game/entities/DlcSign.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e605",
+     "source": "file:include/game/entities/DlcSign.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e606",
+     "source": "file:include/game/entities/EnergyDrink.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e607",
+     "source": "file:include/game/entities/FragileUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e608",
+     "source": "file:include/game/entities/HotPack.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e609",
+     "source": "file:include/game/entities/Item.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e610",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e611",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e612",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/game/entities/Character.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e613",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e614",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e615",
+     "source": "file:include/game/entities/Personas.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e616",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e617",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e618",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e619",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/game/entities/Character.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e620",
+     "source": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e621",
+     "source": "file:include/game/entities/QuestFlagPickup.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e622",
+     "source": "file:include/game/entities/QuestFlagPickup.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e623",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e624",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e625",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e626",
+     "source": "file:include/game/entities/TrueUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e627",
+     "source": "file:include/game/entities/WaterproofSpray.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e628",
+     "source": "file:include/game/gfx/Bounds.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e629",
+     "source": "file:include/game/gfx/Decorations.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e630",
+     "source": "file:include/game/gfx/Decorations.h",
+     "target": "file:include/game/gfx/SpriteStrip.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e631",
+     "source": "file:include/game/gfx/Decorations.h",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e632",
+     "source": "file:include/game/gfx/Decorations.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e633",
+     "source": "file:include/game/gfx/MaskLoader.h",
+     "target": "file:include/engine/render/ImageDecoder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e634",
+     "source": "file:include/game/gfx/MaskLoader.h",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e635",
+     "source": "file:include/game/gfx/SpriteStrip.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e636",
+     "source": "file:include/game/gfx/SpriteStrip.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e637",
+     "source": "file:include/game/gfx/SpriteStrip.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e638",
+     "source": "file:include/game/gfx/UmbrellaGlyph.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e639",
+     "source": "file:include/game/gfx/UmbrellaGlyph.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e640",
+     "source": "file:include/game/gfx/UmbrellaGlyph.h",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e641",
+     "source": "file:include/game/gfx/WalkCycle.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e642",
+     "source": "file:include/game/quest/Chapter1Quest.h",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e643",
+     "source": "file:include/game/quest/Chapter1Quest.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e644",
+     "source": "file:include/game/quest/Chapter2Quest.h",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e645",
+     "source": "file:include/game/quest/Chapter2Quest.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e646",
+     "source": "file:include/game/quest/Chapter3Quest.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e647",
+     "source": "file:include/game/quest/Chapter3Quest.h",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e648",
+     "source": "file:include/game/quest/Chapter3Quest.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e649",
+     "source": "file:include/game/quest/Chapter4Quest.h",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e650",
+     "source": "file:include/game/quest/Chapter4Quest.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e651",
+     "source": "file:include/game/quest/ChapterPickups.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e652",
+     "source": "file:include/game/quest/ChapterPickups.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e653",
+     "source": "file:include/game/quest/ChapterQuestItems.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e654",
+     "source": "file:include/game/quest/ChapterQuestItems.h",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e655",
+     "source": "file:include/game/quest/ChapterQuestItems.h",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e656",
+     "source": "file:include/game/quest/ChapterQuestItems.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e657",
+     "source": "file:include/game/quest/ChapterSpawns.h",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e658",
+     "source": "file:include/game/quest/ChapterSpawns.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e659",
+     "source": "file:include/game/quest/ChapterVendors.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e660",
+     "source": "file:include/game/quest/ChapterVendors.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e661",
+     "source": "file:include/game/quest/ChapterVendors.h",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e662",
+     "source": "file:include/game/quest/ItemCatalog.h",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e663",
+     "source": "file:include/game/quest/NpcSpawns.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e664",
+     "source": "file:include/game/quest/PipoyaRoster.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e665",
+     "source": "file:include/game/quest/QuestHookTable.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e666",
+     "source": "file:include/game/quest/QuestIndicator.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e667",
+     "source": "file:include/game/quest/QuestObjective.h",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e668",
+     "source": "file:include/game/quest/QuestObjective.h",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e669",
+     "source": "file:include/game/quest/QuestObjective.h",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e670",
+     "source": "file:include/game/quest/QuestObjective.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e671",
+     "source": "file:include/game/state/Chapter1AddDrop.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e672",
+     "source": "file:include/game/state/Chapter2Midterms.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e673",
+     "source": "file:include/game/state/Chapter3SportsDay.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e674",
+     "source": "file:include/game/state/Chapter4Finals.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e675",
+     "source": "file:include/game/state/ChapterToast.h",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e676",
+     "source": "file:include/game/state/ChapterToast.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e677",
+     "source": "file:include/game/state/EndingMenuModel.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e678",
+     "source": "file:include/game/state/InterludeExit.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e679",
+     "source": "file:include/game/state/InterludeExitMarker.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e680",
+     "source": "file:include/game/state/InterludeExitMarker.h",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e681",
+     "source": "file:include/game/state/InterludeExitMarker.h",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e682",
+     "source": "file:include/game/state/InterludeMarket.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e683",
+     "source": "file:include/game/state/SemesterStateMachine.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e684",
+     "source": "file:include/game/vendor/Vendor.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e685",
+     "source": "file:include/game/vendor/Vendor.h",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e686",
+     "source": "file:include/game/vendor/Vendor.h",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e687",
+     "source": "file:include/game/vendor/VendorLoader.h",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e688",
+     "source": "file:include/game/vendor/VendorSprite.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e689",
+     "source": "file:include/game/vendor/VendorSprite.h",
+     "target": "file:include/game/quest/PipoyaRoster.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e690",
+     "source": "file:include/game/world/BuildingTracker.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e691",
+     "source": "file:include/game/world/BuildingTracker.h",
+     "target": "file:include/game/world/Buildings.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e692",
+     "source": "file:include/game/world/Buildings.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e693",
+     "source": "file:include/game/world/CollisionMask.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e694",
+     "source": "file:include/game/world/Physics.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e695",
+     "source": "file:include/game/world/Physics.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e696",
+     "source": "file:include/game/world/Physics.h",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e697",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e698",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/entities/Personas.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e699",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/gfx/Decorations.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e700",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/quest/PipoyaRoster.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e701",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/vendor/VendorSprite.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e702",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/world/Buildings.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e703",
+     "source": "file:include/game/world/TexturePreload.h",
+     "target": "file:include/game/world/Obstacles.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e704",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e705",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/engine/events/HudSlot.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e706",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e707",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e708",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e709",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e710",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/world/BuildingTracker.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e711",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e712",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/world/HudTiming.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e713",
+     "source": "file:include/game/world/World.h",
+     "target": "file:include/game/world/WorldOptions.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e714",
+     "source": "file:include/ui/ChapterCard.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e715",
+     "source": "file:include/ui/CharacterSelect.h",
+     "target": "file:include/game/entities/Personas.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e716",
+     "source": "file:include/ui/EndingView.h",
+     "target": "file:include/game/state/EndingMenuModel.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e717",
+     "source": "file:include/ui/EndingView.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e718",
+     "source": "file:include/ui/GameHelp.h",
+     "target": "file:include/game/state/GameHelpPages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e719",
+     "source": "file:include/ui/HelpPageView.h",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e720",
+     "source": "file:include/ui/HelpPageView.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e721",
+     "source": "file:include/ui/HelpPageView.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e722",
+     "source": "file:include/ui/InventoryView.h",
+     "target": "file:include/game/quest/InventoryPaging.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e723",
+     "source": "file:include/ui/InventoryView.h",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e724",
+     "source": "file:include/ui/MessageView.h",
+     "target": "file:include/engine/events/HudSlot.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e725",
+     "source": "file:include/ui/MessageView.h",
+     "target": "file:include/game/world/HudTiming.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e726",
+     "source": "file:include/ui/QuestGiverIndicator.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e727",
+     "source": "file:include/ui/QuestGiverIndicator.h",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e728",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e729",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e730",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/engine/render/Camera2D.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e731",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/engine/render/RaylibRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e732",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e733",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e734",
+     "source": "file:include/ui/View.h",
+     "target": "file:include/ui/ChapterCard.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e735",
+     "source": "file:include/ui/hud/ObjectiveBar.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e736",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/IScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e737",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/SceneBootstrap.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e738",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/SceneManager.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e739",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/scenes/CharacterSelectScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e740",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/scenes/GameplayScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e741",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/scenes/LoadingScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e742",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/app/scenes/TitleScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e743",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/engine/audio/AudioDevice.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e744",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e745",
+     "source": "file:src/app/SceneBootstrap.cpp",
+     "target": "file:include/ui/CharacterSelect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e746",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/app/SceneManager.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e747",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e748",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e749",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/engine/render/DrawScope.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e750",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/engine/render/Window.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e751",
+     "source": "file:src/app/SceneManager.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e752",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/app/SceneBootstrap.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e753",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/app/SceneManager.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e754",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/audio/AudioDevice.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e755",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e756",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e757",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/platform/WorkingDir.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e758",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/render/Font.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e759",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/render/RaylibRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e760",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e761",
+     "source": "file:src/app/main.cpp",
+     "target": "file:include/engine/render/Window.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e762",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/app/scenes/CharacterSelectScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e763",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e764",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e765",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e766",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e767",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e768",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/render/Renderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e769",
+     "source": "file:src/app/scenes/CharacterSelectScene.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e770",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/app/scenes/GameplayScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e771",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e772",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e773",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e774",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/engine/render/DrawScope.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e775",
+     "source": "file:src/app/scenes/GameplayScene.cpp",
+     "target": "file:include/game/world/WorldOptions.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e776",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/app/scenes/LoadingScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e777",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e778",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e779",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/engine/render/Renderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e780",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e781",
+     "source": "file:src/app/scenes/LoadingScene.cpp",
+     "target": "file:include/game/world/TexturePreload.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e782",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/app/scenes/TitleScene.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e783",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e784",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e785",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e786",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e787",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e788",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/render/Renderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e789",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e790",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e791",
+     "source": "file:src/app/scenes/TitleScene.cpp",
+     "target": "file:include/ui/HelpPageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e792",
+     "source": "file:src/engine/audio/AudioDevice.cpp",
+     "target": "file:include/engine/audio/AudioDevice.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e793",
+     "source": "file:src/engine/audio/AudioManager.cpp",
+     "target": "file:include/engine/audio/AudioDevice.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e794",
+     "source": "file:src/engine/audio/AudioManager.cpp",
+     "target": "file:include/engine/audio/AudioManager.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e795",
+     "source": "file:src/engine/events/EventBus.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e796",
+     "source": "file:src/engine/events/EventSink.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e797",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e798",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e799",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e800",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e801",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e802",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e803",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e804",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e805",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e806",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e807",
+     "source": "file:src/engine/platform/Harness.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e808",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e809",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e810",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e811",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e812",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e813",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e814",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e815",
+     "source": "file:src/engine/platform/ScriptInput.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e816",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e817",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e818",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e819",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e820",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e821",
+     "source": "file:src/engine/platform/ScriptResolver.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e822",
+     "source": "file:src/engine/render/ImageDecoder.cpp",
+     "target": "file:include/engine/render/ImageDecoder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e823",
+     "source": "file:src/game/controller/DialogChoiceApply.cpp",
+     "target": "file:include/game/controller/DialogChoiceApply.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e824",
+     "source": "file:src/game/controller/DialogChoiceApply.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e825",
+     "source": "file:src/game/controller/DialogChoiceApply.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e826",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e827",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e828",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e829",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e830",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e831",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e832",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/GameObjectQueries.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e833",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/InteractDispatch.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e834",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e835",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/screens/DialogScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e836",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/screens/EndingScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e837",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/screens/InventoryScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e838",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/controller/screens/PauseScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e839",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e840",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e841",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e842",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/gfx/Bounds.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e843",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e844",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e845",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e846",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e847",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e848",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/InventoryPaging.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e849",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e850",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e851",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/quest/QuestHookTable.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e852",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e853",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e854",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/state/EndingMenuModel.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e855",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/state/GameHelpPages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e856",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e857",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e858",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/world/Physics.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e859",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e860",
+     "source": "file:src/game/controller/GameController.cpp",
+     "target": "file:include/game/world/WorldConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e861",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e862",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e863",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e864",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/EnergyDrink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e865",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/FragileUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e866",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/HotPack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e867",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e868",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e869",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e870",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/entities/WaterproofSpray.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e871",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e872",
+     "source": "file:src/game/controller/GameObjectFactory.cpp",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e873",
+     "source": "file:src/game/controller/InputHandler.cpp",
+     "target": "file:include/game/controller/InputHandler.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e874",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e875",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e876",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e877",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e878",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/controller/GameObjectQueries.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e879",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/controller/InteractDispatch.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e880",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/controller/VendorMenu.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e881",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e882",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e883",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e884",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e885",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/quest/QuestHookTable.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e886",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e887",
+     "source": "file:src/game/controller/InteractDispatch.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e888",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e889",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/controller/SceneRouter.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e890",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e891",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e892",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e893",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e894",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e895",
+     "source": "file:src/game/controller/SceneRouter.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e896",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e897",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/controller/GameObjectQueries.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e898",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e899",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e900",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/gfx/Bounds.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e901",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/world/Physics.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e902",
+     "source": "file:src/game/controller/SimSystems.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e903",
+     "source": "file:src/game/controller/VendorMenu.cpp",
+     "target": "file:include/game/controller/VendorMenu.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e904",
+     "source": "file:src/game/controller/VendorMenu.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e905",
+     "source": "file:src/game/controller/VendorMenu.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e906",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e907",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e908",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e909",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/controller/DialogChoiceApply.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e910",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/controller/InputHandler.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e911",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/controller/SceneRouter.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e912",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/controller/VendorMenu.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e913",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/controller/screens/DialogScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e914",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e915",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e916",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e917",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e918",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e919",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e920",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e921",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e922",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e923",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e924",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e925",
+     "source": "file:src/game/controller/screens/DialogScreen.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e926",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e927",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e928",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "file:include/game/controller/screens/EndingScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e929",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "file:include/game/state/EndingMenuModel.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e930",
+     "source": "file:src/game/controller/screens/EndingScreen.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e931",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e932",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e933",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/game/controller/screens/InventoryScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e934",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e935",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/game/quest/InventoryPaging.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e936",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e937",
+     "source": "file:src/game/controller/screens/InventoryScreen.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e938",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e939",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e940",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "file:include/game/controller/screens/PauseScreen.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e941",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "file:include/game/state/GameHelpPages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e942",
+     "source": "file:src/game/controller/screens/PauseScreen.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e943",
+     "source": "file:src/game/dialog/DialogLayout.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e944",
+     "source": "file:src/game/dialog/DialogLoader.cpp",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e945",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e946",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e947",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e948",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e949",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e950",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e951",
+     "source": "file:src/game/dialog/DialogOpener.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e952",
+     "source": "file:src/game/dialog/DialogSource.cpp",
+     "target": "file:include/game/dialog/DialogRepository.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e953",
+     "source": "file:src/game/dialog/DialogSource.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e954",
+     "source": "file:src/game/dialog/DialogState.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e955",
+     "source": "file:src/game/dialog/DialogState.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e956",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e957",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e958",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e959",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e960",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e961",
+     "source": "file:src/game/dialog/DialogView.cpp",
+     "target": "file:include/game/dialog/DialogView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e962",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e963",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e964",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e965",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e966",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e967",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e968",
+     "source": "file:src/game/entities/CashPickup.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e969",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e970",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e971",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e972",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e973",
+     "source": "file:src/game/entities/CursedUmbrella.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e974",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e975",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e976",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e977",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e978",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e979",
+     "source": "file:src/game/entities/DlcSign.cpp",
+     "target": "file:include/game/entities/DlcSign.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e980",
+     "source": "file:src/game/entities/EnergyDrink.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e981",
+     "source": "file:src/game/entities/EnergyDrink.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e982",
+     "source": "file:src/game/entities/EnergyDrink.cpp",
+     "target": "file:include/game/entities/EnergyDrink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e983",
+     "source": "file:src/game/entities/EnergyDrink.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e984",
+     "source": "file:src/game/entities/FragileUmbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e985",
+     "source": "file:src/game/entities/FragileUmbrella.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e986",
+     "source": "file:src/game/entities/FragileUmbrella.cpp",
+     "target": "file:include/game/entities/FragileUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e987",
+     "source": "file:src/game/entities/FragileUmbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e988",
+     "source": "file:src/game/entities/HotPack.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e989",
+     "source": "file:src/game/entities/HotPack.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e990",
+     "source": "file:src/game/entities/HotPack.cpp",
+     "target": "file:include/game/entities/HotPack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e991",
+     "source": "file:src/game/entities/HotPack.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e992",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e993",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e994",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e995",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e996",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e997",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e998",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e999",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/game/gfx/WalkCycle.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1000",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/game/world/Physics.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1001",
+     "source": "file:src/game/entities/NPC.cpp",
+     "target": "file:include/game/world/WorldConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1002",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1003",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1004",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1005",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1006",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1007",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1008",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1009",
+     "source": "file:src/game/entities/Player.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1010",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1011",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1012",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1013",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1014",
+     "source": "file:src/game/entities/ProfessorTrapUmbrella.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1015",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1016",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1017",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1018",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1019",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1020",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1021",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1022",
+     "source": "file:src/game/entities/QuestFlagPickup.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1023",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1024",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1025",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1026",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1027",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1028",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1029",
+     "source": "file:src/game/entities/TransparentUmbrella.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1030",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1031",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1032",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1033",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1034",
+     "source": "file:src/game/entities/TrueUmbrella.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1035",
+     "source": "file:src/game/entities/WaterproofSpray.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1036",
+     "source": "file:src/game/entities/WaterproofSpray.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1037",
+     "source": "file:src/game/entities/WaterproofSpray.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1038",
+     "source": "file:src/game/entities/WaterproofSpray.cpp",
+     "target": "file:include/game/entities/WaterproofSpray.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1039",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1040",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1041",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1042",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1043",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1044",
+     "source": "file:src/game/quest/Chapter1Quest.cpp",
+     "target": "file:include/game/vendor/VendorMessages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1045",
+     "source": "file:src/game/quest/Chapter2Quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1046",
+     "source": "file:src/game/quest/Chapter2Quest.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1047",
+     "source": "file:src/game/quest/Chapter2Quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1048",
+     "source": "file:src/game/quest/Chapter2Quest.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1049",
+     "source": "file:src/game/quest/Chapter3Quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1050",
+     "source": "file:src/game/quest/Chapter3Quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1051",
+     "source": "file:src/game/quest/Chapter3Quest.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1052",
+     "source": "file:src/game/quest/Chapter4Quest.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1053",
+     "source": "file:src/game/quest/Chapter4Quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1054",
+     "source": "file:src/game/quest/Chapter4Quest.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1055",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1056",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1057",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1058",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1059",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1060",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1061",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1062",
+     "source": "file:src/game/quest/ChapterGate.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1063",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1064",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1065",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1066",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1067",
+     "source": "file:src/game/quest/ChapterVendors.cpp",
+     "target": "file:include/game/vendor/VendorLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1068",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1069",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/entities/EnergyDrink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1070",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/entities/HotPack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1071",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1072",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/entities/WaterproofSpray.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1073",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1074",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1075",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1076",
+     "source": "file:src/game/quest/ItemCatalog.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1077",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1078",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1079",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1080",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1081",
+     "source": "file:src/game/quest/QuestHookTable.cpp",
+     "target": "file:include/game/quest/QuestHookTable.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1082",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1083",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1084",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1085",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1086",
+     "source": "file:src/game/quest/QuestIndicator.cpp",
+     "target": "file:include/game/quest/QuestIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1087",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1088",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1089",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1090",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1091",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1092",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1093",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1094",
+     "source": "file:src/game/state/EndingGate.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1095",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/Chapter1AddDrop.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1096",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/Chapter2Midterms.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1097",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/Chapter3SportsDay.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1098",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/Chapter4Finals.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1099",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/InterludeMarket.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1100",
+     "source": "file:src/game/state/SemesterStateMachine.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1101",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1102",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1103",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1104",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1105",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1106",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1107",
+     "source": "file:src/game/vendor/Vendor.cpp",
+     "target": "file:include/game/vendor/VendorMessages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1108",
+     "source": "file:src/game/vendor/VendorLoader.cpp",
+     "target": "file:include/game/vendor/VendorLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1109",
+     "source": "file:src/game/world/BuildingTracker.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1110",
+     "source": "file:src/game/world/BuildingTracker.cpp",
+     "target": "file:include/engine/events/EventSink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1111",
+     "source": "file:src/game/world/BuildingTracker.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1112",
+     "source": "file:src/game/world/BuildingTracker.cpp",
+     "target": "file:include/game/world/BuildingTracker.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1113",
+     "source": "file:src/game/world/TerrainMask.cpp",
+     "target": "file:include/game/gfx/MaskLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1114",
+     "source": "file:src/game/world/TerrainMask.cpp",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1115",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1116",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1117",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1118",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/entities/DlcSign.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1119",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1120",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1121",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1122",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1123",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/ChapterPickups.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1124",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1125",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1126",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1127",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1128",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/quest/PipoyaRoster.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1129",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1130",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/vendor/VendorSprite.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1131",
+     "source": "file:src/game/world/World.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1132",
+     "source": "file:src/game/world/WorldOptions.cpp",
+     "target": "file:include/game/world/WorldOptions.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1133",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1134",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1135",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1136",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/entities/DlcSign.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1137",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1138",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1139",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1140",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1141",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1142",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/ChapterPickups.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1143",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1144",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1145",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1146",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1147",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1148",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/quest/PipoyaRoster.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1149",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1150",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/vendor/VendorSprite.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1151",
+     "source": "file:src/game/world/WorldSpawn.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1152",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1153",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1154",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1155",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1156",
+     "source": "file:src/game/world/WorldSportsLap.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1157",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1158",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1159",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1160",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1161",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1162",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1163",
+     "source": "file:src/ui/ChapterCard.cpp",
+     "target": "file:include/ui/ChapterCard.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1164",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1165",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1166",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1167",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1168",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1169",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1170",
+     "source": "file:src/ui/EndingView.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1171",
+     "source": "file:src/ui/HelpPageView.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1172",
+     "source": "file:src/ui/HelpPageView.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1173",
+     "source": "file:src/ui/HelpPageView.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1174",
+     "source": "file:src/ui/HelpPageView.cpp",
+     "target": "file:include/ui/HelpPageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1175",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1176",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1177",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1178",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1179",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1180",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1181",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1182",
+     "source": "file:src/ui/InventoryView.cpp",
+     "target": "file:include/ui/InventoryView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1183",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1184",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1185",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1186",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1187",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1188",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1189",
+     "source": "file:src/ui/MessageView.cpp",
+     "target": "file:include/ui/ReducedMotion.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1190",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1191",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1192",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1193",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/render/CameraScope.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1194",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/render/Renderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1195",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1196",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/controller/GameObjectQueries.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1197",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/dialog/DialogView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1198",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1199",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/gfx/Decorations.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1200",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/gfx/SpriteStrip.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1201",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1202",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/quest/QuestIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1203",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/quest/QuestObjective.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1204",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/state/InterludeExitMarker.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1205",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/world/Buildings.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1206",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/world/Obstacles.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1207",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1208",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/game/world/WorldConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1209",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/ChapterCard.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1210",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1211",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1212",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/HelpPageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1213",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/InventoryView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1214",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1215",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/QuestGiverIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1216",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/RainHud.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1217",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/ReducedMotion.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1218",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/View.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1219",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/hud/ObjectiveBar.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1220",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/hud/RainVignette.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1221",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/hud/SportsLapRing.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1222",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/hud/StatusPanel.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1223",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/overlay/HelpOverlay.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1224",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/overlay/MenuAffordance.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1225",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/overlay/PauseMenu.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1226",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/world/QuestGiverIndicators.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1227",
+     "source": "file:src/ui/View.cpp",
+     "target": "file:include/ui/world/SportsLapTrack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1228",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1229",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1230",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1231",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1232",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1233",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1234",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/game/quest/QuestObjective.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1235",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1236",
+     "source": "file:src/ui/hud/ObjectiveBar.cpp",
+     "target": "file:include/ui/hud/ObjectiveBar.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1237",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1238",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1239",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1240",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1241",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1242",
+     "source": "file:src/ui/hud/RainVignette.cpp",
+     "target": "file:include/ui/hud/RainVignette.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1243",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1244",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1245",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1246",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1247",
+     "source": "file:src/ui/hud/SportsLapRing.cpp",
+     "target": "file:include/ui/hud/SportsLapRing.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1248",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1249",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1250",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1251",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1252",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1253",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1254",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1255",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/ui/RainHud.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1256",
+     "source": "file:src/ui/hud/StatusPanel.cpp",
+     "target": "file:include/ui/hud/StatusPanel.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1257",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1258",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1259",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1260",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1261",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1262",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/ui/HelpPageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1263",
+     "source": "file:src/ui/overlay/HelpOverlay.cpp",
+     "target": "file:include/ui/overlay/HelpOverlay.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1264",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1265",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1266",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1267",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1268",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1269",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1270",
+     "source": "file:src/ui/overlay/MenuAffordance.cpp",
+     "target": "file:include/ui/overlay/MenuAffordance.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1271",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1272",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1273",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1274",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1275",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1276",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1277",
+     "source": "file:src/ui/overlay/PauseMenu.cpp",
+     "target": "file:include/ui/overlay/PauseMenu.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1278",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1279",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1280",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1281",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/controller/GameObjectQueries.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1282",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1283",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/quest/QuestIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1284",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1285",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1286",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/game/world/WorldConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1287",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/ui/QuestGiverIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1288",
+     "source": "file:src/ui/world/QuestGiverIndicators.cpp",
+     "target": "file:include/ui/world/QuestGiverIndicators.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1289",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1290",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1291",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1292",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1293",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1294",
+     "source": "file:src/ui/world/SportsLapTrack.cpp",
+     "target": "file:include/ui/world/SportsLapTrack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1295",
+     "source": "file:tests/controller/test_eventbus.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1296",
+     "source": "file:tests/controller/test_eventbus_isolation.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1297",
+     "source": "file:tests/controller/test_eventbus_scoped.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1298",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1299",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1300",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/entities/FragileUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1301",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1302",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1303",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1304",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1305",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1306",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1307",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1308",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1309",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1310",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1311",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1312",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1313",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1314",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1315",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1316",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1317",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1318",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1319",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1320",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1321",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1322",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1323",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1324",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1325",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1326",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1327",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1328",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1329",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1330",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1331",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "file:include/game/controller/InputHandler.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1332",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1333",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1334",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1335",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/controller/SceneRouter.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1336",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1337",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1338",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1339",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1340",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1341",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1342",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1343",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1344",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1345",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1346",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1347",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1348",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1349",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1350",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "file:include/game/dialog/DialogView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1351",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1352",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1353",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1354",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/game/dialog/DialogView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1355",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1356",
+     "source": "file:tests/dialog/test_dialog_content_dir.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1357",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1358",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1359",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1360",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1361",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/game/dialog/DialogView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1362",
+     "source": "file:tests/dialog/test_dialog_loader.cpp",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1363",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "file:include/game/controller/DialogChoiceApply.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1364",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1365",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1366",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1367",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1368",
+     "source": "file:tests/dialog/test_dialog_repository.cpp",
+     "target": "file:include/game/dialog/DialogRepository.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1369",
+     "source": "file:tests/dialog/test_dialog_repository.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1370",
+     "source": "file:tests/dialog/test_dialog_repository.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1371",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1372",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1373",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1374",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1375",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1376",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1377",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1378",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1379",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1380",
+     "source": "file:tests/dialog/test_dialog_source.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1381",
+     "source": "file:tests/dialog/test_dialog_source.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1382",
+     "source": "file:tests/dialog/test_dialog_source.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1383",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "file:include/game/controller/DialogChoiceApply.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1384",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1385",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1386",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1387",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1388",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1389",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1390",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1391",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1392",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1393",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1394",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/entities/EnergyDrink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1395",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/entities/HotPack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1396",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1397",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/entities/WaterproofSpray.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1398",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1399",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1400",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1401",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1402",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1403",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1404",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1405",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1406",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1407",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/game/entities/DlcSign.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1408",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1409",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1410",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1411",
+     "source": "file:tests/entities/test_npc.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1412",
+     "source": "file:tests/entities/test_npc.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1413",
+     "source": "file:tests/entities/test_npc_animation.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1414",
+     "source": "file:tests/entities/test_npc_animation.cpp",
+     "target": "file:include/game/gfx/WalkCycle.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1415",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1416",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1417",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1418",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1419",
+     "source": "file:tests/entities/test_player.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1420",
+     "source": "file:tests/entities/test_player_core.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1421",
+     "source": "file:tests/entities/test_player_core.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1422",
+     "source": "file:tests/entities/test_player_core.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1423",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1424",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1425",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1426",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1427",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1428",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1429",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1430",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1431",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1432",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1433",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1434",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1435",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1436",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1437",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1438",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1439",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1440",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1441",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1442",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/world/Buildings.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1443",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1444",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1445",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1446",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1447",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1448",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/EnergyDrink.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1449",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/HotPack.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1450",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1451",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1452",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1453",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1454",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1455",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1456",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1457",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1458",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/game/entities/FragileUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1459",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1460",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1461",
+     "source": "file:tests/gfx/test_bounds.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1462",
+     "source": "file:tests/gfx/test_bounds.cpp",
+     "target": "file:include/game/gfx/Bounds.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1463",
+     "source": "file:tests/gfx/test_camera2d.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1464",
+     "source": "file:tests/gfx/test_camera2d.cpp",
+     "target": "file:include/engine/render/Camera2D.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1465",
+     "source": "file:tests/gfx/test_camera2d_clamp.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1466",
+     "source": "file:tests/gfx/test_camera2d_clamp.cpp",
+     "target": "file:include/engine/render/Camera2D.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1467",
+     "source": "file:tests/gfx/test_color.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1468",
+     "source": "file:tests/gfx/test_rect.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1469",
+     "source": "file:tests/gfx/test_rect.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1470",
+     "source": "file:tests/gfx/test_sprite_strip.cpp",
+     "target": "file:include/game/gfx/Decorations.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1471",
+     "source": "file:tests/gfx/test_sprite_strip.cpp",
+     "target": "file:include/game/gfx/SpriteStrip.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1472",
+     "source": "file:tests/gfx/test_text_builder.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1473",
+     "source": "file:tests/gfx/test_text_builder.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1474",
+     "source": "file:tests/gfx/test_text_builder.cpp",
+     "target": "file:include/engine/render/TextBuilder.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1475",
+     "source": "file:tests/gfx/test_texture_cache.cpp",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1476",
+     "source": "file:tests/gfx/test_vec2.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1477",
+     "source": "file:tests/gfx/test_walk_cycle.cpp",
+     "target": "file:include/game/gfx/WalkCycle.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1478",
+     "source": "file:tests/harness/test_scriptinput.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1479",
+     "source": "file:tests/harness/test_scriptinput.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1480",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1481",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1482",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1483",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1484",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1485",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1486",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1487",
+     "source": "file:tests/harness/test_scriptinput_classic_move.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1488",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1489",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1490",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1491",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1492",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1493",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1494",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1495",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1496",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1497",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1498",
+     "source": "file:tests/harness/test_scriptinput_plan.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1499",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1500",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1501",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1502",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1503",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1504",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1505",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1506",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1507",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1508",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1509",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1510",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1511",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1512",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1513",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1514",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1515",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1516",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1517",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1518",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1519",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1520",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1521",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1522",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1523",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1524",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1525",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1526",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1527",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1528",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1529",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1530",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1531",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1532",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1533",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1534",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1535",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1536",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1537",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1538",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1539",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1540",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1541",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1542",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1543",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1544",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1545",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1546",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1547",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1548",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1549",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1550",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1551",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1552",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1553",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1554",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1555",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1556",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1557",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1558",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1559",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1560",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1561",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1562",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1563",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1564",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1565",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1566",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1567",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1568",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1569",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1570",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1571",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1572",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1573",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1574",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1575",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1576",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1577",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1578",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1579",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1580",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1581",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1582",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1583",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1584",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1585",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1586",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1587",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1588",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1589",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1590",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1591",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1592",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1593",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1594",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1595",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1596",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1597",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1598",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1599",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1600",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1601",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1602",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1603",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1604",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1605",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1606",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1607",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1608",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1609",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1610",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1611",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1612",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1613",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1614",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1615",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1616",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1617",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1618",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1619",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1620",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1621",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1622",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1623",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1624",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1625",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1626",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1627",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1628",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1629",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1630",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1631",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1632",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1633",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1634",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1635",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1636",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1637",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1638",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1639",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1640",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1641",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1642",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1643",
+     "source": "file:tests/quest/test_chapter2_roster.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1644",
+     "source": "file:tests/quest/test_chapter2_roster.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1645",
+     "source": "file:tests/quest/test_chapter2_roster.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1646",
+     "source": "file:tests/quest/test_chapter3_roster.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1647",
+     "source": "file:tests/quest/test_chapter3_roster.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1648",
+     "source": "file:tests/quest/test_chapter3_roster.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1649",
+     "source": "file:tests/quest/test_chapter4_roster.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1650",
+     "source": "file:tests/quest/test_chapter4_roster.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1651",
+     "source": "file:tests/quest/test_chapter4_roster.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1652",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1653",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1654",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1655",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1656",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1657",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1658",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1659",
+     "source": "file:tests/quest/test_chapter_gate.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1660",
+     "source": "file:tests/quest/test_chapter_gate.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1661",
+     "source": "file:tests/quest/test_chapter_gate.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1662",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1663",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1664",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1665",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1666",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/entities/QuestFlagPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1667",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1668",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1669",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1670",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1671",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1672",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1673",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1674",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1675",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1676",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1677",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1678",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1679",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1680",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1681",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1682",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1683",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1684",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1685",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1686",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1687",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1688",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/engine/events/HudSlot.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1689",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1690",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1691",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/controller/SceneRouter.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1692",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1693",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1694",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1695",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1696",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1697",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1698",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1699",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1700",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1701",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1702",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1703",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/game/entities/CashPickup.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1704",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1705",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/game/quest/ChapterPickups.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1706",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1707",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1708",
+     "source": "file:tests/quest/test_loadchapter_chapter1.cpp",
+     "target": "file:include/game/dialog/DialogLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1709",
+     "source": "file:tests/quest/test_loadchapter_chapter1.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1710",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1711",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1712",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1713",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "file:include/game/quest/QuestHookTable.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1714",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1715",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1716",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1717",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1718",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1719",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/Chapter4Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1720",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1721",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "file:include/game/quest/QuestIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1722",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1723",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1724",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1725",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/entities/FragileUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1726",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1727",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1728",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/entities/TrueUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1729",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1730",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/Chapter3Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1731",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/ChapterPickups.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1732",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/ChapterQuestItems.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1733",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1734",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1735",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/quest/NpcSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1736",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1737",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1738",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1739",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/dialog/DialogOpener.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1740",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1741",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1742",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1743",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1744",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1745",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1746",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1747",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1748",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1749",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1750",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/game/state/EndingGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1751",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1752",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1753",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1754",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1755",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1756",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1757",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/quest/ChapterGate.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1758",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1759",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1760",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1761",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1762",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1763",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1764",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1765",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1766",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1767",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1768",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "file:include/game/state/InterludeExit.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1769",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "file:include/game/state/InterludeExitMarker.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1770",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1771",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1772",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1773",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1774",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1775",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1776",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1777",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1778",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1779",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1780",
+     "source": "file:tests/state/test_state_machine.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1781",
+     "source": "file:tests/ui/test_accessibility_contrast.cpp",
+     "target": "file:include/engine/math/Color.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1782",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1783",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1784",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1785",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1786",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/ui/ChapterCard.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1787",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1788",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1789",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1790",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1791",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1792",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1793",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1794",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1795",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1796",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1797",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1798",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1799",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1800",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1801",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/engine/render/Font.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1802",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1803",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/game/quest/QuestObjective.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1804",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/game/vendor/VendorMessages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1805",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/ui/ChapterCard.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1806",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/ui/EndingView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1807",
+     "source": "file:tests/ui/test_font_ui_glyph_scan.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1808",
+     "source": "file:tests/ui/test_font_ui_glyphs.cpp",
+     "target": "file:include/engine/render/Font.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1809",
+     "source": "file:tests/ui/test_font_ui_glyphs.cpp",
+     "target": "file:include/game/world/Buildings.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1810",
+     "source": "file:tests/ui/test_font_ui_literal_scan.cpp",
+     "target": "file:include/engine/render/Font.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1811",
+     "source": "file:tests/ui/test_hud_reset.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1812",
+     "source": "file:tests/ui/test_hud_reset.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1813",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1814",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1815",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1816",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/gfx/UmbrellaGlyph.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1817",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/quest/Chapter1Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1818",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/quest/Chapter2Quest.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1819",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1820",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1821",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/ui/InventoryView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1822",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1823",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1824",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1825",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/game/entities/CursedUmbrella.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1826",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1827",
+     "source": "file:tests/ui/test_karma_toast.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1828",
+     "source": "file:tests/ui/test_large_targets.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1829",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1830",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1831",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1832",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1833",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1834",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1835",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1836",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1837",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1838",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/ui/GameHelp.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1839",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/engine/math/Rect.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1840",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1841",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1842",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/game/dialog/DialogLayout.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1843",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1844",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1845",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1846",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1847",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1848",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1849",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1850",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1851",
+     "source": "file:tests/ui/test_press_latch.cpp",
+     "target": "file:include/ui/PressLatch.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1852",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1853",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1854",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "file:include/ui/QuestGiverIndicator.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1855",
+     "source": "file:tests/ui/test_rain_hud_redundant.cpp",
+     "target": "file:include/ui/RainHud.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1856",
+     "source": "file:tests/ui/test_reduced_motion.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1857",
+     "source": "file:tests/ui/test_reduced_motion.cpp",
+     "target": "file:include/ui/ReducedMotion.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1858",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1859",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1860",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1861",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1862",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1863",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1864",
+     "source": "file:tests/ui/test_restart_safety.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1865",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1866",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/engine/events/HudSlot.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1867",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/engine/math/Vec2.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1868",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/controller/EventWiring.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1869",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1870",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/state/ChapterToast.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1871",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1872",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1873",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1874",
+     "source": "file:tests/ui/test_two_hud_channels.cpp",
+     "target": "file:include/ui/MessageView.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1875",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1876",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1877",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1878",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1879",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1880",
+     "source": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1881",
+     "source": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1882",
+     "source": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "target": "file:include/game/vendor/VendorSprite.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1883",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1884",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1885",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1886",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/input/Key.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1887",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1888",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1889",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/dialog/DialogSource.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1890",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/dialog/DialogState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1891",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1892",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1893",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1894",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1895",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1896",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1897",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1898",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/quest/Flags.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1899",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/quest/ItemCatalog.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1900",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/vendor/Vendor.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1901",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/vendor/VendorConfig.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1902",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "file:include/game/vendor/VendorMessages.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1903",
+     "source": "file:tests/vendor/test_vendor_loader.cpp",
+     "target": "file:include/game/quest/ChapterVendors.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1904",
+     "source": "file:tests/vendor/test_vendor_loader.cpp",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1905",
+     "source": "file:tests/vendor/test_vendor_loader.cpp",
+     "target": "file:include/game/vendor/VendorLoader.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1906",
+     "source": "file:tests/world/test_building_tracker.cpp",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1907",
+     "source": "file:tests/world/test_building_tracker.cpp",
+     "target": "file:include/game/world/BuildingTracker.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1908",
+     "source": "file:tests/world/test_collision_mask.cpp",
+     "target": "file:include/game/world/CollisionMask.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1909",
+     "source": "file:tests/world/test_collision_mask.cpp",
+     "target": "file:include/game/world/Physics.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1910",
+     "source": "file:tests/world/test_physics.cpp",
+     "target": "file:include/game/world/Physics.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1911",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1912",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1913",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "file:include/game/entities/Player.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1914",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "file:include/game/quest/ChapterSpawns.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1915",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "file:include/game/world/World.h",
+     "etype": "includes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1916",
+     "source": "file:include/app/scenes/CharacterSelectScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1917",
+     "source": "file:include/app/scenes/GameplayScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1918",
+     "source": "file:include/app/scenes/LoadingScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1919",
+     "source": "file:include/app/scenes/TitleScene.h",
+     "target": "file:include/app/IScene.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1920",
+     "source": "file:include/engine/platform/ScriptInput.h",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1921",
+     "source": "file:include/engine/render/RaylibRenderer.h",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1922",
+     "source": "file:include/game/entities/CashPickup.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1923",
+     "source": "file:include/game/entities/CashPickup.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1924",
+     "source": "file:include/game/entities/Character.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1925",
+     "source": "file:include/game/entities/ConsumableItem.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1926",
+     "source": "file:include/game/entities/ConsumableItem.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1927",
+     "source": "file:include/game/entities/CursedUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1928",
+     "source": "file:include/game/entities/DlcSign.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1929",
+     "source": "file:include/game/entities/DlcSign.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1930",
+     "source": "file:include/game/entities/EnergyDrink.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1931",
+     "source": "file:include/game/entities/FragileUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1932",
+     "source": "file:include/game/entities/HotPack.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1933",
+     "source": "file:include/game/entities/Item.h",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1934",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/game/entities/Character.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1935",
+     "source": "file:include/game/entities/NPC.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1936",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/game/entities/Character.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1937",
+     "source": "file:include/game/entities/Player.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1938",
+     "source": "file:include/game/entities/ProfessorTrapUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1939",
+     "source": "file:include/game/entities/QuestFlagPickup.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1940",
+     "source": "file:include/game/entities/QuestFlagPickup.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1941",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "file:include/game/entities/Item.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1942",
+     "source": "file:include/game/entities/TransparentUmbrella.h",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1943",
+     "source": "file:include/game/entities/TrueUmbrella.h",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1944",
+     "source": "file:include/game/entities/WaterproofSpray.h",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1945",
+     "source": "file:include/game/state/Chapter1AddDrop.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1946",
+     "source": "file:include/game/state/Chapter2Midterms.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1947",
+     "source": "file:include/game/state/Chapter3SportsDay.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1948",
+     "source": "file:include/game/state/Chapter4Finals.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1949",
+     "source": "file:include/game/state/InterludeMarket.h",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1950",
+     "source": "file:include/game/vendor/Vendor.h",
+     "target": "file:include/game/entities/NPC.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1951",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1952",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1953",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1954",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1955",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1956",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1957",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1958",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1959",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1960",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1961",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1962",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1963",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1964",
+     "source": "file:tests/ui/test_chapter_card.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1965",
+     "source": "file:tests/ui/test_ending_card_render.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1966",
+     "source": "file:tests/ui/test_ending_menu.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1967",
+     "source": "file:tests/ui/test_inventory_view.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1968",
+     "source": "file:tests/ui/test_menu_help.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1969",
+     "source": "file:tests/ui/test_message_view.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1970",
+     "source": "file:tests/ui/test_pause_menu_toggle.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1971",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1972",
+     "source": "file:tests/ui/test_quest_giver_indicator.cpp",
+     "target": "file:include/engine/core/GameObject.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1973",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "inherits"
+    }
+   },
+   {
+    "data": {
+     "id": "e1974",
+     "source": "pat-factory",
+     "target": "file:include/game/controller/GameObjectFactory.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1975",
+     "source": "pat-template",
+     "target": "file:include/game/entities/TransparentUmbrella.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1976",
+     "source": "pat-template",
+     "target": "file:include/game/entities/ConsumableItem.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1977",
+     "source": "pat-observer",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1978",
+     "source": "pat-state",
+     "target": "file:include/game/state/SemesterStateMachine.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1979",
+     "source": "pat-state",
+     "target": "file:include/game/state/SemesterState.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1980",
+     "source": "pat-strategy",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1981",
+     "source": "pat-singleton",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1982",
+     "source": "pat-command",
+     "target": "file:include/game/quest/QuestHookTable.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1983",
+     "source": "oo-crtp",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1984",
+     "source": "oo-isp-roles",
+     "target": "file:include/engine/core/Roles.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1985",
+     "source": "oo-raii",
+     "target": "file:include/engine/render/Texture.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1986",
+     "source": "oo-raii",
+     "target": "file:include/engine/events/EventBus.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1987",
+     "source": "arch-mvc",
+     "target": "file:include/game/world/World.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1988",
+     "source": "arch-mvc",
+     "target": "file:include/ui/View.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1989",
+     "source": "arch-mvc",
+     "target": "file:include/game/controller/GameController.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1990",
+     "source": "arch-isystem",
+     "target": "file:include/game/controller/SimSystem.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1991",
+     "source": "arch-dip-renderer",
+     "target": "file:include/engine/render/IRenderer.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1992",
+     "source": "arch-dip-renderer",
+     "target": "file:include/engine/render/RaylibRenderer.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1993",
+     "source": "arch-harness",
+     "target": "file:include/engine/input/Input.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1994",
+     "source": "arch-harness",
+     "target": "file:include/engine/platform/ScriptInput.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1995",
+     "source": "arch-harness",
+     "target": "file:include/engine/platform/Harness.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1996",
+     "source": "arch-harness",
+     "target": "file:include/engine/platform/Time.h",
+     "etype": "realizes"
+    }
+   },
+   {
+    "data": {
+     "id": "e1997",
+     "source": "domain:app",
+     "target": "domain:game",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e1998",
+     "source": "domain:app",
+     "target": "domain:ui",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e1999",
+     "source": "domain:app",
+     "target": "domain:engine",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e2000",
+     "source": "domain:game",
+     "target": "domain:engine",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e2001",
+     "source": "domain:ui",
+     "target": "domain:engine",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e2002",
+     "source": "domain:ui",
+     "target": "domain:game",
+     "etype": "depends"
+    }
+   },
+   {
+    "data": {
+     "id": "e2003",
+     "source": "file:tests/controller/test_eventbus.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2004",
+     "source": "file:tests/controller/test_eventbus_isolation.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2005",
+     "source": "file:tests/controller/test_eventbus_scoped.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2006",
+     "source": "file:tests/controller/test_factory.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2007",
+     "source": "file:tests/controller/test_i35_interact_vendor.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2008",
+     "source": "file:tests/controller/test_i6_interact_reach.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2009",
+     "source": "file:tests/controller/test_input_handler.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2010",
+     "source": "file:tests/controller/test_scene_router.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2011",
+     "source": "file:tests/controller/test_sim_systems.cpp",
+     "target": "bucket:game/controller",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2012",
+     "source": "file:tests/dialog/test_dialog_box_render.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2013",
+     "source": "file:tests/dialog/test_dialog_choice_layout.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2014",
+     "source": "file:tests/dialog/test_dialog_content_dir.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2015",
+     "source": "file:tests/dialog/test_dialog_layout.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2016",
+     "source": "file:tests/dialog/test_dialog_loader.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2017",
+     "source": "file:tests/dialog/test_dialog_opener.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2018",
+     "source": "file:tests/dialog/test_dialog_repository.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2019",
+     "source": "file:tests/dialog/test_dialog_skip.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2020",
+     "source": "file:tests/dialog/test_dialog_source.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2021",
+     "source": "file:tests/dialog/test_dialog_state.cpp",
+     "target": "bucket:game/dialog",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2022",
+     "source": "file:tests/entities/test_cashpickup.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2023",
+     "source": "file:tests/entities/test_consumable.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2024",
+     "source": "file:tests/entities/test_cursed_taint.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2025",
+     "source": "file:tests/entities/test_dlc_sign.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2026",
+     "source": "file:tests/entities/test_npc.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2027",
+     "source": "file:tests/entities/test_npc_animation.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2028",
+     "source": "file:tests/entities/test_npc_loaddialog.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2029",
+     "source": "file:tests/entities/test_player.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2030",
+     "source": "file:tests/entities/test_player_core.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2031",
+     "source": "file:tests/entities/test_quest_pickup.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2032",
+     "source": "file:tests/entities/test_quest_pickup_render.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2033",
+     "source": "file:tests/entities/test_rain_survival.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2034",
+     "source": "file:tests/entities/test_roles.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2035",
+     "source": "file:tests/entities/test_umbrella_render.cpp",
+     "target": "bucket:game/entities",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2036",
+     "source": "file:tests/gfx/test_bounds.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2037",
+     "source": "file:tests/gfx/test_camera2d.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2038",
+     "source": "file:tests/gfx/test_camera2d_clamp.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2039",
+     "source": "file:tests/gfx/test_color.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2040",
+     "source": "file:tests/gfx/test_rect.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2041",
+     "source": "file:tests/gfx/test_sprite_strip.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2042",
+     "source": "file:tests/gfx/test_text_builder.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2043",
+     "source": "file:tests/gfx/test_texture_cache.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2044",
+     "source": "file:tests/gfx/test_vec2.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2045",
+     "source": "file:tests/gfx/test_walk_cycle.cpp",
+     "target": "bucket:game/gfx",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2046",
+     "source": "file:tests/quest/test_ch1_flavor_crowd.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2047",
+     "source": "file:tests/quest/test_ch1_quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2048",
+     "source": "file:tests/quest/test_ch1_spine_reachable.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2049",
+     "source": "file:tests/quest/test_ch2_quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2050",
+     "source": "file:tests/quest/test_ch2_reactive_substates.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2051",
+     "source": "file:tests/quest/test_ch2_ripple.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2052",
+     "source": "file:tests/quest/test_ch3_quest.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2053",
+     "source": "file:tests/quest/test_ch3_ripple.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2054",
+     "source": "file:tests/quest/test_ch3_umbrella_reveal.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2055",
+     "source": "file:tests/quest/test_ch4_ending_confession.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2056",
+     "source": "file:tests/quest/test_ch4_finale.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2057",
+     "source": "file:tests/quest/test_ch4_finale_exit.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2058",
+     "source": "file:tests/quest/test_ch4_gentle_umbrella.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2059",
+     "source": "file:tests/quest/test_ch4_ripple.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2060",
+     "source": "file:tests/quest/test_ch4_routing.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2061",
+     "source": "file:tests/quest/test_chapter2_roster.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2062",
+     "source": "file:tests/quest/test_chapter3_roster.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2063",
+     "source": "file:tests/quest/test_chapter4_roster.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2064",
+     "source": "file:tests/quest/test_chapter4_senior_skip.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2065",
+     "source": "file:tests/quest/test_chapter_gate.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2066",
+     "source": "file:tests/quest/test_chapter_questitems.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2067",
+     "source": "file:tests/quest/test_chapter_spawns.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2068",
+     "source": "file:tests/quest/test_chapter_spine.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2069",
+     "source": "file:tests/quest/test_chapter_transitions.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2070",
+     "source": "file:tests/quest/test_economy_loop.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2071",
+     "source": "file:tests/quest/test_loadchapter_chapter1.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2072",
+     "source": "file:tests/quest/test_quest_hook_table.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2073",
+     "source": "file:tests/quest/test_quest_indicator.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2074",
+     "source": "file:tests/quest/test_ripple_seed_flags.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2075",
+     "source": "file:tests/quest/test_spawn_reachability.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2076",
+     "source": "file:tests/quest/test_suit_senior_oneshot.cpp",
+     "target": "bucket:game/quest",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2077",
+     "source": "file:tests/state/test_ending_gate.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2078",
+     "source": "file:tests/state/test_interlude_exit.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2079",
+     "source": "file:tests/state/test_interlude_exit_feedback.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2080",
+     "source": "file:tests/state/test_interlude_exit_marker.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2081",
+     "source": "file:tests/state/test_interlude_loaner_return.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2082",
+     "source": "file:tests/state/test_state_machine.cpp",
+     "target": "bucket:game/state",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2083",
+     "source": "file:tests/vendor/test_vendor.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2084",
+     "source": "file:tests/vendor/test_vendor_centred_cluster.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2085",
+     "source": "file:tests/vendor/test_vendor_decline.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2086",
+     "source": "file:tests/vendor/test_vendor_inventory.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2087",
+     "source": "file:tests/vendor/test_vendor_loader.cpp",
+     "target": "bucket:game/vendor",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2088",
+     "source": "file:tests/world/test_building_tracker.cpp",
+     "target": "bucket:game/world",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2089",
+     "source": "file:tests/world/test_collision_mask.cpp",
+     "target": "bucket:game/world",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2090",
+     "source": "file:tests/world/test_physics.cpp",
+     "target": "bucket:game/world",
+     "etype": "tests"
+    }
+   },
+   {
+    "data": {
+     "id": "e2091",
+     "source": "file:tests/world/test_world_chapter_roster.cpp",
+     "target": "bucket:game/world",
+     "etype": "tests"
+    }
+   }
+  ]
+ },
+ "meta": {
+  "repo": "jiangjiangian/ultraplan-sync",
+  "branch": "main",
+  "generated_by": "graph/build_graph.py",
+  "counts": {
+   "files": 500,
+   "file_nodes": 500,
+   "concept_nodes": 14,
+   "domain_nodes": 9,
+   "bucket_nodes": 33,
+   "nodes_total": 556,
+   "edges_total": 2092
+  },
+  "edge_types": [
+   "depends",
+   "in-bucket",
+   "in-domain",
+   "includes",
+   "inherits",
+   "realizes",
+   "tests"
+  ],
+  "domains": [
+   "app",
+   "docs",
+   "engine",
+   "game",
+   "resources",
+   "root",
+   "tests",
+   "tools",
+   "ui"
+  ]
+ }
+};

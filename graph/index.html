@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>尋傘記 · 知識圖譜</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <h1>《尋傘記》知識圖譜</h1>
+    <p class="sub">把整個 repo 的<strong>每一個檔案</strong>、OO 概念與相依關係畫成一張可互動的圖。
+      點節點看細節、連到原始碼與 wiki。<a href="wiki/index.md">→ wiki 索引</a></p>
+
+    <input id="search" type="search" placeholder="搜尋檔名 / 類別 / 路徑…" autocomplete="off">
+
+    <h2>檢視預設</h2>
+    <div class="views" id="views">
+      <button data-view="skeleton" class="active">架構骨架</button>
+      <button data-view="inherit">繼承樹</button>
+      <button data-view="patterns">設計模式</button>
+      <button data-view="full">完整全圖</button>
+    </div>
+
+    <h2>排版</h2>
+    <div class="layout-row">
+      <select id="layout">
+        <option value="cose">力導向（cose）</option>
+        <option value="concentric">同心圓（依連結度）</option>
+        <option value="breadthfirst">階層（breadthfirst）</option>
+        <option value="grid">網格</option>
+        <option value="circle">環形</option>
+      </select>
+      <button id="refit" title="重新置中">⤢</button>
+    </div>
+
+    <h2>節點種類</h2>
+    <div id="kindFilters"></div>
+
+    <h2>領域</h2>
+    <div id="domainFilters"></div>
+
+    <h2>邊（相依）種類</h2>
+    <div id="edgeFilters"></div>
+
+    <h2>圖例</h2>
+    <div class="legend" id="legend"></div>
+
+    <div id="stats"></div>
+  </aside>
+
+  <main id="cy"></main>
+
+  <aside id="detail" class="hidden">
+    <button id="closeDetail" title="關閉">×</button>
+    <div class="dhead">
+      <span class="kindtag" id="dKind"></span>
+      <h3 id="dTitle"></h3>
+      <div class="path" id="dPath"></div>
+    </div>
+    <div class="dbody" id="dBody"></div>
+  </aside>
+</div>
+<div class="hint">滑鼠拖曳平移 · 滾輪縮放 · 點節點看細節 · 雙擊檔案節點開原始碼</div>
+
+<script src="vendor/cytoscape.min.js"></script>
+<script src="data/graph-data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
