@@ -1,69 +1,100 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>尋傘記 · 知識圖譜</title>
+<meta charset="UTF-8">
+<title>《尋傘記》知識圖譜｜一張圖看完整個 repo 的檔案、概念與相依</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="C++ 遊戲《尋傘記》repo 的每一個檔案、OO 概念與相依關係（#include / 繼承 / 設計模式落點），畫成一張可互動的知識圖譜。滑過看連結、點節點看介紹與原始碼 / 逐檔說明。">
+<meta property="og:title" content="《尋傘記》知識圖譜">
+<meta property="og:description" content="把整個 repo 的檔案與相依關係串成一張可互動的地圖。">
+<meta property="og:type" content="website">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<div id="app">
-  <aside id="sidebar">
-    <h1>《尋傘記》知識圖譜</h1>
-    <p class="sub">把整個 repo 的<strong>每一個檔案</strong>、OO 概念與相依關係畫成一張可互動的圖。
-      點節點看細節、連到原始碼與 wiki。<a href="https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/index.md" target="_blank" rel="noopener">→ wiki 索引</a></p>
 
-    <input id="search" type="search" placeholder="搜尋檔名 / 類別 / 路徑…" autocomplete="off">
-
-    <h2>檢視預設</h2>
-    <div class="views" id="views">
-      <button data-view="skeleton" class="active">架構骨架</button>
-      <button data-view="inherit">繼承樹</button>
-      <button data-view="patterns">設計模式</button>
-      <button data-view="code">源碼 src+include</button>
-      <button data-view="full">完整全圖</button>
+<!-- Welcome modal -->
+<div class="modal-bg" id="welcome">
+  <div class="modal">
+    <h2><span style="display:inline-block;transform:rotate(-10deg)">🌂</span> 歡迎</h2>
+    <p>這是 C++ 遊戲《尋傘記：政大山下篇》的 <b style="color:#fbbf24">整個 repo 知識圖譜</b>——把每一個檔案、OO 概念、設計模式，和它們之間的相依關係（<code>#include</code>、類別繼承、模式落點）全部畫成一張可互動的地圖。</p>
+    <div class="legend">
+      <div class="legend-item"><span class="dot" style="background:#fbbf24"></span> 圓點 = 一個程式檔（顏色＝領域）</div>
+      <div class="legend-item"><span class="dot" style="background:#ff6b9d;border-radius:0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)"></span> 星形 = 設計模式 / OO 概念</div>
+      <div class="legend-item"><span class="line" style="background:#8ab4f8"></span> 連線 = 相依</div>
     </div>
-
-    <h2>排版</h2>
-    <div class="layout-row">
-      <select id="layout">
-        <option value="cose">力導向（cose）</option>
-        <option value="concentric">同心圓（依連結度）</option>
-        <option value="breadthfirst">階層（breadthfirst）</option>
-        <option value="grid">網格</option>
-        <option value="circle">環形</option>
-      </select>
-      <button id="refit" title="重新置中">⤢</button>
-    </div>
-
-    <h2>節點種類</h2>
-    <div id="kindFilters"></div>
-
-    <h2>領域</h2>
-    <div id="domainFilters"></div>
-
-    <h2>邊（相依）種類</h2>
-    <div id="edgeFilters"></div>
-
-    <h2>圖例</h2>
-    <div class="legend" id="legend"></div>
-
-    <div id="stats"></div>
-  </aside>
-
-  <main id="cy"></main>
-
-  <aside id="detail" class="hidden">
-    <button id="closeDetail" title="關閉">×</button>
-    <div class="dhead">
-      <span class="kindtag" id="dKind"></span>
-      <h3 id="dTitle"></h3>
-      <div class="path" id="dPath"></div>
-    </div>
-    <div class="dbody" id="dBody"></div>
-  </aside>
+    <p style="font-size:13px"><b>怎麼用：</b></p>
+    <p style="font-size:13px;color:#aab2c8">• 滑鼠拖曳、滾輪縮放<br>
+    • <b style="color:#fbbf24">滑鼠移到節點上</b> → 高亮相鄰、看提示<br>
+    • <b style="color:#fbbf24">點節點</b> → 右側看介紹、原始碼與逐檔說明連結<br>
+    • <b style="color:#fbbf24">雙擊節點</b> → 直接開逐檔說明<br>
+    • 左側欄可搜尋檔名 / 類別、依領域過濾</p>
+    <button class="go" onclick="document.getElementById('welcome').classList.remove('show'); localStorage.setItem('xs_seen_intro','1');">看地圖 →</button>
+    <div class="small">由 graph/build_graph.py 從原始碼靜態建立 · 衍生視圖，架構真相在 docs/UML/</div>
+  </div>
 </div>
-<div class="hint">滑鼠拖曳平移 · 滾輪縮放 · 點節點看細節 · 雙擊檔案節點開原始碼</div>
+
+<div id="app">
+  <header>
+    <h1><span class="umb">🌂</span><span class="full"> 《尋傘記》知識圖譜</span></h1>
+    <span class="meta" id="header-meta">載入中…</span>
+    <div class="right">
+      <a class="ghbtn" href="https://github.com/jiangjiangian/ultraplan-sync" target="_blank" rel="noopener">◎ GitHub</a>
+      <button class="help-btn" onclick="document.getElementById('welcome').classList.add('show')">？ 說明</button>
+    </div>
+  </header>
+  <button class="sidebar-toggle" id="sidebar-toggle" aria-label="開啟選單" onclick="toggleSidebar()">☰</button>
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+  <aside id="sidebar">
+    <div class="row">
+      <h2>🔎 搜尋</h2>
+      <input id="search" type="text" placeholder="檔名 / 類別 / 路徑 關鍵字..." />
+    </div>
+    <div class="row">
+      <h2>📊 概況</h2>
+      <div class="stat-grid" id="stats"></div>
+    </div>
+    <div class="row">
+      <h2>🎨 顯示方式</h2>
+      <div class="radios" id="layouts">
+        <label><input type="radio" name="layout" value="cose" checked> 力導向 (聚類)</label>
+        <label><input type="radio" name="layout" value="grid"> 網格 (依領域)</label>
+        <label><input type="radio" name="layout" value="concentric"> 同心圓 (依連結度)</label>
+        <label><input type="radio" name="layout" value="circle"> 圓形</label>
+      </div>
+    </div>
+    <div class="row">
+      <h2>🧩 節點種類</h2>
+      <div class="kinds" id="kinds"></div>
+    </div>
+    <div class="row">
+      <h2>📂 領域過濾</h2>
+      <div class="filters" id="domains"></div>
+    </div>
+    <div class="footer-note">
+      整個 repo 的知識地圖，由 <code>graph/build_graph.py</code> 靜態掃描原始碼自動建立。<br>
+      點節點 → 連到 GitHub 原始碼與「逐檔詳盡說明」。<br>
+      <a href="https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/index.md" target="_blank" rel="noopener">📖 wiki 索引</a>
+    </div>
+  </aside>
+  <div id="cy"></div>
+</div>
+
+<div id="details">
+  <button class="close" onclick="document.getElementById('details').style.display='none'">✕</button>
+  <h3 id="d-title"></h3>
+  <div class="tags" id="d-tags"></div>
+  <div class="summary" id="d-summary" style="display:none"></div>
+  <div class="chips" id="d-classes"></div>
+  <div class="btns" id="d-btns"></div>
+
+  <div class="section-h" id="d-out-h">用到 / 體現的</div>
+  <div id="d-outgoing"></div>
+
+  <div class="section-h" id="d-in-h">被誰用到</div>
+  <div id="d-incoming"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
 
 <script src="vendor/cytoscape.min.js"></script>
 <script src="data/graph-data.js"></script>

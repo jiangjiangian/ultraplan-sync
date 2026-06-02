@@ -1,327 +1,281 @@
-/* 《尋傘記》知識圖譜 — 互動邏輯（Cytoscape.js，手寫，無框架）。
-   資料來自 window.GRAPH_DATA（data/graph-data.js）。 */
+/* 《尋傘記》知識圖譜 — 互動邏輯（Cytoscape.js）。設計/行為對齊李宏毅老師頻道地圖，
+   改寫為本 repo 的資料：節點=檔案/概念，邊=#include / 繼承 / 模式落點。資料來自 window.GRAPH_DATA。 */
 (function () {
   "use strict";
-
   var DATA = window.GRAPH_DATA;
   if (!DATA) { document.getElementById("cy").innerHTML =
-    "<p style='padding:40px'>找不到 data/graph-data.js，請先跑 <code>python3 graph/build_graph.py</code>。</p>"; return; }
+    "<pre style='color:#f87171;padding:20px'>找不到 data/graph-data.js，請先跑 python3 graph/build_graph.py</pre>"; return; }
 
-  // ---- 配色 ----
-  var DOMAIN_COL = { app:"#e76f51", engine:"#2a9d8f", game:"#e9b949", ui:"#4895ef",
-    tests:"#9aa5b1", docs:"#b5838d", tools:"#9c89b8", resources:"#74a12e", root:"#7b8794" };
-  var KIND_COL = { pattern:"#f4a261", principle:"#06d6a0", architecture:"#118ab2" };
-  var KIND_SHAPE = { file:"ellipse", bucket:"round-rectangle", domain:"round-rectangle",
-    pattern:"star", principle:"diamond", architecture:"hexagon" };
-  var KIND_LABEL = { file:"檔案", bucket:"bucket", domain:"領域分層",
-    pattern:"設計模式 (GoF)", principle:"OO 原則 / 技法", architecture:"架構元件" };
-  var EDGE_COL = { includes:"#cbd5e1", inherits:"#3a86ff", realizes:"#f4a261",
-    "in-bucket":"#e4ebf3", "in-domain":"#e4ebf3", depends:"#ef476f", tests:"#b8c0cc" };
-  var EDGE_LABEL = { includes:"#include 相依", inherits:"類別繼承", realizes:"模式落點",
-    "in-bucket":"歸屬 bucket", "in-domain":"歸屬領域", depends:"領域依賴方向", tests:"測試對應" };
+  // ---- 配色（暗色主題；檔案依領域、概念依種類）----
+  var DOMAIN_COL = { app:"#ed7d31", engine:"#4ade80", game:"#fbbf24", ui:"#5b9bd5",
+    tests:"#a5a5a5", docs:"#c586c0", tools:"#9b8cff", resources:"#70ad47", root:"#7a8499" };
+  var CONCEPT_COL = { pattern:"#ff6b9d", principle:"#2dd4bf", architecture:"#a78bfa" };
+  var SHAPE = { file:"ellipse", pattern:"star", principle:"diamond", architecture:"hexagon",
+    domain:"round-rectangle", bucket:"round-rectangle" };
+  var DOMAIN_LABEL = { app:"app 組裝根", engine:"engine 引擎", game:"game 遊戲邏輯", ui:"ui 視圖",
+    tests:"tests 測試", docs:"docs 文件", tools:"tools 工具", resources:"resources 資產", root:"root 根" };
+  var KIND_ZH = { file:"程式檔", pattern:"設計模式", principle:"OO 原則", architecture:"架構元件",
+    domain:"領域", bucket:"bucket" };
+  var ET = {  // 邊種類 → 卡片標題（往外 / 往內）
+    includes:["#include →","← 被 include"], inherits:["繼承自 →","← 子類別"],
+    realizes:["落點 →","← 體現"], tests:["測試 →","← 被測試"],
+    "in-bucket":["屬於 →","← 含"], "in-domain":["屬於 →","← 含"], depends:["相依 →","← 被相依"] };
+  function colOf(d){ return d.kind==="file" ? (DOMAIN_COL[d.domain]||"#888")
+    : (CONCEPT_COL[d.kind] || (d.kind==="domain"?(DOMAIN_COL[d.domain]||"#888"):"#7a8499")); }
 
-  // ---- 預先標註每個節點的顏色 / 大小 ----
-  DATA.elements.nodes.forEach(function (n) {
-    var d = n.data;
-    if (d.kind === "file") { d.col = DOMAIN_COL[d.domain] || "#888"; d.sz = 14 + Math.min(28, (d.loc || 0) / 22); }
-    else if (d.kind === "domain") { d.col = DOMAIN_COL[d.domain] || "#555"; d.sz = 54; }
-    else if (d.kind === "bucket") { d.col = DOMAIN_COL[d.domain] || "#888"; d.sz = 26; }
-    else { d.col = KIND_COL[d.kind] || "#888"; d.sz = 36; }
+  // ---- 度數（決定大小與標籤門檻）+ 鄰接索引 ----
+  var deg = {}, OUT = {}, IN = {}, nodesById = {};
+  DATA.elements.nodes.forEach(function(n){ nodesById[n.data.id]=n.data; deg[n.data.id]=0; });
+  DATA.elements.edges.forEach(function(e){
+    var d=e.data; deg[d.source]=(deg[d.source]||0)+1; deg[d.target]=(deg[d.target]||0)+1;
+    (OUT[d.source]=OUT[d.source]||[]).push(d); (IN[d.target]=IN[d.target]||[]).push(d);
+  });
+  DATA.elements.nodes.forEach(function(n){
+    var d=n.data, g=deg[d.id]||0;
+    d.col = colOf(d);
+    d.sz = d.kind==="file" ? 14+Math.min(30, g*1.1)
+         : d.kind==="domain" ? 52 : d.kind==="bucket" ? 24 : 38;
+    d.deg = g;
+    d.shape = SHAPE[d.kind] || "ellipse";
   });
 
-  // ---- 建立 Cytoscape ----
+  // ---- Cytoscape ----
   var cy = cytoscape({
     container: document.getElementById("cy"),
     elements: DATA.elements,
-    wheelSensitivity: 0.25,
-    textureOnViewport: true,    // 拖曳/縮放用貼圖渲染 → 大圖不卡（關鍵）
-    hideEdgesOnViewport: true,  // 互動時暫時隱藏邊，少畫很多東西
-    motionBlur: false,
+    textureOnViewport: true, hideEdgesOnViewport: true, motionBlur: false,
+    wheelSensitivity: 0.2, minZoom: 0.08, maxZoom: 4,
     style: [
-      { selector: "node", style: {
-        "background-color": "data(col)", "shape": function (e){ return KIND_SHAPE[e.data("kind")] || "ellipse"; },
-        "width": "data(sz)", "height": "data(sz)", "label": "data(label)",
-        "font-size": 8, "color": "#1f2933", "text-wrap": "wrap", "text-max-width": 90,
-        "text-valign": "bottom", "text-margin-y": 2, "min-zoomed-font-size": 7,
-        "border-width": 0, "text-opacity": 0.0 } },
-      { selector: 'node[kind="file"]', style: { "text-opacity": 0.0 } },
-      { selector: 'node[kind="bucket"]', style: { "text-opacity": 0.85, "font-size": 10 } },
-      { selector: 'node[kind="domain"]', style: { "text-opacity": 1, "font-size": 14,
-        "font-weight": "bold", "color": "#fff", "text-valign": "center", "text-outline-width": 0 } },
-      { selector: 'node[kind="pattern"],node[kind="principle"],node[kind="architecture"]',
-        style: { "text-opacity": 1, "font-size": 11, "font-weight": "bold" } },
-      { selector: "edge", style: {
-        "width": 1, "line-color": "data(col)", "curve-style": "haystack",
-        "haystack-radius": 0, "opacity": 0.55 } },
-      { selector: 'edge[etype="inherits"]', style: { "width": 2.4, "curve-style": "bezier",
-        "target-arrow-shape": "triangle", "target-arrow-color": EDGE_COL.inherits, "opacity": 0.9 } },
-      { selector: 'edge[etype="realizes"]', style: { "width": 2, "curve-style": "bezier",
-        "line-style": "dashed", "target-arrow-shape": "vee", "target-arrow-color": EDGE_COL.realizes, "opacity": 0.9 } },
-      { selector: 'edge[etype="depends"]', style: { "width": 3, "curve-style": "bezier",
-        "line-style": "dashed", "target-arrow-shape": "triangle", "target-arrow-color": EDGE_COL.depends, "opacity": 0.85 } },
-      { selector: 'edge[etype="tests"]', style: { "line-style": "dotted", "opacity": 0.4 } },
-      { selector: ".faded", style: { "opacity": 0.07, "text-opacity": 0.0 } },
-      { selector: ".hl", style: { "text-opacity": 1, "font-size": 11, "z-index": 99,
-        "border-width": 2, "border-color": "#1f2933" } },
-      { selector: ".search-hit", style: { "background-color": "#ef233c", "text-opacity": 1,
-        "border-width": 3, "border-color": "#ef233c", "z-index": 100 } },
-      { selector: "edge.hl", style: { "opacity": 1, "width": 3 } },
+      { selector:"node", style:{
+        "background-color":"data(col)", "shape":"data(shape)",
+        "width":"data(sz)", "height":"data(sz)",
+        "label":"data(label)", "color":"#e6e6e6", "font-size":10, "font-weight":"bold",
+        "font-family":'"Microsoft JhengHei","PingFang TC",sans-serif',
+        "text-valign":"bottom", "text-halign":"center", "text-margin-y":4,
+        "text-wrap":"wrap", "text-max-width":120, "min-zoomed-font-size":7,
+        "border-width":2, "border-color":"#0f1419",
+        "text-background-color":"#0f1419", "text-background-opacity":0.82, "text-background-padding":3,
+        "text-opacity":0 } },
+      { selector:'node[deg >= 8]', style:{ "text-opacity":1 } },
+      { selector:'node[kind="pattern"],node[kind="principle"],node[kind="architecture"]',
+        style:{ "text-opacity":1, "font-size":12 } },
+      { selector:'node[kind="domain"]', style:{ "text-opacity":1, "font-size":13, "color":"#fff" } },
+      // edges
+      { selector:"edge", style:{ "curve-style":"haystack", "width":1.1, "line-color":"#344056", "opacity":0.32 } },
+      { selector:'edge[etype="inherits"]', style:{ "curve-style":"bezier", "width":2.2,
+        "line-color":"#4ade80", "target-arrow-shape":"triangle", "target-arrow-color":"#4ade80",
+        "arrow-scale":0.9, "opacity":0.85 } },
+      { selector:'edge[etype="realizes"]', style:{ "curve-style":"bezier", "width":1.8, "line-style":"dashed",
+        "line-color":"#fbbf24", "target-arrow-shape":"vee", "target-arrow-color":"#fbbf24", "opacity":0.8 } },
+      { selector:'edge[etype="depends"]', style:{ "curve-style":"bezier", "width":2.6, "line-style":"dashed",
+        "line-color":"#f87171", "target-arrow-shape":"triangle", "target-arrow-color":"#f87171", "opacity":0.85 } },
+      { selector:'edge[etype="tests"]', style:{ "line-color":"#5a4a63", "opacity":0.28 } },
+      { selector:'edge[etype="in-bucket"],edge[etype="in-domain"]', style:{ "line-color":"#2a3046", "opacity":0.25 } },
+      { selector:"node:selected", style:{ "border-width":4, "border-color":"#fbbf24" } },
+      { selector:".faded", style:{ "opacity":0.1, "text-opacity":0 } },
+      { selector:".search-hit", style:{ "border-width":3, "border-color":"#fbbf24", "text-opacity":1 } },
     ],
-    layout: { name: "preset" },
+    layout: { name:"preset" },
   });
+  window.cy = cy;
+  var tooltip = document.getElementById("tooltip");
 
-  // ---- 鄰接索引（給 detail 面板用）----
-  var IN = {}, OUT = {};   // OUT[src] = [{etype,target}], IN[tgt] = [{etype,source}]
-  DATA.elements.edges.forEach(function (e) {
-    var d = e.data; (OUT[d.source] = OUT[d.source] || []).push(d);
-    (IN[d.target] = IN[d.target] || []).push(d);
-  });
-  function nodeData(id){ var n = cy.getElementById(id); return n.length ? n.data() : null; }
-
-  // ---- 篩選狀態 ----
-  var kinds = ["domain","bucket","pattern","principle","architecture","file"];
-  var domains = DATA.meta.domains.slice();
-  var etypes = DATA.meta.edge_types.slice();
-  var kindOn = {}, domOn = {}, edgeOn = {};
-  kinds.forEach(function(k){ kindOn[k] = true; });
-  domains.forEach(function(d){ domOn[d] = true; });
-  etypes.forEach(function(t){ edgeOn[t] = true; });
-
+  // ---- 過濾狀態 ----
+  var DOMAINS = DATA.meta.domains.slice();
+  var kindShow = { file:true, concept:true, container:false };
+  var domShow = {}; DOMAINS.forEach(function(d){ domShow[d]=true; });
+  function kindBucket(k){ return k==="file" ? "file"
+    : (k==="domain"||k==="bucket") ? "container" : "concept"; }
   function nodeVisible(d){
-    if (!kindOn[d.kind]) return false;
-    if (d.kind === "file" && !domOn[d.domain]) return false;
-    if (d.kind === "bucket" && !domOn[d.domain]) return false;
+    if (!kindShow[kindBucket(d.kind)]) return false;
+    if (d.kind==="file" && !domShow[d.domain]) return false;
+    if (d.kind==="bucket" && !domShow[d.domain]) return false;
     return true;
   }
   function applyFilters(relayout){
-    var vis = {};   // 先算進 JS map，別在 batch 內回讀 cy style（可能 stale）
+    var vis = {};
     cy.batch(function(){
-      cy.nodes().forEach(function(n){
-        var v = nodeVisible(n.data()); vis[n.id()] = v;
-        n.style("display", v ? "element" : "none");
-      });
-      cy.edges().forEach(function(e){
-        var d = e.data(), ok = edgeOn[d.etype] && vis[d.source] && vis[d.target];
-        e.style("display", ok ? "element" : "none");
-      });
+      cy.nodes().forEach(function(n){ var v=nodeVisible(n.data()); vis[n.id()]=v;
+        n.style("display", v?"element":"none"); });
+      cy.edges().forEach(function(e){ var d=e.data();
+        e.style("display", (vis[d.source]&&vis[d.target])?"element":"none"); });
     });
     if (relayout) runLayout();
     updateStats();
   }
 
   // ---- 排版 ----
-  function layoutOpts(name){
-    var vis = cy.elements(":visible");
-    var common = { name: name, fit: true, padding: 40, animate: false };
-    if (name === "cose") return Object.assign(common, { nodeRepulsion: 9000,
-      idealEdgeLength: 70, numIter: 1200, gravity: 0.3, componentSpacing: 80 });
-    if (name === "concentric") return Object.assign(common, {
-      concentric: function(n){ return n.degree(); }, levelWidth: function(){ return 3; }, minNodeSpacing: 18 });
-    if (name === "breadthfirst") return Object.assign(common, { directed: true, spacingFactor: 1.1 });
-    if (name === "grid") return Object.assign(common, { avoidOverlap: true });
-    if (name === "circle") return common;
-    return common;
-  }
   function runLayout(){
-    var name = document.getElementById("layout").value;
-    cy.elements(":visible").layout(layoutOpts(name)).run();
+    var name = (document.querySelector('input[name=layout]:checked')||{}).value || "cose";
+    var eles = cy.elements(":visible");
+    var opts = { name:name, fit:true, padding:30, animate:false };
+    if (name==="cose") opts = Object.assign(opts, { idealEdgeLength:120, nodeRepulsion:13000,
+      gravity:0.4, numIter:1000, componentSpacing:90 });
+    else if (name==="concentric") opts = Object.assign(opts, { concentric:function(n){return n.degree();},
+      levelWidth:function(){return 4;}, minNodeSpacing:14 });
+    else if (name==="grid") opts = Object.assign(opts, { avoidOverlap:true,
+      sort:function(a,b){ return (a.data("domain")||"z").localeCompare(b.data("domain")||"z"); } });
+    eles.layout(opts).run();
   }
 
-  // ---- 預設檢視 ----
-  var VIEWS = {
-    skeleton: { kinds:["domain","bucket","pattern","principle","architecture"],
-      edges:["in-domain","in-bucket","depends","realizes"], layout:"cose" },
-    inherit:  { kinds:["file","pattern","principle","architecture"],
-      edges:["inherits","realizes"], layout:"breadthfirst" },
-    patterns: { kinds:["pattern","principle","architecture","file"],
-      edges:["realizes"], layout:"concentric" },
-    code:     { kinds:["file"], domains:["app","engine","game","ui"],
-      edges:["includes","inherits"], layout:"cose" },
-    full:     { kinds:kinds.slice(), edges:etypes.slice(), layout:"cose" },
-  };
-  function setView(name){
-    var v = VIEWS[name]; if (!v) return;
-    kinds.forEach(function(k){ kindOn[k] = v.kinds.indexOf(k) >= 0; });
-    etypes.forEach(function(t){ edgeOn[t] = v.edges.indexOf(t) >= 0; });
-    domains.forEach(function(d){ domOn[d] = v.domains ? v.domains.indexOf(d) >= 0 : true; });
-    document.getElementById("layout").value = v.layout;
-    syncCheckboxes();
-    document.querySelectorAll("#views button").forEach(function(b){
-      b.classList.toggle("active", b.dataset.view === name); });
-    applyFilters(true);
+  // ---- hover：高亮鄰域 + tooltip ----
+  cy.on("mouseover", "node", function(evt){
+    var n = evt.target, hood = n.closedNeighborhood();
+    cy.elements().difference(hood).addClass("faded");
+    n.style("text-opacity", 1);
+    var d = n.data(), oe = evt.originalEvent || {};
+    tooltip.innerHTML = "<b>"+esc(d.label)+"</b>"
+      + (d.path ? "<div class='tt-path'>"+esc(d.path)+"</div>" : "")
+      + (d.summary ? "<div class='tt-path' style='color:#c5cdd6'>"+esc(d.summary.slice(0,80))+"…</div>" : "")
+      + "<div class='tt-hint'>"+(d.deg||0)+" 條相依 · 點看詳情</div>";
+    tooltip.style.display = "block";
+    moveTip(oe);
+  });
+  cy.on("mousemove", "node", function(evt){ if (tooltip.style.display==="block") moveTip(evt.originalEvent||{}); });
+  cy.on("mouseout", "node", function(evt){
+    cy.elements().removeClass("faded");
+    var d = evt.target.data(); if ((d.deg||0) < 8 && kindBucket(d.kind)==="file") evt.target.style("text-opacity", 0);
+    tooltip.style.display = "none";
+  });
+  function moveTip(oe){
+    var x = (oe.clientX||0), y = (oe.clientY||0);
+    var tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    tooltip.style.left = Math.min(x+16, window.innerWidth - tw - 8) + "px";
+    tooltip.style.top  = Math.min(y+16, window.innerHeight - th - 8) + "px";
   }
 
-  // ---- 細節面板 ----
-  var app = document.getElementById("app"), detail = document.getElementById("detail");
-  function fileName(id){ var d = nodeData(id); return d ? d.label : id; }
-  function linkList(arr, dir){
-    if (!arr || !arr.length) return "<li style='color:#9aa5b1'>（無）</li>";
-    return arr.map(function(e){
-      var other = dir === "out" ? e.target : e.source;
-      return "<li><span class='chip' style='background:#f1f5f9'>"+ (EDGE_LABEL[e.etype]||e.etype)
-        +"</span> <a class='ln' data-go='"+other+"'>"+ fileName(other) +"</a></li>";
-    }).join("");
-  }
-  function showDetail(id){
-    var d = nodeData(id); if (!d) return;
-    var kindCol = d.kind === "file" ? (DOMAIN_COL[d.domain]||"#777") : (KIND_COL[d.kind]||"#777");
-    document.getElementById("dKind").textContent = KIND_LABEL[d.kind] || d.kind;
-    document.getElementById("dKind").style.background = kindCol;
-    document.getElementById("dTitle").textContent = d.label;
-    document.getElementById("dPath").textContent = d.path || d.id;
-    var h = [];
-    var meta = [];
-    if (d.kind === "file"){
-      meta.push(["領域", d.domain + (d.bucket ? " / " + d.bucket : "")]);
-      meta.push(["類型", d.ntype]); if (d.loc) meta.push(["行數", d.loc + " LOC"]);
-    } else if (d.kind === "domain" || d.kind === "bucket"){
-      meta.push(["種類", KIND_LABEL[d.kind]]); meta.push(["領域", d.domain]);
-    }
-    if (meta.length) h.push("<dl class='meta'>" + meta.map(function(m){
-      return "<dt>"+m[0]+"</dt><dd>"+m[1]+"</dd>"; }).join("") + "</dl>");
-    if (d.summary) h.push("<div class='summary'>"+ d.summary +"</div>");
-    if (d.classes && d.classes.length) h.push("<h4>類別</h4><div>" +
-      d.classes.map(function(c){ return "<span class='chip'>"+c+"</span>"; }).join("") + "</div>");
-
-    var out = OUT[id] || [], inc = IN[id] || [];
-    var inclOut = out.filter(function(e){return e.etype==="includes";});
-    var inclIn = inc.filter(function(e){return e.etype==="includes";});
-    var inhOut = out.filter(function(e){return e.etype==="inherits";});
-    var inhIn = inc.filter(function(e){return e.etype==="inherits";});
-    var realIn = inc.filter(function(e){return e.etype==="realizes";});
-    var realOut = out.filter(function(e){return e.etype==="realizes";});
-    if (inhOut.length) h.push("<h4>繼承自</h4><ul class='links'>"+linkList(inhOut,"out")+"</ul>");
-    if (inhIn.length) h.push("<h4>被繼承（子類別）</h4><ul class='links'>"+linkList(inhIn,"in")+"</ul>");
-    if (realOut.length) h.push("<h4>落點檔案</h4><ul class='links'>"+linkList(realOut,"out")+"</ul>");
-    if (realIn.length) h.push("<h4>體現的概念 / 模式</h4><ul class='links'>"+linkList(realIn,"in")+"</ul>");
-    if (inclOut.length) h.push("<h4>#include（"+inclOut.length+"）</h4><ul class='links'>"+linkList(inclOut,"out")+"</ul>");
-    if (inclIn.length) h.push("<h4>被誰 include（"+inclIn.length+"）</h4><ul class='links'>"+linkList(inclIn,"in")+"</ul>");
-
-    var ext = [];
-    if (d.github) ext.push("<a href='"+d.github+"' target='_blank' rel='noopener'>↗ 原始碼 (GitHub)</a>");
-    if (d.wiki) ext.push("<a class='ghost' href='"+d.wiki+"' target='_blank'>📖 wiki</a>");
-    if (ext.length) h.push("<div class='ext'>"+ext.join("")+"</div>");
-    document.getElementById("dBody").innerHTML = h.join("");
-
-    detail.classList.remove("hidden"); app.classList.add("detail-open");
-    document.querySelectorAll("#dBody a.ln").forEach(function(a){
-      a.addEventListener("click", function(){ selectNode(a.dataset.go); }); });
-  }
-  function closeDetail(){ detail.classList.add("hidden"); app.classList.remove("detail-open");
-    cy.elements().removeClass("faded hl"); location.hash = ""; }
-  document.getElementById("closeDetail").addEventListener("click", closeDetail);
-
-  // ---- 選取 / 聚焦 ----
-  function focusNode(node){
-    cy.elements().addClass("faded").removeClass("hl");
-    var hood = node.closedNeighborhood();
-    hood.removeClass("faded"); hood.addClass("hl"); node.addClass("hl");
-    cy.animate({ center: { eles: node }, zoom: Math.max(cy.zoom(), 0.9) }, { duration: 300 });
-  }
-  function selectNode(id){
-    var node = cy.getElementById(id);
-    if (!node.length) return;
-    if (node.style("display") === "none") setView("full");   // 被預設檢視藏起來 → 切全圖
-    node = cy.getElementById(id);
-    focusNode(node); showDetail(id);
-    var enc = encodeURIComponent(id);
-    if (location.hash !== "#node=" + enc) location.hash = "node=" + enc;
-  }
-
-  var lastTap = { id: null, t: 0 };   // 手動偵測雙擊（cytoscape 核心無保證的 dbltap）
+  // ---- tap：細節面板 ----
   cy.on("tap", "node", function(evt){
-    var id = evt.target.id(), now = Date.now();
-    if (lastTap.id === id && now - lastTap.t < 320){          // 雙擊 → 開原始碼
-      var g = evt.target.data("github"); if (g) window.open(g, "_blank");
-      lastTap.t = 0; return;
-    }
-    lastTap = { id: id, t: now };
-    selectNode(id);
+    showDetails(evt.target.data("id"));
+    if (window.matchMedia("(max-width:768px)").matches) toggleSidebar(false);
   });
-  cy.on("tap", function(evt){ if (evt.target === cy){ cy.elements().removeClass("faded hl"); } });
-
-  // ---- 搜尋 ----
-  document.getElementById("search").addEventListener("input", function(e){
-    var q = e.target.value.trim().toLowerCase();
-    cy.nodes().removeClass("search-hit");
-    if (!q){ return; }
-    var hits = cy.nodes().filter(function(n){
-      var d = n.data();
-      return (d.label && d.label.toLowerCase().indexOf(q) >= 0)
-        || (d.path && d.path.toLowerCase().indexOf(q) >= 0)
-        || (d.classes && d.classes.join(" ").toLowerCase().indexOf(q) >= 0);
-    });
-    // 確保命中節點可見
-    var needFull = hits.some(function(n){ return n.style("display") === "none"; });
-    if (needFull && hits.length) setView("full");
-    hits = hits.filter(function(n){ return n.style("display") !== "none"; });
-    hits.addClass("search-hit");
-    if (hits.length) cy.animate({ fit: { eles: hits, padding: 80 } }, { duration: 300 });
+  cy.on("tap", function(evt){ if (evt.target===cy){ cy.elements().removeClass("faded"); } });
+  cy.on("dbltap", "node", function(evt){
+    var d = evt.target.data(); var u = d.wiki || d.github; if (u) window.open(u, "_blank");
+  });
+  cy.on("zoom", function(){
+    var z = cy.zoom();
+    cy.nodes().forEach(function(n){ var d=n.data();
+      if (kindBucket(d.kind)!=="file") return;
+      n.style("text-opacity", (z>1.3 || (d.deg||0)>=8) ? 1 : 0); });
   });
 
-  // ---- 側欄：核取方塊 ----
-  function makeChecks(containerId, items, state, colorOf, onToggle){
-    var c = document.getElementById(containerId);
-    c.innerHTML = "";
-    items.forEach(function(it){
-      var id = it.key, lbl = it.label, col = colorOf ? colorOf(id) : null;
-      var w = document.createElement("label"); w.className = "chk";
-      w.innerHTML = (col ? "<span class='dot' style='background:"+col+"'></span>" : "")
-        + "<input type='checkbox' "+(state[id]?"checked":"")+"> "+lbl
-        + "<span class='count'>"+(it.count!=null?it.count:"")+"</span>";
-      w.querySelector("input").addEventListener("change", function(ev){
-        state[id] = ev.target.checked; onToggle(); });
-      c.appendChild(w);
-    });
-  }
-  function counts(pred){ return cy.nodes().filter(pred).length; }
-  function syncCheckboxes(){
-    makeChecks("kindFilters", kinds.map(function(k){ return { key:k, label:KIND_LABEL[k],
-      count: counts(function(n){return n.data("kind")===k;}) }; }), kindOn,
-      function(k){ return KIND_COL[k] || DOMAIN_COL[k] || "#999"; }, function(){ applyFilters(false); });
-    makeChecks("domainFilters", domains.map(function(d){ return { key:d, label:d,
-      count: counts(function(n){return n.data("kind")==="file"&&n.data("domain")===d;}) }; }),
-      domOn, function(d){ return DOMAIN_COL[d]; }, function(){ applyFilters(false); });
-    makeChecks("edgeFilters", etypes.map(function(t){ return { key:t,
-      label:EDGE_LABEL[t]||t, count: (cy.edges('[etype="'+t+'"]').length) }; }),
-      edgeOn, function(t){ return EDGE_COL[t]; }, function(){ applyFilters(false); });
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+  function focusNode(id){ var n=cy.getElementById(id); if(!n.length) return;
+    if (n.style("display")==="none"){ // 被過濾掉 → 打開它所屬種類/領域
+      var d=n.data(); kindShow[kindBucket(d.kind)]=true; if(d.domain) domShow[d.domain]=true;
+      syncControls(); applyFilters(false); }
+    cy.elements().removeClass("faded"); cy.elements().difference(n.closedNeighborhood()).addClass("faded");
+    cy.animate({ center:{eles:n}, zoom:Math.max(cy.zoom(),0.8) }, { duration:300 });
   }
 
-  function buildLegend(){
-    var L = document.getElementById("legend"); var h = [];
-    h.push("<div style='margin-bottom:6px'><strong>節點顏色＝領域</strong></div>");
-    ["app","engine","game","ui","tests","docs","tools","resources","root"].forEach(function(d){
-      h.push("<div class='row'><span class='swatch' style='background:"+DOMAIN_COL[d]+"'></span>"+d+"</div>"); });
-    h.push("<div style='margin:8px 0 6px'><strong>概念節點（形狀）</strong></div>");
-    h.push("<div class='row'><span class='swatch' style='background:"+KIND_COL.pattern+"'></span>★ 設計模式</div>");
-    h.push("<div class='row'><span class='swatch' style='background:"+KIND_COL.principle+"'></span>◆ OO 原則</div>");
-    h.push("<div class='row'><span class='swatch' style='background:"+KIND_COL.architecture+"'></span>⬡ 架構元件</div>");
-    h.push("<div style='margin:8px 0 6px'><strong>邊</strong></div>");
-    ["inherits","realizes","includes","depends","tests"].forEach(function(t){
-      h.push("<div class='row'><span class='edge' style='border-top:3px "+
-        (t==="realizes"||t==="depends"?"dashed":t==="tests"?"dotted":"solid")+" "+EDGE_COL[t]+"'></span>"+(EDGE_LABEL[t]||t)+"</div>"); });
-    L.innerHTML = h.join("");
+  function relCard(e, otherId, outgoing){
+    var o = nodesById[otherId]; if(!o) return "";
+    var lbl = (ET[e.etype]||["→","←"])[outgoing?0:1];
+    var links = [];
+    if (o.github) links.push("<a href='"+o.github+"' target='_blank' rel='noopener'>↗ 原始碼</a>");
+    if (o.wiki) links.push("<a href='"+o.wiki+"' target='_blank' rel='noopener'>📖 說明</a>");
+    return "<div class='ref-card'>"
+      + "<div class='head et-"+e.etype+"'>"+lbl+"</div>"
+      + "<div class='title'><a data-focus='"+esc(o.id)+"'>"+esc(o.label)+"</a></div>"
+      + (links.length?"<div class='links'>"+links.join("")+"</div>":"")
+      + "</div>";
   }
+
+  function showDetails(id){
+    var d = nodesById[id]; if(!d) return;
+    var det = document.getElementById("details"); det.style.display="block";
+    document.getElementById("d-title").textContent = d.label;
+    // tags
+    var tags=[];
+    if (d.kind==="file"){ tags.push(DOMAIN_LABEL[d.domain]||d.domain); if(d.bucket) tags.push(d.bucket);
+      tags.push(d.ntype); if(d.loc) tags.push(d.loc+" 行"); }
+    else tags.push(KIND_ZH[d.kind]||d.kind);
+    document.getElementById("d-tags").innerHTML = tags.map(function(t){return "<span class='tag'>"+esc(t)+"</span>";}).join("");
+    // summary (concepts)
+    var sm = document.getElementById("d-summary");
+    if (d.summary){ sm.style.display="block"; sm.textContent=d.summary; } else sm.style.display="none";
+    // classes
+    document.getElementById("d-classes").innerHTML = (d.classes&&d.classes.length)
+      ? d.classes.map(function(c){return "<span class='chip'>"+esc(c)+"</span>";}).join("") : "";
+    // buttons
+    var btns=[];
+    if (d.github) btns.push("<a class='src' href='"+d.github+"' target='_blank' rel='noopener'>↗ 原始碼</a>");
+    if (d.wiki) btns.push("<a class='wiki' href='"+d.wiki+"' target='_blank' rel='noopener'>📖 逐檔詳盡說明</a>");
+    document.getElementById("d-btns").innerHTML = btns.join("");
+    // relationships
+    var out = OUT[id]||[], inc = IN[id]||[];
+    var oh = document.getElementById("d-out-h"), ih = document.getElementById("d-in-h");
+    oh.textContent = d.kind==="file" ? "用到 / 體現的（往外）" : "落點檔案";
+    ih.textContent = "被誰用到（往內）";
+    document.getElementById("d-outgoing").innerHTML = out.length
+      ? out.map(function(e){return relCard(e, e.target, true);}).join("")
+      : "<div class='empty'>（無）</div>";
+    document.getElementById("d-incoming").innerHTML = inc.length
+      ? inc.map(function(e){return relCard(e, e.source, false);}).join("")
+      : "<div class='empty'>（無）</div>";
+    det.querySelectorAll("a[data-focus]").forEach(function(a){
+      a.addEventListener("click", function(){ var fid=a.getAttribute("data-focus"); showDetails(fid); focusNode(fid); }); });
+    det.scrollTop = 0;
+  }
+
+  // ---- 側欄控制 ----
   function updateStats(){
-    var vn = cy.nodes(":visible").length, ve = cy.edges(":visible").length;
+    var nf=0, nc=0; cy.nodes(":visible").forEach(function(n){ var b=kindBucket(n.data("kind")); if(b==="file")nf++; else if(b==="concept")nc++; });
+    var ne = cy.edges(":visible").length;
     document.getElementById("stats").innerHTML =
-      "顯示中："+vn+" 節點 · "+ve+" 邊<br>全圖："+DATA.meta.counts.nodes_total+" 節點 · "
-      + DATA.meta.counts.edges_total + " 邊（涵蓋 "+DATA.meta.counts.files+" 個檔案）"
-      + "<br>產生：<code>graph/build_graph.py</code>";
+      stat(nf,"顯示中的檔案") + stat(nc,"OO 概念") + stat(ne,"相依邊") + stat(DATA.meta.counts.files,"總檔案");
+  }
+  function stat(n,l){ return "<div class='stat'><div class='num'>"+n+"</div><div class='lbl'>"+l+"</div></div>"; }
+  function syncControls(){
+    // kinds
+    var kc=[ ["file","程式檔"], ["concept","OO 概念（模式/原則/架構）"], ["container","領域 / bucket 容器"] ];
+    document.getElementById("kinds").innerHTML = kc.map(function(k){
+      return "<label><input type='checkbox' data-kind='"+k[0]+"' "+(kindShow[k[0]]?"checked":"")+"> "+k[1]+"</label>"; }).join("");
+    document.querySelectorAll("#kinds input").forEach(function(cb){
+      cb.addEventListener("change", function(){ kindShow[cb.dataset.kind]=cb.checked; applyFilters(true); }); });
+    // domains
+    var cnt={}; DATA.elements.nodes.forEach(function(n){ if(n.data.kind==="file") cnt[n.data.domain]=(cnt[n.data.domain]||0)+1; });
+    document.getElementById("domains").innerHTML = DOMAINS.map(function(dm){
+      return "<label><input type='checkbox' data-dom='"+dm+"' "+(domShow[dm]?"checked":"")+">"
+        + "<span class='swatch' style='background:"+(DOMAIN_COL[dm]||"#888")+"'></span>"+(DOMAIN_LABEL[dm]||dm)
+        + "<span class='cnt'>"+(cnt[dm]||0)+"</span></label>"; }).join("");
+    document.querySelectorAll("#domains input").forEach(function(cb){
+      cb.addEventListener("change", function(){ domShow[cb.dataset.dom]=cb.checked; applyFilters(false); }); });
   }
 
-  // ---- 控制項綁定 ----
-  document.querySelectorAll("#views button").forEach(function(b){
-    b.addEventListener("click", function(){ setView(b.dataset.view); }); });
-  document.getElementById("layout").addEventListener("change", runLayout);
-  document.getElementById("refit").addEventListener("click", function(){ cy.fit(null, 40); });
-  window.addEventListener("hashchange", function(){
-    var m = /node=(.+)/.exec(location.hash); if (m) selectNode(decodeURIComponent(m[1])); });
+  document.querySelectorAll('input[name=layout]').forEach(function(r){
+    r.addEventListener("change", runLayout); });
+  document.getElementById("search").addEventListener("input", function(e){
+    var q=e.target.value.trim().toLowerCase();
+    cy.nodes().removeClass("search-hit");
+    if(!q){ cy.elements().removeClass("faded"); return; }
+    var hits=cy.nodes(":visible").filter(function(n){ var d=n.data();
+      return (d.label&&d.label.toLowerCase().indexOf(q)>=0) || (d.path&&d.path.toLowerCase().indexOf(q)>=0)
+        || (d.classes&&d.classes.join(" ").toLowerCase().indexOf(q)>=0); });
+    cy.elements().addClass("faded"); hits.removeClass("faded").addClass("search-hit");
+    hits.connectedEdges().removeClass("faded");
+    if (hits.length && hits.length<14) cy.animate({ fit:{eles:hits, padding:60} }, {duration:300});
+  });
+
+  // ---- 行動版側欄 ----
+  window.toggleSidebar = function(force){
+    var a=document.getElementById("sidebar"), b=document.getElementById("sidebar-backdrop");
+    var open=(typeof force==="boolean")?force:!a.classList.contains("open");
+    a.classList.toggle("open",open); b.classList.toggle("open",open);
+    setTimeout(function(){ cy.resize(); }, 280);
+  };
 
   // ---- 啟動 ----
-  buildLegend();
-  syncCheckboxes();
-  setView("skeleton");                       // 預設：乾淨的架構骨架
-  var m = /node=(.+)/.exec(location.hash);   // 深連結：#node=ID
-  if (m) setTimeout(function(){ selectNode(decodeURIComponent(m[1])); }, 400);
+  if (!localStorage.getItem("xs_seen_intro")) document.getElementById("welcome").classList.add("show");
+  document.getElementById("header-meta").textContent =
+    DATA.meta.counts.files + " 個檔案 · " + DATA.meta.counts.edges_total + " 條相依";
+  syncControls();
+  applyFilters(false);
+  runLayout();
+  // 深連結 #node=<id>
+  var m = /node=(.+)/.exec(location.hash);
+  if (m){ var id=decodeURIComponent(m[1]); setTimeout(function(){ showDetails(id); focusNode(id); }, 500); }
 })();
