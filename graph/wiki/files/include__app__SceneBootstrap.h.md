@@ -40,4 +40,4 @@ sources: ["include/app/SceneBootstrap.h"]
 `PushInitialScene` 的場景工廠鏈大量使用 lambda closure 層層捕獲，是 [Factory Method](../concepts/pat-factory.md) 的匿名 lambda 版：每個工廠只建構自己負責的場景，並把「下一層工廠」捕捉進去，形成延遲實體化的工廠鏈。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/app/SceneBootstrap.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneBootstrap.h) · [← 全檔索引](../files-index.md) · 相關概念：[Factory Method](../concepts/pat-factory.md) · [Harness](../concepts/arch-harness.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/app/SceneBootstrap.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneBootstrap.h) · [← 全檔索引](../files-index.md) · 相關概念：[Factory Method](../concepts/pat-factory.md) · [Harness](../concepts/arch-harness.md)

@@ -39,4 +39,4 @@ sources: ["tests/entities/test_quest_pickup.cpp"]
 
 ## 連結
 
-[🕸 圖譜節點](../../index.html#node=file:tests/entities/test_quest_pickup.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[ISP Roles](../concepts/oo-isp-roles.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:tests/entities/test_quest_pickup.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[ISP Roles](../concepts/oo-isp-roles.md)

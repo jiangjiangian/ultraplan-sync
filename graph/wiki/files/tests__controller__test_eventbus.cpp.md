@@ -39,4 +39,4 @@ sources: ["tests/controller/test_eventbus.cpp"]
 本檔體現了 [Observer](../concepts/pat-observer.md) 模式的核心不變式測試。`EventBus` 是 [Singleton](../concepts/pat-singleton.md)，每個 case 以 `Clear()` 重置全域狀態，實現測試隔離。重入安全 case 直接釘住了「快照再迭代」的設計決策，防止未來的最佳化破壞此保證。測試風格為純 doctest 單元測試，無 GL、無 harness。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:tests/controller/test_eventbus.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[Observer](../concepts/pat-observer.md) · [Singleton](../concepts/pat-singleton.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:tests/controller/test_eventbus.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[Observer](../concepts/pat-observer.md) · [Singleton](../concepts/pat-singleton.md)

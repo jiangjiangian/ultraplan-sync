@@ -46,4 +46,4 @@ ISP 設計：`ConsumableItem` 僅扮演 `IInteractable`，不實作 `IUpdatable`
 [ISP（角色介面分離）](../concepts/oo-isp-roles.md)體現在只扮演 `IInteractable`：消耗品在地圖上不需逐幀更新、也不自行繪製，強制每個角色都是真實的實作而非空覆寫。`WithRoles<ConsumableItem, Item>` 的 CRTP 鍵位設計讓葉類別免於重複宣告角色集（[CRTP](../concepts/oo-crtp.md)）。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/game/entities/ConsumableItem.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h) · [← 全檔索引](../files-index.md) · 相關概念：[Template Method](../concepts/pat-template.md) · [ISP / Roles](../concepts/oo-isp-roles.md) · [CRTP](../concepts/oo-crtp.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/entities/ConsumableItem.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h) · [← 全檔索引](../files-index.md) · 相關概念：[Template Method](../concepts/pat-template.md) · [ISP / Roles](../concepts/oo-isp-roles.md) · [CRTP](../concepts/oo-crtp.md)

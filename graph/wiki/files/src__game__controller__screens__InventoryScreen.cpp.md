@@ -44,4 +44,4 @@ sources: ["src/game/controller/screens/InventoryScreen.cpp"]
 
 ## 連結
 
-[🕸 圖譜節點](../../index.html#node=file:src/game/controller/screens/InventoryScreen.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/InventoryScreen.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[MVC](../concepts/arch-mvc.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:src/game/controller/screens/InventoryScreen.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/InventoryScreen.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[MVC](../concepts/arch-mvc.md)

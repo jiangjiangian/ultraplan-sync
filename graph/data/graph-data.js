@@ -948,7 +948,7 @@ window.GRAPH_DATA = {
       "IScene"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/IScene.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__IScene.h.md"
     }
    },
    {
@@ -964,7 +964,7 @@ window.GRAPH_DATA = {
      "loc": 39,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneBootstrap.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__SceneBootstrap.h.md"
     }
    },
    {
@@ -982,7 +982,7 @@ window.GRAPH_DATA = {
       "SceneManager"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneManager.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__SceneManager.h.md"
     }
    },
    {
@@ -1000,7 +1000,7 @@ window.GRAPH_DATA = {
       "CharacterSelectScene"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/CharacterSelectScene.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__scenes__CharacterSelectScene.h.md"
     }
    },
    {
@@ -1018,7 +1018,7 @@ window.GRAPH_DATA = {
       "GameplayScene"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/GameplayScene.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__scenes__GameplayScene.h.md"
     }
    },
    {
@@ -1036,7 +1036,7 @@ window.GRAPH_DATA = {
       "LoadingScene"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/LoadingScene.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__scenes__LoadingScene.h.md"
     }
    },
    {
@@ -1054,7 +1054,7 @@ window.GRAPH_DATA = {
       "TitleScene"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/scenes/TitleScene.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__app__scenes__TitleScene.h.md"
     }
    },
    {
@@ -1072,7 +1072,7 @@ window.GRAPH_DATA = {
       "AudioDevice"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/audio/AudioDevice.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__audio__AudioDevice.h.md"
     }
    },
    {
@@ -1090,7 +1090,7 @@ window.GRAPH_DATA = {
       "AudioManager"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/audio/AudioManager.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__audio__AudioManager.h.md"
     }
    },
    {
@@ -1108,7 +1108,7 @@ window.GRAPH_DATA = {
       "GameObject"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/GameObject.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__core__GameObject.h.md"
     }
    },
    {
@@ -1130,7 +1130,7 @@ window.GRAPH_DATA = {
       "WithRoles"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/core/Roles.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__core__Roles.h.md"
     }
    },
    {
@@ -1151,7 +1151,7 @@ window.GRAPH_DATA = {
       "Slot"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventBus.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__events__EventBus.h.md"
     }
    },
    {
@@ -1167,7 +1167,7 @@ window.GRAPH_DATA = {
      "loc": 39,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/EventSink.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__events__EventSink.h.md"
     }
    },
    {
@@ -1183,7 +1183,7 @@ window.GRAPH_DATA = {
      "loc": 31,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/events/HudSlot.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__events__HudSlot.h.md"
     }
    },
    {
@@ -1203,7 +1203,7 @@ window.GRAPH_DATA = {
       "Input"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Input.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__input__Input.h.md"
     }
    },
    {
@@ -1219,7 +1219,7 @@ window.GRAPH_DATA = {
      "loc": 42,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/input/Key.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__input__Key.h.md"
     }
    },
    {
@@ -1237,7 +1237,7 @@ window.GRAPH_DATA = {
       "Color"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Color.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__math__Color.h.md"
     }
    },
    {
@@ -1255,7 +1255,7 @@ window.GRAPH_DATA = {
       "Rect"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Rect.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__math__Rect.h.md"
     }
    },
    {
@@ -1273,7 +1273,7 @@ window.GRAPH_DATA = {
       "Vec2"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/math/Vec2.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__math__Vec2.h.md"
     }
    },
    {
@@ -1291,7 +1291,7 @@ window.GRAPH_DATA = {
       "Harness"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Harness.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__platform__Harness.h.md"
     }
    },
    {
@@ -1311,7 +1311,7 @@ window.GRAPH_DATA = {
       "Step"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/ScriptInput.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__platform__ScriptInput.h.md"
     }
    },
    {
@@ -1329,7 +1329,7 @@ window.GRAPH_DATA = {
       "Time"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/Time.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__platform__Time.h.md"
     }
    },
    {
@@ -1345,7 +1345,7 @@ window.GRAPH_DATA = {
      "loc": 39,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/platform/WorkingDir.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__platform__WorkingDir.h.md"
     }
    },
    {
@@ -1363,7 +1363,7 @@ window.GRAPH_DATA = {
       "Camera2D"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Camera2D.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__Camera2D.h.md"
     }
    },
    {
@@ -1381,7 +1381,7 @@ window.GRAPH_DATA = {
       "CameraScope"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/CameraScope.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__CameraScope.h.md"
     }
    },
    {
@@ -1399,7 +1399,7 @@ window.GRAPH_DATA = {
       "DrawScope"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/DrawScope.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__DrawScope.h.md"
     }
    },
    {
@@ -1417,7 +1417,7 @@ window.GRAPH_DATA = {
       "FontState"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Font.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__Font.h.md"
     }
    },
    {
@@ -1435,7 +1435,7 @@ window.GRAPH_DATA = {
       "IRenderer"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/IRenderer.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__IRenderer.h.md"
     }
    },
    {
@@ -1453,7 +1453,7 @@ window.GRAPH_DATA = {
       "DecodedImage"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/ImageDecoder.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__ImageDecoder.h.md"
     }
    },
    {
@@ -1471,7 +1471,7 @@ window.GRAPH_DATA = {
       "RaylibRenderer"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__RaylibRenderer.h.md"
     }
    },
    {
@@ -1492,7 +1492,7 @@ window.GRAPH_DATA = {
       "nccu"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Renderer.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__Renderer.h.md"
     }
    },
    {
@@ -1513,7 +1513,7 @@ window.GRAPH_DATA = {
       "nccu"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/TextBuilder.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__TextBuilder.h.md"
     }
    },
    {
@@ -1532,7 +1532,7 @@ window.GRAPH_DATA = {
       "TextureCache"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Texture.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__Texture.h.md"
     }
    },
    {
@@ -1551,7 +1551,7 @@ window.GRAPH_DATA = {
       "Builder"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Window.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__engine__render__Window.h.md"
     }
    },
    {
@@ -1567,7 +1567,7 @@ window.GRAPH_DATA = {
      "loc": 29,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/DialogChoiceApply.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__DialogChoiceApply.h.md"
     }
    },
    {
@@ -1583,7 +1583,7 @@ window.GRAPH_DATA = {
      "loc": 158,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/EventWiring.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__EventWiring.h.md"
     }
    },
    {
@@ -1601,7 +1601,7 @@ window.GRAPH_DATA = {
       "GameController"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameController.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__GameController.h.md"
     }
    },
    {
@@ -1619,7 +1619,7 @@ window.GRAPH_DATA = {
       "GameObjectFactory"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectFactory.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__GameObjectFactory.h.md"
     }
    },
    {
@@ -1635,7 +1635,7 @@ window.GRAPH_DATA = {
      "loc": 43,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/GameObjectQueries.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__GameObjectQueries.h.md"
     }
    },
    {
@@ -1653,7 +1653,7 @@ window.GRAPH_DATA = {
       "InputHandler"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/InputHandler.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__InputHandler.h.md"
     }
    },
    {
@@ -1669,7 +1669,7 @@ window.GRAPH_DATA = {
      "loc": 37,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/InteractDispatch.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__InteractDispatch.h.md"
     }
    },
    {
@@ -1687,7 +1687,7 @@ window.GRAPH_DATA = {
       "SceneRouter"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SceneRouter.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__SceneRouter.h.md"
     }
    },
    {
@@ -1711,7 +1711,7 @@ window.GRAPH_DATA = {
       "SweepSystem"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/SimSystem.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__SimSystem.h.md"
     }
    },
    {
@@ -1727,7 +1727,7 @@ window.GRAPH_DATA = {
      "loc": 53,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/VendorMenu.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__VendorMenu.h.md"
     }
    },
    {
@@ -1743,7 +1743,7 @@ window.GRAPH_DATA = {
      "loc": 41,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/DialogScreen.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__screens__DialogScreen.h.md"
     }
    },
    {
@@ -1759,7 +1759,7 @@ window.GRAPH_DATA = {
      "loc": 30,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/EndingScreen.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__screens__EndingScreen.h.md"
     }
    },
    {
@@ -1775,7 +1775,7 @@ window.GRAPH_DATA = {
      "loc": 33,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/InventoryScreen.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__screens__InventoryScreen.h.md"
     }
    },
    {
@@ -1791,7 +1791,7 @@ window.GRAPH_DATA = {
      "loc": 34,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/controller/screens/PauseScreen.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__controller__screens__PauseScreen.h.md"
     }
    },
    {
@@ -1807,7 +1807,7 @@ window.GRAPH_DATA = {
      "loc": 72,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogLayout.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogLayout.h.md"
     }
    },
    {
@@ -1826,7 +1826,7 @@ window.GRAPH_DATA = {
       "LoadedChapter"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogLoader.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogLoader.h.md"
     }
    },
    {
@@ -1842,7 +1842,7 @@ window.GRAPH_DATA = {
      "loc": 71,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogOpener.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogOpener.h.md"
     }
    },
    {
@@ -1860,7 +1860,7 @@ window.GRAPH_DATA = {
       "DialogRepository"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogRepository.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogRepository.h.md"
     }
    },
    {
@@ -1876,7 +1876,7 @@ window.GRAPH_DATA = {
      "loc": 70,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogSource.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogSource.h.md"
     }
    },
    {
@@ -1895,7 +1895,7 @@ window.GRAPH_DATA = {
       "DialogState"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogState.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogState.h.md"
     }
    },
    {
@@ -1911,7 +1911,7 @@ window.GRAPH_DATA = {
      "loc": 27,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/dialog/DialogView.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__dialog__DialogView.h.md"
     }
    },
    {
@@ -1929,7 +1929,7 @@ window.GRAPH_DATA = {
       "CashPickup"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CashPickup.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__CashPickup.h.md"
     }
    },
    {
@@ -1947,7 +1947,7 @@ window.GRAPH_DATA = {
       "Character"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Character.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__Character.h.md"
     }
    },
    {
@@ -1965,7 +1965,7 @@ window.GRAPH_DATA = {
       "ConsumableItem"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ConsumableItem.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__ConsumableItem.h.md"
     }
    },
    {
@@ -1983,7 +1983,7 @@ window.GRAPH_DATA = {
       "CursedUmbrella"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CursedUmbrella.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__CursedUmbrella.h.md"
     }
    },
    {
@@ -2001,7 +2001,7 @@ window.GRAPH_DATA = {
       "DlcSign"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/DlcSign.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__DlcSign.h.md"
     }
    },
    {
@@ -2019,7 +2019,7 @@ window.GRAPH_DATA = {
       "EnergyDrink"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/EnergyDrink.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__EnergyDrink.h.md"
     }
    },
    {
@@ -2037,7 +2037,7 @@ window.GRAPH_DATA = {
       "FragileUmbrella"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/FragileUmbrella.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__FragileUmbrella.h.md"
     }
    },
    {
@@ -2055,7 +2055,7 @@ window.GRAPH_DATA = {
       "HotPack"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/HotPack.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__HotPack.h.md"
     }
    },
    {
@@ -2073,7 +2073,7 @@ window.GRAPH_DATA = {
       "Item"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Item.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__Item.h.md"
     }
    },
    {
@@ -2092,7 +2092,7 @@ window.GRAPH_DATA = {
       "RenderCell"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/NPC.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__NPC.h.md"
     }
    },
    {
@@ -2111,7 +2111,7 @@ window.GRAPH_DATA = {
       "CharacterSelectResult"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Personas.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__Personas.h.md"
     }
    },
    {
@@ -2129,7 +2129,7 @@ window.GRAPH_DATA = {
       "Player"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Player.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__Player.h.md"
     }
    },
    {
@@ -2147,7 +2147,7 @@ window.GRAPH_DATA = {
       "ProfessorTrapUmbrella"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/ProfessorTrapUmbrella.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__ProfessorTrapUmbrella.h.md"
     }
    },
    {
@@ -2165,7 +2165,7 @@ window.GRAPH_DATA = {
       "QuestFlagPickup"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/QuestFlagPickup.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__QuestFlagPickup.h.md"
     }
    },
    {
@@ -2183,7 +2183,7 @@ window.GRAPH_DATA = {
       "TransparentUmbrella"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TransparentUmbrella.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__TransparentUmbrella.h.md"
     }
    },
    {
@@ -2201,7 +2201,7 @@ window.GRAPH_DATA = {
       "TrueUmbrella"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/TrueUmbrella.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__TrueUmbrella.h.md"
     }
    },
    {
@@ -2219,7 +2219,7 @@ window.GRAPH_DATA = {
       "WaterproofSpray"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/WaterproofSpray.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__entities__WaterproofSpray.h.md"
     }
    },
    {
@@ -2235,7 +2235,7 @@ window.GRAPH_DATA = {
      "loc": 38,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/Bounds.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__Bounds.h.md"
     }
    },
    {
@@ -2251,7 +2251,7 @@ window.GRAPH_DATA = {
      "loc": 69,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/Decorations.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__Decorations.h.md"
     }
    },
    {
@@ -2267,7 +2267,7 @@ window.GRAPH_DATA = {
      "loc": 62,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/MaskLoader.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__MaskLoader.h.md"
     }
    },
    {
@@ -2285,7 +2285,7 @@ window.GRAPH_DATA = {
       "DecorationDef"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/SpriteStrip.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__SpriteStrip.h.md"
     }
    },
    {
@@ -2301,7 +2301,7 @@ window.GRAPH_DATA = {
      "loc": 148,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/UmbrellaGlyph.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__UmbrellaGlyph.h.md"
     }
    },
    {
@@ -2317,7 +2317,7 @@ window.GRAPH_DATA = {
      "loc": 61,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/gfx/WalkCycle.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__gfx__WalkCycle.h.md"
     }
    },
    {
@@ -2333,7 +2333,7 @@ window.GRAPH_DATA = {
      "loc": 163,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter1Quest.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__Chapter1Quest.h.md"
     }
    },
    {
@@ -2349,7 +2349,7 @@ window.GRAPH_DATA = {
      "loc": 211,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter2Quest.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__Chapter2Quest.h.md"
     }
    },
    {
@@ -2365,7 +2365,7 @@ window.GRAPH_DATA = {
      "loc": 97,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter3Quest.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__Chapter3Quest.h.md"
     }
    },
    {
@@ -2381,7 +2381,7 @@ window.GRAPH_DATA = {
      "loc": 116,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Chapter4Quest.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__Chapter4Quest.h.md"
     }
    },
    {
@@ -2397,7 +2397,7 @@ window.GRAPH_DATA = {
      "loc": 36,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterGate.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ChapterGate.h.md"
     }
    },
    {
@@ -2415,7 +2415,7 @@ window.GRAPH_DATA = {
       "PickupPlacement"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterPickups.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ChapterPickups.h.md"
     }
    },
    {
@@ -2433,7 +2433,7 @@ window.GRAPH_DATA = {
       "QuestItemPlacement"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterQuestItems.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ChapterQuestItems.h.md"
     }
    },
    {
@@ -2449,7 +2449,7 @@ window.GRAPH_DATA = {
      "loc": 156,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterSpawns.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ChapterSpawns.h.md"
     }
    },
    {
@@ -2467,7 +2467,7 @@ window.GRAPH_DATA = {
       "VendorPlacement"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterVendors.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ChapterVendors.h.md"
     }
    },
    {
@@ -2483,7 +2483,7 @@ window.GRAPH_DATA = {
      "loc": 81,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/Flags.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__Flags.h.md"
     }
    },
    {
@@ -2499,7 +2499,7 @@ window.GRAPH_DATA = {
      "loc": 24,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/InventoryPaging.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__InventoryPaging.h.md"
     }
    },
    {
@@ -2518,7 +2518,7 @@ window.GRAPH_DATA = {
       "InventoryRow"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ItemCatalog.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__ItemCatalog.h.md"
     }
    },
    {
@@ -2536,7 +2536,7 @@ window.GRAPH_DATA = {
       "NpcSpawn"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/NpcSpawns.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__NpcSpawns.h.md"
     }
    },
    {
@@ -2552,7 +2552,7 @@ window.GRAPH_DATA = {
      "loc": 82,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/PipoyaRoster.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__PipoyaRoster.h.md"
     }
    },
    {
@@ -2570,7 +2570,7 @@ window.GRAPH_DATA = {
       "QuestHook"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestHookTable.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__QuestHookTable.h.md"
     }
    },
    {
@@ -2586,7 +2586,7 @@ window.GRAPH_DATA = {
      "loc": 50,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestIndicator.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__QuestIndicator.h.md"
     }
    },
    {
@@ -2602,7 +2602,7 @@ window.GRAPH_DATA = {
      "loc": 112,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/QuestObjective.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__quest__QuestObjective.h.md"
     }
    },
    {
@@ -2620,7 +2620,7 @@ window.GRAPH_DATA = {
       "Chapter1AddDrop"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter1AddDrop.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__Chapter1AddDrop.h.md"
     }
    },
    {
@@ -2638,7 +2638,7 @@ window.GRAPH_DATA = {
       "Chapter2Midterms"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter2Midterms.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__Chapter2Midterms.h.md"
     }
    },
    {
@@ -2656,7 +2656,7 @@ window.GRAPH_DATA = {
       "Chapter3SportsDay"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter3SportsDay.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__Chapter3SportsDay.h.md"
     }
    },
    {
@@ -2674,7 +2674,7 @@ window.GRAPH_DATA = {
       "Chapter4Finals"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/Chapter4Finals.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__Chapter4Finals.h.md"
     }
    },
    {
@@ -2690,7 +2690,7 @@ window.GRAPH_DATA = {
      "loc": 89,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/ChapterToast.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__ChapterToast.h.md"
     }
    },
    {
@@ -2706,7 +2706,7 @@ window.GRAPH_DATA = {
      "loc": 32,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/EndingGate.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__EndingGate.h.md"
     }
    },
    {
@@ -2722,7 +2722,7 @@ window.GRAPH_DATA = {
      "loc": 54,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/EndingMenuModel.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__EndingMenuModel.h.md"
     }
    },
    {
@@ -2738,7 +2738,7 @@ window.GRAPH_DATA = {
      "loc": 25,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/GameHelpPages.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__GameHelpPages.h.md"
     }
    },
    {
@@ -2754,7 +2754,7 @@ window.GRAPH_DATA = {
      "loc": 44,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeExit.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__InterludeExit.h.md"
     }
    },
    {
@@ -2773,7 +2773,7 @@ window.GRAPH_DATA = {
       "InterludeExitMarkerLayout"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeExitMarker.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__InterludeExitMarker.h.md"
     }
    },
    {
@@ -2791,7 +2791,7 @@ window.GRAPH_DATA = {
       "InterludeMarket"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/InterludeMarket.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__InterludeMarket.h.md"
     }
    },
    {
@@ -2809,7 +2809,7 @@ window.GRAPH_DATA = {
       "IChapterState"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterState.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__SemesterState.h.md"
     }
    },
    {
@@ -2827,7 +2827,7 @@ window.GRAPH_DATA = {
       "SemesterStateMachine"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/state/SemesterStateMachine.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__state__SemesterStateMachine.h.md"
     }
    },
    {
@@ -2845,7 +2845,7 @@ window.GRAPH_DATA = {
       "Vendor"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/Vendor.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__vendor__Vendor.h.md"
     }
    },
    {
@@ -2864,7 +2864,7 @@ window.GRAPH_DATA = {
       "VendorConfig"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorConfig.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__vendor__VendorConfig.h.md"
     }
    },
    {
@@ -2880,7 +2880,7 @@ window.GRAPH_DATA = {
      "loc": 40,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorLoader.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__vendor__VendorLoader.h.md"
     }
    },
    {
@@ -2896,7 +2896,7 @@ window.GRAPH_DATA = {
      "loc": 44,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorMessages.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__vendor__VendorMessages.h.md"
     }
    },
    {
@@ -2912,7 +2912,7 @@ window.GRAPH_DATA = {
      "loc": 79,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorSprite.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__vendor__VendorSprite.h.md"
     }
    },
    {
@@ -2930,7 +2930,7 @@ window.GRAPH_DATA = {
       "BuildingTracker"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/BuildingTracker.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__BuildingTracker.h.md"
     }
    },
    {
@@ -2948,7 +2948,7 @@ window.GRAPH_DATA = {
       "Building"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Buildings.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__Buildings.h.md"
     }
    },
    {
@@ -2966,7 +2966,7 @@ window.GRAPH_DATA = {
       "CollisionMask"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/CollisionMask.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__CollisionMask.h.md"
     }
    },
    {
@@ -2982,7 +2982,7 @@ window.GRAPH_DATA = {
      "loc": 26,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/HudTiming.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__HudTiming.h.md"
     }
    },
    {
@@ -2998,7 +2998,7 @@ window.GRAPH_DATA = {
      "loc": 27,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Obstacles.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__Obstacles.h.md"
     }
    },
    {
@@ -3014,7 +3014,7 @@ window.GRAPH_DATA = {
      "loc": 57,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/Physics.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__Physics.h.md"
     }
    },
    {
@@ -3030,7 +3030,7 @@ window.GRAPH_DATA = {
      "loc": 117,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/TexturePreload.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__TexturePreload.h.md"
     }
    },
    {
@@ -3048,7 +3048,7 @@ window.GRAPH_DATA = {
       "World"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/World.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__World.h.md"
     }
    },
    {
@@ -3064,7 +3064,7 @@ window.GRAPH_DATA = {
      "loc": 23,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/WorldConfig.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__WorldConfig.h.md"
     }
    },
    {
@@ -3082,7 +3082,7 @@ window.GRAPH_DATA = {
       "WorldOptions"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/world/WorldOptions.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__game__world__WorldOptions.h.md"
     }
    },
    {
@@ -3100,7 +3100,7 @@ window.GRAPH_DATA = {
       "ChapterCardState"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/ChapterCard.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__ChapterCard.h.md"
     }
    },
    {
@@ -3116,7 +3116,7 @@ window.GRAPH_DATA = {
      "loc": 15,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/CharacterSelect.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__CharacterSelect.h.md"
     }
    },
    {
@@ -3134,7 +3134,7 @@ window.GRAPH_DATA = {
       "EndingSummary"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/EndingView.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__EndingView.h.md"
     }
    },
    {
@@ -3150,7 +3150,7 @@ window.GRAPH_DATA = {
      "loc": 151,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/GameHelp.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__GameHelp.h.md"
     }
    },
    {
@@ -3168,7 +3168,7 @@ window.GRAPH_DATA = {
       "HelpPageStyle"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/HelpPageView.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__HelpPageView.h.md"
     }
    },
    {
@@ -3184,7 +3184,7 @@ window.GRAPH_DATA = {
      "loc": 57,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/InventoryView.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__InventoryView.h.md"
     }
    },
    {
@@ -3200,7 +3200,7 @@ window.GRAPH_DATA = {
      "loc": 42,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/MessageView.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__MessageView.h.md"
     }
    },
    {
@@ -3218,7 +3218,7 @@ window.GRAPH_DATA = {
       "PressLatch"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/PressLatch.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__PressLatch.h.md"
     }
    },
    {
@@ -3236,7 +3236,7 @@ window.GRAPH_DATA = {
       "QuestGiverIndicatorLayout"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/QuestGiverIndicator.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__QuestGiverIndicator.h.md"
     }
    },
    {
@@ -3252,7 +3252,7 @@ window.GRAPH_DATA = {
      "loc": 30,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/RainHud.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__RainHud.h.md"
     }
    },
    {
@@ -3268,7 +3268,7 @@ window.GRAPH_DATA = {
      "loc": 51,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/ReducedMotion.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__ReducedMotion.h.md"
     }
    },
    {
@@ -3289,7 +3289,7 @@ window.GRAPH_DATA = {
       "DecorationSprite"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/View.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__View.h.md"
     }
    },
    {
@@ -3305,7 +3305,7 @@ window.GRAPH_DATA = {
      "loc": 33,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/ObjectiveBar.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__hud__ObjectiveBar.h.md"
     }
    },
    {
@@ -3321,7 +3321,7 @@ window.GRAPH_DATA = {
      "loc": 31,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/RainVignette.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__hud__RainVignette.h.md"
     }
    },
    {
@@ -3337,7 +3337,7 @@ window.GRAPH_DATA = {
      "loc": 30,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/SportsLapRing.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__hud__SportsLapRing.h.md"
     }
    },
    {
@@ -3353,7 +3353,7 @@ window.GRAPH_DATA = {
      "loc": 30,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/hud/StatusPanel.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__hud__StatusPanel.h.md"
     }
    },
    {
@@ -3369,7 +3369,7 @@ window.GRAPH_DATA = {
      "loc": 31,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/HelpOverlay.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__overlay__HelpOverlay.h.md"
     }
    },
    {
@@ -3385,7 +3385,7 @@ window.GRAPH_DATA = {
      "loc": 33,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/MenuAffordance.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__overlay__MenuAffordance.h.md"
     }
    },
    {
@@ -3401,7 +3401,7 @@ window.GRAPH_DATA = {
      "loc": 33,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/PauseMenu.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__overlay__PauseMenu.h.md"
     }
    },
    {
@@ -3417,7 +3417,7 @@ window.GRAPH_DATA = {
      "loc": 30,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/QuestGiverIndicators.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__world__QuestGiverIndicators.h.md"
     }
    },
    {
@@ -3433,7 +3433,7 @@ window.GRAPH_DATA = {
      "loc": 29,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/SportsLapTrack.h",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/include__ui__world__SportsLapTrack.h.md"
     }
    },
    {
@@ -5309,7 +5309,7 @@ window.GRAPH_DATA = {
      "loc": 64,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/SceneBootstrap.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__SceneBootstrap.cpp.md"
     }
    },
    {
@@ -5325,7 +5325,7 @@ window.GRAPH_DATA = {
      "loc": 107,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/SceneManager.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__SceneManager.cpp.md"
     }
    },
    {
@@ -5341,7 +5341,7 @@ window.GRAPH_DATA = {
      "loc": 84,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/main.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__main.cpp.md"
     }
    },
    {
@@ -5357,7 +5357,7 @@ window.GRAPH_DATA = {
      "loc": 144,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/CharacterSelectScene.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__scenes__CharacterSelectScene.cpp.md"
     }
    },
    {
@@ -5373,7 +5373,7 @@ window.GRAPH_DATA = {
      "loc": 116,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/GameplayScene.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__scenes__GameplayScene.cpp.md"
     }
    },
    {
@@ -5389,7 +5389,7 @@ window.GRAPH_DATA = {
      "loc": 75,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/LoadingScene.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__scenes__LoadingScene.cpp.md"
     }
    },
    {
@@ -5407,7 +5407,7 @@ window.GRAPH_DATA = {
       "MenuItem"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/app/scenes/TitleScene.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__app__scenes__TitleScene.cpp.md"
     }
    },
    {
@@ -5423,7 +5423,7 @@ window.GRAPH_DATA = {
      "loc": 13,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/audio/AudioDevice.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__audio__AudioDevice.cpp.md"
     }
    },
    {
@@ -5439,7 +5439,7 @@ window.GRAPH_DATA = {
      "loc": 22,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/audio/AudioManager.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__audio__AudioManager.cpp.md"
     }
    },
    {
@@ -5455,7 +5455,7 @@ window.GRAPH_DATA = {
      "loc": 86,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/events/EventBus.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__events__EventBus.cpp.md"
     }
    },
    {
@@ -5471,7 +5471,7 @@ window.GRAPH_DATA = {
      "loc": 21,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/events/EventSink.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__events__EventSink.cpp.md"
     }
    },
    {
@@ -5489,7 +5489,7 @@ window.GRAPH_DATA = {
       "HarnessState"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/Harness.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__platform__Harness.cpp.md"
     }
    },
    {
@@ -5505,7 +5505,7 @@ window.GRAPH_DATA = {
      "loc": 171,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/ScriptInput.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__platform__ScriptInput.cpp.md"
     }
    },
    {
@@ -5521,7 +5521,7 @@ window.GRAPH_DATA = {
      "loc": 247,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/platform/ScriptResolver.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__platform__ScriptResolver.cpp.md"
     }
    },
    {
@@ -5537,7 +5537,7 @@ window.GRAPH_DATA = {
      "loc": 40,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/engine/render/ImageDecoder.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__engine__render__ImageDecoder.cpp.md"
     }
    },
    {
@@ -5553,7 +5553,7 @@ window.GRAPH_DATA = {
      "loc": 21,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/DialogChoiceApply.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__DialogChoiceApply.cpp.md"
     }
    },
    {
@@ -5569,7 +5569,7 @@ window.GRAPH_DATA = {
      "loc": 244,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/GameController.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__GameController.cpp.md"
     }
    },
    {
@@ -5585,7 +5585,7 @@ window.GRAPH_DATA = {
      "loc": 35,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/GameObjectFactory.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__GameObjectFactory.cpp.md"
     }
    },
    {
@@ -5601,7 +5601,7 @@ window.GRAPH_DATA = {
      "loc": 38,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/InputHandler.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__InputHandler.cpp.md"
     }
    },
    {
@@ -5617,7 +5617,7 @@ window.GRAPH_DATA = {
      "loc": 95,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/InteractDispatch.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__InteractDispatch.cpp.md"
     }
    },
    {
@@ -5633,7 +5633,7 @@ window.GRAPH_DATA = {
      "loc": 102,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/SceneRouter.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__SceneRouter.cpp.md"
     }
    },
    {
@@ -5649,7 +5649,7 @@ window.GRAPH_DATA = {
      "loc": 112,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/SimSystems.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__SimSystems.cpp.md"
     }
    },
    {
@@ -5665,7 +5665,7 @@ window.GRAPH_DATA = {
      "loc": 36,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/VendorMenu.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__VendorMenu.cpp.md"
     }
    },
    {
@@ -5681,7 +5681,7 @@ window.GRAPH_DATA = {
      "loc": 171,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/DialogScreen.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__screens__DialogScreen.cpp.md"
     }
    },
    {
@@ -5697,7 +5697,7 @@ window.GRAPH_DATA = {
      "loc": 37,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/EndingScreen.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__screens__EndingScreen.cpp.md"
     }
    },
    {
@@ -5713,7 +5713,7 @@ window.GRAPH_DATA = {
      "loc": 73,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/InventoryScreen.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__screens__InventoryScreen.cpp.md"
     }
    },
    {
@@ -5729,7 +5729,7 @@ window.GRAPH_DATA = {
      "loc": 85,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/controller/screens/PauseScreen.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__controller__screens__PauseScreen.cpp.md"
     }
    },
    {
@@ -5747,7 +5747,7 @@ window.GRAPH_DATA = {
       "Range"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogLayout.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogLayout.cpp.md"
     }
    },
    {
@@ -5763,7 +5763,7 @@ window.GRAPH_DATA = {
      "loc": 354,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogLoader.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogLoader.cpp.md"
     }
    },
    {
@@ -5781,7 +5781,7 @@ window.GRAPH_DATA = {
       "DispatchEntry"
      ],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogOpener.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogOpener.cpp.md"
     }
    },
    {
@@ -5797,7 +5797,7 @@ window.GRAPH_DATA = {
      "loc": 141,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogSource.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogSource.cpp.md"
     }
    },
    {
@@ -5813,7 +5813,7 @@ window.GRAPH_DATA = {
      "loc": 92,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogState.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogState.cpp.md"
     }
    },
    {
@@ -5829,7 +5829,7 @@ window.GRAPH_DATA = {
      "loc": 61,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/dialog/DialogView.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__dialog__DialogView.cpp.md"
     }
    },
    {
@@ -5845,7 +5845,7 @@ window.GRAPH_DATA = {
      "loc": 42,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/CashPickup.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__CashPickup.cpp.md"
     }
    },
    {
@@ -5861,7 +5861,7 @@ window.GRAPH_DATA = {
      "loc": 27,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/CursedUmbrella.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__CursedUmbrella.cpp.md"
     }
    },
    {
@@ -5877,7 +5877,7 @@ window.GRAPH_DATA = {
      "loc": 57,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/DlcSign.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__DlcSign.cpp.md"
     }
    },
    {
@@ -5893,7 +5893,7 @@ window.GRAPH_DATA = {
      "loc": 14,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/EnergyDrink.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__EnergyDrink.cpp.md"
     }
    },
    {
@@ -5909,7 +5909,7 @@ window.GRAPH_DATA = {
      "loc": 14,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/FragileUmbrella.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__FragileUmbrella.cpp.md"
     }
    },
    {
@@ -5925,7 +5925,7 @@ window.GRAPH_DATA = {
      "loc": 14,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/HotPack.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__HotPack.cpp.md"
     }
    },
    {
@@ -5941,7 +5941,7 @@ window.GRAPH_DATA = {
      "loc": 224,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/NPC.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__NPC.cpp.md"
     }
    },
    {
@@ -5957,7 +5957,7 @@ window.GRAPH_DATA = {
      "loc": 180,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/Player.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__Player.cpp.md"
     }
    },
    {
@@ -5973,7 +5973,7 @@ window.GRAPH_DATA = {
      "loc": 20,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/ProfessorTrapUmbrella.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__ProfessorTrapUmbrella.cpp.md"
     }
    },
    {
@@ -5989,7 +5989,7 @@ window.GRAPH_DATA = {
      "loc": 104,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/QuestFlagPickup.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__QuestFlagPickup.cpp.md"
     }
    },
    {
@@ -6005,7 +6005,7 @@ window.GRAPH_DATA = {
      "loc": 44,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/TransparentUmbrella.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__TransparentUmbrella.cpp.md"
     }
    },
    {
@@ -6021,7 +6021,7 @@ window.GRAPH_DATA = {
      "loc": 26,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/TrueUmbrella.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__TrueUmbrella.cpp.md"
     }
    },
    {
@@ -6037,7 +6037,7 @@ window.GRAPH_DATA = {
      "loc": 15,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/entities/WaterproofSpray.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__entities__WaterproofSpray.cpp.md"
     }
    },
    {
@@ -6053,7 +6053,7 @@ window.GRAPH_DATA = {
      "loc": 163,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter1Quest.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__Chapter1Quest.cpp.md"
     }
    },
    {
@@ -6069,7 +6069,7 @@ window.GRAPH_DATA = {
      "loc": 223,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter2Quest.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__Chapter2Quest.cpp.md"
     }
    },
    {
@@ -6085,7 +6085,7 @@ window.GRAPH_DATA = {
      "loc": 128,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter3Quest.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__Chapter3Quest.cpp.md"
     }
    },
    {
@@ -6101,7 +6101,7 @@ window.GRAPH_DATA = {
      "loc": 131,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/Chapter4Quest.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__Chapter4Quest.cpp.md"
     }
    },
    {
@@ -6117,7 +6117,7 @@ window.GRAPH_DATA = {
      "loc": 52,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ChapterGate.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__ChapterGate.cpp.md"
     }
    },
    {
@@ -6133,7 +6133,7 @@ window.GRAPH_DATA = {
      "loc": 142,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ChapterVendors.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__ChapterVendors.cpp.md"
     }
    },
    {
@@ -6149,7 +6149,7 @@ window.GRAPH_DATA = {
      "loc": 297,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/ItemCatalog.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__ItemCatalog.cpp.md"
     }
    },
    {
@@ -6165,7 +6165,7 @@ window.GRAPH_DATA = {
      "loc": 65,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/QuestHookTable.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__QuestHookTable.cpp.md"
     }
    },
    {
@@ -6181,7 +6181,7 @@ window.GRAPH_DATA = {
      "loc": 46,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/quest/QuestIndicator.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__quest__QuestIndicator.cpp.md"
     }
    },
    {
@@ -6197,7 +6197,7 @@ window.GRAPH_DATA = {
      "loc": 96,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/state/EndingGate.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__state__EndingGate.cpp.md"
     }
    },
    {
@@ -6213,7 +6213,7 @@ window.GRAPH_DATA = {
      "loc": 99,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/state/SemesterStateMachine.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__state__SemesterStateMachine.cpp.md"
     }
    },
    {
@@ -6229,7 +6229,7 @@ window.GRAPH_DATA = {
      "loc": 110,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/vendor/Vendor.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__vendor__Vendor.cpp.md"
     }
    },
    {
@@ -6245,7 +6245,7 @@ window.GRAPH_DATA = {
      "loc": 219,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/vendor/VendorLoader.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__vendor__VendorLoader.cpp.md"
     }
    },
    {
@@ -6261,7 +6261,7 @@ window.GRAPH_DATA = {
      "loc": 29,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/BuildingTracker.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__BuildingTracker.cpp.md"
     }
    },
    {
@@ -6277,7 +6277,7 @@ window.GRAPH_DATA = {
      "loc": 19,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/TerrainMask.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__TerrainMask.cpp.md"
     }
    },
    {
@@ -6293,7 +6293,7 @@ window.GRAPH_DATA = {
      "loc": 146,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/World.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__World.cpp.md"
     }
    },
    {
@@ -6309,7 +6309,7 @@ window.GRAPH_DATA = {
      "loc": 27,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldOptions.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__WorldOptions.cpp.md"
     }
    },
    {
@@ -6325,7 +6325,7 @@ window.GRAPH_DATA = {
      "loc": 344,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldSpawn.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__WorldSpawn.cpp.md"
     }
    },
    {
@@ -6341,7 +6341,7 @@ window.GRAPH_DATA = {
      "loc": 59,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/game/world/WorldSportsLap.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__game__world__WorldSportsLap.cpp.md"
     }
    },
    {
@@ -6357,7 +6357,7 @@ window.GRAPH_DATA = {
      "loc": 225,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/ChapterCard.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__ChapterCard.cpp.md"
     }
    },
    {
@@ -6373,7 +6373,7 @@ window.GRAPH_DATA = {
      "loc": 427,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/EndingView.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__EndingView.cpp.md"
     }
    },
    {
@@ -6389,7 +6389,7 @@ window.GRAPH_DATA = {
      "loc": 73,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/HelpPageView.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__HelpPageView.cpp.md"
     }
    },
    {
@@ -6405,7 +6405,7 @@ window.GRAPH_DATA = {
      "loc": 257,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/InventoryView.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__InventoryView.cpp.md"
     }
    },
    {
@@ -6421,7 +6421,7 @@ window.GRAPH_DATA = {
      "loc": 112,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/MessageView.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__MessageView.cpp.md"
     }
    },
    {
@@ -6437,7 +6437,7 @@ window.GRAPH_DATA = {
      "loc": 368,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/View.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__View.cpp.md"
     }
    },
    {
@@ -6453,7 +6453,7 @@ window.GRAPH_DATA = {
      "loc": 60,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/ObjectiveBar.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__hud__ObjectiveBar.cpp.md"
     }
    },
    {
@@ -6469,7 +6469,7 @@ window.GRAPH_DATA = {
      "loc": 44,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/RainVignette.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__hud__RainVignette.cpp.md"
     }
    },
    {
@@ -6485,7 +6485,7 @@ window.GRAPH_DATA = {
      "loc": 49,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/SportsLapRing.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__hud__SportsLapRing.cpp.md"
     }
    },
    {
@@ -6501,7 +6501,7 @@ window.GRAPH_DATA = {
      "loc": 158,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/hud/StatusPanel.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__hud__StatusPanel.cpp.md"
     }
    },
    {
@@ -6517,7 +6517,7 @@ window.GRAPH_DATA = {
      "loc": 48,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/HelpOverlay.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__overlay__HelpOverlay.cpp.md"
     }
    },
    {
@@ -6533,7 +6533,7 @@ window.GRAPH_DATA = {
      "loc": 52,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/MenuAffordance.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__overlay__MenuAffordance.cpp.md"
     }
    },
    {
@@ -6549,7 +6549,7 @@ window.GRAPH_DATA = {
      "loc": 80,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/overlay/PauseMenu.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__overlay__PauseMenu.cpp.md"
     }
    },
    {
@@ -6565,7 +6565,7 @@ window.GRAPH_DATA = {
      "loc": 45,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/world/QuestGiverIndicators.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__world__QuestGiverIndicators.cpp.md"
     }
    },
    {
@@ -6581,7 +6581,7 @@ window.GRAPH_DATA = {
      "loc": 66,
      "classes": [],
      "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/src/ui/world/SportsLapTrack.cpp",
-     "wiki": null
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/src__ui__world__SportsLapTrack.cpp.md"
     }
    },
    {
@@ -6611,7 +6611,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 58,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_eventbus.cpp.md"
     }
    },
    {
@@ -6628,7 +6629,8 @@ window.GRAPH_DATA = {
      "classes": [
       "EventBusIsolation"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_isolation.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_isolation.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_eventbus_isolation.cpp.md"
     }
    },
    {
@@ -6643,7 +6645,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 161,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_scoped.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_scoped.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_eventbus_scoped.cpp.md"
     }
    },
    {
@@ -6658,7 +6661,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 68,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_factory.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_factory.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_factory.cpp.md"
     }
    },
    {
@@ -6675,7 +6679,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i35_interact_vendor.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i35_interact_vendor.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_i35_interact_vendor.cpp.md"
     }
    },
    {
@@ -6692,7 +6697,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Outcome"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i6_interact_reach.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_i6_interact_reach.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_i6_interact_reach.cpp.md"
     }
    },
    {
@@ -6710,7 +6716,8 @@ window.GRAPH_DATA = {
       "StubInput",
       "ScopedInputSource"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_input_handler.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_input_handler.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_input_handler.cpp.md"
     }
    },
    {
@@ -6725,7 +6732,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 332,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_scene_router.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_scene_router.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_scene_router.cpp.md"
     }
    },
    {
@@ -6742,7 +6750,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Fixture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_sim_systems.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_sim_systems.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__controller__test_sim_systems.cpp.md"
     }
    },
    {
@@ -6759,7 +6768,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spy"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_box_render.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_box_render.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_box_render.cpp.md"
     }
    },
    {
@@ -6777,7 +6787,8 @@ window.GRAPH_DATA = {
       "PosSpy",
       "T"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_choice_layout.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_choice_layout.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_choice_layout.cpp.md"
     }
    },
    {
@@ -6794,7 +6805,8 @@ window.GRAPH_DATA = {
      "classes": [
       "DialogContentDirInit"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_content_dir.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_content_dir.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_content_dir.cpp.md"
     }
    },
    {
@@ -6811,7 +6823,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spy"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_layout.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_layout.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_layout.cpp.md"
     }
    },
    {
@@ -6826,7 +6839,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 99,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_loader.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_loader.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_loader.cpp.md"
     }
    },
    {
@@ -6841,7 +6855,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 338,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_opener.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_opener.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_opener.cpp.md"
     }
    },
    {
@@ -6856,7 +6871,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 126,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_repository.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_repository.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_repository.cpp.md"
     }
    },
    {
@@ -6873,7 +6889,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_skip.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_skip.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_skip.cpp.md"
     }
    },
    {
@@ -6888,7 +6905,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 134,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_source.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_source.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_source.cpp.md"
     }
    },
    {
@@ -6903,7 +6921,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 136,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_state.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/dialog/test_dialog_state.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__dialog__test_dialog_state.cpp.md"
     }
    },
    {
@@ -6920,7 +6939,8 @@ window.GRAPH_DATA = {
      "classes": [
       "MessageCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cashpickup.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cashpickup.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_cashpickup.cpp.md"
     }
    },
    {
@@ -6938,7 +6958,8 @@ window.GRAPH_DATA = {
       "MessageCapture",
       "Row"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_consumable.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_consumable.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_consumable.cpp.md"
     }
    },
    {
@@ -6953,7 +6974,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 103,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cursed_taint.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_cursed_taint.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_cursed_taint.cpp.md"
     }
    },
    {
@@ -6970,7 +6992,8 @@ window.GRAPH_DATA = {
      "classes": [
       "MessageCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_dlc_sign.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_dlc_sign.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_dlc_sign.cpp.md"
     }
    },
    {
@@ -6985,7 +7008,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 80,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_npc.cpp.md"
     }
    },
    {
@@ -7000,7 +7024,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 148,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_animation.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_animation.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_npc_animation.cpp.md"
     }
    },
    {
@@ -7015,7 +7040,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 38,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_loaddialog.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_npc_loaddialog.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_npc_loaddialog.cpp.md"
     }
    },
    {
@@ -7030,7 +7056,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 39,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_player.cpp.md"
     }
    },
    {
@@ -7045,7 +7072,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 131,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player_core.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_player_core.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_player_core.cpp.md"
     }
    },
    {
@@ -7060,7 +7088,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 28,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_quest_pickup.cpp.md"
     }
    },
    {
@@ -7078,7 +7107,8 @@ window.GRAPH_DATA = {
       "CountingRenderer",
       "RectCall"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup_render.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_quest_pickup_render.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_quest_pickup_render.cpp.md"
     }
    },
    {
@@ -7095,7 +7125,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_rain_survival.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_rain_survival.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_rain_survival.cpp.md"
     }
    },
    {
@@ -7112,7 +7143,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Bare"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_roles.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_roles.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_roles.cpp.md"
     }
    },
    {
@@ -7130,7 +7162,8 @@ window.GRAPH_DATA = {
       "CountingRenderer",
       "RectCall"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_umbrella_render.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/entities/test_umbrella_render.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__entities__test_umbrella_render.cpp.md"
     }
    },
    {
@@ -7160,7 +7193,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 40,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_bounds.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_bounds.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_bounds.cpp.md"
     }
    },
    {
@@ -7175,7 +7209,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 43,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_camera2d.cpp.md"
     }
    },
    {
@@ -7190,7 +7225,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 56,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d_clamp.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_camera2d_clamp.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_camera2d_clamp.cpp.md"
     }
    },
    {
@@ -7205,7 +7241,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 54,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_color.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_color.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_color.cpp.md"
     }
    },
    {
@@ -7220,7 +7257,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 55,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_rect.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_rect.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_rect.cpp.md"
     }
    },
    {
@@ -7235,7 +7273,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 176,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_sprite_strip.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_sprite_strip.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_sprite_strip.cpp.md"
     }
    },
    {
@@ -7250,7 +7289,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 37,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_text_builder.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_text_builder.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_text_builder.cpp.md"
     }
    },
    {
@@ -7265,7 +7305,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 79,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_texture_cache.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_texture_cache.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_texture_cache.cpp.md"
     }
    },
    {
@@ -7280,7 +7321,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 55,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_vec2.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_vec2.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_vec2.cpp.md"
     }
    },
    {
@@ -7295,7 +7337,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 63,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_walk_cycle.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/gfx/test_walk_cycle.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__gfx__test_walk_cycle.cpp.md"
     }
    },
    {
@@ -7310,7 +7353,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 95,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__harness__test_scriptinput.cpp.md"
     }
    },
    {
@@ -7325,7 +7369,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 114,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_classic_move.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_classic_move.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__harness__test_scriptinput_classic_move.cpp.md"
     }
    },
    {
@@ -7342,7 +7387,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Frame"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_plan.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/harness/test_scriptinput_plan.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__harness__test_scriptinput_plan.cpp.md"
     }
    },
    {
@@ -7357,7 +7403,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 153,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_flavor_crowd.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_flavor_crowd.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch1_flavor_crowd.cpp.md"
     }
    },
    {
@@ -7374,7 +7421,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Capture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_quest.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_quest.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch1_quest.cpp.md"
     }
    },
    {
@@ -7391,7 +7439,8 @@ window.GRAPH_DATA = {
      "classes": [
       "SpineResult"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_spine_reachable.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch1_spine_reachable.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch1_spine_reachable.cpp.md"
     }
    },
    {
@@ -7406,7 +7455,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 370,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_quest.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_quest.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch2_quest.cpp.md"
     }
    },
    {
@@ -7421,7 +7471,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 135,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_reactive_substates.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_reactive_substates.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch2_reactive_substates.cpp.md"
     }
    },
    {
@@ -7436,7 +7487,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 131,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_ripple.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch2_ripple.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch2_ripple.cpp.md"
     }
    },
    {
@@ -7451,7 +7503,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 255,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_quest.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_quest.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch3_quest.cpp.md"
     }
    },
    {
@@ -7466,7 +7519,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 84,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_ripple.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_ripple.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch3_ripple.cpp.md"
     }
    },
    {
@@ -7481,7 +7535,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 116,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_umbrella_reveal.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch3_umbrella_reveal.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch3_umbrella_reveal.cpp.md"
     }
    },
    {
@@ -7499,7 +7554,8 @@ window.GRAPH_DATA = {
       "TestInput",
       "Ch4Fixture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ending_confession.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ending_confession.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_ending_confession.cpp.md"
     }
    },
    {
@@ -7514,7 +7570,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 127,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_finale.cpp.md"
     }
    },
    {
@@ -7531,7 +7588,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale_exit.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_finale_exit.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_finale_exit.cpp.md"
     }
    },
    {
@@ -7546,7 +7604,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 137,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_gentle_umbrella.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_gentle_umbrella.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_gentle_umbrella.cpp.md"
     }
    },
    {
@@ -7561,7 +7620,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 128,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ripple.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_ripple.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_ripple.cpp.md"
     }
    },
    {
@@ -7576,7 +7636,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 101,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_routing.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ch4_routing.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ch4_routing.cpp.md"
     }
    },
    {
@@ -7591,7 +7652,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 66,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter2_roster.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter2_roster.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter2_roster.cpp.md"
     }
    },
    {
@@ -7606,7 +7668,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 68,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter3_roster.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter3_roster.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter3_roster.cpp.md"
     }
    },
    {
@@ -7621,7 +7684,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 56,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_roster.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_roster.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter4_roster.cpp.md"
     }
    },
    {
@@ -7636,7 +7700,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 113,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_senior_skip.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter4_senior_skip.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter4_senior_skip.cpp.md"
     }
    },
    {
@@ -7651,7 +7716,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 55,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_gate.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_gate.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter_gate.cpp.md"
     }
    },
    {
@@ -7666,7 +7732,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 184,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_questitems.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_questitems.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter_questitems.cpp.md"
     }
    },
    {
@@ -7681,7 +7748,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 180,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spawns.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spawns.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter_spawns.cpp.md"
     }
    },
    {
@@ -7696,7 +7764,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 127,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spine.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_spine.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter_spine.cpp.md"
     }
    },
    {
@@ -7711,7 +7780,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 385,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_transitions.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_chapter_transitions.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_chapter_transitions.cpp.md"
     }
    },
    {
@@ -7726,7 +7796,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 90,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_economy_loop.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_economy_loop.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_economy_loop.cpp.md"
     }
    },
    {
@@ -7741,7 +7812,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 147,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_loadchapter_chapter1.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_loadchapter_chapter1.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_loadchapter_chapter1.cpp.md"
     }
    },
    {
@@ -7756,7 +7828,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 69,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_hook_table.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_hook_table.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_quest_hook_table.cpp.md"
     }
    },
    {
@@ -7771,7 +7844,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 173,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_indicator.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_quest_indicator.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_quest_indicator.cpp.md"
     }
    },
    {
@@ -7786,7 +7860,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 114,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ripple_seed_flags.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_ripple_seed_flags.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_ripple_seed_flags.cpp.md"
     }
    },
    {
@@ -7803,7 +7878,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spot"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_spawn_reachability.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_spawn_reachability.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_spawn_reachability.cpp.md"
     }
    },
    {
@@ -7818,7 +7894,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 93,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_suit_senior_oneshot.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/quest/test_suit_senior_oneshot.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__quest__test_suit_senior_oneshot.cpp.md"
     }
    },
    {
@@ -7833,7 +7910,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 318,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_ending_gate.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_ending_gate.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_ending_gate.cpp.md"
     }
    },
    {
@@ -7848,7 +7926,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 66,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_interlude_exit.cpp.md"
     }
    },
    {
@@ -7863,7 +7942,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 119,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_feedback.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_feedback.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_interlude_exit_feedback.cpp.md"
     }
    },
    {
@@ -7882,7 +7962,8 @@ window.GRAPH_DATA = {
       "RectCall",
       "TextCall"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_marker.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_exit_marker.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_interlude_exit_marker.cpp.md"
     }
    },
    {
@@ -7897,7 +7978,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 172,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_loaner_return.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_interlude_loaner_return.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_interlude_loaner_return.cpp.md"
     }
    },
    {
@@ -7912,7 +7994,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 57,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_state_machine.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/state/test_state_machine.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__state__test_state_machine.cpp.md"
     }
    },
    {
@@ -7927,7 +8010,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 91,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_accessibility_contrast.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_accessibility_contrast.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_accessibility_contrast.cpp.md"
     }
    },
    {
@@ -7944,7 +8028,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spy"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_chapter_card.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_chapter_card.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_chapter_card.cpp.md"
     }
    },
    {
@@ -7961,7 +8046,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spy"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_card_render.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_card_render.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_ending_card_render.cpp.md"
     }
    },
    {
@@ -7978,7 +8064,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_menu.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_ending_menu.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_ending_menu.cpp.md"
     }
    },
    {
@@ -7993,7 +8080,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 155,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyph_scan.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyph_scan.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_font_ui_glyph_scan.cpp.md"
     }
    },
    {
@@ -8008,7 +8096,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 93,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyphs.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_glyphs.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_font_ui_glyphs.cpp.md"
     }
    },
    {
@@ -8023,7 +8112,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 349,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_literal_scan.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_font_ui_literal_scan.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_font_ui_literal_scan.cpp.md"
     }
    },
    {
@@ -8038,7 +8128,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 76,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_hud_reset.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_hud_reset.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_hud_reset.cpp.md"
     }
    },
    {
@@ -8056,7 +8147,8 @@ window.GRAPH_DATA = {
       "Spy",
       "Case"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_inventory_view.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_inventory_view.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_inventory_view.cpp.md"
     }
    },
    {
@@ -8073,7 +8165,8 @@ window.GRAPH_DATA = {
      "classes": [
       "KarmaCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_karma_toast.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_karma_toast.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_karma_toast.cpp.md"
     }
    },
    {
@@ -8088,7 +8181,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 104,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_large_targets.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_large_targets.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_large_targets.cpp.md"
     }
    },
    {
@@ -8105,7 +8199,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_menu_help.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_menu_help.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_menu_help.cpp.md"
     }
    },
    {
@@ -8122,7 +8217,8 @@ window.GRAPH_DATA = {
      "classes": [
       "Spy"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_message_view.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_message_view.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_message_view.cpp.md"
     }
    },
    {
@@ -8139,7 +8235,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_pause_menu_toggle.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_pause_menu_toggle.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_pause_menu_toggle.cpp.md"
     }
    },
    {
@@ -8154,7 +8251,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 74,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_press_latch.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_press_latch.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_press_latch.cpp.md"
     }
    },
    {
@@ -8174,7 +8272,8 @@ window.GRAPH_DATA = {
       "TextCall",
       "StubObj"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_quest_giver_indicator.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_quest_giver_indicator.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_quest_giver_indicator.cpp.md"
     }
    },
    {
@@ -8189,7 +8288,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 81,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_rain_hud_redundant.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_rain_hud_redundant.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_rain_hud_redundant.cpp.md"
     }
    },
    {
@@ -8204,7 +8304,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 108,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_reduced_motion.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_reduced_motion.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_reduced_motion.cpp.md"
     }
    },
    {
@@ -8219,7 +8320,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 142,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_restart_safety.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_restart_safety.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_restart_safety.cpp.md"
     }
    },
    {
@@ -8234,7 +8336,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 232,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_two_hud_channels.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/ui/test_two_hud_channels.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__ui__test_two_hud_channels.cpp.md"
     }
    },
    {
@@ -8251,7 +8354,8 @@ window.GRAPH_DATA = {
      "classes": [
       "VendorCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__vendor__test_vendor.cpp.md"
     }
    },
    {
@@ -8266,7 +8370,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 81,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_centred_cluster.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_centred_cluster.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__vendor__test_vendor_centred_cluster.cpp.md"
     }
    },
    {
@@ -8283,7 +8388,8 @@ window.GRAPH_DATA = {
      "classes": [
       "TestInput"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_decline.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_decline.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__vendor__test_vendor_decline.cpp.md"
     }
    },
    {
@@ -8300,7 +8406,8 @@ window.GRAPH_DATA = {
      "classes": [
       "MsgCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_inventory.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_inventory.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__vendor__test_vendor_inventory.cpp.md"
     }
    },
    {
@@ -8315,7 +8422,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 115,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_loader.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/vendor/test_vendor_loader.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__vendor__test_vendor_loader.cpp.md"
     }
    },
    {
@@ -8332,7 +8440,8 @@ window.GRAPH_DATA = {
      "classes": [
       "EventCapture"
      ],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_building_tracker.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_building_tracker.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__world__test_building_tracker.cpp.md"
     }
    },
    {
@@ -8347,7 +8456,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 110,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_collision_mask.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_collision_mask.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__world__test_collision_mask.cpp.md"
     }
    },
    {
@@ -8362,7 +8472,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 123,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_physics.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_physics.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__world__test_physics.cpp.md"
     }
    },
    {
@@ -8377,7 +8488,8 @@ window.GRAPH_DATA = {
      "ext": ".cpp",
      "loc": 176,
      "classes": [],
-     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_world_chapter_roster.cpp"
+     "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/world/test_world_chapter_roster.cpp",
+     "wiki": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/graph/wiki/files/tests__world__test_world_chapter_roster.cpp.md"
     }
    },
    {

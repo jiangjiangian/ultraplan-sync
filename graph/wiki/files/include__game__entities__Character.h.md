@@ -45,4 +45,4 @@ sources: ["include/game/entities/Character.h"]
 整體設計維持 Model 乾淨：不引入 raylib、不讀輸入、不發事件，完全符合 MVC 架構紅線（[MVC](../concepts/arch-mvc.md)）。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/game/entities/Character.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Character.h) · [← 全檔索引](../files-index.md) · 相關概念：[MVC](../concepts/arch-mvc.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/entities/Character.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/Character.h) · [← 全檔索引](../files-index.md) · 相關概念：[MVC](../concepts/arch-mvc.md)

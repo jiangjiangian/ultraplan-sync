@@ -42,4 +42,4 @@ Ch4 對應期末考終焉：5 個路人全 isQuestGiver=false，依 chapter4.md 
 資料表驅動設計（Table-Driven Configuration）的典型應用：每章的 NPC 陣容獨立於 World，以章節狀態為鍵查表，消除 World 對各章 NPC 的直接耦合。備注中詳細說明各 NPC 位置的設計依據（場景台詞對應地理座標、跑道半徑計算、最近 NPC 間距），反映地形遮罩與可達性驗證的生產品質要求。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/game/quest/ChapterSpawns.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterSpawns.h) · [← 全檔索引](../files-index.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/quest/ChapterSpawns.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/quest/ChapterSpawns.h) · [← 全檔索引](../files-index.md)

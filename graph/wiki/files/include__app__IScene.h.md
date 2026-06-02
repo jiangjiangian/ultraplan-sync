@@ -52,4 +52,4 @@ sources: ["include/app/IScene.h"]
 [RAII](../concepts/oo-raii.md) 依賴場景的 `Enter / Exit` 明確接線與取消訂閱，而非仰賴建構 / 解構子——因為場景可能被推入堆疊後暫時不活躍（Push 語意），生命週期與活躍期不同。`WorldForHarnessOrNull` 接縫使錄製機制不需要下轉型（no `dynamic_cast`），符合 [DIP](../concepts/arch-dip-renderer.md) 精神。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/app/IScene.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/IScene.h) · [← 全檔索引](../files-index.md) · 相關概念：[Factory Method](../concepts/pat-factory.md) · [RAII](../concepts/oo-raii.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/app/IScene.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/IScene.h) · [← 全檔索引](../files-index.md) · 相關概念：[Factory Method](../concepts/pat-factory.md) · [RAII](../concepts/oo-raii.md)

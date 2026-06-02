@@ -41,4 +41,4 @@ sources: ["tests/controller/test_eventbus_isolation.cpp"]
 本檔體現了 [Observer](../concepts/pat-observer.md) 模式的測試可靠性問題，並以框架鉤子（doctest reporter 介面）解決。其本身是一種「測試 fixture 即 RAII」的思路：隔離邊界由框架保證觸發，而非各 case 手動呼叫 `Clear`，完全消除了人為遺漏的風險。[RAII](../concepts/oo-raii.md) 精神：每個 case 的資源（匯流排狀態）在邊界被自動釋放。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:tests/controller/test_eventbus_isolation.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_isolation.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[Observer](../concepts/pat-observer.md) · [RAII](../concepts/oo-raii.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:tests/controller/test_eventbus_isolation.cpp) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/tests/controller/test_eventbus_isolation.cpp) · [← 全檔索引](../files-index.md) · 相關概念：[Observer](../concepts/pat-observer.md) · [RAII](../concepts/oo-raii.md)

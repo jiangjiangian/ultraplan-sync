@@ -35,4 +35,4 @@ sources: ["include/ui/world/QuestGiverIndicators.h"]
 此函式將「誰有任務指示符」的判定集中於 `QuestIndicatorVisible`，是 SRP 與 DRY 原則的體現：View 只負責繪製，判斷邏輯不散落在此。[DIP](../concepts/arch-dip-renderer.md) 透過 `IRenderer&` 完成；無 `dynamic_cast` 依賴符合 [ISP / Roles](../concepts/oo-isp-roles.md) 精神。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/ui/world/QuestGiverIndicators.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/QuestGiverIndicators.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/ui/world/QuestGiverIndicators.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/world/QuestGiverIndicators.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)

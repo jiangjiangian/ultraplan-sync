@@ -42,4 +42,4 @@ sources: ["include/game/vendor/VendorSprite.h"]
 
 ## 連結
 
-[🕸 圖譜節點](../../index.html#node=file:include/game/vendor/VendorSprite.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorSprite.h) · [← 全檔索引](../files-index.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/vendor/VendorSprite.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/vendor/VendorSprite.h) · [← 全檔索引](../files-index.md)

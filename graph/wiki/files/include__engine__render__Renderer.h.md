@@ -48,4 +48,4 @@ sources: ["include/engine/render/Renderer.h"]
 Header-only 設計保持了零額外 `.cpp` 的低維護成本；由於類別無狀態，inline 也無 ODR 問題。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/engine/render/Renderer.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Renderer.h) · [← 全檔索引](../files-index.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/Renderer.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/Renderer.h) · [← 全檔索引](../files-index.md)

@@ -43,4 +43,4 @@ sources: ["include/engine/render/RaylibRenderer.h"]
 由於整個類別都是 inline 定義在標頭中、且每個方法只有一行委派，它是一個典型的**Adapter**（GoF），把 `IRenderer` 介面的呼叫約定轉接到 `Renderer`/`TextBuilder` 的流暢介面。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/engine/render/RaylibRenderer.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/RaylibRenderer.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/RaylibRenderer.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)

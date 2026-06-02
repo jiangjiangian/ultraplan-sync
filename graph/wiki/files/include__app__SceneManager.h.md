@@ -48,4 +48,4 @@ sources: ["include/app/SceneManager.h"]
 `RunOutcome` + `main.cpp` 重建場景堆疊的設計，使「重新開始」觸發整個 World / View / GameController 範圍的 RAII 重建（[RAII](../concepts/oo-raii.md)），避免了跨局殘留的狀態污染。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/app/SceneManager.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneManager.h) · [← 全檔索引](../files-index.md) · 相關概念：[State](../concepts/pat-state.md) · [Command](../concepts/pat-command.md) · [RAII](../concepts/oo-raii.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/app/SceneManager.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/app/SceneManager.h) · [← 全檔索引](../files-index.md) · 相關概念：[State](../concepts/pat-state.md) · [Command](../concepts/pat-command.md) · [RAII](../concepts/oo-raii.md)

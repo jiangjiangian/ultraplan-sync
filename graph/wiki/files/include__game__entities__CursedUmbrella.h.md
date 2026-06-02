@@ -40,4 +40,4 @@ sources: ["include/game/entities/CursedUmbrella.h"]
 `cursedTaint_` 累積機制體現了「滑動道德代價」設計：業力懲罰不是離散的單次事件，而是跨章節的長尾效應。此設計使玩家在最初拾取時可能低估後果，在後續章節中逐漸感受。這是敘事驅動的遊戲設計決策，在程式碼層面以 `Player::IncCursedTaint()` + `ApplyCursedTaintDecay()` 協作實現，職責分離清晰。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/game/entities/CursedUmbrella.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CursedUmbrella.h) · [← 全檔索引](../files-index.md) · 相關概念：[Template Method](../concepts/pat-template.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/game/entities/CursedUmbrella.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/game/entities/CursedUmbrella.h) · [← 全檔索引](../files-index.md) · 相關概念：[Template Method](../concepts/pat-template.md)

@@ -53,5 +53,3 @@ tools/world.tmj
 # Sanitizer build tree (gitignored alongside build/ + build_*/)
 build-asan/
 
-# 逐檔知識頁產生中（背景代理）——完成後移除此行、一次提交
-graph/wiki/files/

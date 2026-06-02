@@ -35,4 +35,4 @@ sources: ["include/ui/overlay/PauseMenu.h"]
 同 `MenuAffordance.h`，體現 [DIP](../concepts/arch-dip-renderer.md) 與 SRP：大型 View 的疊層渲染被拆成多個各自聚焦的自由函式，每個只閱讀 `const World&` 並透過 `IRenderer` 輸出。無狀態設計使本函式可在任何時刻被呼叫而無副作用。`ReducedMotion` 與 `LargeTargets` 的無障礙設定選項在此疊層切換，使配置變更立即反映至 View。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/ui/overlay/PauseMenu.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/PauseMenu.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/ui/overlay/PauseMenu.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/PauseMenu.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)

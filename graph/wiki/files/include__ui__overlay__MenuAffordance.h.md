@@ -35,4 +35,4 @@ sources: ["include/ui/overlay/MenuAffordance.h"]
 此檔案體現 [ISP](../concepts/oo-isp-roles.md) 精神：不藉由大型渲染類別的成員，而以自由函式將小型 UI 職責拆開。[DIP](../concepts/arch-dip-renderer.md) 原則透過注入 `IRenderer&` 而非直接呼叫 raylib 得以落實，使渲染決定性且可替換。無狀態的純函式風格確保每幀呼叫皆安全。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/ui/overlay/MenuAffordance.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/MenuAffordance.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/ui/overlay/MenuAffordance.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/ui/overlay/MenuAffordance.h) · [← 全檔索引](../files-index.md) · 相關概念：[DIP Renderer](../concepts/arch-dip-renderer.md)

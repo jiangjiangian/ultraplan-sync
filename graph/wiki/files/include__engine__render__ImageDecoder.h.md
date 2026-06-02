@@ -42,4 +42,4 @@ sources: ["include/engine/render/ImageDecoder.h"]
 `LoadRgba8Image` 的 no-throw 契約搭配「回傳 sentinel」模式（而非 `std::optional` 或 exception），維持與 C-style raylib API 的風格一致性，並使所有呼叫端都能以簡單 `if (img.Empty())` 處理缺檔情況。
 
 ## 連結
-[🕸 圖譜節點](../../index.html#node=file:include/engine/render/ImageDecoder.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/ImageDecoder.h) · [← 全檔索引](../files-index.md)
+[🕸 圖譜節點](https://jiangjiangian.github.io/ultraplan-sync/#node=file:include/engine/render/ImageDecoder.h) · [↗ 原始碼](https://github.com/jiangjiangian/ultraplan-sync/blob/main/include/engine/render/ImageDecoder.h) · [← 全檔索引](../files-index.md)
