@@ -1,6 +1,6 @@
 # 全檔索引 — 《尋傘記》知識圖譜
 
-> 自動產生 by `graph/build_graph.py`。共 **500** 個版控檔案，一個都不漏。點 `node` 連結會在互動圖譜中聚焦該檔。
+> 自動產生 by `graph/build_graph.py`。共 **501** 個版控檔案，一個都不漏。點 `node` 連結會在互動圖譜中聚焦該檔。
 
 ## app · 組裝根  (14)
 
@@ -359,11 +359,12 @@
 | `resources/assets/sprites/school_uniform_3/male_12.png` | asset | assets | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:resources/assets/sprites/school_uniform_3/male_12.png) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_12.png) |
 | `resources/assets/sprites/school_uniform_3/male_13.png` | asset | assets | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:resources/assets/sprites/school_uniform_3/male_13.png) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/resources/assets/sprites/school_uniform_3/male_13.png) |
 
-## root · 專案根  (9)
+## root · 專案根  (10)
 
 | 檔案 | 類型 | bucket | LOC | 類別 | 連結 |
 |---|---|---|---|---|---|
 | `.github/.keep` | config | — | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:.github/.keep) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/.github/.keep) |
+| `.github/workflows/pages.yml` | other | — | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:.github/workflows/pages.yml) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/.github/workflows/pages.yml) |
 | `.gitignore` | config | — | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:.gitignore) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/.gitignore) |
 | `CMakeLists.txt` | build | — | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:CMakeLists.txt) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/CMakeLists.txt) |
 | `CREDITS.md` | doc | — | — | — | [node](https://jiangjiangian.github.io/ultraplan-sync/#node=file:CREDITS.md) · [src](https://github.com/jiangjiangian/ultraplan-sync/blob/main/CREDITS.md) |

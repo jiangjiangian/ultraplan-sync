@@ -34,6 +34,9 @@
     container: document.getElementById("cy"),
     elements: DATA.elements,
     wheelSensitivity: 0.25,
+    textureOnViewport: true,    // 拖曳/縮放用貼圖渲染 → 大圖不卡（關鍵）
+    hideEdgesOnViewport: true,  // 互動時暫時隱藏邊，少畫很多東西
+    motionBlur: false,
     style: [
       { selector: "node", style: {
         "background-color": "data(col)", "shape": function (e){ return KIND_SHAPE[e.data("kind")] || "ellipse"; },
@@ -132,13 +135,15 @@
       edges:["inherits","realizes"], layout:"breadthfirst" },
     patterns: { kinds:["pattern","principle","architecture","file"],
       edges:["realizes"], layout:"concentric" },
+    code:     { kinds:["file"], domains:["app","engine","game","ui"],
+      edges:["includes","inherits"], layout:"cose" },
     full:     { kinds:kinds.slice(), edges:etypes.slice(), layout:"cose" },
   };
   function setView(name){
     var v = VIEWS[name]; if (!v) return;
     kinds.forEach(function(k){ kindOn[k] = v.kinds.indexOf(k) >= 0; });
     etypes.forEach(function(t){ edgeOn[t] = v.edges.indexOf(t) >= 0; });
-    domains.forEach(function(d){ domOn[d] = true; });
+    domains.forEach(function(d){ domOn[d] = v.domains ? v.domains.indexOf(d) >= 0 : true; });
     document.getElementById("layout").value = v.layout;
     syncCheckboxes();
     document.querySelectorAll("#views button").forEach(function(b){

@@ -15,6 +15,21 @@
   "include_count": 0
  },
  {
+  "id": "file:.github/workflows/pages.yml",
+  "label": "pages.yml",
+  "kind": "file",
+  "path": ".github/workflows/pages.yml",
+  "ntype": "other",
+  "domain": "root",
+  "bucket": "",
+  "ext": ".yml",
+  "loc": 0,
+  "classes": [],
+  "github": "https://github.com/jiangjiangian/ultraplan-sync/blob/main/.github/workflows/pages.yml",
+  "includes": [],
+  "include_count": 0
+ },
+ {
   "id": "file:.gitignore",
   "label": ".gitignore",
   "kind": "file",
